@@ -1,0 +1,442 @@
+[
+  {
+    "canonical_id": "anchoring_bias",
+    "type": "bias",
+    "chapter": "Decision-Making & Information Processing Biases",
+    "display": "Anchoring Bias",
+    "definition": "Relying heavily on the first piece of information (the \"anchor\") when making decisions or forming opinions.",
+    "example": "Upon hearing an antisemitic remark from a trusted friend or family member early in life, a person may anchor to this perspective, allowing it to color their perceptions of Jewish individuals and communities, despite later learning contradictory information."
+  },
+  {
+    "canonical_id": "attentional_bias",
+    "type": "bias",
+    "chapter": "Decision-Making & Information Processing Biases",
+    "display": "Attentional Bias",
+    "definition": "The tendency to pay attention to emotionally dominant stimuli and ignore other relevant data.",
+    "example": "When individuals pay disproportionate attention to emotional content that confirms negative stereotypes about Jewish people while ignoring evidence that proves the contrary."
+  },
+  {
+    "canonical_id": "group_attribution_error",
+    "type": "bias",
+    "chapter": "Decision-Making & Information Processing Biases",
+    "display": "Group Attribution Error",
+    "definition": "The erroneous belief that the characteristics of an individual group member reflect the general beliefs or behaviors of the entire group.",
+    "example": "When a person witnesses a Jewish individual engaging in a financial dispute and erroneously concludes that all Jewish people are greedy or financially untrustworthy. This incorrect assumption attributes the actions of one person to the entire group, perpetuating harmful stereotypes and ignoring the diversity of individuals within any community."
+  },
+  {
+    "canonical_id": "groupthink",
+    "type": "bias",
+    "chapter": "Decision-Making & Information Processing Biases",
+    "display": "Groupthink",
+    "definition": "The practice of thinking or making decisions as a group in a way that discourages creativity or individual responsibility.",
+    "example": "Groupthink manifests in an academic club meeting where members discuss cultural diversity themes for an upcoming university event. When selecting topics, a proposal laced with subtle antisemitic undertones gains traction. Despite initial discomfort from some members, the desire for unanimity and fear of dissent lead the group to uncritically accept the proposal, showcasing how groupthink can perpetuate antisemitism by discouraging individual objections to prejudiced ideas."
+  },
+  {
+    "canonical_id": "status_quo_bias",
+    "type": "bias",
+    "chapter": "Decision-Making & Information Processing Biases",
+    "display": "Status Quo Bias",
+    "definition": "Preferring for things to stay the same by doing nothing or sticking with a decision made previously.",
+    "example": "Jews shouldn't be allowed onto the Temple Mount in Jerusalem because it's always been that way."
+  },
+  {
+    "canonical_id": "dunning_kruger_effect",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Dunning-Kruger/Overconfidence Effect",
+    "definition": "The tendency of people with low ability at a task to overestimate their ability.",
+    "example": "When an individual with minimal understanding of Jewish history, culture, or the complexities of modern geopolitics confidently spreads simplistic or erroneous views about Jews. They may assert unfounded theories about Jewish influence in world events or finance, dismissing the need for further education or dialogue on the subjects due to an inflated sense of their own insights."
+  },
+  {
+    "canonical_id": "focusing_effect",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Focusing Effect",
+    "definition": "The tendency to give too much weight to certain aspects of an event while ignoring others.",
+    "example": "Fixating on the fact that a criminal is Jewish even though their crime had nothing to do with religion."
+  },
+  {
+    "canonical_id": "framing_effect",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Framing Effect",
+    "definition": "The tendency to react differently to information depending on how it is presented.",
+    "example": "When a neutral fact about Jews, Judaism or Israel is framed negatively to imply something nefarious, leading to negative perceptions."
+  },
+  {
+    "canonical_id": "hostile_attribution_bias",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Hostile Attribution Bias",
+    "definition": "The tendency to interpret others' actions as hostile, even when they're benign.",
+    "example": "When a person unjustifiably views a Jewish colleague's disagreement in a work meeting as a personal attack rather than a professional opinion."
+  },
+  {
+    "canonical_id": "negativity_bias",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Negativity Bias",
+    "definition": "The tendency to remember and focus on negative information more than positive.",
+    "example": "When a person hears a negative rumor about a Jewish individual, they might give it more credence than the numerous positive interactions they've had."
+  },
+  {
+    "canonical_id": "priming",
+    "type": "bias",
+    "chapter": "Behavioral, Perceptual & Egocentric Biases",
+    "display": "Priming",
+    "definition": "Influencing people's reactions based on previously presented information.",
+    "example": "After watching a documentary portraying Jewish people in a negative light, an individual might unconsciously adopt a more critical stance towards Jewish colleagues or neighbors."
+  },
+  {
+    "canonical_id": "availability_heuristic",
+    "type": "bias",
+    "chapter": "Belief & Probability Biases",
+    "display": "Availability Heuristic",
+    "definition": "The tendency to overestimate the importance of information that is readily available.",
+    "example": "If a person frequently encounters antisemitic jokes or comments on social media, they might start to believe that such sentiments are widely accepted and normal, underestimating the prevalence of positive or neutral attitudes toward Jewish people."
+  },
+  {
+    "canonical_id": "confirmation_bias",
+    "type": "bias",
+    "chapter": "Belief & Probability Biases",
+    "display": "Confirmation Bias",
+    "definition": "The tendency to favor and seek out information that confirms pre-existing beliefs or hypotheses.",
+    "example": "A person frequents online platforms known for spreading unfounded conspiracy theories about Jews, selectively absorbing and disseminating content that falsely accuses Jewish individuals of global manipulation. Despite these sources lacking credibility and being contradicted by factual evidence, the individual prioritizes such information, reinforcing their existing antisemitic prejudices while ignoring reputable, balanced perspectives."
+  },
+  {
+    "canonical_id": "illusion_of_control",
+    "type": "bias",
+    "chapter": "Belief & Probability Biases",
+    "display": "Illusion of Control",
+    "definition": "The tendency to overestimate one's or another's ability to control events.",
+    "example": "Believing that a few Jews, or a single machine, can control the world or complex systems like global finance and intercontinental trade."
+  },
+  {
+    "canonical_id": "neglect_of_probability",
+    "type": "bias",
+    "chapter": "Belief & Probability Biases",
+    "display": "Neglect of Probability",
+    "definition": "The tendency to ignore the statistical likelihood of events, often fearing highly improbable negative outcomes.",
+    "example": "Claiming Israel has been committing genocide over the years despite the Palestinian population growing healthily and at a higher birth rate than Israelis (Jews and Arabs)."
+  },
+  {
+    "canonical_id": "wishful_thinking",
+    "type": "bias",
+    "chapter": "Belief & Probability Biases",
+    "display": "Wishful Thinking",
+    "definition": "The tendency to believe something because one wishes it to be true, rather than because of any evidence.",
+    "example": "Arguing \"if only the Palestinians had a state then there would be peace and they wouldn't resort to violence against Israel.\""
+  },
+  {
+    "canonical_id": "bandwagon_effect",
+    "type": "bias",
+    "chapter": "Social Biases",
+    "display": "Bandwagon Effect",
+    "definition": "The tendency to adopt beliefs or behaviors because they seem popular or because others are doing so.",
+    "example": "An individual might start endorsing antisemitic sentiments simply because they notice these views gaining traction in their social circle or online."
+  },
+  {
+    "canonical_id": "herd_mentality",
+    "type": "bias",
+    "chapter": "Social Biases",
+    "display": "Herd Mentality",
+    "definition": "The tendency to conform to the majority opinion in one's group, without individual critical thinking.",
+    "example": "Adopting antisemitic attitudes if they are prevalent within one's group, even if they contradict one's personal beliefs."
+  },
+  {
+    "canonical_id": "in_group_out_group_bias",
+    "type": "bias",
+    "chapter": "Social Biases",
+    "display": "In-Group/Out-Group Bias",
+    "definition": "The tendency to prefer either members of one's own group at the expense of others or other groups at the expense of one's own.",
+    "example": "Members of a close-knit community might rally around antisemitic myths or conspiracy theories as a way to strengthen group identity, viewing Jewish people as the out-group and unfairly attributing societal issues to them, something we've seen Candace Owens do in defense of Kanye West after the latter's well documented hate spree."
+  },
+  {
+    "canonical_id": "stereotyping",
+    "type": "bias",
+    "chapter": "Social Biases",
+    "display": "Stereotyping",
+    "definition": "The tendency to assign generalized attributes to individuals based on their group membership.",
+    "example": "Someone might assume all Jewish people are wealthy or have certain influence, based on pervasive stereotypes, without acknowledging individual differences."
+  },
+  {
+    "canonical_id": "false_memory",
+    "type": "bias",
+    "chapter": "Memory Biases",
+    "display": "False Memory",
+    "definition": "The tendency to recall events differently from the way they happened, often influenced by suggestion or the blending of actual memories with misinformation.",
+    "example": "Under the influence of stereotypes and hearsay, an individual might \"remember\" witnessing unfair business practices by a Jewish shop owner, even though the event never occurred."
+  },
+  {
+    "canonical_id": "misinformation_effect",
+    "type": "bias",
+    "chapter": "Memory Biases",
+    "display": "Misinformation Effect",
+    "definition": "The tendency to recall of episodic memories becomes less accurate due to post-event information.",
+    "example": "After reading a biased article misreporting a peaceful protest by a Jewish group as violent, a person might falsely recall having seen footage of the protest that aligns with the article's inaccuracies."
+  },
+  {
+    "canonical_id": "rosy_retrospection",
+    "type": "bias",
+    "chapter": "Memory Biases",
+    "display": "Rosy Retrospection",
+    "definition": "The tendency to remember past events more fondly than they occurred, often overlooking negative experiences.",
+    "example": "Applied to antisemitism, an individual might nostalgically recall a time of peace and harmony that either never was or obscures a darker reality, very much like Congresswoman Rashida Tlaib imagined a fantastical reality wherein Palestinians \"welcomed\" Holocaust survivors to the British Mandate although the exact opposite is true as Jews were neither welcomed nor safe from violent attack."
+  },
+  {
+    "canonical_id": "ad_hominem",
+    "type": "fallacy",
+    "chapter": "Relevance & Distraction Fallacies",
+    "display": "Ad Hominem",
+    "definition": "Attacking the character of the person making an argument rather than the argument itself.",
+    "example": "When a person criticizes a Jewish individual's argument against antisemitism by attacking their character or identity as Jewish, rather than addressing the argument itself."
+  },
+  {
+    "canonical_id": "non_sequitur",
+    "type": "fallacy",
+    "chapter": "Relevance & Distraction Fallacies",
+    "display": "Non-Sequitur",
+    "definition": "A conclusion or statement that does not logically follow the previous argument or statement.",
+    "example": "Claiming that because a Jewish individual has achieved significant success, antisemitism must not exist or is exaggerated, which does not logically follow."
+  },
+  {
+    "canonical_id": "red_herring",
+    "type": "fallacy",
+    "chapter": "Relevance & Distraction Fallacies",
+    "display": "Red Herring",
+    "definition": "Introducing an irrelevant topic to divert attention from the original issue.",
+    "example": "In a debate about the historical contributions of Jewish people, someone introduces an unrelated issue, such as the policies of the State of Israel, to divert attention from the original topic."
+  },
+  {
+    "canonical_id": "straw_man",
+    "type": "fallacy",
+    "chapter": "Relevance & Distraction Fallacies",
+    "display": "Straw Man",
+    "definition": "Misrepresenting someone's argument to make it easier to attack.",
+    "example": "Misrepresenting the argument that antisemitism is a significant societal issue by suggesting that those raising concerns are claiming it's the only form of prejudice that exists, then attacking this misrepresentation."
+  },
+  {
+    "canonical_id": "anecdotal_fallacy",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Anecdotal Fallacy",
+    "definition": "Using personal experience or an isolated example instead of a valid argument, especially to dismiss statistics.",
+    "example": "When a person uses their own negative experience with a Jew to argue that such negative attributes necessarily apply to all Jews."
+  },
+  {
+    "canonical_id": "appeal_to_ignorance",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Appeal to Ignorance",
+    "definition": "Arguing that a lack of evidence proves something is true or false.",
+    "example": "Because a lot of physical evidence was destroyed during the anti-Jewish attack, it's proof the attack never really happened."
+  },
+  {
+    "canonical_id": "burden_of_proof_fallacy",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Burden of Proof Fallacy",
+    "definition": "Asserting that the burden of proof lies not with the person making the claim, but with someone else to disprove.",
+    "example": "Demanding that Jewish individuals or organizations must prove they do not control the media or global finance, rather than those making the accusations providing evidence for their claims."
+  },
+  {
+    "canonical_id": "cherry_picking",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Cherry Picking",
+    "definition": "Cherry-picking data clusters to suit an argument, or finding a pattern to fit a presumption.",
+    "example": "Selecting specific incidents involving Jewish individuals to support claims of widespread conspiracy or control, while ignoring counter-evidence."
+  },
+  {
+    "canonical_id": "circular_reasoning",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Circular Reasoning",
+    "definition": "When the premise of an argument repeats the conclusion without providing any evidence.",
+    "example": "\"Zionism is racism because racism is Zionism.\" At no point is there any evidence or qualification offered as to how one equates to the other."
+  },
+  {
+    "canonical_id": "false_analogy",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "False Analogy",
+    "definition": "Making a misleading comparison between logically unconnected ideas.",
+    "example": "Comparing the discrimination faced by Jewish people to unrelated situations, minimizing the unique history and impact of antisemitism. \"What Israel does to Palestinians is like or worse than what the Nazis did to Jews.\""
+  },
+  {
+    "canonical_id": "false_cause",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "False Cause",
+    "definition": "Presuming that a real or perceived relationship between things means that one is the cause of the other.",
+    "example": "Blaming economic downturns or societal issues on the presence or influence of Jewish people, assuming a broader cause-effect relationship without evidence."
+  },
+  {
+    "canonical_id": "hasty_generalization",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Hasty Generalization",
+    "definition": "Making a rushed conclusion without considering all of the variables.",
+    "example": "Jumping to the worst possible conclusion about a news story because it involves Jews or Israel, even though little is known and details of the event are still emerging."
+  },
+  {
+    "canonical_id": "proof_by_assertion",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Proof by Assertion",
+    "definition": "A form of argument where a proposition is repeatedly restated regardless of contradiction.",
+    "example": "Repeatedly stating that Jewish people have disproportionate control over global affairs without providing substantiated evidence, regardless of factual counterarguments."
+  },
+  {
+    "canonical_id": "slippery_slope",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Slippery Slope Fallacy",
+    "definition": "Arguing that a small first step will lead to a chain of related events culminating in a significant effect, often with little evidence.",
+    "example": "Arguing that increased cultural sensitivity toward Jewish people will inevitably lead to unreasonable restrictions on free speech or other freedoms, without evidence to support such a drastic outcome."
+  },
+  {
+    "canonical_id": "sweeping_generalization",
+    "type": "fallacy",
+    "chapter": "Deficiency in Evidence Fallacies",
+    "display": "Sweeping Generalization",
+    "definition": "Applying a general rule too broadly.",
+    "example": "Applying stereotypes about Jewish people broadly, such as all being wealthy or influential in global affairs, without acknowledging the socioeconomic diversity within the community."
+  },
+  {
+    "canonical_id": "excluded_middle_fallacy",
+    "type": "fallacy",
+    "chapter": "False Dilemma Fallacies",
+    "display": "Excluded Middle Fallacy",
+    "definition": "Assuming there are only two extremes in an argument, ignoring any middle ground or alternative options.",
+    "example": "Ignoring the nuanced positions between fervent support and absolute condemnation in discussions about Jewish cultural or religious practices and Israel."
+  },
+  {
+    "canonical_id": "false_dilemma",
+    "type": "fallacy",
+    "chapter": "False Dilemma Fallacies",
+    "display": "False Dilemma Fallacy",
+    "definition": "Presenting two opposing options as the only possibilities.",
+    "example": "\"You can't be a Zionist and feminist.\" Or, \"You can't claim to be pro-Palestinian unless you call for the erasure of Israel.\""
+  },
+  {
+    "canonical_id": "sunk_cost_fallacy",
+    "type": "fallacy",
+    "chapter": "False Dilemma Fallacies",
+    "display": "Sunk Cost Fallacy",
+    "definition": "Continuing a behavior or endeavor as a result of previously invested resources (time, money, effort).",
+    "example": "\"So much has been invested in helping Palestinian refugees, we can't stop now, we must increase our financial support!\""
+  },
+  {
+    "canonical_id": "zero_sum_fallacy",
+    "type": "fallacy",
+    "chapter": "False Dilemma Fallacies",
+    "display": "Zero Sum Fallacy",
+    "definition": "Assuming that a gain by one party must result in a loss by another.",
+    "example": "\"Palestinians can't be free until Israel is wiped off the map.\""
+  },
+  {
+    "canonical_id": "ambiguity_fallacy",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Ambiguity Fallacy",
+    "definition": "Using double meanings or ambiguities of language to mislead or misrepresent the truth.",
+    "example": "An article ambiguously using the term \"global financial leaders\" in a way that insinuates Jewish control of global finance without clear evidence, misleading readers to draw antisemitic conclusions."
+  },
+  {
+    "canonical_id": "appeal_to_authority",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Authority",
+    "definition": "Asserting that a claim is true because an authority figure believes it.",
+    "example": "Claiming a conspiracy theory about Jewish people must be true because a prominent political figure or celebrity endorsed it, without presenting factual evidence."
+  },
+  {
+    "canonical_id": "appeal_to_complexity",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Complexity",
+    "definition": "Claiming something is too complex to understand and therefore one's premise must be true or false.",
+    "example": "In response to proposed legislation aimed at combating antisemitism, someone might argue, \"The issue of antisemitism is so deeply rooted in societal structures, psychology, and history that no single law could ever address it effectively. Thus, attempting to legislate against it is futile.\" This argument suggests the complexity of antisemitism makes any solution inadequate, discouraging action."
+  },
+  {
+    "canonical_id": "appeal_to_emotion",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Emotion",
+    "definition": "Attempting to manipulate an emotional response instead of presenting a valid argument.",
+    "example": "Using emotionally charged images or stories from history selectively to invoke anger or resentment towards Jewish people, without a balanced or logical argument."
+  },
+  {
+    "canonical_id": "appeal_to_fear",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Fear",
+    "definition": "Using fear to influence the audience's opinion or actions.",
+    "example": "Warning that if a certain political candidate with Jewish heritage is elected, it will lead to disproportionate Jewish influence over the government, aiming to scare voters."
+  },
+  {
+    "canonical_id": "appeal_to_nature",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Nature",
+    "definition": "Arguing that because something is 'natural' it is therefore valid, justified, inevitable, or ideal.",
+    "example": "Arguing that \"resistance\" (a euphemism for terrorism) is \"justified\" because it is a \"natural reaction\" to \"oppression\" and, therefore, a \"natural right.\""
+  },
+  {
+    "canonical_id": "appeal_to_pity",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Pity",
+    "definition": "Using the audience's sympathy, guilt, or pity to win an argument.",
+    "example": "Soliciting support for an antisemitic stance by highlighting the speaker's personal hardships as reasons to distrust or dislike Jewish individuals."
+  },
+  {
+    "canonical_id": "appeal_to_poverty",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Poverty",
+    "definition": "Assuming a conclusion is correct because the speaker is financially poor or arguing that someone wealthy is wrong because of their wealth.",
+    "example": "Discrediting the opinions or arguments of a Jewish person on social issues by suggesting their wealth makes them out of touch with 'real' problems."
+  },
+  {
+    "canonical_id": "appeal_to_purity",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Purity",
+    "definition": "(No True Scotsman): Making an appeal to purity as a way to dismiss relevant criticisms or flaws of an argument.",
+    "example": "Arguing \"you can't be a true Torah Jew and support the secular Zionist state,\" as members of the radical Neturei Karta sect repeatedly do."
+  },
+  {
+    "canonical_id": "appeal_to_tradition",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Appeal to Tradition",
+    "definition": "Arguing that something must be done a certain way because it has always been done that way.",
+    "example": "\"These antisemitic jokes have been part of our culture for decades. They're not meant to be taken seriously; it's just how things have always been.\" In this case, the longevity of certain cultural expressions is used to excuse content that perpetuates antisemitic stereotypes."
+  },
+  {
+    "canonical_id": "equivocation",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Equivocation",
+    "definition": "Using an ambiguous term in more than one sense, thus rendering an argument misleading.",
+    "example": "When the intention behind \"Palestinian liberation\" implies the destruction of the Jewish state."
+  },
+  {
+    "canonical_id": "moving_the_goalposts",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Moving the Goalposts",
+    "definition": "Changing the criteria of a proposition when it appears to be met.",
+    "example": "Initially demanding specific evidence to prove antisemitism in an incident, then, once provided, asking for even more detailed proof, making it impossible to satisfy the criteria."
+  },
+  {
+    "canonical_id": "reductive_fallacy",
+    "type": "fallacy",
+    "chapter": "Manipulation Fallacies",
+    "display": "Reductive Fallacy",
+    "definition": "Oversimplifying a complex issue to make it seem that there's a single cause or solution.",
+    "example": "Simplifying the cause of a complex geopolitical conflict involving Israel to simply being about religious or ethnic differences, ignoring historical, territorial, and political nuances."
+  }
+]

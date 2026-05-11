@@ -2,9 +2,12 @@
 import { ulid } from "ulid";
 import { useSession } from "./session-store";
 import { hashClaim, RecentSet } from "@/lib/dedup";
-import type { ClaimCard, TranscriptSegment } from "@/lib/types";
+import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 const recentClaimHashes = new RecentSet(30);
+const recentMarkerHashes = new RecentSet(40);
+let utteranceCounter = 0;
+let lastRhetoricRunAt = 0;
 
 type ExtractedClaim = {
   claim_text: string;
@@ -65,6 +68,60 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
     // first; confirmed wins on race conditions because it has citations.
     void verifyProvisional(card.id, c.claim_text);
     void verifyConfirmed(card.id, c.claim_text);
+  }
+
+  maybeRunRhetoric();
+}
+
+// Rhetoric analysis runs on a rolling window every 5 utterances or 30 seconds —
+// whichever happens first. The orchestrator stays in the foreground; the call
+// is fire-and-forget so it doesn't slow down the claims pipeline.
+export function maybeRunRhetoric() {
+  utteranceCounter += 1;
+  const now = Date.now();
+  const timeSince = now - lastRhetoricRunAt;
+  if (utteranceCounter % 5 === 0 || timeSince > 30_000) {
+    lastRhetoricRunAt = now;
+    void runRhetoric();
+  }
+}
+
+async function runRhetoric() {
+  const { transcript } = useSession.getState();
+  if (transcript.length === 0) return;
+
+  const last = transcript[transcript.length - 1];
+  const cutoff = last.end - 60;
+  const win = transcript
+    .filter((s) => s.end >= cutoff)
+    .map((s) => `[${Math.floor(s.start)}s] ${s.text}`)
+    .join("\n");
+
+  let res: Response;
+  try {
+    res = await fetch("/api/analyze-rhetoric", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transcript_window: win,
+        recent_hashes: recentMarkerHashes.toArray(),
+      }),
+    });
+  } catch (e) {
+    console.error("analyze-rhetoric fetch failed", e);
+    return;
+  }
+  if (!res.ok) return;
+  const { markers } = (await res.json()) as {
+    markers: Array<Omit<RhetoricMarker, "id">>;
+  };
+  if (!Array.isArray(markers) || markers.length === 0) return;
+
+  for (const m of markers) {
+    const h = hashClaim(`${m.name}::${m.excerpt}`);
+    if (recentMarkerHashes.has(h)) continue;
+    recentMarkerHashes.add(h);
+    useSession.getState().addMarker({ ...m, id: ulid() });
   }
 }
 

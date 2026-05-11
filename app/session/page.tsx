@@ -233,10 +233,11 @@ function PresentClaimStrip({
             <div
               key={c.id}
               data-claim-id={c.id}
-              className="w-[300px] shrink-0 animate-in fade-in slide-in-from-bottom-1 duration-300"
+              className="w-[280px] shrink-0 animate-in fade-in slide-in-from-bottom-1 duration-300"
             >
               <ClaimCard
                 card={c}
+                compact
                 highlighted={highlightedId === c.id}
                 onClick={() => onCardClick(c.id, c.utterance_start)}
               />

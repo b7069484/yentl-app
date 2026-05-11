@@ -6,10 +6,12 @@ export function ClaimCard({
   card,
   onClick,
   highlighted = false,
+  compact = false,
 }: {
   card: ClaimCardT;
   onClick?: () => void;
   highlighted?: boolean;
+  compact?: boolean;
 }) {
   const verdict = VERDICT[card.primary_label];
   const isPending = card.status === "checking";
@@ -47,14 +49,22 @@ export function ClaimCard({
         <ScoreNumber score={card.score} colorClass={verdict.scoreText} />
       </header>
 
-      <div className="space-y-3 pb-4 pl-5 pr-4 pt-3">
-        <p className="text-[15px] font-medium leading-snug text-foreground">
+      <div
+        className={`pl-5 pr-4 ${
+          compact ? "space-y-1.5 pb-3 pt-2.5" : "space-y-3 pb-4 pt-3"
+        }`}
+      >
+        <p
+          className={`font-medium leading-snug text-foreground ${
+            compact ? "line-clamp-3 text-[13px]" : "text-[15px]"
+          }`}
+        >
           &ldquo;{card.claim_text}&rdquo;
         </p>
 
         {isPending ? (
-          <SkeletonLines lines={2} />
-        ) : (
+          <SkeletonLines lines={compact ? 1 : 2} />
+        ) : compact ? null : (
           <p
             className={`text-sm leading-relaxed ${
               isProvisional ? "text-foreground/70" : "text-foreground/80"
@@ -64,7 +74,7 @@ export function ClaimCard({
           </p>
         )}
 
-        {!isPending && card.annotations.length > 0 && (
+        {!isPending && !compact && card.annotations.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {card.annotations.map((a, i) => (
               <span
@@ -77,7 +87,7 @@ export function ClaimCard({
           </div>
         )}
 
-        {card.sources.length > 0 && (
+        {!compact && card.sources.length > 0 && (
           <div className="space-y-1.5 pt-1">
             <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Sources · {card.sources.length}
@@ -87,6 +97,12 @@ export function ClaimCard({
                 <SourceListItem key={i} source={s} />
               ))}
             </div>
+          </div>
+        )}
+
+        {compact && card.sources.length > 0 && (
+          <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            {card.sources.length} source{card.sources.length === 1 ? "" : "s"} cited
           </div>
         )}
       </div>

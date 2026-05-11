@@ -2,9 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import { SessionHeader } from "@/components/session/SessionHeader";
 import { TranscriptView } from "@/components/session/TranscriptView";
+import { ClaimCardStack } from "@/components/session/ClaimCardStack";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
 import { openDeepgramStream } from "@/lib/client/deepgram-stream";
+import { onFinalUtterance } from "@/lib/client/orchestrator";
 
 export default function SessionPage() {
   const mic = useRef<MicHandle | null>(null);
@@ -25,7 +27,10 @@ export default function SessionPage() {
     try {
       dg.current = await openDeepgramStream({
         onInterim: (t) => session.setInterim(t),
-        onFinal: (seg) => session.appendFinal(seg),
+        onFinal: (seg) => {
+          session.appendFinal(seg);
+          void onFinalUtterance(seg);
+        },
         onError: () => {
           setError(
             "Lost connection to Deepgram. Check your network or refresh and try again.",
@@ -81,9 +86,39 @@ export default function SessionPage() {
           </button>
         </div>
       )}
-      <main className="flex-1 overflow-hidden">
-        <TranscriptView />
+      <main className="grid flex-1 grid-cols-[1.1fr_1fr] divide-x divide-border/60 overflow-hidden">
+        <section
+          aria-label="Transcript"
+          className="flex min-h-0 flex-col overflow-hidden bg-background"
+        >
+          <PanelHeader label="Transcript" hint="Interim text fades to final" />
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <TranscriptView />
+          </div>
+        </section>
+        <section
+          aria-label="Claims"
+          className="flex min-h-0 flex-col overflow-hidden bg-background"
+        >
+          <PanelHeader label="Claims" hint="Each card cites its sources" />
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <ClaimCardStack />
+          </div>
+        </section>
       </main>
+    </div>
+  );
+}
+
+function PanelHeader({ label, hint }: { label: string; hint?: string }) {
+  return (
+    <div className="flex items-baseline justify-between border-b border-border/50 bg-card/40 px-4 py-2">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        {label}
+      </span>
+      {hint && (
+        <span className="text-[10px] text-muted-foreground/80">{hint}</span>
+      )}
     </div>
   );
 }

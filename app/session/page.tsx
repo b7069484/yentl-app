@@ -6,6 +6,7 @@ import { ClaimCardStack } from "@/components/session/ClaimCardStack";
 import { MarkersPanel } from "@/components/session/MarkersPanel";
 import { MarkerTicker } from "@/components/session/MarkerTicker";
 import { ClaimCard } from "@/components/session/ClaimCard";
+import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
@@ -18,6 +19,7 @@ export default function SessionPage() {
   const session = useSession();
   const [error, setError] = useState<string | null>(null);
   const [highlightedClaimId, setHighlightedClaimId] = useState<string | null>(null);
+  const [endDialogOpen, setEndDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const teardown = () => {
@@ -67,8 +69,7 @@ export default function SessionPage() {
 
   const end = () => {
     stop();
-    session.endSession();
-    // export lands in Task 24
+    setEndDialogOpen(true);
   };
 
   useEffect(() => () => teardown(), []);
@@ -171,6 +172,11 @@ export default function SessionPage() {
           <MarkerTicker onMarkerClick={focusTranscriptAtTime} />
         </main>
       )}
+
+      <EndSessionDialog
+        open={endDialogOpen}
+        onClose={() => setEndDialogOpen(false)}
+      />
     </div>
   );
 }

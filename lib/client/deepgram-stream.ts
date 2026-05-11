@@ -23,9 +23,12 @@ export async function openDeepgramStream(events: DGEvents) {
     utterance_end_ms: "1000",
   });
 
+  // Sec-WebSocket-Protocol auth: short-lived JWTs from /api/deepgram/token use
+  // the "bearer" scheme; long-lived API keys would use "token". Mirrors what
+  // @deepgram/sdk CustomClient.mjs does internally.
   const ws = new WebSocket(
     `wss://api.deepgram.com/v1/listen?${params}`,
-    ["token", key],
+    ["bearer", key],
   );
 
   let sessionStart = Date.now() / 1000;

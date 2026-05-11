@@ -101,3 +101,10 @@ export const useSession = create<State>((set, get) => ({
     mode: "A",
   }),
 }));
+
+// Dev-only handle on the store so end-to-end tests and the browser console
+// can inspect / drive session state without React DevTools. Dead-code
+// eliminated in production builds via NODE_ENV.
+if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+  (window as unknown as { __factify?: unknown }).__factify = { session: useSession };
+}

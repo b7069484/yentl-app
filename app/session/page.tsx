@@ -67,6 +67,14 @@ export default function SessionPage() {
 
   useEffect(() => () => teardown(), []);
 
+  // Dev-only shim so the orchestrator can be driven from the console / agent-browser
+  // for end-to-end verification without needing a real microphone.
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    const w = window as unknown as { __factify?: Record<string, unknown> };
+    w.__factify = { ...(w.__factify ?? {}), onFinalUtterance };
+  }, []);
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <SessionHeader onStart={start} onStop={stop} onEnd={end} />

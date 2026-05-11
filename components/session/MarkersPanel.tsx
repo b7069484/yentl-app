@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import { useSession } from "@/lib/client/session-store";
 import { MarkerChip } from "./MarkerChip";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,14 +10,18 @@ export function MarkersPanel({
   onMarkerClick?: (start: number) => void;
 } = {}) {
   const markers = useSession((s) => s.markers);
-  const counts = useSession((s) =>
-    s.markers.reduce(
-      (acc, m) => {
-        acc[m.type] = (acc[m.type] ?? 0) + 1;
-        return acc;
-      },
-      { bias: 0, fallacy: 0, rhetoric: 0 } as Record<string, number>,
-    ),
+  // Compute counts via useMemo — returning a fresh object from a Zustand
+  // selector trips React's "getServerSnapshot should be cached" guard.
+  const counts = useMemo(
+    () =>
+      markers.reduce(
+        (acc, m) => {
+          acc[m.type] = (acc[m.type] ?? 0) + 1;
+          return acc;
+        },
+        { bias: 0, fallacy: 0, rhetoric: 0 } as Record<string, number>,
+      ),
+    [markers],
   );
 
   return (

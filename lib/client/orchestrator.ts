@@ -16,6 +16,11 @@ type ExtractedClaim = {
 };
 
 export async function onFinalUtterance(segment: TranscriptSegment) {
+  // Always advance the rhetoric pacer — even pure-rhetoric utterances (no
+  // checkable claim) should count toward "5 utterances or 30s" so markers
+  // get a chance to land.
+  maybeRunRhetoric();
+
   const { transcript } = useSession.getState();
 
   const cutoff = segment.start - 30;
@@ -69,8 +74,6 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
     void verifyProvisional(card.id, c.claim_text);
     void verifyConfirmed(card.id, c.claim_text);
   }
-
-  maybeRunRhetoric();
 }
 
 // Rhetoric analysis runs on a rolling window every 5 utterances or 30 seconds —

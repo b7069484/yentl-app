@@ -1,9 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "app/api/extract-claims/route.ts": { "maxDuration": 30 },
-    "app/api/verify-provisional/route.ts": { "maxDuration": 30 },
-    "app/api/verify-confirmed/route.ts": { "maxDuration": 60 },
-    "app/api/analyze-rhetoric/route.ts": { "maxDuration": 60 }
-  }
-}

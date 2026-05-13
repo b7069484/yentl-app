@@ -66,3 +66,31 @@ export type Session = {
   claims: ClaimCard[];
   markers: RhetoricMarker[];
 };
+
+/* ── Speakers (added in Sprint 1) ─────────────────────────────── */
+
+export type SpeakerId = number;             // 0, 1, 2... as Deepgram emits
+
+export type Speaker = {
+  id: SpeakerId;                            // canonical Deepgram speaker index
+  label: string;                            // default "Speaker 1", "Speaker 2", ...
+};
+
+/* ── Source preview (added in Sprint 1) ────────────────────────── */
+
+export type SourcePreview = {
+  image_url: string | null;
+  image_alt: string | null;
+  title: string | null;
+  description: string | null;
+  fetched_at: number;                       // epoch ms — for cache TTL
+};
+
+/* ── Session provenance (added in Sprint 1) ────────────────────── */
+
+export type SessionSource =
+  | { kind: "mic" }
+  | { kind: "audio_file"; blob_url: string; duration_sec: number; filename: string; mime: string }
+  | { kind: "text_doc"; filename: string; mime: string; byte_count: number }
+  | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }
+  | { kind: "media_url"; url: string };

@@ -3,7 +3,14 @@ import type {
   PrimaryLabel,
   RhetoricMarker,
   Session,
+  Speaker,
+  SpeakerId,
 } from "@/lib/types";
+
+function labelFor(speakers: Speaker[], id: SpeakerId | null): string {
+  if (id === null) return "";
+  return speakers.find((sp) => sp.id === id)?.label ?? `Speaker ${id + 1}`;
+}
 
 const VERDICT_TONE: Record<PrimaryLabel, { fg: string; bg: string; border: string; label: string }> = {
   TRUE:         { fg: "#065f46", bg: "#ecfdf5", border: "#a7f3d0", label: "True" },
@@ -37,6 +44,11 @@ export function toReport(session: Session): string {
 
   const claimsByStart = new Map<number, ClaimCard>();
   for (const c of session.claims) claimsByStart.set(c.utterance_start, c);
+
+  const speakersBlock = session.speakers.length >= 2
+    ? `<section><h2>Speakers</h2><ul class="speakers">${session.speakers
+        .map((sp) => `<li>${escapeHtml(sp.label)}</li>`).join("")}</ul></section>`
+    : "";
 
   const verdictCounts = session.claims.reduce<Record<string, number>>((acc, c) => {
     acc[c.primary_label] = (acc[c.primary_label] ?? 0) + 1;
@@ -106,6 +118,9 @@ export function toReport(session: Session): string {
   .marker h3 { font-size: 14px; margin: 4px 0 4px; }
   .marker .quote { font-size: 12px; font-style: italic; color: #475569; }
   .marker .exp { font-size: 12px; color: #334155; margin-top: 4px; }
+  .speakers { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+  .speakers li { font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 9999px; background: #f8fafc; }
+  .speaker-tag { font-size: 11px; color: var(--muted); font-style: italic; margin: 4px 0 8px; }
   .footer { color: var(--muted); font-size: 12px; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--line); text-align: center; }
   .footer a { color: inherit; }
   @media print {
@@ -133,6 +148,7 @@ export function toReport(session: Session): string {
     <div class="stat"><div class="n">${verdictCounts.FALSE ?? 0}</div><div class="l">False</div></div>
   </div>
 
+  ${speakersBlock}
   <h2>Transcript</h2>
   ${renderTranscript(session, claimsByStart)}
 
@@ -140,14 +156,14 @@ export function toReport(session: Session): string {
   ${
     session.claims.length === 0
       ? '<p style="color:var(--muted);font-style:italic;">No claims captured.</p>'
-      : session.claims.map(renderClaim).join("\n")
+      : session.claims.map((c) => renderClaim(c, session.speakers)).join("\n")
   }
 
   <h2>Markers · ${session.markers.length}</h2>
   ${
     session.markers.length === 0
       ? '<p style="color:var(--muted);font-style:italic;">No biases, fallacies, or rhetorical patterns captured.</p>'
-      : renderMarkerBreakdown(markerCounts) + session.markers.map(renderMarker).join("\n")
+      : renderMarkerBreakdown(markerCounts) + session.markers.map((m) => renderMarker(m, session.speakers)).join("\n")
   }
 
   <div class="footer">
@@ -165,17 +181,21 @@ function renderTranscript(session: Session, claimsByStart: Map<number, ClaimCard
   const parts = session.transcript.map((seg) => {
     const claim = claimsByStart.get(seg.start);
     const text = escapeHtml(seg.text);
+    const speakerLabel = labelFor(session.speakers, seg.speaker_id);
+    const prefix = speakerLabel ? `<strong>${escapeHtml(speakerLabel)}:</strong> ` : "";
     if (claim) {
       const v = VERDICT_TONE[claim.primary_label];
-      return `<span class="seg-hit" style="background:${v.bg};border-bottom-color:${v.border};color:${v.fg};" title="${v.label} · ${claim.score}/100">${text}</span>`;
+      return `${prefix}<span class="seg-hit" style="background:${v.bg};border-bottom-color:${v.border};color:${v.fg};" title="${v.label} · ${claim.score}/100">${text}</span>`;
     }
-    return text;
+    return `${prefix}${text}`;
   });
   return `<div class="transcript"><p>${parts.join(" ")}</p></div>`;
 }
 
-function renderClaim(c: ClaimCard): string {
+function renderClaim(c: ClaimCard, speakers: Speaker[]): string {
   const v = VERDICT_TONE[c.primary_label];
+  const speakerLabel = labelFor(speakers, c.speaker_id);
+  const speakerTag = speakerLabel ? `<div class="speaker-tag">— ${escapeHtml(speakerLabel)}</div>` : "";
   const annotations = c.annotations.length
     ? `<div class="annotations">${c.annotations.map((a) => `<span>${escapeHtml(a)}</span>`).join("")}</div>`
     : "";
@@ -198,6 +218,7 @@ function renderClaim(c: ClaimCard): string {
     <span class="pill" style="background:${v.bg};color:${v.fg};border-color:${v.border};">${v.label}</span>
     <span class="score" style="color:${v.fg};">${c.score}<span class="of">/100</span></span>
   </div>
+  ${speakerTag}
   <div class="claim-text">&ldquo;${escapeHtml(c.claim_text)}&rdquo;</div>
   ${c.explanation ? `<p class="explanation">${escapeHtml(c.explanation)}</p>` : ""}
   ${annotations}
@@ -211,14 +232,17 @@ function renderMarkerBreakdown(counts: Record<string, number>) {
   </p>`;
 }
 
-function renderMarker(m: RhetoricMarker): string {
+function renderMarker(m: RhetoricMarker, speakers: Speaker[]): string {
   const t = TYPE_TONE[m.type];
+  const speakerLabel = labelFor(speakers, m.speaker_id);
+  const speakerTag = speakerLabel ? `<div class="speaker-tag">— ${escapeHtml(speakerLabel)}</div>` : "";
   return `<article class="marker">
   <span class="stripe" style="background:${t.border};"></span>
   <div class="row">
     <span class="pill" style="background:${t.bg};color:${t.fg};border-color:${t.border};">${t.label}</span>
     <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted);">${SEVERITY_LABEL[m.severity]}</span>
   </div>
+  ${speakerTag}
   <h3>${escapeHtml(m.display)}</h3>
   <p class="quote">&ldquo;${escapeHtml(m.excerpt)}&rdquo;</p>
   ${m.explanation ? `<p class="exp">${escapeHtml(m.explanation)}</p>` : ""}

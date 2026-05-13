@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Volume2 } from "lucide-react";
+import { AudioMeter } from "@/components/session/AudioMeter";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 
 export function SessionHeader({
-  onStart, onStop, onEnd, onExport,
+  onStart, onStop, onEnd, onExport, audioStream,
 }: {
   onStart: () => void;
   onStop: () => void;
   onEnd: () => void;
   onExport: () => void;
+  audioStream: MediaStream | null;
 }) {
   const { isRecording, mode, toggleMode, title, startedAt } = useSession();
   const hasContent = useSession(
@@ -43,6 +45,7 @@ export function SessionHeader({
           <span className="font-mono text-xs tabular-nums text-foreground/80">
             {formatTime(elapsed)}
           </span>
+          <AudioMeter stream={isRecording ? audioStream : null} />
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">

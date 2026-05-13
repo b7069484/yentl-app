@@ -19,6 +19,7 @@ export default function SessionPage() {
   const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
   const session = useSession();
   const [error, setError] = useState<string | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [highlightedClaimId, setHighlightedClaimId] = useState<string | null>(null);
   const [endDialogOpen, setEndDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -29,6 +30,7 @@ export default function SessionPage() {
     try { dg.current?.close(); } catch {}
     mic.current = null;
     dg.current = null;
+    setAudioStream(null);
   };
 
   const start = async () => {
@@ -54,6 +56,7 @@ export default function SessionPage() {
         (chunk) => dg.current?.send(chunk),
         { speakersMode: session.speakersMode },
       );
+      setAudioStream(mic.current.stream);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       const friendly = /permission|denied|notallowed/i.test(msg)
@@ -155,6 +158,7 @@ export default function SessionPage() {
         onStop={stop}
         onEnd={end}
         onExport={() => setExportDialogOpen(true)}
+        audioStream={audioStream}
       />
       {error && (
         <div

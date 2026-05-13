@@ -2,7 +2,15 @@
 import { ulid } from "ulid";
 import { useSession } from "./session-store";
 import { hashClaim, RecentSet } from "@/lib/dedup";
-import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
+import { getEntry } from "@/lib/taxonomy";
+import type {
+  ClaimCard,
+  RhetoricMarker,
+  Source,
+  SourcePreview,
+  SpeakerId,
+  TranscriptSegment,
+} from "@/lib/types";
 
 const recentClaimHashes = new RecentSet(30);
 const recentMarkerHashes = new RecentSet(40);
@@ -13,20 +21,32 @@ type ExtractedClaim = {
   claim_text: string;
   utterance_start: number;
   utterance_end: number;
+  topic: string;
 };
 
+export function attributeMarker(
+  m: { start_time: number; end_time: number },
+  transcript: TranscriptSegment[],
+): SpeakerId | null {
+  const overlapping = transcript.filter(
+    (s) => s.end >= m.start_time && s.start <= m.end_time && s.speaker_id !== null,
+  );
+  if (overlapping.length === 0) return null;
+  const ids = new Set(overlapping.map((s) => s.speaker_id as number));
+  return ids.size === 1 ? (overlapping[0].speaker_id as number) : null;
+}
+
 export async function onFinalUtterance(segment: TranscriptSegment) {
-  // Always advance the rhetoric pacer — even pure-rhetoric utterances (no
-  // checkable claim) should count toward "5 utterances or 30s" so markers
-  // get a chance to land.
   maybeRunRhetoric();
 
   const { transcript } = useSession.getState();
 
   const cutoff = segment.start - 30;
+  // Committee amendment (Linguist): thread speaker labels into CONTEXT so the
+  // model can distinguish first-person assertion from reported speech.
   const ctx = transcript
     .filter((s) => s.end >= cutoff)
-    .map((s) => s.text)
+    .map((s) => s.speaker_id !== null ? `[Speaker ${s.speaker_id}] ${s.text}` : s.text)
     .join(" ");
 
   let res: Response;
@@ -60,7 +80,9 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
       claim_text: c.claim_text,
       utterance_start: c.utterance_start,
       utterance_end: c.utterance_end,
-      primary_label: "UNVERIFIABLE",
+      speaker_id: segment.speaker_id,
+      topic: c.topic ?? "Other",
+      primary_label: "UNVERIFIABLE",   // overridden once verify-provisional or verify-confirmed lands
       score: 0,
       annotations: [],
       explanation: "",
@@ -69,16 +91,11 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
     };
     useSession.getState().addClaim(card);
 
-    // Fire both verification passes in parallel. Provisional usually returns
-    // first; confirmed wins on race conditions because it has citations.
     void verifyProvisional(card.id, c.claim_text);
     void verifyConfirmed(card.id, c.claim_text);
   }
 }
 
-// Rhetoric analysis runs on a rolling window every 5 utterances or 30 seconds —
-// whichever happens first. The orchestrator stays in the foreground; the call
-// is fire-and-forget so it doesn't slow down the claims pipeline.
 export function maybeRunRhetoric() {
   utteranceCounter += 1;
   const now = Date.now();
@@ -116,15 +133,36 @@ async function runRhetoric() {
   }
   if (!res.ok) return;
   const { markers } = (await res.json()) as {
-    markers: Array<Omit<RhetoricMarker, "id">>;
+    markers: Array<Omit<RhetoricMarker, "id" | "speaker_id">>;
   };
   if (!Array.isArray(markers) || markers.length === 0) return;
 
+  const currentTranscript = useSession.getState().transcript;
+
   for (const m of markers) {
-    const h = hashClaim(`${m.name}::${m.excerpt}`);
+    // Validate against taxonomy — drop unknowns, auto-correct mismatched type/display
+    const entry = getEntry(m.name);
+    if (!entry) continue;
+    const correctedType = entry.type;
+    const correctedDisplay = entry.display;
+
+    // Dedup key: (type, excerpt) — see spec §6.4
+    const h = hashClaim(`${correctedType}::${m.excerpt}`);
     if (recentMarkerHashes.has(h)) continue;
     recentMarkerHashes.add(h);
-    useSession.getState().addMarker({ ...m, id: ulid() });
+
+    const speakerId = attributeMarker(
+      { start_time: m.start_time, end_time: m.end_time },
+      currentTranscript,
+    );
+
+    useSession.getState().addMarker({
+      ...m,
+      type: correctedType,
+      display: correctedDisplay,
+      speaker_id: speakerId,
+      id: ulid(),
+    });
   }
 }
 
@@ -160,7 +198,37 @@ async function verifyConfirmed(id: string, claim_text: string) {
     return;
   }
   if (!res.ok) return;
-  const data = await res.json();
+  const data = (await res.json()) as Omit<ClaimCard, "id" | "claim_text" | "utterance_start" | "utterance_end" | "speaker_id" | "topic" | "status">;
   useSession.getState().updateClaim(id, { ...data, status: "confirmed" });
+
+  // Fire OG-preview fetches in the background; they'll patch each Source.preview when they land.
+  if (Array.isArray(data.sources) && data.sources.length > 0) {
+    void fetchAndApplyPreviews(id, data.sources);
+  }
 }
 
+async function fetchAndApplyPreviews(claimId: string, sources: Source[]) {
+  const urls = sources.map((s) => s.url);
+  let res: Response;
+  try {
+    res = await fetch("/api/source-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ urls }),
+    });
+  } catch (e) {
+    console.error("source-preview fetch failed", e);
+    return;
+  }
+  if (!res.ok) return;
+  const { previews } = (await res.json()) as {
+    previews: Record<string, SourcePreview | null>;
+  };
+  const current = useSession.getState().claims.find((c) => c.id === claimId);
+  if (!current) return;
+  const patched = current.sources.map((s) => {
+    const p = previews[s.url];
+    return p ? { ...s, preview: p } : s;
+  });
+  useSession.getState().updateClaim(claimId, { sources: patched });
+}

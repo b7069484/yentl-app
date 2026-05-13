@@ -7,8 +7,10 @@ describe("toMarkdown", () => {
     title: "Demo",
     started_at: "2026-05-11T10:00:00.000Z",
     ended_at: "2026-05-11T10:05:00.000Z",
+    speakers: [],
+    source: { kind: "mic" },
     transcript: [
-      { text: "Unemployment is at a 30-year low.", start: 0, end: 4, is_final: true },
+      { text: "Unemployment is at a 30-year low.", start: 0, end: 4, is_final: true, speaker_id: null },
     ],
     claims: [
       {
@@ -16,6 +18,9 @@ describe("toMarkdown", () => {
         claim_text: "Unemployment is at a 30-year low.",
         utterance_start: 0,
         utterance_end: 4,
+        speaker_id: null,
+        topic: "Economics",
+        topic_secondary: null,
         primary_label: "PARTIAL",
         score: 65,
         annotations: ["cherry-picked timeframe"],
@@ -39,6 +44,7 @@ describe("toMarkdown", () => {
         name: "absolutism",
         display: "Absolutism",
         excerpt: "always",
+        speaker_id: null,
         start_time: 1,
         end_time: 1.3,
         severity: "subtle",

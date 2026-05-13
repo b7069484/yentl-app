@@ -25,11 +25,11 @@ export function dominantSpeaker(words: DeepgramWord[]): number | null {
   return [...counts.entries()].reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 }
 
-const REFRESH_LEAD_MS = 30_000;         // refresh 30s before expiry
+const REFRESH_LEAD_MS = 30_000;
 const REFRESH_MAX_ATTEMPTS = 3;
 const REFRESH_BACKOFF_BASE_MS = 500;
-const DRAIN_FALLBACK_MS = 5_000;        // hard-close old socket if CloseStream handshake doesn't echo
-const NULL_SPEAKER_WARN_THRESHOLD = 5;  // warn once after this many consecutive null speakers on diarized streams
+const DRAIN_FALLBACK_MS = 5_000;
+const NULL_SPEAKER_WARN_THRESHOLD = 5;
 const PARAMS = new URLSearchParams({
   model: "nova-3",
   language: "en",
@@ -37,10 +37,11 @@ const PARAMS = new URLSearchParams({
   smart_format: "true",
   interim_results: "true",
   utterance_end_ms: "1000",
-  diarize: "true",                       // populated in Task 13; included now since we own the URL
+  diarize: "true",
 });
 
 type TokenResponse = { key: string; expires_at: string };
+type SpeakerCounters = { consecutive: number; warned: boolean };
 
 async function fetchToken(signal?: AbortSignal): Promise<{ key: string; expiresAtMs: number }> {
   const res = await fetch("/api/deepgram/token", { method: "POST", signal });
@@ -49,6 +50,25 @@ async function fetchToken(signal?: AbortSignal): Promise<{ key: string; expiresA
   const expiresAtMs = new Date(data.expires_at).getTime();
   if (!Number.isFinite(expiresAtMs)) throw new Error("token response has invalid expires_at");
   return { key: data.key, expiresAtMs };
+}
+
+function abortableSleep(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    if (signal.aborted) { resolve(); return; }
+    const t = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => { clearTimeout(t); resolve(); };
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+function isAbortError(e: unknown): boolean {
+  if (!e || typeof e !== "object") return false;
+  const name = (e as { name?: unknown }).name;
+  const message = (e as { message?: unknown }).message;
+  return name === "AbortError" || message === "aborted";
 }
 
 async function fetchTokenWithRetry(signal: AbortSignal): Promise<{ key: string; expiresAtMs: number }> {
@@ -60,32 +80,46 @@ async function fetchTokenWithRetry(signal: AbortSignal): Promise<{ key: string; 
       return await fetchToken(signal);
     } catch (e) {
       lastErr = e;
+      if (isAbortError(e)) throw e;
       if (attempt === REFRESH_MAX_ATTEMPTS) break;
       const backoff = REFRESH_BACKOFF_BASE_MS * Math.pow(2, attempt - 1) + Math.random() * 200;
-      await new Promise((r) => setTimeout(r, backoff));
+      await abortableSleep(backoff, signal);
+      if (signal.aborted) throw new Error("aborted");
     }
   }
   throw lastErr ?? new Error("token fetch failed after retries");
 }
 
-function openSocket(key: string, events: DGEvents, signal: AbortSignal): Promise<WebSocket> {
+function openSocket(
+  key: string,
+  events: DGEvents,
+  signal: AbortSignal,
+  counters: SpeakerCounters,
+): Promise<WebSocket> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) { reject(new Error("aborted")); return; }
     const ws = new WebSocket(
       `wss://api.deepgram.com/v1/listen?${PARAMS}`,
-      ["bearer", key],            // bearer scheme for JWTs
+      ["bearer", key],
     );
-    const onAbort = () => { try { ws.close(); } catch { /* noop */ } };
+    const onAbort = () => {
+      try { ws.close(); } catch { /* noop */ }
+      reject(new Error("aborted"));
+    };
     signal.addEventListener("abort", onAbort, { once: true });
 
-    const handleOpen = () => {
+    const cleanup = () => {
       ws.removeEventListener("open", handleOpen);
-      attachMessageHandlers(ws, events);
+      ws.removeEventListener("error", handleEarlyError);
+      signal.removeEventListener("abort", onAbort);
+    };
+    const handleOpen = () => {
+      cleanup();
+      attachMessageHandlers(ws, events, counters);
       resolve(ws);
     };
     const handleEarlyError = (e: Event) => {
-      ws.removeEventListener("error", handleEarlyError);
-      signal.removeEventListener("abort", onAbort);
+      cleanup();
       reject(e);
     };
     ws.addEventListener("open", handleOpen);
@@ -93,10 +127,7 @@ function openSocket(key: string, events: DGEvents, signal: AbortSignal): Promise
   });
 }
 
-let consecutiveNullSpeakers = 0;
-let nullSpeakerWarned = false;
-
-function attachMessageHandlers(ws: WebSocket, events: DGEvents) {
+function attachMessageHandlers(ws: WebSocket, events: DGEvents, counters: SpeakerCounters) {
   ws.onmessage = (ev) => {
     try {
       const msg = JSON.parse(ev.data);
@@ -109,13 +140,13 @@ function attachMessageHandlers(ws: WebSocket, events: DGEvents) {
         const words = (alt.words as DeepgramWord[] | undefined) ?? [];
         const speakerId = dominantSpeaker(words);
         if (speakerId === null) {
-          consecutiveNullSpeakers += 1;
-          if (!nullSpeakerWarned && consecutiveNullSpeakers >= NULL_SPEAKER_WARN_THRESHOLD) {
+          counters.consecutive += 1;
+          if (!counters.warned && counters.consecutive >= NULL_SPEAKER_WARN_THRESHOLD) {
             console.warn(`[deepgram] ${NULL_SPEAKER_WARN_THRESHOLD} consecutive utterances missing speaker tag — diarization may have silently failed`);
-            nullSpeakerWarned = true;
+            counters.warned = true;
           }
         } else {
-          consecutiveNullSpeakers = 0;
+          counters.consecutive = 0;
         }
         events.onFinal({
           text,
@@ -135,18 +166,22 @@ function attachMessageHandlers(ws: WebSocket, events: DGEvents) {
   ws.onclose = () => events.onClose();
 }
 
-// Send Deepgram's CloseStream message so the server flushes in-flight utterances,
-// then resolve when Deepgram echoes its own close frame. Falls back to hard-close
-// after DRAIN_FALLBACK_MS if no echo.
 function gracefulDrain(ws: WebSocket): Promise<void> {
   return new Promise((resolve) => {
     let done = false;
-    const finish = () => { if (done) return; done = true; try { ws.close(); } catch { /* noop */ } resolve(); };
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      if (timer) { clearTimeout(timer); timer = null; }
+      try { ws.close(); } catch { /* noop */ }
+      resolve();
+    };
     ws.addEventListener("close", finish, { once: true });
     try {
       if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "CloseStream" }));
     } catch { /* noop */ }
-    setTimeout(finish, DRAIN_FALLBACK_MS);
+    timer = setTimeout(finish, DRAIN_FALLBACK_MS);
   });
 }
 
@@ -154,14 +189,13 @@ export async function openDeepgramStream(events: DGEvents) {
   const controller = new AbortController();
   const signal = controller.signal;
   let closed = false;
+  // Per-stream counters — was module-level, which corrupted the new stream's state
+  // during a speakersMode restart while the old socket's drain window was still alive.
+  const counters: SpeakerCounters = { consecutive: 0, warned: false };
 
   let { key, expiresAtMs } = await fetchTokenWithRetry(signal);
-  let ws = await openSocket(key, events, signal);
+  let ws = await openSocket(key, events, signal, counters);
   let refreshTimer: ReturnType<typeof setTimeout> | null = null;
-
-  // Reset per-session diagnostics
-  consecutiveNullSpeakers = 0;
-  nullSpeakerWarned = false;
 
   function scheduleRefresh() {
     if (closed) return;
@@ -173,18 +207,19 @@ export async function openDeepgramStream(events: DGEvents) {
     if (closed) return;
     try {
       const next = await fetchTokenWithRetry(signal);
-      if (closed) return;                   // re-check after await
-      const newWs = await openSocket(next.key, events, signal);
+      if (closed) return;
+      const newWs = await openSocket(next.key, events, signal, counters);
       if (closed) { try { newWs.close(); } catch { /* noop */ } return; }
       const oldWs = ws;
       ws = newWs;
       key = next.key;
       expiresAtMs = next.expiresAtMs;
-      // CloseStream handshake — let Deepgram tell us when it's done draining
       void gracefulDrain(oldWs);
       scheduleRefresh();
     } catch (e) {
-      events.onError(e);                    // bubble after all retries exhausted
+      // A deliberate close() races refresh — that's not a user-visible error.
+      if (closed || isAbortError(e)) return;
+      events.onError(e);
     }
   }
 
@@ -193,10 +228,12 @@ export async function openDeepgramStream(events: DGEvents) {
 
   return {
     send: (chunk: Blob) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        chunk.arrayBuffer().then((buf) => ws.send(buf));
+      const target = ws;
+      if (target.readyState === WebSocket.OPEN) {
+        chunk.arrayBuffer().then((buf) => {
+          if (target.readyState === WebSocket.OPEN) target.send(buf);
+        });
       }
-      // Else silently drop — the swap window is brief; existing dedup catches duplicates
     },
     close: () => {
       closed = true;

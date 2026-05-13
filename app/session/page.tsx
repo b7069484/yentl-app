@@ -91,13 +91,20 @@ export default function SessionPage() {
   // effect would race the refresh timer — DO NOT weaken Task 11's AbortController
   // without also rewriting this effect to coordinate explicitly.
   const lastSpeakersMode = useRef(session.speakersMode);
+  const restarting = useRef(false);
   useEffect(() => {
     if (lastSpeakersMode.current === session.speakersMode) return;
     lastSpeakersMode.current = session.speakersMode;
     if (!session.isRecording) return;
+    if (restarting.current) return;
+    restarting.current = true;
     void (async () => {
-      teardown();
-      await start();
+      try {
+        teardown();
+        await start();
+      } finally {
+        restarting.current = false;
+      }
     })();
     // start/teardown are stable in this component scope; intentionally not in deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,8 +113,12 @@ export default function SessionPage() {
   // Dev-only shim for end-to-end testing without a real microphone.
   useEffect(() => {
     if (process.env.NODE_ENV === "production") return;
-    const w = window as unknown as { __factify?: Record<string, unknown> };
-    w.__factify = { ...(w.__factify ?? {}), onFinalUtterance };
+    const w = window as unknown as {
+      __yenta?: Record<string, unknown>;
+      __factify?: Record<string, unknown>;
+    };
+    w.__yenta = { ...(w.__yenta ?? {}), onFinalUtterance };
+    w.__factify = w.__yenta;
   }, []);
 
   // Click a claim card → scroll its corresponding transcript segment into view.

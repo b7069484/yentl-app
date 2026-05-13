@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { ALL, getEntry, entriesByType, totalCount } from "@/lib/taxonomy";
+import { isArchetype } from "@/lib/taxonomy/archetypes";
 
 describe("taxonomy", () => {
   it("contains 123 entries", () => {
@@ -27,5 +28,12 @@ describe("taxonomy", () => {
 
   it("entriesByType partitions correctly", () => {
     expect(entriesByType("rhetoric").length).toBe(15);
+  });
+});
+
+describe("taxonomy — archetype coverage", () => {
+  it("every entry has a valid archetype", () => {
+    const missing = ALL.filter((e) => !e.archetype || !isArchetype(e.archetype));
+    expect(missing.map((e) => e.canonical_id)).toEqual([]);
   });
 });

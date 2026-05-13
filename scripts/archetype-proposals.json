@@ -1,0 +1,740 @@
+[
+  {
+    "canonical_id": "anchoring_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Anchoring is a reasoning bias where prior info distorts judgment.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "attentional_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Selective attention biases reasoning toward emotionally salient stimuli.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "group_attribution_error",
+    "proposed_archetype": "generalization",
+    "rationale": "Generalizing one member's traits to the whole group.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "groupthink",
+    "proposed_archetype": "in_group",
+    "rationale": "Conforming to group consensus suppresses individual reasoning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "status_quo_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated preference for the existing state biases reasoning.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "dunning_kruger_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Overconfident self-assessment is a motivated belief about self.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "focusing_effect",
+    "proposed_archetype": "framing",
+    "rationale": "Weighting some aspects over others is a framing effect.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "framing_effect",
+    "proposed_archetype": "framing",
+    "rationale": "Definition of framing effect itself.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "hostile_attribution_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated interpretation of others' actions as hostile.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "negativity_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Cognitive tilt toward negative info shapes one's worldview.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "priming",
+    "proposed_archetype": "framing",
+    "rationale": "Prior stimuli frame subsequent reactions.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "availability_heuristic",
+    "proposed_archetype": "identity",
+    "rationale": "Reasoning shortcut based on easily recalled info.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "confirmation_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Classic motivated reasoning toward pre-existing beliefs.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "illusion_of_control",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated belief about self's ability to control events.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "neglect_of_probability",
+    "proposed_archetype": "fear",
+    "rationale": "Ignoring base rates to fear improbable bad outcomes.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "wishful_thinking",
+    "proposed_archetype": "identity",
+    "rationale": "Believing what one wishes is motivated reasoning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "bandwagon_effect",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Adopting beliefs because they're popular—appeal to popularity.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "herd_mentality",
+    "proposed_archetype": "in_group",
+    "rationale": "Conforming to one's group's majority opinion.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "in_group_out_group_bias",
+    "proposed_archetype": "in_group",
+    "rationale": "Definition of in/out-group bias.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "stereotyping",
+    "proposed_archetype": "generalization",
+    "rationale": "Generalized attributes assigned by group membership.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "false_memory",
+    "proposed_archetype": "identity",
+    "rationale": "Distorted recall shaping beliefs about reality.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "misinformation_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Memory distortion from post-event info biases reasoning.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "rosy_retrospection",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated rosy recollection biases reasoning.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "ad_hominem",
+    "proposed_archetype": "dismissal",
+    "rationale": "Attacking the person rather than the argument.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "non_sequitur",
+    "proposed_archetype": "redirection",
+    "rationale": "Conclusion doesn't follow; jumps to unrelated content.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "red_herring",
+    "proposed_archetype": "redirection",
+    "rationale": "Classic redirection to irrelevant topic.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "straw_man",
+    "proposed_archetype": "redirection",
+    "rationale": "Misrepresenting argument to attack a substitute.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "anecdotal_fallacy",
+    "proposed_archetype": "generalization",
+    "rationale": "Using isolated example as if generalizable.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_ignorance",
+    "proposed_archetype": "burden",
+    "rationale": "Claiming truth from lack of evidence shifts/abuses burden.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "burden_of_proof_fallacy",
+    "proposed_archetype": "burden",
+    "rationale": "Direct definition of burden-shifting.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "cherry_picking",
+    "proposed_archetype": "identity",
+    "rationale": "Selecting confirming data—motivated reasoning/confirmation.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "circular_reasoning",
+    "proposed_archetype": "vagueness",
+    "rationale": "Premise restates conclusion—evasive non-argument.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "false_analogy",
+    "proposed_archetype": "generalization",
+    "rationale": "Misleading comparison stretching one case to another.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "false_cause",
+    "proposed_archetype": "false_causation",
+    "rationale": "Definition of false causation.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "hasty_generalization",
+    "proposed_archetype": "generalization",
+    "rationale": "Direct definition of generalization fallacy.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "proof_by_assertion",
+    "proposed_archetype": "repetition",
+    "rationale": "Repeating a proposition regardless of refutation.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "slippery_slope",
+    "proposed_archetype": "fear",
+    "rationale": "Chain of feared consequences to scare audience.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "sweeping_generalization",
+    "proposed_archetype": "generalization",
+    "rationale": "Applying a general rule too broadly.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "excluded_middle_fallacy",
+    "proposed_archetype": "false_binary",
+    "rationale": "Ignoring middle ground—false binary.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "false_dilemma",
+    "proposed_archetype": "false_binary",
+    "rationale": "Direct definition of false binary.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "sunk_cost_fallacy",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated reasoning to justify past investments.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "zero_sum_fallacy",
+    "proposed_archetype": "false_binary",
+    "rationale": "Frames outcomes as one-gains-one-loses binary.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "ambiguity_fallacy",
+    "proposed_archetype": "vagueness",
+    "rationale": "Using ambiguous language to mislead.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_authority",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Per guidance, fallacy form routes to appeal_to.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_complexity",
+    "proposed_archetype": "vagueness",
+    "rationale": "Hand-waving by claiming the topic's too complex.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "appeal_to_emotion",
+    "proposed_archetype": "emotion",
+    "rationale": "Non-fear emotional manipulation.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_fear",
+    "proposed_archetype": "fear",
+    "rationale": "Direct fear appeal.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_nature",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Classic appeal-to-nature fallacy.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_pity",
+    "proposed_archetype": "emotion",
+    "rationale": "Pity/sympathy appeal—non-fear emotion.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_poverty",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Appeal to wealth/poverty status as evidence.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "appeal_to_purity",
+    "proposed_archetype": "false_binary",
+    "rationale": "No True Scotsman defines a purity binary.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_tradition",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Classic appeal-to-tradition.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "equivocation",
+    "proposed_archetype": "vagueness",
+    "rationale": "Exploits term ambiguity.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "moving_the_goalposts",
+    "proposed_archetype": "burden",
+    "rationale": "Changing criteria to evade meeting burden.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "reductive_fallacy",
+    "proposed_archetype": "false_causation",
+    "rationale": "Oversimplifying to a single cause/solution.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "halo_effect",
+    "proposed_archetype": "authority",
+    "rationale": "Credibility transfer from positive traits.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "horn_effect",
+    "proposed_archetype": "dismissal",
+    "rationale": "Negative trait taints whole judgment—source dismissal.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "hindsight_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated revision of one's prior knowledge.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "backfire_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Strengthening belief against contradicting evidence.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "belief_perseverance",
+    "proposed_archetype": "identity",
+    "rationale": "Holding beliefs despite refutation.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "illusory_truth_effect",
+    "proposed_archetype": "repetition",
+    "rationale": "Repetition makes claims feel true.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "continued_influence_effect",
+    "proposed_archetype": "repetition",
+    "rationale": "Debunked info still influences—closely tied to repetition effects.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "loss_aversion",
+    "proposed_archetype": "fear",
+    "rationale": "Exploiting fear of loss.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "endowment_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Overvaluing what one owns—self-related bias.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "survivorship_bias",
+    "proposed_archetype": "generalization",
+    "rationale": "Generalizing from survivors while ignoring failures.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "selection_bias",
+    "proposed_archetype": "generalization",
+    "rationale": "Non-representative sampling skews generalization.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "base_rate_neglect",
+    "proposed_archetype": "identity",
+    "rationale": "Ignoring statistical base rates is a reasoning bias.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "conjunction_fallacy_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Representativeness-driven reasoning error.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "gamblers_fallacy_bias",
+    "proposed_archetype": "false_causation",
+    "rationale": "Misattributing causation between independent events.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "authority_bias",
+    "proposed_archetype": "authority",
+    "rationale": "Deference to authority as bias variant.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "mere_exposure_effect",
+    "proposed_archetype": "repetition",
+    "rationale": "Familiarity from exposure breeds preference.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "false_consensus_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Believing others share one's views—motivated.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "just_world_hypothesis",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated belief that world is fair.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "self_serving_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Self-favoring attribution—motivated reasoning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "fundamental_attribution_error",
+    "proposed_archetype": "identity",
+    "rationale": "Misattributing others' behavior to character.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "naive_realism",
+    "proposed_archetype": "identity",
+    "rationale": "Listed explicitly under identity archetype.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "bias_blind_spot",
+    "proposed_archetype": "identity",
+    "rationale": "Belief about self—can't see own bias.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "outcome_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Judging decisions by outcomes biases reasoning.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "optimism_bias",
+    "proposed_archetype": "identity",
+    "rationale": "Motivated positive belief about future.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "affect_heuristic",
+    "proposed_archetype": "emotion",
+    "rationale": "Emotion-driven judgment shortcut.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "representativeness_heuristic",
+    "proposed_archetype": "generalization",
+    "rationale": "Judging by stereotypical resemblance.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "spotlight_effect",
+    "proposed_archetype": "identity",
+    "rationale": "Overestimating others' attention to self.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "curse_of_knowledge",
+    "proposed_archetype": "identity",
+    "rationale": "Assuming others know what you know.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "tu_quoque",
+    "proposed_archetype": "redirection",
+    "rationale": "Whataboutism deflects via accusations.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "no_true_scotsman",
+    "proposed_archetype": "false_binary",
+    "rationale": "Purity test exclusion.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "composition_fallacy",
+    "proposed_archetype": "generalization",
+    "rationale": "Inferring whole from parts.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "division_fallacy",
+    "proposed_archetype": "generalization",
+    "rationale": "Inferring parts from whole.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "genetic_fallacy",
+    "proposed_archetype": "dismissal",
+    "rationale": "Attacking origin of claim, not substance.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "loaded_question",
+    "proposed_archetype": "framing",
+    "rationale": "Embedded assumption frames the question.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "begging_the_question",
+    "proposed_archetype": "vagueness",
+    "rationale": "Circular argument hides reasoning.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "appeal_to_popularity",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Classic appeal-to-popularity.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "appeal_to_consequences",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Appeals to (un)desirable consequences as evidence.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "texas_sharpshooter",
+    "proposed_archetype": "identity",
+    "rationale": "Cherry-pick patterns after the fact—motivated.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "gish_gallop",
+    "proposed_archetype": "redirection",
+    "rationale": "Overwhelm opponent with many claims.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "galileo_gambit",
+    "proposed_archetype": "identity",
+    "rationale": "Persecuted-genius motivated reasoning.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "argument_from_incredulity",
+    "proposed_archetype": "identity",
+    "rationale": "Personal disbelief used as proof.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "argument_from_silence",
+    "proposed_archetype": "burden",
+    "rationale": "Absence of evidence claimed as evidence.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "middle_ground_fallacy",
+    "proposed_archetype": "false_binary",
+    "rationale": "Assumes truth must be at midpoint between two views.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "special_pleading",
+    "proposed_archetype": "burden",
+    "rationale": "Exempting one's case from rules to evade refutation.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "fallacy_fallacy",
+    "proposed_archetype": "dismissal",
+    "rationale": "Dismissing conclusion because argument has a flaw.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "continuum_fallacy",
+    "proposed_archetype": "vagueness",
+    "rationale": "Exploits fuzzy boundaries to deny distinctions.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "single_cause_fallacy",
+    "proposed_archetype": "false_causation",
+    "rationale": "Attributing complex effects to one cause.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "is_ought_fallacy",
+    "proposed_archetype": "appeal_to",
+    "rationale": "Deriving normative from descriptive (akin to appeal to nature).",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "reification_fallacy",
+    "proposed_archetype": "vagueness",
+    "rationale": "Treating abstractions as concrete things.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "plurium_interrogationum",
+    "proposed_archetype": "framing",
+    "rationale": "Many-questions packs assumptions into framing.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "ad_lapidem",
+    "proposed_archetype": "dismissal",
+    "rationale": "Dismissal without reason given.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "stolen_concept",
+    "proposed_archetype": "vagueness",
+    "rationale": "Using a concept while denying its basis.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "etymological_fallacy",
+    "proposed_archetype": "vagueness",
+    "rationale": "Insisting on root meaning to mislead.",
+    "confidence": "low"
+  },
+  {
+    "canonical_id": "loaded_language",
+    "proposed_archetype": "framing",
+    "rationale": "Loaded wording frames perception.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "weasel_words",
+    "proposed_archetype": "vagueness",
+    "rationale": "Vague attribution like 'some say'.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "false_urgency",
+    "proposed_archetype": "fear",
+    "rationale": "Manufactured urgency exploits fear.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "absolutism",
+    "proposed_archetype": "generalization",
+    "rationale": "Always/never sweeping claims.",
+    "confidence": "medium"
+  },
+  {
+    "canonical_id": "vagueness",
+    "proposed_archetype": "vagueness",
+    "rationale": "Definitional match.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "glittering_generalities",
+    "proposed_archetype": "vagueness",
+    "rationale": "Vague positive generalities.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "dog_whistles",
+    "proposed_archetype": "in_group",
+    "rationale": "Coded signals to in-group.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "innuendo",
+    "proposed_archetype": "vagueness",
+    "rationale": "Implied unstated meaning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "repetition_emphasis",
+    "proposed_archetype": "repetition",
+    "rationale": "Repetition for rhetorical effect.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "pejorative_framing",
+    "proposed_archetype": "framing",
+    "rationale": "Negative-loaded framing.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "euphemism",
+    "proposed_archetype": "framing",
+    "rationale": "Soft wording reframes meaning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "dysphemism",
+    "proposed_archetype": "framing",
+    "rationale": "Harsh wording reframes meaning.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "imprecise_quantifiers",
+    "proposed_archetype": "vagueness",
+    "rationale": "Vague quantification.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "hedge_words",
+    "proposed_archetype": "vagueness",
+    "rationale": "Hedging avoids commitment.",
+    "confidence": "high"
+  },
+  {
+    "canonical_id": "code_words",
+    "proposed_archetype": "in_group",
+    "rationale": "In-group coded vocabulary.",
+    "confidence": "high"
+  }
+]

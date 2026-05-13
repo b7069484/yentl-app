@@ -31,6 +31,7 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
       barsRef.current.forEach((el) => {
         if (el) el.style.background = "rgb(148 163 184 / 0.4)"; // slate-400/40
       });
+      if (a11yRef.current) a11yRef.current.textContent = "Microphone silent";
       return;
     }
 

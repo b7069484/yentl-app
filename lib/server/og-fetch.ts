@@ -1,19 +1,32 @@
 import type { SourcePreview } from "@/lib/types";
 
-const ENTITY_DECODE: Record<string, string> = {
+const NAMED_ENTITY_DECODE: Record<string, string> = {
   "&amp;": "&",
   "&lt;": "<",
   "&gt;": ">",
   "&quot;": '"',
-  "&#39;": "'",
   "&apos;": "'",
-  "&#x27;": "'",
-  "&#x2F;": "/",
   "&nbsp;": " ",
 };
 
+/**
+ * Decode the entities that show up in real-world OG meta tags:
+ *   - Common named entities (&amp; &lt; &gt; &quot; &apos; &nbsp;)
+ *   - Decimal numeric entities of any zero-padding (&#39; &#039; &#0039; …)
+ *   - Hex numeric entities (&#x27; &#X27; &#x2F;)
+ * Anything that fails to decode passes through unchanged.
+ */
 export function decodeHtmlEntities(s: string): string {
-  return s.replace(/&(amp|lt|gt|quot|apos|nbsp|#39|#x27|#x2F);/g, (m) => ENTITY_DECODE[m] ?? m);
+  return s.replace(/&(?:(amp|lt|gt|quot|apos|nbsp)|#(\d+)|#[xX]([0-9a-fA-F]+));/g, (m, named, dec, hex) => {
+    if (named) return NAMED_ENTITY_DECODE[`&${named};`] ?? m;
+    const cp = dec ? parseInt(dec, 10) : parseInt(hex, 16);
+    if (!Number.isFinite(cp) || cp < 0 || cp > 0x10ffff) return m;
+    try {
+      return String.fromCodePoint(cp);
+    } catch {
+      return m;
+    }
+  });
 }
 
 export function absolutize(raw: string | null, base: string): string | null {

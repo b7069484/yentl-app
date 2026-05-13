@@ -9,8 +9,28 @@ describe("decodeHtmlEntities", () => {
     expect(decodeHtmlEntities("It&#39;s")).toBe("It's");
   });
 
+  it("decodes zero-padded decimal entities (real-world OG quirk)", () => {
+    expect(decodeHtmlEntities("moon&#039;s")).toBe("moon's");
+    expect(decodeHtmlEntities("moon&#0039;s")).toBe("moon's");
+  });
+
+  it("decodes hex entities including uppercase X", () => {
+    expect(decodeHtmlEntities("a&#x2F;b")).toBe("a/b");
+    expect(decodeHtmlEntities("a&#X2F;b")).toBe("a/b");
+    expect(decodeHtmlEntities("a&#x27;b")).toBe("a'b");
+  });
+
+  it("decodes multi-byte codepoints (e.g., em-dash)", () => {
+    expect(decodeHtmlEntities("dash&#8212;here")).toBe("dash—here");
+    expect(decodeHtmlEntities("dash&#x2014;here")).toBe("dash—here");
+  });
+
   it("passes through text without entities", () => {
     expect(decodeHtmlEntities("plain text")).toBe("plain text");
+  });
+
+  it("leaves bogus entities intact", () => {
+    expect(decodeHtmlEntities("&unknownentity;")).toBe("&unknownentity;");
   });
 });
 

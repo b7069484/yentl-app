@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { RhetoricMarker } from "@/lib/types";
 import { getEntry } from "@/lib/taxonomy";
+import { SpeakerBadge } from "./SpeakerBadge";
 
 const TYPE_THEME: Record<
   RhetoricMarker["type"],
@@ -74,6 +75,7 @@ export function MarkerChip({
             />
             {SEVERITY_LABEL[marker.severity]}
           </span>
+          <SpeakerBadge speakerId={marker.speaker_id} />
         </div>
         <h4 className="mt-1 text-sm font-semibold leading-snug text-foreground">
           {marker.display}

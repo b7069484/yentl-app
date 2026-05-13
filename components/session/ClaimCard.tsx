@@ -1,6 +1,7 @@
 import type { ClaimCard as ClaimCardT } from "@/lib/types";
 import { VERDICT } from "@/lib/client/verdict-theme";
 import { SourceListItem } from "./SourceListItem";
+import { SpeakerBadge } from "./SpeakerBadge";
 
 export function ClaimCard({
   card,
@@ -45,6 +46,7 @@ export function ClaimCard({
             status={card.status}
             sourceCount={card.sources.length}
           />
+          <SpeakerBadge speakerId={card.speaker_id} />
         </div>
         <ScoreNumber score={card.score} colorClass={verdict.scoreText} />
       </header>

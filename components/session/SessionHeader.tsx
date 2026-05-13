@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 
@@ -53,6 +54,7 @@ export function SessionHeader({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <SpeakersModeToggle />
         <Button
           variant="outline"
           size="sm"
@@ -84,6 +86,28 @@ export function SessionHeader({
         </Button>
       </div>
     </header>
+  );
+}
+
+function SpeakersModeToggle() {
+  const speakersMode = useSession((s) => s.speakersMode);
+  const setSpeakersMode = useSession((s) => s.setSpeakersMode);
+  return (
+    <Button
+      variant={speakersMode ? "default" : "outline"}
+      size="sm"
+      onClick={() => setSpeakersMode(!speakersMode)}
+      aria-pressed={speakersMode}
+      title={
+        speakersMode
+          ? "Speakers mode ON — capturing audio played through this device. Click to disable."
+          : "Speakers mode OFF — your voice only. Click to also capture audio played through this device's speakers."
+      }
+      className="gap-1.5"
+    >
+      <Volume2 className="h-3.5 w-3.5" />
+      <span className="hidden sm:inline">Speakers</span>
+    </Button>
   );
 }
 

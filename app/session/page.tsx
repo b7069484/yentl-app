@@ -50,7 +50,10 @@ export default function SessionPage() {
         },
         onClose: () => {},
       });
-      mic.current = await startMic((chunk) => dg.current?.send(chunk));
+      mic.current = await startMic(
+        (chunk) => dg.current?.send(chunk),
+        { speakersMode: session.speakersMode },
+      );
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       const friendly = /permission|denied|notallowed/i.test(msg)
@@ -75,6 +78,27 @@ export default function SessionPage() {
   };
 
   useEffect(() => () => teardown(), []);
+
+  // Restart mic + Deepgram stream when speakersMode flips mid-session.
+  // Chrome's getUserMedia constraints can't be updated on an open stream.
+  //
+  // RACE-SAFETY: teardown() calls dg.current.close(), which (per Task 11's hardened
+  // openDeepgramStream) aborts any in-flight JWT refresh via AbortController and
+  // gracefully drains the active socket. Without that cancellation contract this
+  // effect would race the refresh timer — DO NOT weaken Task 11's AbortController
+  // without also rewriting this effect to coordinate explicitly.
+  const lastSpeakersMode = useRef(session.speakersMode);
+  useEffect(() => {
+    if (lastSpeakersMode.current === session.speakersMode) return;
+    lastSpeakersMode.current = session.speakersMode;
+    if (!session.isRecording) return;
+    void (async () => {
+      teardown();
+      await start();
+    })();
+    // start/teardown are stable in this component scope; intentionally not in deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.speakersMode]);
 
   // Dev-only shim for end-to-end testing without a real microphone.
   useEffect(() => {

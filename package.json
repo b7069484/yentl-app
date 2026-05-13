@@ -9,7 +9,9 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts"
+    "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts",
+    "tag:archetypes": "tsx --env-file=.env.local scripts/tag-archetypes.ts",
+    "apply:archetypes": "tsx scripts/apply-archetypes.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.76",

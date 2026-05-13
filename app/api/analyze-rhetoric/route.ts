@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
 import { generateText, Output } from "ai";
 import { opus } from "@/lib/server/anthropic";
 import {
   AnalyzeRhetoricResponse,
-  SYSTEM,
+  SYSTEM_PREFIX,
   userPrompt,
 } from "@/lib/prompts/analyze-rhetoric";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -16,8 +16,19 @@ export async function POST(req: NextRequest) {
     const { output } = await generateText({
       model: opus,
       output: Output.object({ schema: AnalyzeRhetoricResponse }),
-      system: SYSTEM,
-      prompt: userPrompt(body),
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PREFIX,
+          // Mark this large static block as cacheable. Field name may differ —
+          // verify against current @ai-sdk/anthropic docs; the wire-level expectation
+          // is `{ "cache_control": { "type": "ephemeral" } }` on the system content block.
+          providerOptions: {
+            anthropic: { cacheControl: { type: "ephemeral" } },
+          },
+        },
+        { role: "user", content: userPrompt(body) },
+      ],
     });
     return NextResponse.json(output);
   } catch (e) {

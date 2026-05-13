@@ -2,6 +2,8 @@ import type { ClaimCard as ClaimCardT } from "@/lib/types";
 import { VERDICT } from "@/lib/client/verdict-theme";
 import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
+import Image from "next/image";
+import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
 
 export function ClaimCard({
   card,
@@ -36,6 +38,39 @@ export function ClaimCard({
           isPending ? "opacity-40" : "opacity-100"
         }`}
       />
+
+      {!compact && (() => {
+        const hero = pickHero(card);
+        if (!hero?.image_url) return null;
+        const heroSource = card.sources.find((s) => s.preview?.image_url === hero.image_url);
+        const stanceLabel: Record<Stance, string> = {
+          supports: "supports this claim",
+          contradicts: "contradicts this claim",
+          mixed: "mixed take on this claim",
+        };
+        return (
+          <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border/60">
+            <Image
+              src={hero.image_url}
+              alt={hero.image_alt ?? hero.title ?? "Source preview"}
+              fill
+              unoptimized
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-2.5">
+              {hero.title && (
+                <p className="text-[12px] font-medium leading-tight text-white line-clamp-2">{hero.title}</p>
+              )}
+              {heroSource && (
+                <p className="mt-0.5 text-[10px] uppercase tracking-wider text-white/80">
+                  Source: {heroSource.domain} · {stanceLabel[heroSource.stance]}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       <header className="flex items-start justify-between gap-3 pl-5 pr-4 pt-3.5">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -190,4 +225,27 @@ function SkeletonLines({ lines }: { lines: number }) {
       ))}
     </div>
   );
+}
+
+function pickHero(card: ClaimCardT): SourcePreview | null {
+  if (card.sources.length === 0) return null;
+  const expectedStance: Stance | null =
+    card.primary_label === "TRUE" || card.primary_label === "MOSTLY_TRUE" ? "supports" :
+    card.primary_label === "FALSE" || card.primary_label === "MISLEADING" || card.primary_label === "OMISSION" ? "contradicts" :
+    null;
+
+  const tierRank = (t: ReputationTier) => (t === "high" ? 2 : t === "mid" ? 1 : 0);
+
+  const sorted = [...card.sources].sort((a, b) => {
+    const t = tierRank(b.reputation_tier) - tierRank(a.reputation_tier);
+    if (t !== 0) return t;
+    if (expectedStance) {
+      const s = (b.stance === expectedStance ? 1 : 0) - (a.stance === expectedStance ? 1 : 0);
+      if (s !== 0) return s;
+    }
+    return 0;
+  });
+
+  for (const s of sorted) if (s.preview?.image_url) return s.preview;
+  return null;
 }

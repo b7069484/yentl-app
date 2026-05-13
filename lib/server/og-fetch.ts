@@ -93,6 +93,26 @@ export async function fetchPreview(url: string): Promise<SourcePreview | null> {
     void reader.cancel();
 
     const parsed = parseMetaFromHtml(html, url);
+
+    // Image-load check: if og:image URL doesn't serve real image bytes, drop it
+    if (parsed.image_url) {
+      try {
+        const head = await fetch(parsed.image_url, {
+          method: "HEAD",
+          signal: AbortSignal.timeout(3_000),
+          redirect: "follow",
+        });
+        const ct = head.headers.get("content-type") ?? "";
+        if (!head.ok || !ct.startsWith("image/")) {
+          parsed.image_url = null;
+          parsed.image_alt = null;
+        }
+      } catch {
+        parsed.image_url = null;
+        parsed.image_alt = null;
+      }
+    }
+
     if (!parsed.image_url && !parsed.title && !parsed.description) return null;
 
     const preview: SourcePreview = { ...parsed, fetched_at: Date.now() };

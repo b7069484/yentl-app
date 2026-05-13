@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { RhetoricMarker } from "@/lib/types";
 import { getEntry } from "@/lib/taxonomy";
+import { ARCHETYPE_ICONS } from "@/lib/taxonomy/archetypes";
 import { SpeakerBadge } from "./SpeakerBadge";
 
 const TYPE_THEME: Record<
@@ -48,6 +49,7 @@ export function MarkerChip({
 }) {
   const theme = TYPE_THEME[marker.type];
   const taxonomyEntry = getEntry(marker.name);
+  const Icon = taxonomyEntry?.archetype ? ARCHETYPE_ICONS[taxonomyEntry.archetype] : null;
   const [showDetail, setShowDetail] = useState(false);
 
   return (
@@ -68,6 +70,7 @@ export function MarkerChip({
           >
             {theme.label}
           </span>
+          {Icon && <Icon aria-hidden className="h-3.5 w-3.5 shrink-0 text-foreground/70" />}
           <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
             <span
               aria-hidden

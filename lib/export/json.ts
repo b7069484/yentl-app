@@ -13,6 +13,8 @@ export function toJSON(session: Session): string {
         1000,
     );
   }
+  obj.source = session.source;
+  obj.speakers = session.speakers;
   obj.transcript = session.transcript;
   obj.claims = session.claims;
   obj.markers = session.markers;

@@ -8,7 +8,9 @@ describe("toJSON", () => {
       title: "Test",
       started_at: "2026-05-11T10:00:00.000Z",
       ended_at: "2026-05-11T10:05:00.000Z",
-      transcript: [{ text: "hi", start: 0, end: 1, is_final: true }],
+      speakers: [],
+      source: { kind: "mic" },
+      transcript: [{ text: "hi", start: 0, end: 1, is_final: true, speaker_id: null }],
       claims: [],
       markers: [],
     };
@@ -17,12 +19,16 @@ describe("toJSON", () => {
     expect(parsed.title).toBe("Test");
     expect(parsed.duration_seconds).toBe(300);
     expect(parsed.transcript[0].text).toBe("hi");
+    expect(parsed.source).toEqual({ kind: "mic" });
+    expect(Array.isArray(parsed.speakers)).toBe(true);
   });
 
   it("omits ended_at + duration if missing", () => {
     const session: Session = {
       title: "Open",
       started_at: "2026-05-11T10:00:00.000Z",
+      speakers: [],
+      source: { kind: "mic" },
       transcript: [],
       claims: [],
       markers: [],

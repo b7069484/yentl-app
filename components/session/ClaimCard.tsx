@@ -50,6 +50,11 @@ export function ClaimCard({
             status={card.status}
             sourceCount={card.sources.length}
           />
+          {card.topic && card.topic !== "Other" && (
+            <span className="inline-flex items-center rounded-full border border-border/50 bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground/60">
+              {card.topic}
+            </span>
+          )}
           <SpeakerBadge speakerId={card.speaker_id} />
         </div>
         {!isPending && <ScoreNumber score={card.score} colorClass={verdict.scoreText} />}

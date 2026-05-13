@@ -37,7 +37,7 @@ Numbering preserved where possible. New tasks use `Xa`/`Xb`/`X.5` suffixes to ke
 
 - **No `git push`** unless the user explicitly authorizes
 - **No `vercel deploy` / `vercel --prod`** unless the user explicitly authorizes
-- **No overwrites of `factify-rose.vercel.app`** in any form
+- **No overwrites of `yenta.vercel.app`** in any form
 - **AI Gateway routing:** model slug `"anthropic/claude-opus-4.7"` (plain string, dots, no `anthropic(...)` wrap, and never reference the Anthropic provider key env var directly — auth flows via OIDC from `vercel env pull`)
 - **AI SDK v6:** `generateText({ output: Output.object({ schema }) })` — no `generateObject` (removed in v6)
 - **web_search:** `import { anthropic } from "@ai-sdk/anthropic"` for `anthropic.tools.webSearch_20260209({ maxUses: 5 })` only
@@ -3135,7 +3135,7 @@ export async function fetchPreview(url: string): Promise<SourcePreview | null> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; FactifyBot/1.0; +https://factify-rose.vercel.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; FactifyBot/1.0; +https://yenta.vercel.app)",
         "Accept": "text/html,application/xhtml+xml;q=0.9",
       },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),

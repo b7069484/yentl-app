@@ -1,7 +1,7 @@
 # Factify v1 — Post-shakeout Handoff
 
 **Date:** 2026-05-13
-**Where we are:** v1 is feature-complete and live in production at **https://factify-rose.vercel.app**. End-to-end pipeline (mic → Deepgram → claim extraction → web-grounded verification → bias/fallacy detection → 3-column UI → HTML report export) verified working. The first real demo to a co-founder caught two design errors and one silent-failure mode; the design errors are fixed and live, the silent-failure mode is documented for the next pickup.
+**Where we are:** v1 is feature-complete and live in production at **https://yenta.vercel.app**. End-to-end pipeline (mic → Deepgram → claim extraction → web-grounded verification → bias/fallacy detection → 3-column UI → HTML report export) verified working. The first real demo to a co-founder caught two design errors and one silent-failure mode; the design errors are fixed and live, the silent-failure mode is documented for the next pickup.
 **For:** a fresh Claude Code session resuming work in `/Users/israelbitton/Live FactCheck`.
 
 > **Read order:**
@@ -19,7 +19,7 @@
 - **Author/user:** Israel B. Bitton. Wrote the 2024 book whose 55-category taxonomy seeds Factify's bias/fallacy detection.
 - **Repo:** `main` branch, no remote. Worktree branch `claude/jolly-kepler-076d7b` is 17 commits ahead. **Don't** add a remote unless asked.
 - **Latest commit:** `6de8d6b` — "Decouple End from Export; ship HTML report as primary export format"
-- **Production:** `factify-rose.vercel.app` (deployment ID `dpl_W2pPq…` updated 2026-05-13). Vercel Authentication is **off**; the URL is public.
+- **Production:** `yenta.vercel.app` (deployment ID `dpl_W2pPq…` updated 2026-05-13). Vercel Authentication is **off**; the URL is public.
 - **Tests:** 26/26 passing across 7 files. `tsc --noEmit` clean.
 
 ---
@@ -236,15 +236,15 @@ The first handoff established this pattern. Use it for non-trivial tasks. For ti
 
 1. `cd "/Users/israelbitton/Live FactCheck"` (NOT the worktree — the worktree was for the v1 build push).
 2. Read this handoff. Read memory `MEMORY.md`.
-3. Verify prod is alive: `curl -sI https://factify-rose.vercel.app/` → 200.
-4. Verify token mint: `curl -s -X POST https://factify-rose.vercel.app/api/deepgram/token | jq -r .key | head -c 30; echo` → starts with `eyJ...`.
+3. Verify prod is alive: `curl -sI https://yenta.vercel.app/` → 200.
+4. Verify token mint: `curl -s -X POST https://yenta.vercel.app/api/deepgram/token | jq -r .key | head -c 30; echo` → starts with `eyJ...`.
 5. Pick the first move from Phase 2 (Deepgram JWT refresh is the biggest user pain).
 6. If touching code: `npx tsc --noEmit && npm run test:run` before commit.
 7. Deploy: `vercel deploy --prod` from a worktree with `.vercel/project.json` present.
 
 For local dev: `PORT=3001 npm run dev` (assume the user's main checkout is using 3000). `.env.local` must be present.
 
-For browser verification: `agent-browser skills get agent-browser`, then drive against `http://localhost:3001` or `https://factify-rose.vercel.app`. The dev-only `window.__factify` shim lets you inject synthetic utterances without a real mic — see how the previous session used it.
+For browser verification: `agent-browser skills get agent-browser`, then drive against `http://localhost:3001` or `https://yenta.vercel.app`. The dev-only `window.__factify` shim lets you inject synthetic utterances without a real mic — see how the previous session used it.
 
 ---
 

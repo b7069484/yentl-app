@@ -10,7 +10,7 @@
 
 ## 1. Why this sprint
 
-Factify v1 is live at `factify-rose.vercel.app`. A first real two-speaker demo would currently fail on three fronts: the Deepgram JWT silently expires at 10 minutes, the default `echoCancellation: true` blocks speaker-routed audio from being captured, and there is no diarization — every utterance is attributed to a single anonymous speaker. Separately, a review of three real session exports surfaced pipeline bugs (UNVERIFIABLE rendered during in-flight verification, source URL corruption, marker type mislabeling, marker dedup gaps). And the UI is text-heavy, with no visual anchors on claim cards or marker chips.
+Factify v1 is live at `yenta.vercel.app`. A first real two-speaker demo would currently fail on three fronts: the Deepgram JWT silently expires at 10 minutes, the default `echoCancellation: true` blocks speaker-routed audio from being captured, and there is no diarization — every utterance is attributed to a single anonymous speaker. Separately, a review of three real session exports surfaced pipeline bugs (UNVERIFIABLE rendered during in-flight verification, source URL corruption, marker type mislabeling, marker dedup gaps). And the UI is text-heavy, with no visual anchors on claim cards or marker chips.
 
 Sprint 1 makes the next demo viable. It builds the durability foundation, adds Deepgram-driven diarization with a renamable speaker UI, fixes the user-visible pipeline bugs that don't require pipeline-architecture changes, and lands a first pass of visual enrichment — preview images on claim cards from source OpenGraph metadata, and archetype-classified icons on marker chips. After Sprint 1, every later feature — pipeline-quality refit, input variety, UI rework, meta-analysis, summary PDF — operates on a stable two-speaker signal with a richer-than-text presentation.
 
@@ -495,7 +495,7 @@ export async function fetchPreview(url: string): Promise<SourcePreview | null> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; FactifyBot/1.0; +https://factify-rose.vercel.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; FactifyBot/1.0; +https://yenta.vercel.app)",
         "Accept": "text/html,application/xhtml+xml;q=0.9",
       },
       signal: AbortSignal.timeout(5_000),
@@ -722,7 +722,7 @@ When custom illustrations are designed later: swap `ARCHETYPE_ICONS` values from
 
 - **No `git push`** unless the user explicitly says "push it"
 - **No `vercel deploy` / `vercel --prod`** unless the user explicitly authorizes
-- **No overwrites of `factify-rose.vercel.app`** in any form
+- **No overwrites of `yenta.vercel.app`** in any form
 - All work happens in this worktree (or a fresh worktree off `claude/jolly-kepler-076d7b` — see §10)
 - **Spec commits within the worktree are fine** — they're not pushed, not deployed
 - When user wants to ship after their verification, the implementer drafts the deploy command and ASKS before executing

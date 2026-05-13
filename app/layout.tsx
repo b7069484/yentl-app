@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Factify — Live fact-check & rhetoric analysis",
+  title: "Yenta — Live fact-check & rhetoric analysis",
   description:
-    "Listen, check, learn. Factify scores claims and surfaces biases & fallacies in real time as you speak.",
+    "Listen, check, learn. Yenta transcribes the conversation, scores every claim against the open web, and surfaces the biases and fallacies tucked into the rhetoric in real time.",
 };
 
 export default function RootLayout({

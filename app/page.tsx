@@ -15,16 +15,16 @@ export default function Home() {
           See what's <span className="text-red-600">true</span>.
         </h1>
         <p className="max-w-prose text-lg leading-relaxed text-muted-foreground">
-          Speak, paste, or play audio. Factify transcribes in real time, grades
-          each claim against the open web, and surfaces the biases and
-          fallacies tucked into the rhetoric.
+          Speak, paste, or play audio. Yenta transcribes in real time,
+          separates speakers, grades every claim against the open web, and
+          surfaces the biases and fallacies tucked into the rhetoric.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Button asChild size="lg" className="px-6">
             <Link href="/session">Start a session</Link>
           </Button>
           <span className="text-sm text-muted-foreground">
-            Single speaker · English · Browser mic
+            Multi-speaker · English · Browser mic
           </span>
         </div>
         <ul className="mt-2 grid w-full max-w-2xl grid-cols-1 gap-x-8 gap-y-2 text-sm text-muted-foreground sm:grid-cols-3">

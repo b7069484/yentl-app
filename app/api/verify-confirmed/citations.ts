@@ -1,22 +1,49 @@
 import type { Source, Stance } from "@/lib/types";
 
-type ToolResult = { toolName: string; result?: unknown };
-type Step = { toolResults?: ToolResult[] };
-type Citation = { url: string; title?: string; snippet?: string };
+type ContentBlock = {
+  type: string;
+  // Legacy probe (older AI SDK shapes)
+  toolName?: string;
+  result?: unknown;
+  // Web-search source blocks in @ai-sdk/anthropic v6 — one per cited URL.
+  sourceType?: string;
+  url?: string;
+  title?: string;
+};
+type Step = {
+  content?: ContentBlock[];
+  // Legacy probe path.
+  toolResults?: Array<{ toolName: string; result?: unknown }>;
+};
+
+type Citation = { url: string; title?: string };
 
 /**
- * Walk the AI SDK v6 step list, extract web_search tool results, flatten into a
- * URL → Citation map. URL is the authoritative key — the LLM-emitted url field
- * MUST match exactly (we strip trailing slashes for tolerance, nothing more).
+ * Walk the AI SDK v6 step list and collect authoritative web_search citations.
  *
- * Tool-result shape can vary slightly across web_search versions. We probe a
- * couple of common shapes and ignore unknowns rather than crash. If the
- * tool-result shape changes in a future @ai-sdk/anthropic release, this is the
- * function to update.
+ * Source-of-truth: each step exposes a `content` array; web_search citations
+ * arrive as content blocks with `type: "source"`, `sourceType: "url"`, and a
+ * `url` + `title` pair. We harvest them directly — URL/title cannot be
+ * hallucinated by the LLM this way.
+ *
+ * For backwards compatibility we also probe the older
+ * `step.toolResults[].result.{results|citations}` shape; it stays a no-op when
+ * the new shape is present.
  */
 export function extractCitations(steps: Step[]): Map<string, Citation> {
   const out = new Map<string, Citation>();
   for (const step of steps ?? []) {
+    // Modern shape: source content blocks
+    for (const block of step.content ?? []) {
+      if (block.type !== "source") continue;
+      if (typeof block.url !== "string") continue;
+      const norm = normalizeUrl(block.url);
+      if (!norm) continue;
+      if (!out.has(norm)) {
+        out.set(norm, { url: block.url, title: block.title });
+      }
+    }
+    // Legacy shape: tool-result with embedded results array
     for (const tr of step.toolResults ?? []) {
       if (tr.toolName !== "web_search") continue;
       const result = tr.result as unknown;
@@ -28,16 +55,12 @@ export function extractCitations(steps: Step[]): Map<string, Citation> {
             ? (result as { citations: unknown[] }).citations
             : [];
       for (const raw of items) {
-        const item = raw as { url?: string; title?: string; snippet?: string; description?: string };
+        const item = raw as { url?: string; title?: string };
         if (typeof item.url !== "string") continue;
         const norm = normalizeUrl(item.url);
         if (!norm) continue;
         if (!out.has(norm)) {
-          out.set(norm, {
-            url: item.url,
-            title: item.title,
-            snippet: item.snippet ?? item.description,
-          });
+          out.set(norm, { url: item.url, title: item.title });
         }
       }
     }
@@ -45,10 +68,24 @@ export function extractCitations(steps: Step[]): Map<string, Citation> {
   return out;
 }
 
-function normalizeUrl(u: string): string | null {
+/**
+ * Truncate JSON-bleed corruption in LLM-emitted URLs. When the model is in
+ * Output.object() mode with tools, it occasionally inlines structured-output
+ * delimiters into the url string itself — e.g.
+ *   "https://example.com/path/','stance':'supports','excerpt':'..."
+ * Real URLs never contain `'`, `"`, `,`, whitespace, or `}` outside of
+ * percent-encoded form. Truncate at the first such character so a corrupted
+ * url still matches its intended target via prefix lookup.
+ */
+function scrubUrl(u: string): string {
+  // Take everything before the first illegal-in-real-URL byte.
+  const cut = u.search(/['"\s},]|%27|%22/);
+  return cut === -1 ? u : u.slice(0, cut);
+}
+
+function normalizeUrl(raw: string): string | null {
   try {
-    const url = new URL(u);
-    // Strip trailing slash on pathname only; preserve search + hash
+    const url = new URL(scrubUrl(raw));
     if (url.pathname.length > 1 && url.pathname.endsWith("/")) {
       url.pathname = url.pathname.replace(/\/+$/, "");
     }
@@ -59,30 +96,53 @@ function normalizeUrl(u: string): string | null {
 }
 
 /**
- * Combine LLM-emitted stance/excerpt with tool-authoritative URL/title.
- * Drops any stance_ref whose URL didn't appear in the tool results (the LLM
- * hallucinated it). Returns Source[] with url/domain/title/stance/excerpt set;
- * caller fills reputation_tier.
+ * Build the final source list from authoritative citations + LLM stance.
+ *
+ * Strategy:
+ *   1. Use the citation list (from web_search source blocks) as the canonical
+ *      universe of sources. URL + title come from there.
+ *   2. For each citation, look up the LLM's matching stance_ref by normalized
+ *      URL — first via exact normalized match, then via "stance_ref url starts
+ *      with citation url" (catches JSON-bleed-truncated stance refs).
+ *   3. If no stance_ref matches, default the source's stance to "mixed" rather
+ *      than dropping the citation. The user still sees a verified source link.
  */
 export function mergeStanceWithCitations(
   steps: Step[],
   stanceRefs: Array<{ url: string; stance: Stance; excerpt: string }>,
 ): Array<Omit<Source, "reputation_tier" | "preview">> {
   const citations = extractCitations(steps);
-  const out: Array<Omit<Source, "reputation_tier" | "preview">> = [];
-  const seen = new Set<string>();
+  const refsByKey = new Map<string, { stance: Stance; excerpt: string }>();
+  const refKeys: string[] = [];
   for (const ref of stanceRefs ?? []) {
     const key = normalizeUrl(ref.url);
-    if (!key || !citations.has(key) || seen.has(key)) continue;
-    seen.add(key);
-    const cit = citations.get(key)!;
-    const domain = safeDomain(cit.url);
+    if (!key) continue;
+    if (!refsByKey.has(key)) {
+      refsByKey.set(key, { stance: ref.stance, excerpt: ref.excerpt });
+      refKeys.push(key);
+    }
+  }
+
+  const out: Array<Omit<Source, "reputation_tier" | "preview">> = [];
+  const seen = new Set<string>();
+  for (const [citKey, cit] of citations.entries()) {
+    if (seen.has(citKey)) continue;
+    seen.add(citKey);
+
+    let matched = refsByKey.get(citKey);
+    if (!matched) {
+      // Tolerant fallback: refKey or citKey is a prefix of the other (handles
+      // trailing-content corruption on either side).
+      const looseKey = refKeys.find((rk) => rk.startsWith(citKey) || citKey.startsWith(rk));
+      if (looseKey) matched = refsByKey.get(looseKey);
+    }
+
     out.push({
       url: cit.url,
-      domain,
-      title: cit.title ?? domain,
-      stance: ref.stance,
-      excerpt: ref.excerpt,
+      domain: safeDomain(cit.url),
+      title: cit.title ?? safeDomain(cit.url),
+      stance: matched?.stance ?? "mixed",
+      excerpt: matched?.excerpt ?? "",
     });
   }
   return out;

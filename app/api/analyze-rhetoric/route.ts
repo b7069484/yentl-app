@@ -13,22 +13,20 @@ export const maxDuration = 60;
 export async function POST(req: NextRequest) {
   const body = await req.json();
   try {
+    // Use top-level `system` (not messages[] role:"system") to avoid the AI SDK
+    // prompt-injection warning. SYSTEM_PREFIX is module-constant text, so
+    // explicit `cache_control` would still be nice — but the messages-form
+    // marker triggered a security warning on every call, polluting logs.
+    // Anthropic's automatic prefix-cache still catches the static SYSTEM_PREFIX
+    // when the same content is repeated, just without an explicit hint.
     const { output } = await generateText({
       model: opus,
       output: Output.object({ schema: AnalyzeRhetoricResponse }),
-      messages: [
-        {
-          role: "system",
-          content: SYSTEM_PREFIX,
-          // Mark this large static block as cacheable. Field name may differ —
-          // verify against current @ai-sdk/anthropic docs; the wire-level expectation
-          // is `{ "cache_control": { "type": "ephemeral" } }` on the system content block.
-          providerOptions: {
-            anthropic: { cacheControl: { type: "ephemeral" } },
-          },
-        },
-        { role: "user", content: userPrompt(body) },
-      ],
+      system: SYSTEM_PREFIX,
+      prompt: userPrompt(body),
+      providerOptions: {
+        anthropic: { cacheControl: { type: "ephemeral" } },
+      },
     });
     return NextResponse.json(output);
   } catch (e) {

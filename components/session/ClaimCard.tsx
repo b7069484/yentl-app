@@ -15,8 +15,10 @@ export function ClaimCard({
   compact?: boolean;
 }) {
   const verdict = VERDICT[card.primary_label];
-  const isPending = card.status === "checking";
-  const isProvisional = card.status === "provisional";
+  const isPending =
+    card.status === "checking" ||
+    (card.status === "provisional" && card.primary_label === "UNVERIFIABLE");
+  const isProvisional = card.status === "provisional" && !isPending;
 
   return (
     <article
@@ -37,18 +39,20 @@ export function ClaimCard({
 
       <header className="flex items-start justify-between gap-3 pl-5 pr-4 pt-3.5">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span
-            className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${verdict.pill}`}
-          >
-            {verdict.short}
-          </span>
+          {!isPending && (
+            <span
+              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider ${verdict.pill}`}
+            >
+              {verdict.short}
+            </span>
+          )}
           <StatusPill
             status={card.status}
             sourceCount={card.sources.length}
           />
           <SpeakerBadge speakerId={card.speaker_id} />
         </div>
-        <ScoreNumber score={card.score} colorClass={verdict.scoreText} />
+        {!isPending && <ScoreNumber score={card.score} colorClass={verdict.scoreText} />}
       </header>
 
       <div

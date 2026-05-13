@@ -3,6 +3,9 @@ import type {
   ClaimCard,
   RhetoricMarker,
   Session,
+  SessionSource,
+  Speaker,
+  SpeakerId,
   TranscriptSegment,
 } from "@/lib/types";
 
@@ -14,6 +17,9 @@ type State = {
   interim: string;
   claims: ClaimCard[];
   markers: RhetoricMarker[];
+  speakers: Speaker[];
+  source: SessionSource;
+  speakersMode: boolean;
   isRecording: boolean;
   mode: "A" | "D";
 
@@ -25,13 +31,26 @@ type State = {
   addClaim: (c: ClaimCard) => void;
   updateClaim: (id: string, patch: Partial<ClaimCard>) => void;
   addMarker: (m: RhetoricMarker) => void;
+  ensureSpeaker: (id: SpeakerId) => void;
+  renameSpeaker: (id: SpeakerId, label: string) => void;
+  setSource: (source: SessionSource) => void;
+  setSpeakersMode: (b: boolean) => void;
   toggleMode: () => void;
   setRecording: (b: boolean) => void;
   toSession: () => Session;
   reset: () => void;
 };
 
-export const useSession = create<State>((set, get) => ({
+const DEFAULT_SOURCE: SessionSource = { kind: "mic" };
+
+// Single source of truth for non-action state. Spread into startSession + reset
+// so they can't drift apart silently. TypeScript enforces completeness via `State`.
+const initialState: Omit<State,
+  | "startSession" | "endSession" | "setInterim" | "appendFinal"
+  | "addClaim" | "updateClaim" | "addMarker"
+  | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
+  | "toggleMode" | "setRecording" | "toSession" | "reset"
+> = {
   title: "",
   startedAt: null,
   endedAt: null,
@@ -39,17 +58,20 @@ export const useSession = create<State>((set, get) => ({
   interim: "",
   claims: [],
   markers: [],
+  speakers: [],
+  source: DEFAULT_SOURCE,
+  speakersMode: false,
   isRecording: false,
   mode: "A",
+};
+
+export const useSession = create<State>((set, get) => ({
+  ...initialState,
 
   startSession: (title) => set({
+    ...initialState,
     title: title ?? new Date().toISOString(),
     startedAt: new Date().toISOString(),
-    endedAt: null,
-    transcript: [],
-    interim: "",
-    claims: [],
-    markers: [],
     isRecording: true,
   }),
 
@@ -60,10 +82,24 @@ export const useSession = create<State>((set, get) => ({
 
   setInterim: (text) => set({ interim: text }),
 
-  appendFinal: (segment) => set((s) => ({
-    transcript: [...s.transcript, segment],
-    interim: "",
-  })),
+  appendFinal: (segment) => set((s) => {
+    // Idempotent speaker registration when segment carries a non-null speaker_id
+    let speakers = s.speakers;
+    if (
+      segment.speaker_id !== null &&
+      !speakers.some((sp) => sp.id === segment.speaker_id)
+    ) {
+      speakers = [
+        ...speakers,
+        { id: segment.speaker_id, label: `Speaker ${segment.speaker_id + 1}` },
+      ];
+    }
+    return {
+      transcript: [...s.transcript, segment],
+      interim: "",
+      speakers,
+    };
+  }),
 
   addClaim: (c) => set((s) => ({ claims: [...s.claims, c] })),
 
@@ -72,6 +108,27 @@ export const useSession = create<State>((set, get) => ({
   })),
 
   addMarker: (m) => set((s) => ({ markers: [...s.markers, m] })),
+
+  ensureSpeaker: (id) => set((s) => {
+    if (s.speakers.some((sp) => sp.id === id)) return s;
+    return {
+      speakers: [...s.speakers, { id, label: `Speaker ${id + 1}` }],
+    };
+  }),
+
+  renameSpeaker: (id, label) => set((s) => {
+    const trimmed = label.trim();
+    const finalLabel = trimmed.length > 0 ? trimmed.slice(0, 24) : `Speaker ${id + 1}`;
+    return {
+      speakers: s.speakers.map((sp) =>
+        sp.id === id ? { ...sp, label: finalLabel } : sp,
+      ),
+    };
+  }),
+
+  setSource: (source) => set({ source }),
+
+  setSpeakersMode: (b) => set({ speakersMode: b }),
 
   toggleMode: () => set((s) => ({ mode: s.mode === "A" ? "D" : "A" })),
 
@@ -86,25 +143,15 @@ export const useSession = create<State>((set, get) => ({
       transcript: s.transcript,
       claims: s.claims,
       markers: s.markers,
+      speakers: s.speakers,
+      source: s.source,
     };
   },
 
-  reset: () => set({
-    title: "",
-    startedAt: null,
-    endedAt: null,
-    transcript: [],
-    interim: "",
-    claims: [],
-    markers: [],
-    isRecording: false,
-    mode: "A",
-  }),
+  reset: () => set({ ...initialState }),
 }));
 
-// Dev-only handle on the store so end-to-end tests and the browser console
-// can inspect / drive session state without React DevTools. Dead-code
-// eliminated in production builds via NODE_ENV.
+// Dev-only handle on the store (unchanged from prior version)
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
   (window as unknown as { __factify?: unknown }).__factify = { session: useSession };
 }

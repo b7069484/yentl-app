@@ -4,8 +4,26 @@ export type MicHandle = {
   stop: () => void;
 };
 
-export async function startMic(onChunk: (chunk: Blob) => void): Promise<MicHandle> {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+export type StartMicOptions = {
+  /**
+   * When true, disables Chrome's default echoCancellation / noiseSuppression /
+   * autoGainControl. Useful when the user wants to capture audio playing
+   * through the device's own speakers (otherwise Chrome filters it out before
+   * Deepgram sees it).
+   */
+  speakersMode?: boolean;
+};
+
+export async function startMic(
+  onChunk: (chunk: Blob) => void,
+  opts: StartMicOptions = {},
+): Promise<MicHandle> {
+  const speakersMode = opts.speakersMode ?? false;
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: speakersMode
+      ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      : { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+  });
   const mimeType = pickMime();
   const recorder = new MediaRecorder(stream, { mimeType });
 

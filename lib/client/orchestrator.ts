@@ -22,6 +22,7 @@ type ExtractedClaim = {
   utterance_start: number;
   utterance_end: number;
   topic: string;
+  topic_secondary: string | null;
 };
 
 export function attributeMarker(
@@ -82,6 +83,7 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
       utterance_end: c.utterance_end,
       speaker_id: segment.speaker_id,
       topic: c.topic ?? "Other",
+      topic_secondary: c.topic_secondary ?? null,
       primary_label: "UNVERIFIABLE",   // overridden once verify-provisional or verify-confirmed lands
       score: 0,
       annotations: [],

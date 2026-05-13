@@ -30,7 +30,8 @@ export type ClaimCard = {
   utterance_start: number;
   utterance_end: number;
   speaker_id: SpeakerId | null;
-  topic: string;
+  topic: string;                  // primary topic (renamed alias preserved for back-compat)
+  topic_secondary: string | null; // NEW — second domain when the claim cross-cuts
   primary_label: PrimaryLabel;
   score: number;
   annotations: string[];

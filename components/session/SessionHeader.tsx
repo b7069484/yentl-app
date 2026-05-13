@@ -4,6 +4,7 @@ import { Volume2 } from "lucide-react";
 import { AudioMeter } from "@/components/session/AudioMeter";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
+import { paletteFor } from "@/components/session/TranscriptView";
 
 export function SessionHeader({
   onStart, onStop, onEnd, onExport, audioStream,
@@ -56,6 +57,7 @@ export function SessionHeader({
           </span>
         </div>
       </div>
+      <SpeakerChipRow />
       <div className="flex items-center gap-2">
         <SpeakersModeToggle />
         <Button
@@ -111,6 +113,64 @@ function SpeakersModeToggle() {
       <Volume2 className="h-3.5 w-3.5" />
       <span className="hidden sm:inline">Speakers</span>
     </Button>
+  );
+}
+
+function SpeakerChipRow() {
+  const speakers = useSession((s) => s.speakers);
+  const renameSpeaker = useSession((s) => s.renameSpeaker);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [draft, setDraft] = useState("");
+
+  if (speakers.length < 2) return null;
+
+  const commit = (id: number) => {
+    renameSpeaker(id, draft);
+    setEditingId(null);
+  };
+  const cancel = () => setEditingId(null);
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {speakers.map((sp) => {
+        const palette = paletteFor(sp.id);
+        if (editingId === sp.id) {
+          return (
+            <span
+              key={sp.id}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background pl-1.5 pr-1 py-0.5"
+            >
+              <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${palette.dot}`} />
+              <input
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commit(sp.id);
+                  else if (e.key === "Escape") cancel();
+                }}
+                onBlur={() => commit(sp.id)}
+                maxLength={24}
+                className="w-24 bg-transparent text-[11px] font-medium outline-none placeholder:text-muted-foreground"
+                placeholder={`Speaker ${sp.id + 1}`}
+              />
+            </span>
+          );
+        }
+        return (
+          <button
+            key={sp.id}
+            type="button"
+            onClick={() => { setEditingId(sp.id); setDraft(sp.label); }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background px-2 py-0.5 text-[11px] font-medium text-foreground/80 hover:border-foreground/40"
+            title="Click to rename this speaker"
+          >
+            <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${palette.dot}`} />
+            {sp.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

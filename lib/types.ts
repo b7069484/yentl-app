@@ -21,6 +21,7 @@ export type Source = {
   reputation_tier: ReputationTier;
   stance: Stance;
   excerpt?: string;
+  preview?: SourcePreview;
 };
 
 export type ClaimCard = {
@@ -28,6 +29,8 @@ export type ClaimCard = {
   claim_text: string;
   utterance_start: number;
   utterance_end: number;
+  speaker_id: SpeakerId | null;
+  topic: string;
   primary_label: PrimaryLabel;
   score: number;
   annotations: string[];
@@ -45,6 +48,7 @@ export type RhetoricMarker = {
   name: string;       // canonical id from taxonomy
   display: string;    // human label
   excerpt: string;
+  speaker_id: SpeakerId | null;
   start_time: number;
   end_time: number;
   severity: MarkerSeverity;
@@ -56,6 +60,7 @@ export type TranscriptSegment = {
   start: number;
   end: number;
   is_final: boolean;
+  speaker_id: SpeakerId | null;
 };
 
 export type Session = {
@@ -65,6 +70,8 @@ export type Session = {
   transcript: TranscriptSegment[];
   claims: ClaimCard[];
   markers: RhetoricMarker[];
+  speakers: Speaker[];
+  source: SessionSource;
 };
 
 /* ── Speakers (added in Sprint 1) ─────────────────────────────── */

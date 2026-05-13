@@ -1,4 +1,5 @@
 import type { MarkerType } from "../types";
+import type { Archetype } from "./archetypes";
 import bookEntries from "./book-entries.json";
 import { EXTRAS } from "./extras";
 
@@ -10,6 +11,7 @@ export type TaxonomyEntry = {
   definition?: string;
   example?: string;
   aka?: string;
+  archetype?: Archetype;
 };
 
 const BOOK_AS_ENTRIES: TaxonomyEntry[] = (bookEntries as Array<{

@@ -1,10 +1,12 @@
 import type { MarkerType } from "../types";
+import type { Archetype } from "./archetypes";
 
 export type ExtraEntry = {
   canonical_id: string;
   type: MarkerType;
   display: string;
   aka?: string;
+  archetype?: Archetype;
 };
 
 export const EXTRAS: ExtraEntry[] = [

@@ -10,24 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
-import { toJSON } from "@/lib/export/json";
-import { toMarkdown } from "@/lib/export/markdown";
-
-function download(filename: string, content: string, type: string) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function fileSafe(s: string) {
-  return (s || "factify-session").replace(/[^\w-]+/g, "_").slice(0, 60);
-}
 
 export function EndSessionDialog({
   open,
@@ -54,22 +36,18 @@ export function EndSessionDialog({
 
   const handleConfirm = () => {
     if (!session.endedAt) session.endSession();
-    const data = useSession.getState().toSession();
-    const stem = fileSafe(data.title || "factify-session");
-    download(`${stem}.json`, toJSON(data), "application/json");
-    download(`${stem}.md`, toMarkdown(data), "text/markdown");
     onClose();
-    session.reset();
   };
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>End session & export?</DialogTitle>
+          <DialogTitle>End this session?</DialogTitle>
           <DialogDescription>
-            We&apos;ll save what you captured to your downloads as JSON and
-            Markdown — you can revisit, share, or feed it back in later.
+            Recording stops. Your transcript, claims, and markers stay on screen
+            so you can review and export them — use the Export button when
+            you&apos;re ready.
           </DialogDescription>
         </DialogHeader>
 
@@ -84,7 +62,7 @@ export function EndSessionDialog({
           <Button variant="outline" onClick={onClose}>
             Keep going
           </Button>
-          <Button onClick={handleConfirm}>End &amp; export</Button>
+          <Button onClick={handleConfirm}>End session</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

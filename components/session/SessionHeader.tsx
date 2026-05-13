@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 
 export function SessionHeader({
-  onStart, onStop, onEnd,
+  onStart, onStop, onEnd, onExport,
 }: {
   onStart: () => void;
   onStop: () => void;
   onEnd: () => void;
+  onExport: () => void;
 }) {
   const { isRecording, mode, toggleMode, title, startedAt } = useSession();
+  const hasContent = useSession(
+    (s) => s.transcript.length > 0 || s.claims.length > 0 || s.markers.length > 0,
+  );
   const [, setTick] = useState(0);
 
   // Tick once a second while recording so the clock keeps moving during silence
@@ -66,6 +70,15 @@ export function SessionHeader({
             {startedAt ? "Resume" : "Record"}
           </Button>
         )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onExport}
+          disabled={!hasContent}
+          title={hasContent ? "Export this session" : "Capture content first"}
+        >
+          Export
+        </Button>
         <Button variant="destructive" size="sm" onClick={onEnd}>
           End session
         </Button>

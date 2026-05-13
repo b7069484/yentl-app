@@ -7,6 +7,7 @@ import { MarkersPanel } from "@/components/session/MarkersPanel";
 import { MarkerTicker } from "@/components/session/MarkerTicker";
 import { ClaimCard } from "@/components/session/ClaimCard";
 import { EndSessionDialog } from "@/components/session/EndSessionDialog";
+import { ExportDialog } from "@/components/session/ExportDialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
@@ -20,6 +21,7 @@ export default function SessionPage() {
   const [error, setError] = useState<string | null>(null);
   const [highlightedClaimId, setHighlightedClaimId] = useState<string | null>(null);
   const [endDialogOpen, setEndDialogOpen] = useState(false);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const teardown = () => {
@@ -124,7 +126,12 @@ export default function SessionPage() {
       ref={containerRef}
       className="flex h-screen flex-col bg-background"
     >
-      <SessionHeader onStart={start} onStop={stop} onEnd={end} />
+      <SessionHeader
+        onStart={start}
+        onStop={stop}
+        onEnd={end}
+        onExport={() => setExportDialogOpen(true)}
+      />
       {error && (
         <div
           role="alert"
@@ -176,6 +183,10 @@ export default function SessionPage() {
       <EndSessionDialog
         open={endDialogOpen}
         onClose={() => setEndDialogOpen(false)}
+      />
+      <ExportDialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
       />
     </div>
   );

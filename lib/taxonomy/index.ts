@@ -21,6 +21,7 @@ const BOOK_AS_ENTRIES: TaxonomyEntry[] = (bookEntries as Array<{
   display: string;
   definition: string;
   example: string;
+  archetype?: Archetype;
 }>).map((e) => ({
   canonical_id: e.canonical_id,
   type: e.type,
@@ -28,6 +29,7 @@ const BOOK_AS_ENTRIES: TaxonomyEntry[] = (bookEntries as Array<{
   source: "book" as const,
   definition: e.definition,
   example: e.example,
+  archetype: e.archetype,
 }));
 
 const EXTRAS_AS_ENTRIES: TaxonomyEntry[] = EXTRAS.map((e) => ({

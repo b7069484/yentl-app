@@ -1,5 +1,6 @@
 import type { MarkerType } from "../types";
 import type { Archetype } from "./archetypes";
+import type { FurtherReading } from "./types";
 
 export type ExtraEntry = {
   canonical_id: string;
@@ -7,6 +8,10 @@ export type ExtraEntry = {
   display: string;
   aka?: string;
   archetype?: Archetype;
+  how_to_spot?: string[];
+  further_reading?: FurtherReading[];
+  related_canonical_ids?: string[];
+  wikipedia_slug?: string;
 };
 
 export const EXTRAS: ExtraEntry[] = [

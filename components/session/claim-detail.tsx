@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { ClaimCard, Speaker, Source, PrimaryLabel, Stance, ReputationTier } from "@/lib/types";
+import type { ClaimCard, Speaker, PrimaryLabel } from "@/lib/types";
 import { useSession } from "@/lib/client/session-store";
+import { SourceCard } from "./source-card";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -71,26 +72,6 @@ const VERDICT_BORDER_LEFT: Record<PrimaryLabel, string> = {
   OPINION:      "border-l-purple",
 };
 
-// ─── Source theme maps ────────────────────────────────────────────────────────
-
-const STANCE_DOT: Record<Stance, string> = {
-  supports:    "bg-green",
-  contradicts: "bg-red",
-  mixed:       "bg-orange",
-};
-
-const REPUTATION_COLOR: Record<ReputationTier, string> = {
-  high: "text-green",
-  mid:  "text-slate",
-  low:  "text-red",
-};
-
-const REPUTATION_LABEL: Record<ReputationTier, string> = {
-  high: "HIGH",
-  mid:  "MID",
-  low:  "LOW",
-};
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function VerdictLabel({ verdict }: { verdict: PrimaryLabel }) {
@@ -140,34 +121,20 @@ function ConfBar({ verdict, score }: { verdict: PrimaryLabel; score: number }) {
   );
 }
 
-function SourceCard({ source }: { source: Source }) {
-  const initial = source.domain[0]?.toUpperCase() ?? "?";
+// Exported for use in claim-learn-more.tsx (related claims list)
+export function ScoreChip({
+  score,
+  verdict,
+}: {
+  score: number;
+  verdict: PrimaryLabel;
+}) {
   return (
-    <div className="flex gap-2.5 p-3 bg-cream-2 border border-line-soft rounded-[10px]">
-      <div className="w-10 h-10 rounded-lg bg-ink-2 text-white flex items-center justify-center font-bold text-[12px] flex-shrink-0 select-none">
-        {initial}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-semibold text-ink leading-snug tracking-tight truncate">
-          {source.title}
-        </div>
-        <div className="flex items-center gap-2 text-[11px] text-ink-4 mt-1 flex-wrap">
-          <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STANCE_DOT[source.stance]}`}
-          />
-          <span className="truncate">{source.domain}</span>
-          <span>·</span>
-          <span className={`font-semibold uppercase ${REPUTATION_COLOR[source.reputation_tier]}`}>
-            {REPUTATION_LABEL[source.reputation_tier]}
-          </span>
-        </div>
-        {source.excerpt && (
-          <div className="font-serif italic text-[12px] text-ink-3 mt-1.5 pl-2 border-l-2 border-line line-clamp-3">
-            {source.excerpt}
-          </div>
-        )}
-      </div>
-    </div>
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border tabular-nums flex-shrink-0 ${VERDICT_PILL[verdict]}`}
+    >
+      {Math.round(score)}
+    </span>
   );
 }
 

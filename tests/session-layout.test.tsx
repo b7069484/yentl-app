@@ -77,25 +77,31 @@ import SessionLayout from "@/app/session/layout";
 
 type StoreState = {
   startedAt: string | null;
+  endedAt: string | null;
   isRecording: boolean;
   speakersMode: boolean;
   source: { kind: string };
+  prerecordStage: "picker" | "selected";
   setInterim: (t: string) => void;
   appendFinal: (seg: unknown) => void;
   setRecording: (b: boolean) => void;
   setMicStream: (stream: MediaStream | null) => void;
+  startSession: () => void;
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
   return {
     startedAt: null,
+    endedAt: null,
     isRecording: false,
     speakersMode: false,
     source: { kind: "mic" },
+    prerecordStage: "picker",
     setInterim: vi.fn(),
     appendFinal: vi.fn(),
     setRecording: vi.fn(),
     setMicStream: vi.fn(),
+    startSession: vi.fn(),
     ...overrides,
   };
 }
@@ -314,5 +320,85 @@ describe("SessionLayout – mic guard: non-mic source", () => {
 
     expect(mockStartMic).not.toHaveBeenCalled();
     expect(mockOpenDeepgramStream).not.toHaveBeenCalled();
+  });
+});
+
+// ─── 7. Space shortcut: picker stage → no startSession ───────────────────────
+
+describe("SessionLayout – Space shortcut: picker stage", () => {
+  it("does NOT call startSession when Space pressed in picker stage", () => {
+    const store = makeStore({
+      startedAt: null,
+      prerecordStage: "picker",
+      source: { kind: "mic" },
+    });
+    mockStore(store);
+
+    render(
+      <SessionLayout>
+        <div>child</div>
+      </SessionLayout>,
+    );
+
+    fireEvent.keyDown(window, { code: "Space" });
+    expect(store.startSession).not.toHaveBeenCalled();
+  });
+
+  it("does NOT call startSession when Space pressed in picker stage with non-mic source", () => {
+    const store = makeStore({
+      startedAt: null,
+      prerecordStage: "picker",
+      source: { kind: "audio_file" },
+    });
+    mockStore(store);
+
+    render(
+      <SessionLayout>
+        <div>child</div>
+      </SessionLayout>,
+    );
+
+    fireEvent.keyDown(window, { code: "Space" });
+    expect(store.startSession).not.toHaveBeenCalled();
+  });
+});
+
+// ─── 8. Space shortcut: mic-selected stage → startSession called ──────────────
+
+describe("SessionLayout – Space shortcut: mic-selected stage", () => {
+  it("calls startSession when Space pressed in selected stage with mic source", () => {
+    const store = makeStore({
+      startedAt: null,
+      prerecordStage: "selected",
+      source: { kind: "mic" },
+    });
+    mockStore(store);
+
+    render(
+      <SessionLayout>
+        <div>child</div>
+      </SessionLayout>,
+    );
+
+    fireEvent.keyDown(window, { code: "Space" });
+    expect(store.startSession).toHaveBeenCalledOnce();
+  });
+
+  it("does NOT call startSession when Space pressed in selected stage with non-mic source", () => {
+    const store = makeStore({
+      startedAt: null,
+      prerecordStage: "selected",
+      source: { kind: "youtube" },
+    });
+    mockStore(store);
+
+    render(
+      <SessionLayout>
+        <div>child</div>
+      </SessionLayout>,
+    );
+
+    fireEvent.keyDown(window, { code: "Space" });
+    expect(store.startSession).not.toHaveBeenCalled();
   });
 });

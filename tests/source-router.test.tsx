@@ -31,6 +31,14 @@ vi.mock("@/components/session/source-picker", () => ({
 
 // ─── Mock ingest panes ────────────────────────────────────────────────────────
 
+vi.mock("@/components/session/ingest-panes/mic-prerecord-pane", () => ({
+  MicPreRecordPane: () => (
+    <div data-testid="mic-prerecord-pane">
+      <button type="button">Start a session</button>
+    </div>
+  ),
+}));
+
 vi.mock("@/components/session/ingest-panes/text-ingest-pane", () => ({
   TextIngestPane: () => <div data-testid="text-ingest-pane">TextIngestPane</div>,
 }));

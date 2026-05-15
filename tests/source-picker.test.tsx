@@ -40,7 +40,7 @@ describe("SourcePicker – card rendering", () => {
     render(<SourcePicker />);
     const img = screen.getByAltText("Yenta");
     expect(img).toBeTruthy();
-    expect((img as HTMLImageElement).src).toContain("yenta-y-mark");
+    expect(img.getAttribute("src")).toBe("/yenta-y-mark.png");
   });
 
   it("renders the headline", () => {
@@ -72,33 +72,43 @@ describe("SourcePicker – click handlers: setSource", () => {
   it("Text doc card calls setSource({ kind: 'text_doc', ... })", () => {
     render(<SourcePicker />);
     fireEvent.click(screen.getByText("Text doc").closest("button")!);
-    expect(mockSetSource).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: "text_doc" }),
-    );
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "text_doc",
+      filename: "",
+      mime: "",
+      byte_count: 0,
+    });
   });
 
   it("Audio file card calls setSource({ kind: 'audio_file', ... })", () => {
     render(<SourcePicker />);
     fireEvent.click(screen.getByText("Audio file").closest("button")!);
-    expect(mockSetSource).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: "audio_file" }),
-    );
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "audio_file",
+      blob_url: "",
+      duration_sec: 0,
+      filename: "",
+      mime: "",
+    });
   });
 
   it("YouTube card calls setSource({ kind: 'youtube', ... })", () => {
     render(<SourcePicker />);
     fireEvent.click(screen.getByText("YouTube").closest("button")!);
-    expect(mockSetSource).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: "youtube" }),
-    );
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "youtube",
+      video_id: "",
+      url: "",
+    });
   });
 
   it("Media URL card calls setSource({ kind: 'media_url', ... })", () => {
     render(<SourcePicker />);
     fireEvent.click(screen.getByText("Media URL").closest("button")!);
-    expect(mockSetSource).toHaveBeenCalledWith(
-      expect.objectContaining({ kind: "media_url" }),
-    );
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "media_url",
+      url: "",
+    });
   });
 });
 

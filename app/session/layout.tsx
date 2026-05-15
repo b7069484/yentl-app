@@ -18,6 +18,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   const startedAt = useSession((s) => s.startedAt);
   const speakersMode = useSession((s) => s.speakersMode);
   const sourceKind = useSession((s) => s.source.kind);
+  const prerecordStage = useSession((s) => s.prerecordStage);
 
   const mic = useRef<MicHandle | null>(null);
   const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
@@ -110,14 +111,18 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
       if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) return;
       e.preventDefault();
       if (!startedAt) {
-        session.startSession();
+        // Only start a mic session when the user has navigated through the picker
+        // and selected mic — otherwise Space is a no-op in pre-record state.
+        if (prerecordStage === "selected" && sourceKind === "mic") {
+          session.startSession();
+        }
       } else if (!session.endedAt) {
         session.setRecording(!session.isRecording);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [startedAt, session]);
+  }, [startedAt, prerecordStage, sourceKind, session]);
 
   return (
     <SessionShell>

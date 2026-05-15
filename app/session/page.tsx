@@ -1,6 +1,5 @@
 "use client";
 import { Suspense } from "react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { HomeOverview } from "@/components/session/home-overview";
@@ -40,12 +39,12 @@ function SessionPageInner() {
 function PreRecord({ onStart }: { onStart: () => void }) {
   return (
     <div className="px-6 pt-12 pb-12 max-w-[680px] mx-auto w-full text-center">
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/yenta-y-mark.png"
         alt="Yenta"
         width={600}
         height={340}
-        priority
         className="mx-auto mb-6 h-24 w-auto"
       />
       <h1 className="font-serif text-[28px] font-medium tracking-tight text-ink">Yenta is ready to listen.</h1>

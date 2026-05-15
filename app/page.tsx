@@ -1,16 +1,19 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col bg-cream">
       <section className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-7 px-8 py-16 text-center">
-        <Image
+        {/* Plain <img> intentionally — Next.js Image optimizer through
+            /_next/image was returning a sandboxed CSP response that some
+            browsers refused to render. The raw PNG is 1.2MB but it's the
+            only image on the landing page, so the cost is acceptable. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/yenta-y-mark.png"
           alt="Yenta"
           width={600}
           height={340}
-          priority
           className="h-32 w-auto md:h-40"
         />
 

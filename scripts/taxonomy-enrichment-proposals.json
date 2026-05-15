@@ -1,0 +1,3081 @@
+{
+  "proposals": [
+    {
+      "canonical_id": "anchoring_bias",
+      "how_to_spot": [
+        "Speaker leads with a specific number or extreme figure before any discussion of value.",
+        "Negotiations open with 'Let's start at...' framing all counteroffers around that point.",
+        "Reference to an initial price, poll, or estimate that keeps reappearing as a benchmark.",
+        "Concessions described as discounts from the first number rather than absolute amounts."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Anchoring_effect",
+          "title": "Anchoring effect",
+          "mins": 10
+        },
+        {
+          "source": "other",
+          "slug_or_path": "https://www.behavioraleconomics.com/resources/mini-encyclopedia-of-be/anchoring/",
+          "title": "BehavioralEconomics.com: Anchoring",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "framing_effect",
+        "priming",
+        "focusing_effect",
+        "status_quo_bias",
+        "loss_aversion"
+      ],
+      "wikipedia_slug": "Anchoring_effect"
+    },
+    {
+      "canonical_id": "attentional_bias",
+      "how_to_spot": [
+        "Speaker fixates on one vivid detail and circles back to it repeatedly.",
+        "Emotionally charged threats or rewards crowd out mention of base rates or context.",
+        "Other relevant facts are mentioned only briefly, then dropped.",
+        "Listener notices their own attention being pulled to a single dramatic image."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Attentional_bias",
+          "title": "Attentional bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "availability_heuristic",
+        "negativity_bias",
+        "focusing_effect",
+        "priming",
+        "affect_heuristic"
+      ]
+    },
+    {
+      "canonical_id": "group_attribution_error",
+      "how_to_spot": [
+        "'This one member did X, so they all think X' style reasoning.",
+        "A single quote or action treated as representative of an entire movement.",
+        "Phrases like 'these people' or 'that's how they are' after one example.",
+        "Group decision attributed to every individual member's personal preference."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Group_attribution_error",
+          "title": "Group attribution error",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "stereotyping",
+        "hasty_generalization",
+        "in_group_out_group_bias",
+        "fundamental_attribution_error",
+        "sweeping_generalization"
+      ]
+    },
+    {
+      "canonical_id": "groupthink",
+      "how_to_spot": [
+        "Dissent is dismissed quickly or framed as disloyalty to the team.",
+        "Decisions described as 'we all agree' without visible deliberation.",
+        "Outside critics characterized as enemies or uninformed.",
+        "Self-censorship cues: 'I didn't want to be the only one who...'",
+        "Illusion of unanimity stated as proof the decision is correct."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Groupthink",
+          "title": "Groupthink",
+          "mins": 15
+        }
+      ],
+      "related_canonical_ids": [
+        "bandwagon_effect",
+        "herd_mentality",
+        "in_group_out_group_bias",
+        "false_consensus_effect",
+        "authority_bias"
+      ]
+    },
+    {
+      "canonical_id": "status_quo_bias",
+      "how_to_spot": [
+        "'We've always done it this way' offered as a reason against change.",
+        "Change framed as risky while inaction's risks go unmentioned.",
+        "Default option presented as neutral or safe by definition.",
+        "Speaker demands extraordinary proof for change but none for continuing."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Status_quo_bias",
+          "title": "Status quo bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "loss_aversion",
+        "endowment_effect",
+        "appeal_to_tradition",
+        "sunk_cost_fallacy",
+        "mere_exposure_effect"
+      ]
+    },
+    {
+      "canonical_id": "dunning_kruger_effect",
+      "how_to_spot": [
+        "Confident pronouncements on technical topics without acknowledging complexity.",
+        "Dismissal of experts as overcomplicating 'simple' problems.",
+        "No hedging, no 'I might be wrong,' even on contested questions.",
+        "Speaker can't accurately describe counterarguments they reject."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Dunning–Kruger_effect",
+          "title": "Dunning–Kruger effect",
+          "mins": 15
+        }
+      ],
+      "related_canonical_ids": [
+        "argument_from_incredulity",
+        "appeal_to_complexity",
+        "bias_blind_spot",
+        "naive_realism",
+        "optimism_bias"
+      ],
+      "wikipedia_slug": "Dunning–Kruger_effect"
+    },
+    {
+      "canonical_id": "focusing_effect",
+      "how_to_spot": [
+        "One vivid factor (salary, weather, one feature) dominates the comparison.",
+        "Other tradeoffs mentioned only after pressing.",
+        "'Just think about X' framing that excludes equally relevant Y and Z.",
+        "Decision rationale collapses to a single dimension."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Focusing_effect",
+          "title": "Focusing effect",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "anchoring_bias",
+        "framing_effect",
+        "attentional_bias",
+        "availability_heuristic",
+        "reductive_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "framing_effect",
+      "how_to_spot": [
+        "Same statistic phrased as gain vs. loss to swing the conclusion.",
+        "'90% survival' vs '10% mortality' style reframing.",
+        "Speaker emphasizes the choice of words over the underlying numbers.",
+        "Identical policy sounds appealing or alarming depending on speaker's label."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Framing_effect_(psychology)",
+          "title": "Framing effect (psychology)",
+          "mins": 12
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "prospect-theory",
+          "title": "Prospect Theory",
+          "mins": 25
+        }
+      ],
+      "related_canonical_ids": [
+        "loaded_language",
+        "pejorative_framing",
+        "euphemism",
+        "loss_aversion",
+        "anchoring_bias"
+      ],
+      "wikipedia_slug": "Framing_effect_(psychology)"
+    },
+    {
+      "canonical_id": "hostile_attribution_bias",
+      "how_to_spot": [
+        "Ambiguous actions described as deliberate slights or attacks.",
+        "'They did that on purpose' with no evidence of intent.",
+        "Speaker assumes worst motive when innocent explanations exist.",
+        "Tone escalates quickly from minor incident to accusation of malice."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Hostile_attribution_bias",
+          "title": "Hostile attribution bias",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "fundamental_attribution_error",
+        "negativity_bias",
+        "in_group_out_group_bias",
+        "confirmation_bias",
+        "naive_realism"
+      ]
+    },
+    {
+      "canonical_id": "negativity_bias",
+      "how_to_spot": [
+        "List of nine positives gets dismissed because of one negative.",
+        "Bad news given disproportionate airtime and emotional weight.",
+        "Speaker recalls failures vividly but glosses over successes.",
+        "'Yes, but...' patterns that pivot every positive to a threat."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Negativity_bias",
+          "title": "Negativity bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "attentional_bias",
+        "availability_heuristic",
+        "appeal_to_fear",
+        "loss_aversion",
+        "affect_heuristic"
+      ]
+    },
+    {
+      "canonical_id": "priming",
+      "how_to_spot": [
+        "Speaker drops emotionally charged words early to color later neutral content.",
+        "Background imagery, music, or anecdotes set a mood before the ask.",
+        "Repeated theme words ('safety,' 'family') subtly shape interpretation.",
+        "Question wording references a concept that biases the response."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Priming_(psychology)",
+          "title": "Priming (psychology)",
+          "mins": 12
+        }
+      ],
+      "related_canonical_ids": [
+        "anchoring_bias",
+        "framing_effect",
+        "loaded_language",
+        "dog_whistles",
+        "mere_exposure_effect"
+      ],
+      "wikipedia_slug": "Priming_(psychology)"
+    },
+    {
+      "canonical_id": "availability_heuristic",
+      "how_to_spot": [
+        "Recent news story used to argue a trend without statistics.",
+        "'I keep hearing about...' as evidence of frequency.",
+        "Dramatic anecdotes substitute for base-rate data.",
+        "Risk estimated by how easily an example comes to mind."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Availability_heuristic",
+          "title": "Availability heuristic",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "anecdotal_fallacy",
+        "base_rate_neglect",
+        "hasty_generalization",
+        "attentional_bias",
+        "representativeness_heuristic"
+      ]
+    },
+    {
+      "canonical_id": "confirmation_bias",
+      "how_to_spot": [
+        "Speaker cites only sources that agree with them.",
+        "Counter-evidence dismissed quickly; supporting evidence accepted uncritically.",
+        "'See? This proves it' after one corroborating example.",
+        "Questions framed to elicit agreement rather than test the claim."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Confirmation_bias",
+          "title": "Confirmation bias",
+          "mins": 15
+        }
+      ],
+      "related_canonical_ids": [
+        "cherry_picking",
+        "belief_perseverance",
+        "backfire_effect",
+        "selection_bias"
+      ]
+    },
+    {
+      "canonical_id": "illusion_of_control",
+      "how_to_spot": [
+        "Speaker claims credit for outcomes driven largely by chance or others.",
+        "Rituals or routines treated as causally effective without evidence.",
+        "'If I just work harder, I can fix this' applied to systemic problems.",
+        "Overconfident predictions about controlling complex social or market outcomes."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Illusion_of_control",
+          "title": "Illusion of control",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "optimism_bias",
+        "dunning_kruger_effect",
+        "gamblers_fallacy_bias",
+        "self_serving_bias",
+        "outcome_bias"
+      ]
+    },
+    {
+      "canonical_id": "neglect_of_probability",
+      "how_to_spot": [
+        "Tiny risks treated as if certain ('but what if it happens?').",
+        "No mention of likelihood, only of severity.",
+        "'Even a 1% chance is too much' without cost-benefit analysis.",
+        "Emotional vividness of outcome overrides any probability estimate."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Neglect_of_probability",
+          "title": "Neglect of probability",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_fear",
+        "base_rate_neglect",
+        "availability_heuristic",
+        "affect_heuristic",
+        "slippery_slope"
+      ]
+    },
+    {
+      "canonical_id": "wishful_thinking",
+      "how_to_spot": [
+        "'I just feel like it'll work out' without supporting evidence.",
+        "Speaker dismisses obstacles as 'we'll figure it out.'",
+        "Forecasts align suspiciously with what the speaker wants.",
+        "Evidence against the desired outcome is reinterpreted or ignored."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Wishful_thinking",
+          "title": "Wishful thinking",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "optimism_bias",
+        "appeal_to_consequences",
+        "confirmation_bias",
+        "illusion_of_control",
+        "belief_perseverance"
+      ]
+    },
+    {
+      "canonical_id": "bandwagon_effect",
+      "how_to_spot": [
+        "'Everyone's doing it' or 'it's trending' used as justification.",
+        "Appeals to rising poll numbers as evidence of correctness.",
+        "Pressure to join before 'you're left behind.'",
+        "Popularity offered as the main reason to adopt a view."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Bandwagon_effect",
+          "title": "Bandwagon effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_popularity",
+        "herd_mentality",
+        "groupthink",
+        "false_consensus_effect",
+        "mere_exposure_effect"
+      ]
+    },
+    {
+      "canonical_id": "herd_mentality",
+      "how_to_spot": [
+        "Individuals defer to group view without articulating their own reasoning.",
+        "'If everyone thinks so, who am I to disagree?'",
+        "Sudden consensus shifts in lockstep with a vocal leader.",
+        "No one volunteers a contrary opinion despite obvious concerns."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Herd_mentality",
+          "title": "Herd mentality",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "bandwagon_effect",
+        "groupthink",
+        "appeal_to_popularity",
+        "authority_bias",
+        "false_consensus_effect"
+      ]
+    },
+    {
+      "canonical_id": "in_group_out_group_bias",
+      "how_to_spot": [
+        "'Us vs. them' framing throughout the argument.",
+        "Same behavior praised in allies, condemned in opponents.",
+        "Out-group members described as monolithic; in-group as nuanced.",
+        "Loyalty to the group treated as a virtue overriding evidence."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "In-group_favoritism",
+          "title": "In-group favoritism",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "stereotyping",
+        "group_attribution_error",
+        "groupthink",
+        "tu_quoque",
+        "dog_whistles"
+      ],
+      "wikipedia_slug": "In-group_favoritism"
+    },
+    {
+      "canonical_id": "stereotyping",
+      "how_to_spot": [
+        "Sweeping claims about what 'those people' think, do, or want.",
+        "Individual traits assumed from group membership alone.",
+        "Counter-examples dismissed as exceptions or 'not really one of them.'",
+        "Coded shorthand ('typical X') stands in for argument."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Stereotype",
+          "title": "Stereotype",
+          "mins": 15
+        }
+      ],
+      "related_canonical_ids": [
+        "hasty_generalization",
+        "group_attribution_error",
+        "sweeping_generalization",
+        "in_group_out_group_bias",
+        "representativeness_heuristic"
+      ],
+      "wikipedia_slug": "Stereotype"
+    },
+    {
+      "canonical_id": "false_memory",
+      "how_to_spot": [
+        "Vivid, confident recounting of details that turn out to be wrong.",
+        "Memory has acquired specifics that match later narratives, not the event.",
+        "Speaker resists correction even when shown contemporaneous records.",
+        "Story has become more coherent and dramatic with each retelling."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "False_memory",
+          "title": "False memory",
+          "mins": 12
+        }
+      ],
+      "related_canonical_ids": [
+        "misinformation_effect",
+        "rosy_retrospection",
+        "hindsight_bias",
+        "continued_influence_effect",
+        "belief_perseverance"
+      ]
+    },
+    {
+      "canonical_id": "misinformation_effect",
+      "how_to_spot": [
+        "Witness recall shifts after exposure to news coverage or others' accounts.",
+        "Leading questions ('Did you see the broken glass?') alter later testimony.",
+        "Details that weren't originally present appear in subsequent retellings.",
+        "Memory now matches the misleading source more than the original event."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Misinformation_effect",
+          "title": "Misinformation effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "false_memory",
+        "continued_influence_effect",
+        "illusory_truth_effect",
+        "priming",
+        "loaded_question"
+      ]
+    },
+    {
+      "canonical_id": "rosy_retrospection",
+      "how_to_spot": [
+        "'Back in the day everything was better' without specifics.",
+        "Past hardships minimized or omitted from the narrative.",
+        "Selective recall of pleasant moments from a mixed period.",
+        "Comparison of golden past to flawed present drives the argument."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Rosy_retrospection",
+          "title": "Rosy retrospection",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_tradition",
+        "false_memory",
+        "hindsight_bias",
+        "status_quo_bias",
+        "cherry_picking"
+      ]
+    },
+    {
+      "canonical_id": "ad_hominem",
+      "how_to_spot": [
+        "Response targets the speaker's character, motives, or appearance, not the claim.",
+        "'You would say that, because you're a...' framing.",
+        "Insults or labels replace engagement with the actual argument.",
+        "Past misdeeds raised to discredit unrelated current point."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Ad_hominem",
+          "title": "Ad hominem",
+          "mins": 10
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "fallacies",
+          "title": "Fallacies (SEP)",
+          "mins": 30
+        }
+      ],
+      "related_canonical_ids": [
+        "tu_quoque",
+        "genetic_fallacy",
+        "pejorative_framing",
+        "red_herring"
+      ]
+    },
+    {
+      "canonical_id": "non_sequitur",
+      "how_to_spot": [
+        "Conclusion introduced with 'therefore' but premises don't support it.",
+        "Topic shifts abruptly mid-argument with no logical bridge.",
+        "Listener thinks 'wait, how did we get here?'",
+        "Claim and supporting reason are about different subjects entirely."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Non_sequitur_(logic)",
+          "title": "Non sequitur (logic)",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "red_herring",
+        "false_cause",
+        "circular_reasoning",
+        "ad_lapidem",
+        "reductive_fallacy"
+      ],
+      "wikipedia_slug": "Non_sequitur_(logic)"
+    },
+    {
+      "canonical_id": "red_herring",
+      "how_to_spot": [
+        "Speaker abruptly pivots: 'But what about...' to an unrelated issue.",
+        "Original question goes unanswered while a tangential outrage is introduced.",
+        "Emotional or sensational topic appears just as pressure mounts on the original point.",
+        "Listener feels the subject changed but can't pinpoint when."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Red_herring",
+          "title": "Red herring",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "straw_man",
+        "ad_hominem",
+        "tu_quoque",
+        "gish_gallop",
+        "non_sequitur"
+      ]
+    },
+    {
+      "canonical_id": "straw_man",
+      "how_to_spot": [
+        "'So you're saying...' followed by an extreme version of the opponent's view.",
+        "The restated position is easier to mock than what was actually said.",
+        "Opponent protests 'that's not what I said' and is ignored.",
+        "Absolute words ('always', 'never', 'completely') are inserted into the rephrasing."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Straw_man",
+          "title": "Straw man",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "red_herring",
+        "ad_hominem",
+        "loaded_language",
+        "pejorative_framing",
+        "false_dilemma"
+      ]
+    },
+    {
+      "canonical_id": "anecdotal_fallacy",
+      "how_to_spot": [
+        "'I know someone who...' used to dismiss data or studies.",
+        "A vivid personal story replaces statistics in answer to a numerical question.",
+        "'My grandfather smoked and lived to 95' style counterexamples.",
+        "Single dramatic case is generalized to all cases."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Anecdotal_evidence",
+          "title": "Anecdotal evidence",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "hasty_generalization",
+        "cherry_picking",
+        "availability_heuristic",
+        "survivorship_bias",
+        "base_rate_neglect"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_ignorance",
+      "how_to_spot": [
+        "'No one has proven it's false, so it must be true.'",
+        "'You can't prove it didn't happen' as positive evidence.",
+        "Absence of disproof treated as proof.",
+        "Speaker shifts from making a claim to demanding refutation."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_from_ignorance",
+          "title": "Argument from ignorance",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "burden_of_proof_fallacy",
+        "argument_from_silence",
+        "argument_from_incredulity",
+        "appeal_to_authority",
+        "special_pleading"
+      ]
+    },
+    {
+      "canonical_id": "burden_of_proof_fallacy",
+      "how_to_spot": [
+        "'Prove me wrong' after making an extraordinary claim.",
+        "Speaker makes a positive assertion then demands you disprove it.",
+        "'Until you can show otherwise, my view stands.'",
+        "Refuses to provide evidence, instead questions skeptic's evidence."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Burden_of_proof_(philosophy)",
+          "title": "Burden of proof (philosophy)",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_ignorance",
+        "proof_by_assertion",
+        "ad_lapidem",
+        "special_pleading",
+        "argument_from_silence"
+      ]
+    },
+    {
+      "canonical_id": "cherry_picking",
+      "how_to_spot": [
+        "Only favorable studies, dates, or statistics are cited.",
+        "Counterexamples are conspicuously absent or hand-waved.",
+        "'Look at this one year/region/case' while ignoring the broader trend.",
+        "Quotes pulled from sources whose overall conclusion is opposite."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Cherry_picking",
+          "title": "Cherry picking",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "confirmation_bias",
+        "texas_sharpshooter",
+        "survivorship_bias",
+        "selection_bias",
+        "anecdotal_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "circular_reasoning",
+      "how_to_spot": [
+        "Conclusion appears, rephrased, as a premise.",
+        "'It's true because it says so' style justifications.",
+        "Definitions designed so the claim cannot be false.",
+        "Listener notices the argument loops without external evidence."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Circular_reasoning",
+          "title": "Circular reasoning",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "begging_the_question",
+        "proof_by_assertion",
+        "no_true_scotsman",
+        "stolen_concept",
+        "ad_lapidem"
+      ]
+    },
+    {
+      "canonical_id": "false_analogy",
+      "how_to_spot": [
+        "'It's just like...' linking situations that differ in key respects.",
+        "Emotionally charged comparisons (Nazis, slavery) to mundane policies.",
+        "The analogy collapses if you ask which features actually match.",
+        "Speaker resists examination of the analogy's limits."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "False_analogy",
+          "title": "False analogy",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "false_cause",
+        "hasty_generalization",
+        "reductive_fallacy",
+        "slippery_slope",
+        "composition_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "false_cause",
+      "how_to_spot": [
+        "'After X, Y happened, so X caused Y.'",
+        "Correlation presented as causation with no mechanism offered.",
+        "Alternative explanations or confounders are never mentioned.",
+        "Timing alone is the entire evidence offered."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Questionable_cause",
+          "title": "Questionable cause",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "single_cause_fallacy",
+        "texas_sharpshooter",
+        "hasty_generalization",
+        "confirmation_bias",
+        "gamblers_fallacy_bias"
+      ]
+    },
+    {
+      "canonical_id": "hasty_generalization",
+      "how_to_spot": [
+        "Broad conclusion drawn from one or two examples.",
+        "'I met two of them and they were all...'",
+        "Small or biased sample treated as representative.",
+        "'Everyone knows' following a single anecdote."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Faulty_generalization",
+          "title": "Faulty generalization",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "anecdotal_fallacy",
+        "sweeping_generalization",
+        "stereotyping",
+        "selection_bias",
+        "cherry_picking"
+      ]
+    },
+    {
+      "canonical_id": "proof_by_assertion",
+      "how_to_spot": [
+        "Same claim restated verbatim after rebuttal, with no new evidence.",
+        "Increased volume or emphasis substitutes for argument.",
+        "'It just is' or 'It's a fact' as the whole defense.",
+        "Repetition across appearances regardless of corrections."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Proof_by_assertion",
+          "title": "Proof by assertion",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "illusory_truth_effect",
+        "repetition_emphasis",
+        "ad_lapidem",
+        "circular_reasoning",
+        "begging_the_question"
+      ]
+    },
+    {
+      "canonical_id": "slippery_slope",
+      "how_to_spot": [
+        "'If we allow X, next it'll be Y, then Z, then catastrophe.'",
+        "Chain of consequences with no evidence each step follows.",
+        "Final outcome is extreme and emotionally charged.",
+        "Intermediate stopping points are dismissed as impossible."
+      ],
+      "further_reading": [
+        {
+          "source": "sep",
+          "slug_or_path": "slippery-slope-arguments",
+          "title": "Slippery Slope Arguments (SEP)",
+          "mins": 25
+        },
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Slippery_slope",
+          "title": "Slippery slope",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_fear",
+        "false_cause",
+        "false_dilemma",
+        "continuum_fallacy",
+        "appeal_to_consequences"
+      ]
+    },
+    {
+      "canonical_id": "sweeping_generalization",
+      "how_to_spot": [
+        "A general rule applied to an obvious exception.",
+        "'All X do Y' used to judge an atypical case.",
+        "Speaker resists qualifying with 'usually' or 'often'.",
+        "Rule treated as absolute regardless of context."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Accident_(fallacy)",
+          "title": "Accident (fallacy)",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "hasty_generalization",
+        "stereotyping",
+        "absolutism",
+        "division_fallacy",
+        "composition_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "excluded_middle_fallacy",
+      "how_to_spot": [
+        "Spectrum issues presented as binary.",
+        "Moderate or nuanced positions are mocked as nonexistent.",
+        "'Either you're with us or against us.'",
+        "Speaker ignores listener attempting a 'both/and' answer."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "False_dilemma",
+          "title": "False dilemma",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "false_dilemma",
+        "absolutism",
+        "middle_ground_fallacy",
+        "continuum_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "false_dilemma",
+      "how_to_spot": [
+        "'Either we do X, or Y disaster happens.'",
+        "Only two options offered when more clearly exist.",
+        "Third options are pre-emptively dismissed as unrealistic.",
+        "Forces listener to defend an unwanted side."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "False_dilemma",
+          "title": "False dilemma",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "excluded_middle_fallacy",
+        "appeal_to_fear",
+        "absolutism",
+        "loaded_question",
+        "framing_effect"
+      ]
+    },
+    {
+      "canonical_id": "sunk_cost_fallacy",
+      "how_to_spot": [
+        "'We've come too far to stop now.'",
+        "Past spending invoked to justify continued spending.",
+        "'We can't waste what we've already invested.'",
+        "Decision focuses on prior losses rather than future value."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Sunk_cost",
+          "title": "Sunk cost",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "loss_aversion",
+        "status_quo_bias",
+        "endowment_effect",
+        "appeal_to_consequences"
+      ]
+    },
+    {
+      "canonical_id": "zero_sum_fallacy",
+      "how_to_spot": [
+        "'If they win, we lose' framing with no shared upside.",
+        "Immigration, trade, or rights described as a fixed pie.",
+        "Cooperation dismissed as naive.",
+        "Any gain by another group is reported as loss to one's own."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Zero-sum_thinking",
+          "title": "Zero-sum thinking",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "in_group_out_group_bias",
+        "loss_aversion",
+        "appeal_to_fear",
+        "false_dilemma"
+      ]
+    },
+    {
+      "canonical_id": "ambiguity_fallacy",
+      "how_to_spot": [
+        "Key term subtly shifts meaning mid-argument.",
+        "Speaker exploits a phrase with two readings.",
+        "Conclusion only works under one interpretation, premise under another.",
+        "Clarification requests get deflected or muddied."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fallacy_of_ambiguity",
+          "title": "Fallacy of ambiguity",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "equivocation",
+        "vagueness",
+        "weasel_words",
+        "hedge_words",
+        "etymological_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_authority",
+      "how_to_spot": [
+        "'Dr. X says so' offered as the entire argument.",
+        "Authority cited is outside their field of expertise.",
+        "Credentials emphasized; reasoning is not.",
+        "Dissenting experts are ignored or dismissed."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_from_authority",
+          "title": "Argument from authority",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "authority_bias",
+        "halo_effect",
+        "appeal_to_popularity",
+        "galileo_gambit",
+        "bandwagon_effect"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_complexity",
+      "how_to_spot": [
+        "'It's too complicated to explain' used to end discussion.",
+        "'You wouldn't understand' as a deflection.",
+        "Speaker invokes complexity but offers no detail.",
+        "Listener is shamed for asking basic questions."
+      ],
+      "further_reading": [
+        {
+          "source": "other",
+          "slug_or_path": "https://rationalwiki.org/wiki/Argument_from_complexity",
+          "title": "Argument from complexity",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "vagueness",
+        "appeal_to_authority",
+        "weasel_words",
+        "argument_from_incredulity",
+        "curse_of_knowledge"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_emotion",
+      "how_to_spot": [
+        "Argument leans on dramatic music, imagery, or anecdote.",
+        "Logical questions are reframed as cold or heartless.",
+        "Tearful stories used in place of evidence.",
+        "Audience is roused to anger, fear, or pride at decision points."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_emotion",
+          "title": "Appeal to emotion",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_fear",
+        "appeal_to_pity",
+        "loaded_language",
+        "affect_heuristic",
+        "pejorative_framing"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_fear",
+      "how_to_spot": [
+        "Catastrophic outcomes invoked without probability.",
+        "'If we don't act, X will destroy us.'",
+        "Vivid threat imagery; vague mechanisms.",
+        "Doubt or moderation reframed as dangerous."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_fear",
+          "title": "Appeal to fear",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_emotion",
+        "false_urgency",
+        "slippery_slope",
+        "negativity_bias",
+        "appeal_to_consequences"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_nature",
+      "how_to_spot": [
+        "'It's natural' used as a moral or health endorsement.",
+        "'Unnatural' deployed as automatic condemnation.",
+        "No definition of 'natural' offered.",
+        "Arsenic-and-hemlock counterexamples ignored."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_nature",
+          "title": "Appeal to nature",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_tradition",
+        "appeal_to_purity",
+        "is_ought_fallacy",
+        "glittering_generalities",
+        "appeal_to_popularity"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_pity",
+      "how_to_spot": [
+        "Hardship stories surface when evidence is requested.",
+        "'After all I've been through...' as a logical move.",
+        "Sympathy invoked to deflect accountability.",
+        "Critics are framed as cruel for pressing the point."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_pity",
+          "title": "Appeal to pity",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_emotion",
+        "appeal_to_poverty",
+        "ad_hominem",
+        "special_pleading",
+        "appeal_to_consequences"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_poverty",
+      "how_to_spot": [
+        "'They're just regular folks, so they must be right.'",
+        "Wealth alone cited to discredit an argument.",
+        "Virtue assigned to poverty, vice to riches, with no further reasoning.",
+        "Speaker's modest background offered as evidence of correctness."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argumentum_ad_crumenam",
+          "title": "Argumentum ad crumenam / ad lazarum",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "ad_hominem",
+        "genetic_fallacy",
+        "appeal_to_pity",
+        "halo_effect",
+        "appeal_to_emotion"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_purity",
+      "how_to_spot": [
+        "Listen for 'No real X would...' or 'A true believer would never...'",
+        "Counterexamples get dismissed as not counting or being inauthentic.",
+        "The definition of the group tightens precisely when a flaw is exposed.",
+        "Speaker invokes 'genuine,' 'authentic,' or 'real' to exclude inconvenient cases."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "No_true_Scotsman",
+          "title": "No True Scotsman",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "no_true_scotsman",
+        "special_pleading",
+        "moving_the_goalposts",
+        "circular_reasoning",
+        "ambiguity_fallacy"
+      ],
+      "wikipedia_slug": "No_true_Scotsman"
+    },
+    {
+      "canonical_id": "appeal_to_tradition",
+      "how_to_spot": [
+        "Phrases like 'we've always done it this way' or 'it's tradition.'",
+        "Age or longevity is offered as the main justification, not evidence.",
+        "Proposals to change are framed as disrespectful to ancestors or heritage.",
+        "No engagement with whether the practice actually works today."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_tradition",
+          "title": "Appeal to Tradition",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "status_quo_bias",
+        "appeal_to_nature",
+        "appeal_to_popularity",
+        "appeal_to_authority",
+        "naive_realism"
+      ]
+    },
+    {
+      "canonical_id": "equivocation",
+      "how_to_spot": [
+        "A key word shifts meaning between premise and conclusion.",
+        "Watch for terms like 'natural,' 'free,' 'theory,' 'right' used loosely.",
+        "Argument seems valid only if you don't pin down definitions.",
+        "Asking 'which sense do you mean?' makes the argument collapse."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Equivocation",
+          "title": "Equivocation",
+          "mins": 7
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "fallacies",
+          "title": "Fallacies",
+          "mins": 30
+        }
+      ],
+      "related_canonical_ids": [
+        "ambiguity_fallacy",
+        "vagueness",
+        "weasel_words",
+        "etymological_fallacy",
+        "straw_man"
+      ]
+    },
+    {
+      "canonical_id": "moving_the_goalposts",
+      "how_to_spot": [
+        "After evidence is provided, speaker demands a new, stricter standard.",
+        "'Yes but what about...' followed by an entirely new criterion.",
+        "Original challenge is forgotten as the bar keeps rising.",
+        "Concessions are never accepted as settling the question."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Moving_the_goalposts",
+          "title": "Moving the Goalposts",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "special_pleading",
+        "no_true_scotsman",
+        "appeal_to_purity",
+        "belief_perseverance",
+        "backfire_effect"
+      ]
+    },
+    {
+      "canonical_id": "reductive_fallacy",
+      "how_to_spot": [
+        "'It all comes down to...' or 'the real issue is just...'",
+        "Multi-causal problems get blamed on one factor (greed, culture, genes).",
+        "Nuance and trade-offs are dismissed as overcomplicating things.",
+        "Proposed solution is a single lever for a system with many."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fallacy_of_the_single_cause",
+          "title": "Fallacy of the Single Cause",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "single_cause_fallacy",
+        "false_cause",
+        "hasty_generalization",
+        "sweeping_generalization",
+        "false_dilemma"
+      ],
+      "wikipedia_slug": "Fallacy_of_the_single_cause"
+    },
+    {
+      "canonical_id": "halo_effect",
+      "how_to_spot": [
+        "One positive trait (looks, fame, wealth) leads to praise across unrelated domains.",
+        "Speaker treats a likeable person as automatically competent or honest.",
+        "Endorsements ride on charisma rather than relevant expertise.",
+        "Criticism of the favored person feels almost taboo to voice."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Halo_effect",
+          "title": "Halo Effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "horn_effect",
+        "authority_bias",
+        "appeal_to_authority",
+        "affect_heuristic",
+        "mere_exposure_effect"
+      ]
+    },
+    {
+      "canonical_id": "horn_effect",
+      "how_to_spot": [
+        "One negative trait taints all judgments of the person.",
+        "'I don't trust anything they say' after a single unrelated misstep.",
+        "Past mistake is invoked to dismiss current valid arguments.",
+        "Speaker assumes bad motives across the board from one flaw."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Horn_effect",
+          "title": "Horn Effect",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "halo_effect",
+        "ad_hominem",
+        "genetic_fallacy",
+        "negativity_bias",
+        "hostile_attribution_bias"
+      ]
+    },
+    {
+      "canonical_id": "hindsight_bias",
+      "how_to_spot": [
+        "'I knew it all along' or 'it was obvious this would happen.'",
+        "Past uncertainty is collapsed into a clean inevitable story.",
+        "Speaker mocks decision-makers for not seeing what's clear in retrospect.",
+        "Predictions claimed after the fact, without prior record."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Hindsight_bias",
+          "title": "Hindsight Bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "outcome_bias",
+        "rosy_retrospection",
+        "survivorship_bias",
+        "confirmation_bias",
+        "curse_of_knowledge"
+      ]
+    },
+    {
+      "canonical_id": "backfire_effect",
+      "how_to_spot": [
+        "Corrections seem to entrench the person's prior view, not soften it.",
+        "Reactions become defensive or hostile when shown contrary evidence.",
+        "Speaker doubles down with stronger language right after being challenged.",
+        "Evidence is reframed as proof of the very thing it refutes."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Confirmation_bias",
+          "title": "Confirmation Bias (Backfire Effect section)",
+          "mins": 15
+        }
+      ],
+      "related_canonical_ids": [
+        "belief_perseverance",
+        "confirmation_bias",
+        "continued_influence_effect",
+        "naive_realism"
+      ],
+      "wikipedia_slug": "Backfire_effect"
+    },
+    {
+      "canonical_id": "belief_perseverance",
+      "how_to_spot": [
+        "Belief stays intact even after its original basis is debunked.",
+        "'I still feel it's true' despite acknowledging the evidence is gone.",
+        "Speaker pivots to new justifications without dropping the conclusion.",
+        "Old talking points reappear unchanged in later conversations."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Belief_perseverance",
+          "title": "Belief Perseverance",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "backfire_effect",
+        "continued_influence_effect",
+        "confirmation_bias",
+        "illusory_truth_effect",
+        "moving_the_goalposts"
+      ]
+    },
+    {
+      "canonical_id": "illusory_truth_effect",
+      "how_to_spot": [
+        "A claim feels true mainly because you've heard it many times.",
+        "Slogans and catchphrases repeated verbatim across outlets and speakers.",
+        "No new evidence offered, just familiar phrasing recycled.",
+        "Speaker treats widespread repetition as proof of accuracy."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Illusory_truth_effect",
+          "title": "Illusory Truth Effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "repetition_emphasis",
+        "mere_exposure_effect",
+        "proof_by_assertion",
+        "continued_influence_effect",
+        "availability_heuristic"
+      ]
+    },
+    {
+      "canonical_id": "continued_influence_effect",
+      "how_to_spot": [
+        "Debunked claim keeps surfacing in reasoning as if still valid.",
+        "Speaker acknowledges retraction but reaches the same conclusion anyway.",
+        "Original misinformation drives inferences, corrections don't.",
+        "'I know they retracted it, but still...' is a tell."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Misinformation_effect",
+          "title": "Misinformation Effect",
+          "mins": 8
+        },
+        {
+          "source": "other",
+          "slug_or_path": "https://journals.sagepub.com/doi/10.1177/1529100612451018",
+          "title": "Misinformation and Its Correction (Lewandowsky et al.)",
+          "mins": 30
+        }
+      ],
+      "related_canonical_ids": [
+        "misinformation_effect",
+        "belief_perseverance",
+        "backfire_effect",
+        "illusory_truth_effect",
+        "anchoring_bias"
+      ],
+      "wikipedia_slug": "Misinformation_effect"
+    },
+    {
+      "canonical_id": "loss_aversion",
+      "how_to_spot": [
+        "Pitches emphasize what you'll lose, not what you'll gain.",
+        "'Don't miss out' or 'before it's too late' framing dominates.",
+        "Costs of inaction are vivid; costs of action are minimized.",
+        "Equivalent gains and losses are treated very asymmetrically."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Loss_aversion",
+          "title": "Loss Aversion",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "framing_effect",
+        "endowment_effect",
+        "appeal_to_fear",
+        "false_urgency",
+        "status_quo_bias"
+      ]
+    },
+    {
+      "canonical_id": "endowment_effect",
+      "how_to_spot": [
+        "Owners demand far more to sell than non-owners would pay.",
+        "'It's mine, so it's worth more' attitude without market basis.",
+        "Trial periods used because once possessed, items feel essential.",
+        "Resistance to giving up something even when an upgrade is offered."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Endowment_effect",
+          "title": "Endowment Effect",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "loss_aversion",
+        "status_quo_bias",
+        "sunk_cost_fallacy",
+        "mere_exposure_effect",
+        "anchoring_bias"
+      ]
+    },
+    {
+      "canonical_id": "survivorship_bias",
+      "how_to_spot": [
+        "Examples cited are all winners; failures are invisible in the data.",
+        "'Successful people all did X' without checking unsuccessful ones.",
+        "Stories of dropouts who got rich, ignoring the many who didn't.",
+        "Conclusions drawn from what remained, not what was lost."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Survivorship_bias",
+          "title": "Survivorship Bias",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "selection_bias",
+        "cherry_picking",
+        "anecdotal_fallacy",
+        "hasty_generalization",
+        "texas_sharpshooter"
+      ]
+    },
+    {
+      "canonical_id": "selection_bias",
+      "how_to_spot": [
+        "Sample isn't random; it's whoever was easiest to ask or counted.",
+        "Online polls, self-selected respondents, or convenience samples cited as proof.",
+        "Speaker generalizes from a non-representative slice to everyone.",
+        "Missing-data questions ('who didn't show up?') are never addressed."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Selection_bias",
+          "title": "Selection Bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "survivorship_bias",
+        "cherry_picking",
+        "hasty_generalization",
+        "confirmation_bias"
+      ]
+    },
+    {
+      "canonical_id": "base_rate_neglect",
+      "how_to_spot": [
+        "Vivid case details overwhelm background statistics.",
+        "'But this person fits the profile' ignores how rare the profile actually is.",
+        "Test accuracy cited without considering how rare the condition is.",
+        "Speaker reasons from stereotype without asking 'how common is X?'"
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Base_rate_fallacy",
+          "title": "Base Rate Fallacy",
+          "mins": 12
+        }
+      ],
+      "related_canonical_ids": [
+        "representativeness_heuristic",
+        "conjunction_fallacy_bias",
+        "neglect_of_probability",
+        "availability_heuristic",
+        "anecdotal_fallacy"
+      ],
+      "wikipedia_slug": "Base_rate_fallacy"
+    },
+    {
+      "canonical_id": "conjunction_fallacy_bias",
+      "how_to_spot": [
+        "A detailed scenario is judged more likely than a simpler one.",
+        "Adding plausible-sounding details makes a claim feel more probable.",
+        "'X and Y' is rated higher than just 'X' alone.",
+        "Story coherence is mistaken for statistical likelihood."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Conjunction_fallacy",
+          "title": "Conjunction Fallacy",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "representativeness_heuristic",
+        "base_rate_neglect",
+        "neglect_of_probability",
+        "availability_heuristic"
+      ],
+      "wikipedia_slug": "Conjunction_fallacy"
+    },
+    {
+      "canonical_id": "gamblers_fallacy_bias",
+      "how_to_spot": [
+        "'It's due to happen' after a streak of opposite outcomes.",
+        "Random independent events treated as if they balance out short-term.",
+        "Roulette, coin, lottery talk: 'red has come up five times, black is next.'",
+        "Past results are invoked to predict the next independent draw."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Gambler%27s_fallacy",
+          "title": "Gambler's Fallacy",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "illusion_of_control",
+        "representativeness_heuristic",
+        "neglect_of_probability",
+        "wishful_thinking"
+      ],
+      "wikipedia_slug": "Gambler%27s_fallacy"
+    },
+    {
+      "canonical_id": "authority_bias",
+      "how_to_spot": [
+        "Claim accepted because a credentialed or famous person said it.",
+        "Titles, uniforms, or institutions invoked instead of evidence.",
+        "'Doctors say' or 'experts agree' without naming them or their reasoning.",
+        "Disagreement with authority is treated as obviously wrong."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Authority_bias",
+          "title": "Authority Bias",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_authority",
+        "halo_effect",
+        "bandwagon_effect",
+        "groupthink",
+        "appeal_to_tradition"
+      ]
+    },
+    {
+      "canonical_id": "mere_exposure_effect",
+      "how_to_spot": [
+        "Preference grows simply from repeated exposure, not new information.",
+        "Familiar brands, faces, or phrases feel inherently more trustworthy.",
+        "Speaker prefers the option they've seen most often, even arbitrarily.",
+        "Ads work via repetition rather than argument."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Mere-exposure_effect",
+          "title": "Mere-Exposure Effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "illusory_truth_effect",
+        "repetition_emphasis",
+        "priming",
+        "halo_effect",
+        "status_quo_bias"
+      ],
+      "wikipedia_slug": "Mere-exposure_effect"
+    },
+    {
+      "canonical_id": "false_consensus_effect",
+      "how_to_spot": [
+        "'Everyone I know thinks...' projected onto the whole population.",
+        "Speaker assumes their views are common sense or majority position.",
+        "Surprise or contempt when others disagree, as if disagreement is fringe.",
+        "No actual polling cited, just personal social circle."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "False_consensus_effect",
+          "title": "False Consensus Effect",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "naive_realism",
+        "in_group_out_group_bias",
+        "bandwagon_effect",
+        "appeal_to_popularity",
+        "groupthink"
+      ]
+    },
+    {
+      "canonical_id": "just_world_hypothesis",
+      "how_to_spot": [
+        "Victims are blamed for somehow deserving their misfortune.",
+        "'They must have done something' or 'everything happens for a reason.'",
+        "Success is treated as proof of virtue; suffering as proof of vice.",
+        "Speaker resists structural or random explanations of bad outcomes."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Just-world_hypothesis",
+          "title": "Just-World Hypothesis",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "fundamental_attribution_error",
+        "self_serving_bias",
+        "outcome_bias",
+        "hindsight_bias",
+        "stereotyping"
+      ]
+    },
+    {
+      "canonical_id": "self_serving_bias",
+      "how_to_spot": [
+        "Successes claimed as personal skill; failures blamed on circumstances.",
+        "'I earned it' for wins, 'the system was rigged' for losses.",
+        "Credit-taking is generous; blame-taking is rare.",
+        "Same outcome interpreted differently depending on who achieved it."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Self-serving_bias",
+          "title": "Self-Serving Bias",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "fundamental_attribution_error",
+        "optimism_bias",
+        "dunning_kruger_effect",
+        "bias_blind_spot",
+        "just_world_hypothesis"
+      ]
+    },
+    {
+      "canonical_id": "fundamental_attribution_error",
+      "how_to_spot": [
+        "Others' bad behavior blamed on character; one's own on situation.",
+        "'They're lazy' vs 'I was overwhelmed' for the same lateness.",
+        "Context and constraints ignored when judging strangers.",
+        "Quick personality labels assigned from single incidents."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fundamental_attribution_error",
+          "title": "Fundamental Attribution Error",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "self_serving_bias",
+        "hostile_attribution_bias",
+        "group_attribution_error",
+        "naive_realism",
+        "stereotyping"
+      ]
+    },
+    {
+      "canonical_id": "naive_realism",
+      "how_to_spot": [
+        "Speaker assumes anyone reasonable would see things their way.",
+        "Phrases like 'it's just obvious' or 'open your eyes' appear.",
+        "Disagreement is attributed to bias, ignorance, or bad faith.",
+        "Treats their perception as direct truth, not interpretation.",
+        "Dismisses alternate framings without engaging their substance."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Naïve_realism_(psychology)",
+          "title": "Naïve realism (psychology)",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "bias_blind_spot",
+        "false_consensus_effect",
+        "fundamental_attribution_error",
+        "confirmation_bias",
+        "curse_of_knowledge"
+      ],
+      "wikipedia_slug": "Naïve_realism_(psychology)"
+    },
+    {
+      "canonical_id": "bias_blind_spot",
+      "how_to_spot": [
+        "Speaker claims to be uniquely objective or 'just following facts.'",
+        "Accuses opponents of bias while exempting themselves.",
+        "Says 'I'm not emotional, you are' or similar.",
+        "Frames own views as neutral and others' as ideological.",
+        "Resists self-examination when bias is suggested."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Bias_blind_spot",
+          "title": "Bias blind spot",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "naive_realism",
+        "confirmation_bias",
+        "self_serving_bias",
+        "fundamental_attribution_error",
+        "belief_perseverance"
+      ]
+    },
+    {
+      "canonical_id": "outcome_bias",
+      "how_to_spot": [
+        "Decision judged solely by how it turned out, not the reasoning.",
+        "'It worked, so it was the right call' regardless of risk.",
+        "Hindsight phrasing like 'look at the results' dominates.",
+        "Ignores probabilities known at the time of choice.",
+        "Praises lucky gambles or condemns sound but unlucky decisions."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Outcome_bias",
+          "title": "Outcome bias",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "hindsight_bias",
+        "survivorship_bias",
+        "texas_sharpshooter",
+        "base_rate_neglect",
+        "neglect_of_probability"
+      ]
+    },
+    {
+      "canonical_id": "optimism_bias",
+      "how_to_spot": [
+        "Speaker assumes best-case scenarios will materialize.",
+        "Risks acknowledged then dismissed as unlikely to affect 'us.'",
+        "Phrases like 'it'll work out' without specific evidence.",
+        "Timelines and budgets sound implausibly favorable.",
+        "Counterexamples are treated as exceptional, not warning signs."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Optimism_bias",
+          "title": "Optimism bias",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "wishful_thinking",
+        "illusion_of_control",
+        "dunning_kruger_effect",
+        "survivorship_bias"
+      ]
+    },
+    {
+      "canonical_id": "affect_heuristic",
+      "how_to_spot": [
+        "Judgments track gut feelings about a topic, not its facts.",
+        "'It just feels wrong' substitutes for analysis.",
+        "Strong emotional language replaces probability or evidence.",
+        "Risks downplayed for liked things, exaggerated for disliked ones.",
+        "Quick verdicts arrive before details are examined."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Affect_heuristic",
+          "title": "Affect heuristic",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_emotion",
+        "availability_heuristic",
+        "appeal_to_fear",
+        "negativity_bias",
+        "halo_effect"
+      ]
+    },
+    {
+      "canonical_id": "representativeness_heuristic",
+      "how_to_spot": [
+        "Judgments based on how typical something 'seems' of a category.",
+        "Stereotype-fit overrides base rates or statistics.",
+        "'He looks like a...' or 'this sounds like a classic...' phrasing.",
+        "Vivid descriptions outweigh boring probabilities.",
+        "Ignores how common categories actually are in population."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Representativeness_heuristic",
+          "title": "Representativeness heuristic",
+          "mins": 10
+        }
+      ],
+      "related_canonical_ids": [
+        "base_rate_neglect",
+        "conjunction_fallacy_bias",
+        "stereotyping",
+        "availability_heuristic",
+        "hasty_generalization"
+      ]
+    },
+    {
+      "canonical_id": "spotlight_effect",
+      "how_to_spot": [
+        "Speaker overestimates how much others notice them.",
+        "'Everyone saw' or 'everyone's talking about' minor incidents.",
+        "Embarrassment treated as universally observed.",
+        "Assumes audience is tracking small details about them.",
+        "Anxiety about appearance disproportionate to actual scrutiny."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Spotlight_effect",
+          "title": "Spotlight effect",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "false_consensus_effect",
+        "curse_of_knowledge",
+        "availability_heuristic",
+        "focusing_effect",
+        "attentional_bias"
+      ]
+    },
+    {
+      "canonical_id": "curse_of_knowledge",
+      "how_to_spot": [
+        "Expert assumes listeners share their background knowledge.",
+        "Jargon used without definition; 'obviously' peppers explanation.",
+        "Skips steps that seem trivial to speaker but aren't.",
+        "Frustration when audience asks 'basic' questions.",
+        "Hard to imagine not knowing what they know."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Curse_of_knowledge",
+          "title": "Curse of knowledge",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "false_consensus_effect",
+        "naive_realism",
+        "hindsight_bias",
+        "appeal_to_complexity",
+        "spotlight_effect"
+      ]
+    },
+    {
+      "canonical_id": "tu_quoque",
+      "how_to_spot": [
+        "Response to criticism is 'but what about you/them?'",
+        "'Whataboutism' deflects rather than addresses the claim.",
+        "Past hypocrisy of accuser cited as if it answers the charge.",
+        "No engagement with original argument's merits.",
+        "Shifts focus to opponent's character or record."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Tu_quoque",
+          "title": "Tu quoque",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "ad_hominem",
+        "red_herring",
+        "genetic_fallacy",
+        "fallacy_fallacy",
+        "non_sequitur"
+      ]
+    },
+    {
+      "canonical_id": "no_true_scotsman",
+      "how_to_spot": [
+        "Counterexample dismissed by redefining the category.",
+        "'No real X would do that' appears after a real X did.",
+        "Definition tightens conveniently mid-argument.",
+        "Group purity invoked to exclude inconvenient members.",
+        "Membership criteria shift to protect a generalization."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "No_true_Scotsman",
+          "title": "No true Scotsman",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_purity",
+        "moving_the_goalposts",
+        "special_pleading",
+        "ambiguity_fallacy",
+        "equivocation"
+      ]
+    },
+    {
+      "canonical_id": "composition_fallacy",
+      "how_to_spot": [
+        "Property of parts assumed to apply to the whole.",
+        "'Each player is great, so the team is great.'",
+        "Individual statistics extrapolated to group-level claims.",
+        "Ignores emergent or interactive effects.",
+        "Aggregation treated as simple addition."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fallacy_of_composition",
+          "title": "Fallacy of composition",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "division_fallacy",
+        "hasty_generalization",
+        "sweeping_generalization",
+        "false_analogy",
+        "reductive_fallacy"
+      ],
+      "wikipedia_slug": "Fallacy_of_composition"
+    },
+    {
+      "canonical_id": "division_fallacy",
+      "how_to_spot": [
+        "Property of whole assumed to apply to each part.",
+        "'The team is great, so every player must be great.'",
+        "Group averages applied to individuals.",
+        "Stereotypes derived from aggregate group traits.",
+        "Ignores variation within the whole."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fallacy_of_division",
+          "title": "Fallacy of division",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "composition_fallacy",
+        "stereotyping",
+        "group_attribution_error",
+        "sweeping_generalization",
+        "hasty_generalization"
+      ],
+      "wikipedia_slug": "Fallacy_of_division"
+    },
+    {
+      "canonical_id": "genetic_fallacy",
+      "how_to_spot": [
+        "Claim dismissed based on its source, not its content.",
+        "'That came from [bad outlet], so it's wrong.'",
+        "Origin of an idea conflated with its truth value.",
+        "History of a concept used to discredit current use.",
+        "No engagement with the actual evidence presented."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Genetic_fallacy",
+          "title": "Genetic fallacy",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "ad_hominem",
+        "tu_quoque",
+        "etymological_fallacy",
+        "appeal_to_authority"
+      ]
+    },
+    {
+      "canonical_id": "loaded_question",
+      "how_to_spot": [
+        "Question presupposes a disputed or unproven fact.",
+        "'Have you stopped...' style framing traps any answer.",
+        "Any direct answer concedes the hidden premise.",
+        "Yes/no demanded where premise itself needs challenging.",
+        "Often used in interrogation or gotcha journalism."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Loaded_question",
+          "title": "Loaded question",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "plurium_interrogationum",
+        "begging_the_question",
+        "framing_effect",
+        "false_dilemma"
+      ]
+    },
+    {
+      "canonical_id": "begging_the_question",
+      "how_to_spot": [
+        "Conclusion is assumed within the premises.",
+        "Argument restates claim in different words as 'proof.'",
+        "'X is true because X.' circularity, often disguised.",
+        "Key disputed term defined to guarantee the conclusion.",
+        "No independent evidence offered for the contested point."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Begging_the_question",
+          "title": "Begging the question",
+          "mins": 8
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "fallacies",
+          "title": "Fallacies",
+          "mins": 30
+        }
+      ],
+      "related_canonical_ids": [
+        "circular_reasoning",
+        "proof_by_assertion",
+        "loaded_question",
+        "ambiguity_fallacy",
+        "stolen_concept"
+      ]
+    },
+    {
+      "canonical_id": "appeal_to_popularity",
+      "how_to_spot": [
+        "'Everyone believes/does it' offered as evidence.",
+        "Polls or trends cited as if proving truth.",
+        "'Millions can't be wrong' framing.",
+        "Social consensus substituted for empirical support.",
+        "Pressure to conform rather than to evaluate."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argumentum_ad_populum",
+          "title": "Argumentum ad populum",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "bandwagon_effect",
+        "herd_mentality",
+        "appeal_to_tradition",
+        "appeal_to_authority",
+        "false_consensus_effect"
+      ],
+      "wikipedia_slug": "Argumentum_ad_populum"
+    },
+    {
+      "canonical_id": "appeal_to_consequences",
+      "how_to_spot": [
+        "Claim judged true/false by desirability of implications.",
+        "'If that were true, it would be terrible, so it isn't.'",
+        "Wishful or fearful inference replaces evidence.",
+        "Conflates 'should be' with 'is.'",
+        "Often paired with emotional or moral stakes."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Appeal_to_consequences",
+          "title": "Appeal to consequences",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "wishful_thinking",
+        "appeal_to_emotion",
+        "appeal_to_fear",
+        "is_ought_fallacy",
+        "just_world_hypothesis"
+      ]
+    },
+    {
+      "canonical_id": "texas_sharpshooter",
+      "how_to_spot": [
+        "Pattern is drawn around cherry-picked data points.",
+        "Clusters in random data presented as meaningful.",
+        "Hypothesis defined after seeing the results.",
+        "Hits emphasized; misses quietly ignored.",
+        "Post-hoc explanations claim predictive power."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Texas_sharpshooter_fallacy",
+          "title": "Texas sharpshooter fallacy",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "cherry_picking",
+        "confirmation_bias",
+        "survivorship_bias",
+        "hindsight_bias",
+        "selection_bias"
+      ],
+      "wikipedia_slug": "Texas_sharpshooter_fallacy"
+    },
+    {
+      "canonical_id": "gish_gallop",
+      "how_to_spot": [
+        "Rapid-fire flood of claims, too many to rebut.",
+        "Quantity of arguments substitutes for quality.",
+        "Topic shifts before any point can be examined.",
+        "Refutations dismissed as 'cherry-picking' from the flood.",
+        "Listener feels overwhelmed, not informed."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Gish_gallop",
+          "title": "Gish gallop",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "proof_by_assertion",
+        "red_herring",
+        "moving_the_goalposts",
+        "cherry_picking",
+        "appeal_to_complexity"
+      ]
+    },
+    {
+      "canonical_id": "galileo_gambit",
+      "how_to_spot": [
+        "Speaker compares self to persecuted geniuses.",
+        "'They laughed at Galileo too' defense of fringe view.",
+        "Rejection by experts treated as evidence of being right.",
+        "Martyrdom framing replaces engagement with critiques.",
+        "No mention that most ridiculed ideas were simply wrong."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Galileo_gambit",
+          "title": "Galileo gambit",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_authority",
+        "special_pleading",
+        "argument_from_incredulity",
+        "ad_hominem"
+      ]
+    },
+    {
+      "canonical_id": "argument_from_incredulity",
+      "how_to_spot": [
+        "'I can't imagine how X, therefore not X.'",
+        "Personal disbelief offered as evidence against a claim.",
+        "'It just doesn't make sense to me' ends the inquiry.",
+        "Complexity of explanation treated as implausibility.",
+        "Lack of understanding conflated with impossibility."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_from_incredulity",
+          "title": "Argument from incredulity",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_ignorance",
+        "argument_from_silence",
+        "appeal_to_complexity",
+        "dunning_kruger_effect",
+        "appeal_to_nature"
+      ]
+    },
+    {
+      "canonical_id": "argument_from_silence",
+      "how_to_spot": [
+        "Absence of mention treated as proof of absence.",
+        "'If it happened, someone would have said so.'",
+        "Gaps in historical record used as positive evidence.",
+        "Ignores reasons evidence might be missing.",
+        "Silence interpreted to fit speaker's preferred conclusion."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_from_silence",
+          "title": "Argument from silence",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_ignorance",
+        "argument_from_incredulity",
+        "cherry_picking",
+        "selection_bias",
+        "burden_of_proof_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "middle_ground_fallacy",
+      "how_to_spot": [
+        "Compromise position assumed correct by default.",
+        "'The truth is somewhere in the middle' without analysis.",
+        "Splits difference between well-supported and fringe claims.",
+        "False balance between unequal evidence.",
+        "Avoids judging which side is actually correct."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_to_moderation",
+          "title": "Argument to moderation",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "false_dilemma",
+        "false_analogy",
+        "appeal_to_popularity",
+        "continuum_fallacy",
+        "excluded_middle_fallacy"
+      ],
+      "wikipedia_slug": "Argument_to_moderation"
+    },
+    {
+      "canonical_id": "special_pleading",
+      "how_to_spot": [
+        "Exception invoked for one's own case without justification.",
+        "'That rule doesn't apply here because...' with weak reason.",
+        "Standards applied to others are waived for self/allies.",
+        "Ad hoc rescues protect a claim from counterexamples.",
+        "Asymmetric scrutiny between favored and disfavored cases."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Special_pleading",
+          "title": "Special pleading",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "moving_the_goalposts",
+        "no_true_scotsman",
+        "self_serving_bias"
+      ]
+    },
+    {
+      "canonical_id": "fallacy_fallacy",
+      "how_to_spot": [
+        "Speaker rejects a conclusion because the argument was flawed.",
+        "'You used a fallacy, so you're wrong' regardless of evidence.",
+        "Confuses bad argument with false conclusion.",
+        "Used to dismiss inconvenient claims via technicality.",
+        "No engagement with whether conclusion might still be true."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argument_from_fallacy",
+          "title": "Argument from fallacy",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "tu_quoque",
+        "genetic_fallacy",
+        "ad_hominem",
+        "non_sequitur",
+        "red_herring"
+      ],
+      "wikipedia_slug": "Argument_from_fallacy"
+    },
+    {
+      "canonical_id": "continuum_fallacy",
+      "how_to_spot": [
+        "Speaker claims no meaningful distinction exists because the line is fuzzy.",
+        "Listen for 'where do you draw the line?' as a rhetorical dismissal.",
+        "Two clearly different cases equated by citing intermediate gray-area examples.",
+        "Argument hinges on absence of a precise threshold rather than substantive difference."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Continuum_fallacy",
+          "title": "Continuum fallacy",
+          "mins": 5
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "sorites-paradox",
+          "title": "Sorites Paradox",
+          "mins": 25
+        }
+      ],
+      "related_canonical_ids": [
+        "false_dilemma",
+        "excluded_middle_fallacy",
+        "middle_ground_fallacy",
+        "ambiguity_fallacy",
+        "vagueness",
+        "slippery_slope"
+      ]
+    },
+    {
+      "canonical_id": "single_cause_fallacy",
+      "how_to_spot": [
+        "Complex outcome attributed to one factor: 'the real reason is…'",
+        "Other contributing causes dismissed or never mentioned.",
+        "Phrases like 'it all comes down to' or 'the one thing that caused this'.",
+        "Multi-variable problems reduced to a single villain or hero."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Fallacy_of_the_single_cause",
+          "title": "Fallacy of the single cause",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "reductive_fallacy",
+        "false_cause",
+        "cherry_picking",
+        "hasty_generalization",
+        "texas_sharpshooter",
+        "focusing_effect"
+      ]
+    },
+    {
+      "canonical_id": "is_ought_fallacy",
+      "how_to_spot": [
+        "Jumping from a factual description to a moral prescription with no bridging premise.",
+        "'It's natural, therefore it's good/right' constructions.",
+        "'That's just how it is' used to justify a policy.",
+        "Statistical norms invoked as ethical norms."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Is–ought_problem",
+          "title": "Is–ought problem",
+          "mins": 12
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "hume-moral",
+          "title": "Hume's Moral Philosophy",
+          "mins": 30
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_nature",
+        "appeal_to_tradition",
+        "appeal_to_consequences",
+        "status_quo_bias",
+        "stolen_concept"
+      ],
+      "wikipedia_slug": "Is%E2%80%93ought_problem"
+    },
+    {
+      "canonical_id": "reification_fallacy",
+      "how_to_spot": [
+        "Abstract concepts treated as if they were physical agents that act or want.",
+        "'The market decided', 'science says', 'history demands'.",
+        "Statistics or averages spoken of as real entities with intentions.",
+        "Metaphors quietly converted into literal causes."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Reification_(fallacy)",
+          "title": "Reification (fallacy)",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "equivocation",
+        "ambiguity_fallacy",
+        "appeal_to_authority",
+        "vagueness",
+        "loaded_language",
+        "stolen_concept"
+      ],
+      "wikipedia_slug": "Reification_(fallacy)"
+    },
+    {
+      "canonical_id": "plurium_interrogationum",
+      "how_to_spot": [
+        "A single question smuggles in multiple claims requiring different answers.",
+        "Any yes/no answer concedes a hidden premise.",
+        "'Do you support X and Y?' bundled as one item.",
+        "Refusing to answer is framed as evasion."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Loaded_question",
+          "title": "Loaded question",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "loaded_question",
+        "begging_the_question",
+        "false_dilemma",
+        "straw_man",
+        "framing_effect"
+      ],
+      "wikipedia_slug": "Loaded_question"
+    },
+    {
+      "canonical_id": "ad_lapidem",
+      "how_to_spot": [
+        "Claim dismissed as 'absurd' or 'ridiculous' with no counter-argument given.",
+        "Eye-rolls, scoffs, 'that's just stupid' substituted for refutation.",
+        "Speaker labels position rather than engaging its reasoning.",
+        "Common in TV pundit dunks and dismissive tweets."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Argumentum_ad_lapidem",
+          "title": "Argumentum ad lapidem",
+          "mins": 4
+        }
+      ],
+      "related_canonical_ids": [
+        "ad_hominem",
+        "appeal_to_ignorance",
+        "proof_by_assertion",
+        "argument_from_incredulity",
+        "pejorative_framing",
+        "dysphemism"
+      ]
+    },
+    {
+      "canonical_id": "stolen_concept",
+      "how_to_spot": [
+        "Speaker uses a concept while denying what makes that concept possible.",
+        "'There is no truth' — a claim presented as true.",
+        "'All property is theft' — theft presupposes property.",
+        "Self-undermining statements that rely on what they reject."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Stolen_concept",
+          "title": "Stolen concept",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "circular_reasoning",
+        "begging_the_question",
+        "equivocation",
+        "reification_fallacy",
+        "is_ought_fallacy",
+        "ambiguity_fallacy"
+      ]
+    },
+    {
+      "canonical_id": "etymological_fallacy",
+      "how_to_spot": [
+        "Argument hinges on a word's ancient or original meaning over current usage.",
+        "'The word literally means…' used to override how everyone uses it today.",
+        "Greek/Latin roots invoked to redefine modern terms.",
+        "Dictionary archaeology substituted for substantive argument."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Etymological_fallacy",
+          "title": "Etymological fallacy",
+          "mins": 4
+        }
+      ],
+      "related_canonical_ids": [
+        "equivocation",
+        "ambiguity_fallacy",
+        "genetic_fallacy",
+        "appeal_to_tradition",
+        "no_true_scotsman",
+        "appeal_to_purity"
+      ]
+    },
+    {
+      "canonical_id": "loaded_language",
+      "how_to_spot": [
+        "Word choice carries strong emotional charge beyond neutral description.",
+        "'Regime' vs 'government', 'slaughter' vs 'killed', 'crusade' vs 'campaign'.",
+        "Adjectives doing argumentative work: 'reckless', 'brave', 'so-called'.",
+        "Same facts could be stated neutrally but aren't."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Loaded_language",
+          "title": "Loaded language",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "pejorative_framing",
+        "euphemism",
+        "dysphemism",
+        "appeal_to_emotion",
+        "framing_effect",
+        "glittering_generalities"
+      ]
+    },
+    {
+      "canonical_id": "weasel_words",
+      "how_to_spot": [
+        "'Some say', 'many believe', 'experts agree' with no source named.",
+        "Passive constructions hiding who is making the claim.",
+        "'It is widely thought that…' inserted before a contested assertion.",
+        "Quantifier with no number behind it."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Weasel_word",
+          "title": "Weasel word",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "vagueness",
+        "imprecise_quantifiers",
+        "hedge_words",
+        "appeal_to_popularity",
+        "appeal_to_authority"
+      ],
+      "wikipedia_slug": "Weasel_word"
+    },
+    {
+      "canonical_id": "false_urgency",
+      "how_to_spot": [
+        "'Act now or lose this forever' framing without justification for the deadline.",
+        "Countdown timers, 'last chance', 'only today' pressure tactics.",
+        "Decision time artificially compressed to prevent reflection.",
+        "Hesitation framed as failure or disaster."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Scarcity_(social_psychology)",
+          "title": "Scarcity (social psychology)",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "appeal_to_fear",
+        "loss_aversion",
+        "appeal_to_emotion",
+        "appeal_to_consequences",
+        "slippery_slope",
+        "anchoring_bias"
+      ],
+      "wikipedia_slug": "Scarcity_(social_psychology)"
+    },
+    {
+      "canonical_id": "absolutism",
+      "how_to_spot": [
+        "'Always', 'never', 'every', 'no one' applied to messy real-world claims.",
+        "Categorical phrasing leaves no room for exceptions.",
+        "Single counter-example would refute, yet none acknowledged.",
+        "Often paired with moral certainty in tone."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Faulty_generalization",
+          "title": "Faulty generalization",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "sweeping_generalization",
+        "hasty_generalization",
+        "no_true_scotsman",
+        "false_dilemma",
+        "excluded_middle_fallacy",
+        "appeal_to_purity"
+      ]
+    },
+    {
+      "canonical_id": "vagueness",
+      "how_to_spot": [
+        "Key terms left undefined while heavy conclusions drawn from them.",
+        "'Things will improve', 'we'll handle it', 'change is coming'.",
+        "Hand-waving over specifics: 'the details will work themselves out'.",
+        "Audience fills in their own meaning, often differently."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Vagueness",
+          "title": "Vagueness",
+          "mins": 8
+        },
+        {
+          "source": "sep",
+          "slug_or_path": "vagueness",
+          "title": "Vagueness",
+          "mins": 25
+        }
+      ],
+      "related_canonical_ids": [
+        "weasel_words",
+        "glittering_generalities",
+        "hedge_words",
+        "imprecise_quantifiers",
+        "ambiguity_fallacy",
+        "equivocation"
+      ]
+    },
+    {
+      "canonical_id": "glittering_generalities",
+      "how_to_spot": [
+        "Vague virtue words: 'freedom', 'family values', 'progress', 'common sense'.",
+        "Terms everyone applauds but no one defines the same way.",
+        "Used to brand a position without committing to specifics.",
+        "Substantive policy detail conspicuously absent."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Glittering_generality",
+          "title": "Glittering generality",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "vagueness",
+        "loaded_language",
+        "weasel_words",
+        "appeal_to_emotion",
+        "dog_whistles",
+        "code_words"
+      ],
+      "wikipedia_slug": "Glittering_generality"
+    },
+    {
+      "canonical_id": "dog_whistles",
+      "how_to_spot": [
+        "Ordinary-sounding phrases that signal a coded meaning to an in-group.",
+        "Deniable on the surface but recognized by target audience.",
+        "Numbers, names, or terms that map onto specific ideologies.",
+        "Outsider confusion contrasts with insider knowing nods."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Dog_whistle_(politics)",
+          "title": "Dog whistle (politics)",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "code_words",
+        "innuendo",
+        "euphemism",
+        "loaded_language",
+        "in_group_out_group_bias",
+        "pejorative_framing"
+      ],
+      "wikipedia_slug": "Dog_whistle_(politics)"
+    },
+    {
+      "canonical_id": "innuendo",
+      "how_to_spot": [
+        "Implication delivered without explicit claim — 'I'm just asking questions'.",
+        "'I'm not saying X, but…' followed by suggesting X.",
+        "Suggestive juxtaposition leaves listener to draw the slur.",
+        "Deniability built into the phrasing."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Innuendo",
+          "title": "Innuendo",
+          "mins": 4
+        }
+      ],
+      "related_canonical_ids": [
+        "dog_whistles",
+        "loaded_question",
+        "weasel_words",
+        "pejorative_framing",
+        "ad_hominem",
+        "code_words"
+      ]
+    },
+    {
+      "canonical_id": "repetition_emphasis",
+      "how_to_spot": [
+        "Same phrase or claim repeated across a speech with little new evidence.",
+        "Slogans hammered: 'Build the wall, build the wall'.",
+        "Repetition substitutes for argument or proof.",
+        "Familiarity grows; truth-feeling rises without scrutiny."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Illusory_truth_effect",
+          "title": "Illusory truth effect",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "illusory_truth_effect",
+        "mere_exposure_effect",
+        "proof_by_assertion",
+        "bandwagon_effect",
+        "priming",
+        "continued_influence_effect"
+      ],
+      "wikipedia_slug": "Illusory_truth_effect"
+    },
+    {
+      "canonical_id": "pejorative_framing",
+      "how_to_spot": [
+        "Opponents labeled with derogatory tags before their views are described.",
+        "'Radical', 'extremist', 'fanatic' attached as default modifiers.",
+        "Group described in terms that pre-load disgust or contempt.",
+        "Same behavior framed positively for allies, negatively for opponents."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Framing_(social_sciences)",
+          "title": "Framing (social sciences)",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "loaded_language",
+        "dysphemism",
+        "ad_hominem",
+        "framing_effect",
+        "in_group_out_group_bias",
+        "straw_man"
+      ],
+      "wikipedia_slug": "Framing_(social_sciences)"
+    },
+    {
+      "canonical_id": "euphemism",
+      "how_to_spot": [
+        "Harsh realities softened: 'collateral damage', 'enhanced interrogation'.",
+        "Bureaucratic phrasing replaces vivid description.",
+        "Listeners feel less, despite the same underlying facts.",
+        "Common in PR, military, and corporate layoff language."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Euphemism",
+          "title": "Euphemism",
+          "mins": 7
+        }
+      ],
+      "related_canonical_ids": [
+        "dysphemism",
+        "loaded_language",
+        "weasel_words",
+        "vagueness",
+        "framing_effect",
+        "pejorative_framing"
+      ]
+    },
+    {
+      "canonical_id": "dysphemism",
+      "how_to_spot": [
+        "Neutral things described in maximally harsh terms.",
+        "'Death tax' for estate tax, 'baby killer' for opponent.",
+        "Word choice designed to provoke disgust or anger.",
+        "Often paired symmetrically with euphemisms for one's own side."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Dysphemism",
+          "title": "Dysphemism",
+          "mins": 5
+        }
+      ],
+      "related_canonical_ids": [
+        "euphemism",
+        "loaded_language",
+        "pejorative_framing",
+        "ad_hominem",
+        "appeal_to_emotion",
+        "framing_effect"
+      ]
+    },
+    {
+      "canonical_id": "imprecise_quantifiers",
+      "how_to_spot": [
+        "'Many', 'most', 'a lot of', 'a few' used without numbers.",
+        "Quantity claims that resist verification.",
+        "'A growing number', 'an increasing trend' — relative to what?",
+        "Shifts in scale hidden by elastic words."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Weasel_word",
+          "title": "Weasel word",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "weasel_words",
+        "vagueness",
+        "hedge_words",
+        "hasty_generalization",
+        "base_rate_neglect",
+        "cherry_picking"
+      ],
+      "wikipedia_slug": "Weasel_word"
+    },
+    {
+      "canonical_id": "hedge_words",
+      "how_to_spot": [
+        "'Might', 'could', 'possibly', 'arguably' soften commitment to nothing.",
+        "Strong implication delivered, plausible deniability retained.",
+        "Speaker can later say 'I only said it might be true'.",
+        "Hedges stack: 'it could possibly perhaps be the case'."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Hedge_(linguistics)",
+          "title": "Hedge (linguistics)",
+          "mins": 6
+        }
+      ],
+      "related_canonical_ids": [
+        "weasel_words",
+        "vagueness",
+        "innuendo",
+        "imprecise_quantifiers",
+        "moving_the_goalposts",
+        "equivocation"
+      ],
+      "wikipedia_slug": "Hedge_(linguistics)"
+    },
+    {
+      "canonical_id": "code_words",
+      "how_to_spot": [
+        "Innocuous-sounding terms function as in-group identity markers.",
+        "'Urban', 'globalist', 'states' rights' carry encoded meanings.",
+        "Surface meaning differs from understood meaning in context.",
+        "Plausible deniability for the speaker, recognition for the audience."
+      ],
+      "further_reading": [
+        {
+          "source": "wikipedia",
+          "slug_or_path": "Dog_whistle_(politics)",
+          "title": "Dog whistle (politics)",
+          "mins": 8
+        }
+      ],
+      "related_canonical_ids": [
+        "dog_whistles",
+        "euphemism",
+        "innuendo",
+        "loaded_language",
+        "in_group_out_group_bias",
+        "glittering_generalities"
+      ],
+      "wikipedia_slug": "Dog_whistle_(politics)"
+    }
+  ]
+}

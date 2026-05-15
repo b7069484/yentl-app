@@ -6,7 +6,35 @@
     "display": "Anchoring Bias",
     "definition": "Relying heavily on the first piece of information (the \"anchor\") when making decisions or forming opinions.",
     "example": "Upon hearing an antisemitic remark from a trusted friend or family member early in life, a person may anchor to this perspective, allowing it to color their perceptions of Jewish individuals and communities, despite later learning contradictory information.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Speaker leads with a specific number or extreme figure before any discussion of value.",
+      "Negotiations open with 'Let's start at...' framing all counteroffers around that point.",
+      "Reference to an initial price, poll, or estimate that keeps reappearing as a benchmark.",
+      "Concessions described as discounts from the first number rather than absolute amounts."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Anchoring_effect",
+        "title": "Anchoring effect",
+        "mins": 10
+      },
+      {
+        "source": "other",
+        "slug_or_path": "https://www.behavioraleconomics.com/resources/mini-encyclopedia-of-be/anchoring/",
+        "title": "BehavioralEconomics.com: Anchoring",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "framing_effect",
+      "priming",
+      "focusing_effect",
+      "status_quo_bias",
+      "loss_aversion"
+    ],
+    "wikipedia_slug": "Anchoring_effect"
   },
   {
     "canonical_id": "attentional_bias",
@@ -15,7 +43,28 @@
     "display": "Attentional Bias",
     "definition": "The tendency to pay attention to emotionally dominant stimuli and ignore other relevant data.",
     "example": "When individuals pay disproportionate attention to emotional content that confirms negative stereotypes about Jewish people while ignoring evidence that proves the contrary.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Speaker fixates on one vivid detail and circles back to it repeatedly.",
+      "Emotionally charged threats or rewards crowd out mention of base rates or context.",
+      "Other relevant facts are mentioned only briefly, then dropped.",
+      "Listener notices their own attention being pulled to a single dramatic image."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Attentional_bias",
+        "title": "Attentional bias",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "availability_heuristic",
+      "negativity_bias",
+      "focusing_effect",
+      "priming",
+      "affect_heuristic"
+    ]
   },
   {
     "canonical_id": "group_attribution_error",
@@ -24,7 +73,28 @@
     "display": "Group Attribution Error",
     "definition": "The erroneous belief that the characteristics of an individual group member reflect the general beliefs or behaviors of the entire group.",
     "example": "When a person witnesses a Jewish individual engaging in a financial dispute and erroneously concludes that all Jewish people are greedy or financially untrustworthy. This incorrect assumption attributes the actions of one person to the entire group, perpetuating harmful stereotypes and ignoring the diversity of individuals within any community.",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "'This one member did X, so they all think X' style reasoning.",
+      "A single quote or action treated as representative of an entire movement.",
+      "Phrases like 'these people' or 'that's how they are' after one example.",
+      "Group decision attributed to every individual member's personal preference."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Group_attribution_error",
+        "title": "Group attribution error",
+        "mins": 7
+      }
+    ],
+    "related_canonical_ids": [
+      "stereotyping",
+      "hasty_generalization",
+      "in_group_out_group_bias",
+      "fundamental_attribution_error",
+      "sweeping_generalization"
+    ]
   },
   {
     "canonical_id": "groupthink",
@@ -33,7 +103,29 @@
     "display": "Groupthink",
     "definition": "The practice of thinking or making decisions as a group in a way that discourages creativity or individual responsibility.",
     "example": "Groupthink manifests in an academic club meeting where members discuss cultural diversity themes for an upcoming university event. When selecting topics, a proposal laced with subtle antisemitic undertones gains traction. Despite initial discomfort from some members, the desire for unanimity and fear of dissent lead the group to uncritically accept the proposal, showcasing how groupthink can perpetuate antisemitism by discouraging individual objections to prejudiced ideas.",
-    "archetype": "in_group"
+    "archetype": "in_group",
+    "how_to_spot": [
+      "Dissent is dismissed quickly or framed as disloyalty to the team.",
+      "Decisions described as 'we all agree' without visible deliberation.",
+      "Outside critics characterized as enemies or uninformed.",
+      "Self-censorship cues: 'I didn't want to be the only one who...'",
+      "Illusion of unanimity stated as proof the decision is correct."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Groupthink",
+        "title": "Groupthink",
+        "mins": 15
+      }
+    ],
+    "related_canonical_ids": [
+      "bandwagon_effect",
+      "herd_mentality",
+      "in_group_out_group_bias",
+      "false_consensus_effect",
+      "authority_bias"
+    ]
   },
   {
     "canonical_id": "status_quo_bias",
@@ -42,7 +134,28 @@
     "display": "Status Quo Bias",
     "definition": "Preferring for things to stay the same by doing nothing or sticking with a decision made previously.",
     "example": "Jews shouldn't be allowed onto the Temple Mount in Jerusalem because it's always been that way.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "'We've always done it this way' offered as a reason against change.",
+      "Change framed as risky while inaction's risks go unmentioned.",
+      "Default option presented as neutral or safe by definition.",
+      "Speaker demands extraordinary proof for change but none for continuing."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Status_quo_bias",
+        "title": "Status quo bias",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "loss_aversion",
+      "endowment_effect",
+      "appeal_to_tradition",
+      "sunk_cost_fallacy",
+      "mere_exposure_effect"
+    ]
   },
   {
     "canonical_id": "dunning_kruger_effect",
@@ -51,7 +164,29 @@
     "display": "Dunning-Kruger/Overconfidence Effect",
     "definition": "The tendency of people with low ability at a task to overestimate their ability.",
     "example": "When an individual with minimal understanding of Jewish history, culture, or the complexities of modern geopolitics confidently spreads simplistic or erroneous views about Jews. They may assert unfounded theories about Jewish influence in world events or finance, dismissing the need for further education or dialogue on the subjects due to an inflated sense of their own insights.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Confident pronouncements on technical topics without acknowledging complexity.",
+      "Dismissal of experts as overcomplicating 'simple' problems.",
+      "No hedging, no 'I might be wrong,' even on contested questions.",
+      "Speaker can't accurately describe counterarguments they reject."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Dunning–Kruger_effect",
+        "title": "Dunning–Kruger effect",
+        "mins": 15
+      }
+    ],
+    "related_canonical_ids": [
+      "argument_from_incredulity",
+      "appeal_to_complexity",
+      "bias_blind_spot",
+      "naive_realism",
+      "optimism_bias"
+    ],
+    "wikipedia_slug": "Dunning–Kruger_effect"
   },
   {
     "canonical_id": "focusing_effect",
@@ -60,7 +195,28 @@
     "display": "Focusing Effect",
     "definition": "The tendency to give too much weight to certain aspects of an event while ignoring others.",
     "example": "Fixating on the fact that a criminal is Jewish even though their crime had nothing to do with religion.",
-    "archetype": "framing"
+    "archetype": "framing",
+    "how_to_spot": [
+      "One vivid factor (salary, weather, one feature) dominates the comparison.",
+      "Other tradeoffs mentioned only after pressing.",
+      "'Just think about X' framing that excludes equally relevant Y and Z.",
+      "Decision rationale collapses to a single dimension."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Focusing_effect",
+        "title": "Focusing effect",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "anchoring_bias",
+      "framing_effect",
+      "attentional_bias",
+      "availability_heuristic",
+      "reductive_fallacy"
+    ]
   },
   {
     "canonical_id": "framing_effect",
@@ -69,7 +225,35 @@
     "display": "Framing Effect",
     "definition": "The tendency to react differently to information depending on how it is presented.",
     "example": "When a neutral fact about Jews, Judaism or Israel is framed negatively to imply something nefarious, leading to negative perceptions.",
-    "archetype": "framing"
+    "archetype": "framing",
+    "how_to_spot": [
+      "Same statistic phrased as gain vs. loss to swing the conclusion.",
+      "'90% survival' vs '10% mortality' style reframing.",
+      "Speaker emphasizes the choice of words over the underlying numbers.",
+      "Identical policy sounds appealing or alarming depending on speaker's label."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Framing_effect_(psychology)",
+        "title": "Framing effect (psychology)",
+        "mins": 12
+      },
+      {
+        "source": "sep",
+        "slug_or_path": "prospect-theory",
+        "title": "Prospect Theory",
+        "mins": 25
+      }
+    ],
+    "related_canonical_ids": [
+      "loaded_language",
+      "pejorative_framing",
+      "euphemism",
+      "loss_aversion",
+      "anchoring_bias"
+    ],
+    "wikipedia_slug": "Framing_effect_(psychology)"
   },
   {
     "canonical_id": "hostile_attribution_bias",
@@ -78,7 +262,28 @@
     "display": "Hostile Attribution Bias",
     "definition": "The tendency to interpret others' actions as hostile, even when they're benign.",
     "example": "When a person unjustifiably views a Jewish colleague's disagreement in a work meeting as a personal attack rather than a professional opinion.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Ambiguous actions described as deliberate slights or attacks.",
+      "'They did that on purpose' with no evidence of intent.",
+      "Speaker assumes worst motive when innocent explanations exist.",
+      "Tone escalates quickly from minor incident to accusation of malice."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Hostile_attribution_bias",
+        "title": "Hostile attribution bias",
+        "mins": 7
+      }
+    ],
+    "related_canonical_ids": [
+      "fundamental_attribution_error",
+      "negativity_bias",
+      "in_group_out_group_bias",
+      "confirmation_bias",
+      "naive_realism"
+    ]
   },
   {
     "canonical_id": "negativity_bias",
@@ -87,7 +292,28 @@
     "display": "Negativity Bias",
     "definition": "The tendency to remember and focus on negative information more than positive.",
     "example": "When a person hears a negative rumor about a Jewish individual, they might give it more credence than the numerous positive interactions they've had.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "List of nine positives gets dismissed because of one negative.",
+      "Bad news given disproportionate airtime and emotional weight.",
+      "Speaker recalls failures vividly but glosses over successes.",
+      "'Yes, but...' patterns that pivot every positive to a threat."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Negativity_bias",
+        "title": "Negativity bias",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "attentional_bias",
+      "availability_heuristic",
+      "appeal_to_fear",
+      "loss_aversion",
+      "affect_heuristic"
+    ]
   },
   {
     "canonical_id": "priming",
@@ -96,7 +322,29 @@
     "display": "Priming",
     "definition": "Influencing people's reactions based on previously presented information.",
     "example": "After watching a documentary portraying Jewish people in a negative light, an individual might unconsciously adopt a more critical stance towards Jewish colleagues or neighbors.",
-    "archetype": "framing"
+    "archetype": "framing",
+    "how_to_spot": [
+      "Speaker drops emotionally charged words early to color later neutral content.",
+      "Background imagery, music, or anecdotes set a mood before the ask.",
+      "Repeated theme words ('safety,' 'family') subtly shape interpretation.",
+      "Question wording references a concept that biases the response."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Priming_(psychology)",
+        "title": "Priming (psychology)",
+        "mins": 12
+      }
+    ],
+    "related_canonical_ids": [
+      "anchoring_bias",
+      "framing_effect",
+      "loaded_language",
+      "dog_whistles",
+      "mere_exposure_effect"
+    ],
+    "wikipedia_slug": "Priming_(psychology)"
   },
   {
     "canonical_id": "availability_heuristic",
@@ -105,7 +353,28 @@
     "display": "Availability Heuristic",
     "definition": "The tendency to overestimate the importance of information that is readily available.",
     "example": "If a person frequently encounters antisemitic jokes or comments on social media, they might start to believe that such sentiments are widely accepted and normal, underestimating the prevalence of positive or neutral attitudes toward Jewish people.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Recent news story used to argue a trend without statistics.",
+      "'I keep hearing about...' as evidence of frequency.",
+      "Dramatic anecdotes substitute for base-rate data.",
+      "Risk estimated by how easily an example comes to mind."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Availability_heuristic",
+        "title": "Availability heuristic",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "anecdotal_fallacy",
+      "base_rate_neglect",
+      "hasty_generalization",
+      "attentional_bias",
+      "representativeness_heuristic"
+    ]
   },
   {
     "canonical_id": "confirmation_bias",
@@ -114,7 +383,27 @@
     "display": "Confirmation Bias",
     "definition": "The tendency to favor and seek out information that confirms pre-existing beliefs or hypotheses.",
     "example": "A person frequents online platforms known for spreading unfounded conspiracy theories about Jews, selectively absorbing and disseminating content that falsely accuses Jewish individuals of global manipulation. Despite these sources lacking credibility and being contradicted by factual evidence, the individual prioritizes such information, reinforcing their existing antisemitic prejudices while ignoring reputable, balanced perspectives.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Speaker cites only sources that agree with them.",
+      "Counter-evidence dismissed quickly; supporting evidence accepted uncritically.",
+      "'See? This proves it' after one corroborating example.",
+      "Questions framed to elicit agreement rather than test the claim."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Confirmation_bias",
+        "title": "Confirmation bias",
+        "mins": 15
+      }
+    ],
+    "related_canonical_ids": [
+      "cherry_picking",
+      "belief_perseverance",
+      "backfire_effect",
+      "selection_bias"
+    ]
   },
   {
     "canonical_id": "illusion_of_control",
@@ -123,7 +412,28 @@
     "display": "Illusion of Control",
     "definition": "The tendency to overestimate one's or another's ability to control events.",
     "example": "Believing that a few Jews, or a single machine, can control the world or complex systems like global finance and intercontinental trade.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Speaker claims credit for outcomes driven largely by chance or others.",
+      "Rituals or routines treated as causally effective without evidence.",
+      "'If I just work harder, I can fix this' applied to systemic problems.",
+      "Overconfident predictions about controlling complex social or market outcomes."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Illusion_of_control",
+        "title": "Illusion of control",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "optimism_bias",
+      "dunning_kruger_effect",
+      "gamblers_fallacy_bias",
+      "self_serving_bias",
+      "outcome_bias"
+    ]
   },
   {
     "canonical_id": "neglect_of_probability",
@@ -132,7 +442,28 @@
     "display": "Neglect of Probability",
     "definition": "The tendency to ignore the statistical likelihood of events, often fearing highly improbable negative outcomes.",
     "example": "Claiming Israel has been committing genocide over the years despite the Palestinian population growing healthily and at a higher birth rate than Israelis (Jews and Arabs).",
-    "archetype": "fear"
+    "archetype": "fear",
+    "how_to_spot": [
+      "Tiny risks treated as if certain ('but what if it happens?').",
+      "No mention of likelihood, only of severity.",
+      "'Even a 1% chance is too much' without cost-benefit analysis.",
+      "Emotional vividness of outcome overrides any probability estimate."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Neglect_of_probability",
+        "title": "Neglect of probability",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_fear",
+      "base_rate_neglect",
+      "availability_heuristic",
+      "affect_heuristic",
+      "slippery_slope"
+    ]
   },
   {
     "canonical_id": "wishful_thinking",
@@ -141,7 +472,28 @@
     "display": "Wishful Thinking",
     "definition": "The tendency to believe something because one wishes it to be true, rather than because of any evidence.",
     "example": "Arguing \"if only the Palestinians had a state then there would be peace and they wouldn't resort to violence against Israel.\"",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "'I just feel like it'll work out' without supporting evidence.",
+      "Speaker dismisses obstacles as 'we'll figure it out.'",
+      "Forecasts align suspiciously with what the speaker wants.",
+      "Evidence against the desired outcome is reinterpreted or ignored."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Wishful_thinking",
+        "title": "Wishful thinking",
+        "mins": 7
+      }
+    ],
+    "related_canonical_ids": [
+      "optimism_bias",
+      "appeal_to_consequences",
+      "confirmation_bias",
+      "illusion_of_control",
+      "belief_perseverance"
+    ]
   },
   {
     "canonical_id": "bandwagon_effect",
@@ -150,7 +502,28 @@
     "display": "Bandwagon Effect",
     "definition": "The tendency to adopt beliefs or behaviors because they seem popular or because others are doing so.",
     "example": "An individual might start endorsing antisemitic sentiments simply because they notice these views gaining traction in their social circle or online.",
-    "archetype": "appeal_to"
+    "archetype": "appeal_to",
+    "how_to_spot": [
+      "'Everyone's doing it' or 'it's trending' used as justification.",
+      "Appeals to rising poll numbers as evidence of correctness.",
+      "Pressure to join before 'you're left behind.'",
+      "Popularity offered as the main reason to adopt a view."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Bandwagon_effect",
+        "title": "Bandwagon effect",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_popularity",
+      "herd_mentality",
+      "groupthink",
+      "false_consensus_effect",
+      "mere_exposure_effect"
+    ]
   },
   {
     "canonical_id": "herd_mentality",
@@ -159,7 +532,28 @@
     "display": "Herd Mentality",
     "definition": "The tendency to conform to the majority opinion in one's group, without individual critical thinking.",
     "example": "Adopting antisemitic attitudes if they are prevalent within one's group, even if they contradict one's personal beliefs.",
-    "archetype": "in_group"
+    "archetype": "in_group",
+    "how_to_spot": [
+      "Individuals defer to group view without articulating their own reasoning.",
+      "'If everyone thinks so, who am I to disagree?'",
+      "Sudden consensus shifts in lockstep with a vocal leader.",
+      "No one volunteers a contrary opinion despite obvious concerns."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Herd_mentality",
+        "title": "Herd mentality",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "bandwagon_effect",
+      "groupthink",
+      "appeal_to_popularity",
+      "authority_bias",
+      "false_consensus_effect"
+    ]
   },
   {
     "canonical_id": "in_group_out_group_bias",
@@ -168,7 +562,29 @@
     "display": "In-Group/Out-Group Bias",
     "definition": "The tendency to prefer either members of one's own group at the expense of others or other groups at the expense of one's own.",
     "example": "Members of a close-knit community might rally around antisemitic myths or conspiracy theories as a way to strengthen group identity, viewing Jewish people as the out-group and unfairly attributing societal issues to them, something we've seen Candace Owens do in defense of Kanye West after the latter's well documented hate spree.",
-    "archetype": "in_group"
+    "archetype": "in_group",
+    "how_to_spot": [
+      "'Us vs. them' framing throughout the argument.",
+      "Same behavior praised in allies, condemned in opponents.",
+      "Out-group members described as monolithic; in-group as nuanced.",
+      "Loyalty to the group treated as a virtue overriding evidence."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "In-group_favoritism",
+        "title": "In-group favoritism",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "stereotyping",
+      "group_attribution_error",
+      "groupthink",
+      "tu_quoque",
+      "dog_whistles"
+    ],
+    "wikipedia_slug": "In-group_favoritism"
   },
   {
     "canonical_id": "stereotyping",
@@ -177,7 +593,29 @@
     "display": "Stereotyping",
     "definition": "The tendency to assign generalized attributes to individuals based on their group membership.",
     "example": "Someone might assume all Jewish people are wealthy or have certain influence, based on pervasive stereotypes, without acknowledging individual differences.",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "Sweeping claims about what 'those people' think, do, or want.",
+      "Individual traits assumed from group membership alone.",
+      "Counter-examples dismissed as exceptions or 'not really one of them.'",
+      "Coded shorthand ('typical X') stands in for argument."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Stereotype",
+        "title": "Stereotype",
+        "mins": 15
+      }
+    ],
+    "related_canonical_ids": [
+      "hasty_generalization",
+      "group_attribution_error",
+      "sweeping_generalization",
+      "in_group_out_group_bias",
+      "representativeness_heuristic"
+    ],
+    "wikipedia_slug": "Stereotype"
   },
   {
     "canonical_id": "false_memory",
@@ -186,7 +624,28 @@
     "display": "False Memory",
     "definition": "The tendency to recall events differently from the way they happened, often influenced by suggestion or the blending of actual memories with misinformation.",
     "example": "Under the influence of stereotypes and hearsay, an individual might \"remember\" witnessing unfair business practices by a Jewish shop owner, even though the event never occurred.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Vivid, confident recounting of details that turn out to be wrong.",
+      "Memory has acquired specifics that match later narratives, not the event.",
+      "Speaker resists correction even when shown contemporaneous records.",
+      "Story has become more coherent and dramatic with each retelling."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "False_memory",
+        "title": "False memory",
+        "mins": 12
+      }
+    ],
+    "related_canonical_ids": [
+      "misinformation_effect",
+      "rosy_retrospection",
+      "hindsight_bias",
+      "continued_influence_effect",
+      "belief_perseverance"
+    ]
   },
   {
     "canonical_id": "misinformation_effect",
@@ -195,7 +654,28 @@
     "display": "Misinformation Effect",
     "definition": "The tendency to recall of episodic memories becomes less accurate due to post-event information.",
     "example": "After reading a biased article misreporting a peaceful protest by a Jewish group as violent, a person might falsely recall having seen footage of the protest that aligns with the article's inaccuracies.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Witness recall shifts after exposure to news coverage or others' accounts.",
+      "Leading questions ('Did you see the broken glass?') alter later testimony.",
+      "Details that weren't originally present appear in subsequent retellings.",
+      "Memory now matches the misleading source more than the original event."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Misinformation_effect",
+        "title": "Misinformation effect",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "false_memory",
+      "continued_influence_effect",
+      "illusory_truth_effect",
+      "priming",
+      "loaded_question"
+    ]
   },
   {
     "canonical_id": "rosy_retrospection",
@@ -204,7 +684,28 @@
     "display": "Rosy Retrospection",
     "definition": "The tendency to remember past events more fondly than they occurred, often overlooking negative experiences.",
     "example": "Applied to antisemitism, an individual might nostalgically recall a time of peace and harmony that either never was or obscures a darker reality, very much like Congresswoman Rashida Tlaib imagined a fantastical reality wherein Palestinians \"welcomed\" Holocaust survivors to the British Mandate although the exact opposite is true as Jews were neither welcomed nor safe from violent attack.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "'Back in the day everything was better' without specifics.",
+      "Past hardships minimized or omitted from the narrative.",
+      "Selective recall of pleasant moments from a mixed period.",
+      "Comparison of golden past to flawed present drives the argument."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Rosy_retrospection",
+        "title": "Rosy retrospection",
+        "mins": 5
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_tradition",
+      "false_memory",
+      "hindsight_bias",
+      "status_quo_bias",
+      "cherry_picking"
+    ]
   },
   {
     "canonical_id": "ad_hominem",
@@ -213,7 +714,33 @@
     "display": "Ad Hominem",
     "definition": "Attacking the character of the person making an argument rather than the argument itself.",
     "example": "When a person criticizes a Jewish individual's argument against antisemitism by attacking their character or identity as Jewish, rather than addressing the argument itself.",
-    "archetype": "dismissal"
+    "archetype": "dismissal",
+    "how_to_spot": [
+      "Response targets the speaker's character, motives, or appearance, not the claim.",
+      "'You would say that, because you're a...' framing.",
+      "Insults or labels replace engagement with the actual argument.",
+      "Past misdeeds raised to discredit unrelated current point."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Ad_hominem",
+        "title": "Ad hominem",
+        "mins": 10
+      },
+      {
+        "source": "sep",
+        "slug_or_path": "fallacies",
+        "title": "Fallacies (SEP)",
+        "mins": 30
+      }
+    ],
+    "related_canonical_ids": [
+      "tu_quoque",
+      "genetic_fallacy",
+      "pejorative_framing",
+      "red_herring"
+    ]
   },
   {
     "canonical_id": "non_sequitur",
@@ -222,7 +749,29 @@
     "display": "Non-Sequitur",
     "definition": "A conclusion or statement that does not logically follow the previous argument or statement.",
     "example": "Claiming that because a Jewish individual has achieved significant success, antisemitism must not exist or is exaggerated, which does not logically follow.",
-    "archetype": "redirection"
+    "archetype": "redirection",
+    "how_to_spot": [
+      "Conclusion introduced with 'therefore' but premises don't support it.",
+      "Topic shifts abruptly mid-argument with no logical bridge.",
+      "Listener thinks 'wait, how did we get here?'",
+      "Claim and supporting reason are about different subjects entirely."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Non_sequitur_(logic)",
+        "title": "Non sequitur (logic)",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "red_herring",
+      "false_cause",
+      "circular_reasoning",
+      "ad_lapidem",
+      "reductive_fallacy"
+    ],
+    "wikipedia_slug": "Non_sequitur_(logic)"
   },
   {
     "canonical_id": "red_herring",
@@ -231,7 +780,28 @@
     "display": "Red Herring",
     "definition": "Introducing an irrelevant topic to divert attention from the original issue.",
     "example": "In a debate about the historical contributions of Jewish people, someone introduces an unrelated issue, such as the policies of the State of Israel, to divert attention from the original topic.",
-    "archetype": "redirection"
+    "archetype": "redirection",
+    "how_to_spot": [
+      "Speaker abruptly pivots: 'But what about...' to an unrelated issue.",
+      "Original question goes unanswered while a tangential outrage is introduced.",
+      "Emotional or sensational topic appears just as pressure mounts on the original point.",
+      "Listener feels the subject changed but can't pinpoint when."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Red_herring",
+        "title": "Red herring",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "straw_man",
+      "ad_hominem",
+      "tu_quoque",
+      "gish_gallop",
+      "non_sequitur"
+    ]
   },
   {
     "canonical_id": "straw_man",
@@ -240,7 +810,28 @@
     "display": "Straw Man",
     "definition": "Misrepresenting someone's argument to make it easier to attack.",
     "example": "Misrepresenting the argument that antisemitism is a significant societal issue by suggesting that those raising concerns are claiming it's the only form of prejudice that exists, then attacking this misrepresentation.",
-    "archetype": "redirection"
+    "archetype": "redirection",
+    "how_to_spot": [
+      "'So you're saying...' followed by an extreme version of the opponent's view.",
+      "The restated position is easier to mock than what was actually said.",
+      "Opponent protests 'that's not what I said' and is ignored.",
+      "Absolute words ('always', 'never', 'completely') are inserted into the rephrasing."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Straw_man",
+        "title": "Straw man",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "red_herring",
+      "ad_hominem",
+      "loaded_language",
+      "pejorative_framing",
+      "false_dilemma"
+    ]
   },
   {
     "canonical_id": "anecdotal_fallacy",
@@ -249,7 +840,28 @@
     "display": "Anecdotal Fallacy",
     "definition": "Using personal experience or an isolated example instead of a valid argument, especially to dismiss statistics.",
     "example": "When a person uses their own negative experience with a Jew to argue that such negative attributes necessarily apply to all Jews.",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "'I know someone who...' used to dismiss data or studies.",
+      "A vivid personal story replaces statistics in answer to a numerical question.",
+      "'My grandfather smoked and lived to 95' style counterexamples.",
+      "Single dramatic case is generalized to all cases."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Anecdotal_evidence",
+        "title": "Anecdotal evidence",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "hasty_generalization",
+      "cherry_picking",
+      "availability_heuristic",
+      "survivorship_bias",
+      "base_rate_neglect"
+    ]
   },
   {
     "canonical_id": "appeal_to_ignorance",
@@ -258,7 +870,28 @@
     "display": "Appeal to Ignorance",
     "definition": "Arguing that a lack of evidence proves something is true or false.",
     "example": "Because a lot of physical evidence was destroyed during the anti-Jewish attack, it's proof the attack never really happened.",
-    "archetype": "burden"
+    "archetype": "burden",
+    "how_to_spot": [
+      "'No one has proven it's false, so it must be true.'",
+      "'You can't prove it didn't happen' as positive evidence.",
+      "Absence of disproof treated as proof.",
+      "Speaker shifts from making a claim to demanding refutation."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Argument_from_ignorance",
+        "title": "Argument from ignorance",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "burden_of_proof_fallacy",
+      "argument_from_silence",
+      "argument_from_incredulity",
+      "appeal_to_authority",
+      "special_pleading"
+    ]
   },
   {
     "canonical_id": "burden_of_proof_fallacy",
@@ -267,7 +900,28 @@
     "display": "Burden of Proof Fallacy",
     "definition": "Asserting that the burden of proof lies not with the person making the claim, but with someone else to disprove.",
     "example": "Demanding that Jewish individuals or organizations must prove they do not control the media or global finance, rather than those making the accusations providing evidence for their claims.",
-    "archetype": "burden"
+    "archetype": "burden",
+    "how_to_spot": [
+      "'Prove me wrong' after making an extraordinary claim.",
+      "Speaker makes a positive assertion then demands you disprove it.",
+      "'Until you can show otherwise, my view stands.'",
+      "Refuses to provide evidence, instead questions skeptic's evidence."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Burden_of_proof_(philosophy)",
+        "title": "Burden of proof (philosophy)",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_ignorance",
+      "proof_by_assertion",
+      "ad_lapidem",
+      "special_pleading",
+      "argument_from_silence"
+    ]
   },
   {
     "canonical_id": "cherry_picking",
@@ -276,7 +930,28 @@
     "display": "Cherry Picking",
     "definition": "Cherry-picking data clusters to suit an argument, or finding a pattern to fit a presumption.",
     "example": "Selecting specific incidents involving Jewish individuals to support claims of widespread conspiracy or control, while ignoring counter-evidence.",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "Only favorable studies, dates, or statistics are cited.",
+      "Counterexamples are conspicuously absent or hand-waved.",
+      "'Look at this one year/region/case' while ignoring the broader trend.",
+      "Quotes pulled from sources whose overall conclusion is opposite."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Cherry_picking",
+        "title": "Cherry picking",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "confirmation_bias",
+      "texas_sharpshooter",
+      "survivorship_bias",
+      "selection_bias",
+      "anecdotal_fallacy"
+    ]
   },
   {
     "canonical_id": "circular_reasoning",
@@ -285,7 +960,28 @@
     "display": "Circular Reasoning",
     "definition": "When the premise of an argument repeats the conclusion without providing any evidence.",
     "example": "\"Zionism is racism because racism is Zionism.\" At no point is there any evidence or qualification offered as to how one equates to the other.",
-    "archetype": "vagueness"
+    "archetype": "vagueness",
+    "how_to_spot": [
+      "Conclusion appears, rephrased, as a premise.",
+      "'It's true because it says so' style justifications.",
+      "Definitions designed so the claim cannot be false.",
+      "Listener notices the argument loops without external evidence."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Circular_reasoning",
+        "title": "Circular reasoning",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "begging_the_question",
+      "proof_by_assertion",
+      "no_true_scotsman",
+      "stolen_concept",
+      "ad_lapidem"
+    ]
   },
   {
     "canonical_id": "false_analogy",
@@ -294,7 +990,28 @@
     "display": "False Analogy",
     "definition": "Making a misleading comparison between logically unconnected ideas.",
     "example": "Comparing the discrimination faced by Jewish people to unrelated situations, minimizing the unique history and impact of antisemitism. \"What Israel does to Palestinians is like or worse than what the Nazis did to Jews.\"",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "'It's just like...' linking situations that differ in key respects.",
+      "Emotionally charged comparisons (Nazis, slavery) to mundane policies.",
+      "The analogy collapses if you ask which features actually match.",
+      "Speaker resists examination of the analogy's limits."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "False_analogy",
+        "title": "False analogy",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "false_cause",
+      "hasty_generalization",
+      "reductive_fallacy",
+      "slippery_slope",
+      "composition_fallacy"
+    ]
   },
   {
     "canonical_id": "false_cause",
@@ -303,7 +1020,28 @@
     "display": "False Cause",
     "definition": "Presuming that a real or perceived relationship between things means that one is the cause of the other.",
     "example": "Blaming economic downturns or societal issues on the presence or influence of Jewish people, assuming a broader cause-effect relationship without evidence.",
-    "archetype": "false_causation"
+    "archetype": "false_causation",
+    "how_to_spot": [
+      "'After X, Y happened, so X caused Y.'",
+      "Correlation presented as causation with no mechanism offered.",
+      "Alternative explanations or confounders are never mentioned.",
+      "Timing alone is the entire evidence offered."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Questionable_cause",
+        "title": "Questionable cause",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "single_cause_fallacy",
+      "texas_sharpshooter",
+      "hasty_generalization",
+      "confirmation_bias",
+      "gamblers_fallacy_bias"
+    ]
   },
   {
     "canonical_id": "hasty_generalization",
@@ -312,7 +1050,28 @@
     "display": "Hasty Generalization",
     "definition": "Making a rushed conclusion without considering all of the variables.",
     "example": "Jumping to the worst possible conclusion about a news story because it involves Jews or Israel, even though little is known and details of the event are still emerging.",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "Broad conclusion drawn from one or two examples.",
+      "'I met two of them and they were all...'",
+      "Small or biased sample treated as representative.",
+      "'Everyone knows' following a single anecdote."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Faulty_generalization",
+        "title": "Faulty generalization",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "anecdotal_fallacy",
+      "sweeping_generalization",
+      "stereotyping",
+      "selection_bias",
+      "cherry_picking"
+    ]
   },
   {
     "canonical_id": "proof_by_assertion",
@@ -321,7 +1080,28 @@
     "display": "Proof by Assertion",
     "definition": "A form of argument where a proposition is repeatedly restated regardless of contradiction.",
     "example": "Repeatedly stating that Jewish people have disproportionate control over global affairs without providing substantiated evidence, regardless of factual counterarguments.",
-    "archetype": "repetition"
+    "archetype": "repetition",
+    "how_to_spot": [
+      "Same claim restated verbatim after rebuttal, with no new evidence.",
+      "Increased volume or emphasis substitutes for argument.",
+      "'It just is' or 'It's a fact' as the whole defense.",
+      "Repetition across appearances regardless of corrections."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Proof_by_assertion",
+        "title": "Proof by assertion",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "illusory_truth_effect",
+      "repetition_emphasis",
+      "ad_lapidem",
+      "circular_reasoning",
+      "begging_the_question"
+    ]
   },
   {
     "canonical_id": "slippery_slope",
@@ -330,7 +1110,34 @@
     "display": "Slippery Slope Fallacy",
     "definition": "Arguing that a small first step will lead to a chain of related events culminating in a significant effect, often with little evidence.",
     "example": "Arguing that increased cultural sensitivity toward Jewish people will inevitably lead to unreasonable restrictions on free speech or other freedoms, without evidence to support such a drastic outcome.",
-    "archetype": "fear"
+    "archetype": "fear",
+    "how_to_spot": [
+      "'If we allow X, next it'll be Y, then Z, then catastrophe.'",
+      "Chain of consequences with no evidence each step follows.",
+      "Final outcome is extreme and emotionally charged.",
+      "Intermediate stopping points are dismissed as impossible."
+    ],
+    "further_reading": [
+      {
+        "source": "sep",
+        "slug_or_path": "slippery-slope-arguments",
+        "title": "Slippery Slope Arguments (SEP)",
+        "mins": 25
+      },
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Slippery_slope",
+        "title": "Slippery slope",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_fear",
+      "false_cause",
+      "false_dilemma",
+      "continuum_fallacy",
+      "appeal_to_consequences"
+    ]
   },
   {
     "canonical_id": "sweeping_generalization",
@@ -339,7 +1146,28 @@
     "display": "Sweeping Generalization",
     "definition": "Applying a general rule too broadly.",
     "example": "Applying stereotypes about Jewish people broadly, such as all being wealthy or influential in global affairs, without acknowledging the socioeconomic diversity within the community.",
-    "archetype": "generalization"
+    "archetype": "generalization",
+    "how_to_spot": [
+      "A general rule applied to an obvious exception.",
+      "'All X do Y' used to judge an atypical case.",
+      "Speaker resists qualifying with 'usually' or 'often'.",
+      "Rule treated as absolute regardless of context."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Accident_(fallacy)",
+        "title": "Accident (fallacy)",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "hasty_generalization",
+      "stereotyping",
+      "absolutism",
+      "division_fallacy",
+      "composition_fallacy"
+    ]
   },
   {
     "canonical_id": "excluded_middle_fallacy",
@@ -348,7 +1176,27 @@
     "display": "Excluded Middle Fallacy",
     "definition": "Assuming there are only two extremes in an argument, ignoring any middle ground or alternative options.",
     "example": "Ignoring the nuanced positions between fervent support and absolute condemnation in discussions about Jewish cultural or religious practices and Israel.",
-    "archetype": "false_binary"
+    "archetype": "false_binary",
+    "how_to_spot": [
+      "Spectrum issues presented as binary.",
+      "Moderate or nuanced positions are mocked as nonexistent.",
+      "'Either you're with us or against us.'",
+      "Speaker ignores listener attempting a 'both/and' answer."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "False_dilemma",
+        "title": "False dilemma",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "false_dilemma",
+      "absolutism",
+      "middle_ground_fallacy",
+      "continuum_fallacy"
+    ]
   },
   {
     "canonical_id": "false_dilemma",
@@ -357,7 +1205,28 @@
     "display": "False Dilemma Fallacy",
     "definition": "Presenting two opposing options as the only possibilities.",
     "example": "\"You can't be a Zionist and feminist.\" Or, \"You can't claim to be pro-Palestinian unless you call for the erasure of Israel.\"",
-    "archetype": "false_binary"
+    "archetype": "false_binary",
+    "how_to_spot": [
+      "'Either we do X, or Y disaster happens.'",
+      "Only two options offered when more clearly exist.",
+      "Third options are pre-emptively dismissed as unrealistic.",
+      "Forces listener to defend an unwanted side."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "False_dilemma",
+        "title": "False dilemma",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "excluded_middle_fallacy",
+      "appeal_to_fear",
+      "absolutism",
+      "loaded_question",
+      "framing_effect"
+    ]
   },
   {
     "canonical_id": "sunk_cost_fallacy",
@@ -366,7 +1235,27 @@
     "display": "Sunk Cost Fallacy",
     "definition": "Continuing a behavior or endeavor as a result of previously invested resources (time, money, effort).",
     "example": "\"So much has been invested in helping Palestinian refugees, we can't stop now, we must increase our financial support!\"",
-    "archetype": "identity"
+    "archetype": "identity",
+    "how_to_spot": [
+      "'We've come too far to stop now.'",
+      "Past spending invoked to justify continued spending.",
+      "'We can't waste what we've already invested.'",
+      "Decision focuses on prior losses rather than future value."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Sunk_cost",
+        "title": "Sunk cost",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "loss_aversion",
+      "status_quo_bias",
+      "endowment_effect",
+      "appeal_to_consequences"
+    ]
   },
   {
     "canonical_id": "zero_sum_fallacy",
@@ -375,7 +1264,27 @@
     "display": "Zero Sum Fallacy",
     "definition": "Assuming that a gain by one party must result in a loss by another.",
     "example": "\"Palestinians can't be free until Israel is wiped off the map.\"",
-    "archetype": "false_binary"
+    "archetype": "false_binary",
+    "how_to_spot": [
+      "'If they win, we lose' framing with no shared upside.",
+      "Immigration, trade, or rights described as a fixed pie.",
+      "Cooperation dismissed as naive.",
+      "Any gain by another group is reported as loss to one's own."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Zero-sum_thinking",
+        "title": "Zero-sum thinking",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "in_group_out_group_bias",
+      "loss_aversion",
+      "appeal_to_fear",
+      "false_dilemma"
+    ]
   },
   {
     "canonical_id": "ambiguity_fallacy",
@@ -384,7 +1293,28 @@
     "display": "Ambiguity Fallacy",
     "definition": "Using double meanings or ambiguities of language to mislead or misrepresent the truth.",
     "example": "An article ambiguously using the term \"global financial leaders\" in a way that insinuates Jewish control of global finance without clear evidence, misleading readers to draw antisemitic conclusions.",
-    "archetype": "vagueness"
+    "archetype": "vagueness",
+    "how_to_spot": [
+      "Key term subtly shifts meaning mid-argument.",
+      "Speaker exploits a phrase with two readings.",
+      "Conclusion only works under one interpretation, premise under another.",
+      "Clarification requests get deflected or muddied."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Fallacy_of_ambiguity",
+        "title": "Fallacy of ambiguity",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "equivocation",
+      "vagueness",
+      "weasel_words",
+      "hedge_words",
+      "etymological_fallacy"
+    ]
   },
   {
     "canonical_id": "appeal_to_authority",
@@ -393,7 +1323,28 @@
     "display": "Appeal to Authority",
     "definition": "Asserting that a claim is true because an authority figure believes it.",
     "example": "Claiming a conspiracy theory about Jewish people must be true because a prominent political figure or celebrity endorsed it, without presenting factual evidence.",
-    "archetype": "appeal_to"
+    "archetype": "appeal_to",
+    "how_to_spot": [
+      "'Dr. X says so' offered as the entire argument.",
+      "Authority cited is outside their field of expertise.",
+      "Credentials emphasized; reasoning is not.",
+      "Dissenting experts are ignored or dismissed."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Argument_from_authority",
+        "title": "Argument from authority",
+        "mins": 10
+      }
+    ],
+    "related_canonical_ids": [
+      "authority_bias",
+      "halo_effect",
+      "appeal_to_popularity",
+      "galileo_gambit",
+      "bandwagon_effect"
+    ]
   },
   {
     "canonical_id": "appeal_to_complexity",
@@ -402,7 +1353,28 @@
     "display": "Appeal to Complexity",
     "definition": "Claiming something is too complex to understand and therefore one's premise must be true or false.",
     "example": "In response to proposed legislation aimed at combating antisemitism, someone might argue, \"The issue of antisemitism is so deeply rooted in societal structures, psychology, and history that no single law could ever address it effectively. Thus, attempting to legislate against it is futile.\" This argument suggests the complexity of antisemitism makes any solution inadequate, discouraging action.",
-    "archetype": "vagueness"
+    "archetype": "vagueness",
+    "how_to_spot": [
+      "'It's too complicated to explain' used to end discussion.",
+      "'You wouldn't understand' as a deflection.",
+      "Speaker invokes complexity but offers no detail.",
+      "Listener is shamed for asking basic questions."
+    ],
+    "further_reading": [
+      {
+        "source": "other",
+        "slug_or_path": "https://rationalwiki.org/wiki/Argument_from_complexity",
+        "title": "Argument from complexity",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "vagueness",
+      "appeal_to_authority",
+      "weasel_words",
+      "argument_from_incredulity",
+      "curse_of_knowledge"
+    ]
   },
   {
     "canonical_id": "appeal_to_emotion",
@@ -411,7 +1383,28 @@
     "display": "Appeal to Emotion",
     "definition": "Attempting to manipulate an emotional response instead of presenting a valid argument.",
     "example": "Using emotionally charged images or stories from history selectively to invoke anger or resentment towards Jewish people, without a balanced or logical argument.",
-    "archetype": "emotion"
+    "archetype": "emotion",
+    "how_to_spot": [
+      "Argument leans on dramatic music, imagery, or anecdote.",
+      "Logical questions are reframed as cold or heartless.",
+      "Tearful stories used in place of evidence.",
+      "Audience is roused to anger, fear, or pride at decision points."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Appeal_to_emotion",
+        "title": "Appeal to emotion",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_fear",
+      "appeal_to_pity",
+      "loaded_language",
+      "affect_heuristic",
+      "pejorative_framing"
+    ]
   },
   {
     "canonical_id": "appeal_to_fear",
@@ -420,7 +1413,28 @@
     "display": "Appeal to Fear",
     "definition": "Using fear to influence the audience's opinion or actions.",
     "example": "Warning that if a certain political candidate with Jewish heritage is elected, it will lead to disproportionate Jewish influence over the government, aiming to scare voters.",
-    "archetype": "fear"
+    "archetype": "fear",
+    "how_to_spot": [
+      "Catastrophic outcomes invoked without probability.",
+      "'If we don't act, X will destroy us.'",
+      "Vivid threat imagery; vague mechanisms.",
+      "Doubt or moderation reframed as dangerous."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Appeal_to_fear",
+        "title": "Appeal to fear",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_emotion",
+      "false_urgency",
+      "slippery_slope",
+      "negativity_bias",
+      "appeal_to_consequences"
+    ]
   },
   {
     "canonical_id": "appeal_to_nature",
@@ -429,7 +1443,28 @@
     "display": "Appeal to Nature",
     "definition": "Arguing that because something is 'natural' it is therefore valid, justified, inevitable, or ideal.",
     "example": "Arguing that \"resistance\" (a euphemism for terrorism) is \"justified\" because it is a \"natural reaction\" to \"oppression\" and, therefore, a \"natural right.\"",
-    "archetype": "appeal_to"
+    "archetype": "appeal_to",
+    "how_to_spot": [
+      "'It's natural' used as a moral or health endorsement.",
+      "'Unnatural' deployed as automatic condemnation.",
+      "No definition of 'natural' offered.",
+      "Arsenic-and-hemlock counterexamples ignored."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Appeal_to_nature",
+        "title": "Appeal to nature",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_tradition",
+      "appeal_to_purity",
+      "is_ought_fallacy",
+      "glittering_generalities",
+      "appeal_to_popularity"
+    ]
   },
   {
     "canonical_id": "appeal_to_pity",
@@ -438,7 +1473,28 @@
     "display": "Appeal to Pity",
     "definition": "Using the audience's sympathy, guilt, or pity to win an argument.",
     "example": "Soliciting support for an antisemitic stance by highlighting the speaker's personal hardships as reasons to distrust or dislike Jewish individuals.",
-    "archetype": "emotion"
+    "archetype": "emotion",
+    "how_to_spot": [
+      "Hardship stories surface when evidence is requested.",
+      "'After all I've been through...' as a logical move.",
+      "Sympathy invoked to deflect accountability.",
+      "Critics are framed as cruel for pressing the point."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Appeal_to_pity",
+        "title": "Appeal to pity",
+        "mins": 6
+      }
+    ],
+    "related_canonical_ids": [
+      "appeal_to_emotion",
+      "appeal_to_poverty",
+      "ad_hominem",
+      "special_pleading",
+      "appeal_to_consequences"
+    ]
   },
   {
     "canonical_id": "appeal_to_poverty",
@@ -447,7 +1503,28 @@
     "display": "Appeal to Poverty",
     "definition": "Assuming a conclusion is correct because the speaker is financially poor or arguing that someone wealthy is wrong because of their wealth.",
     "example": "Discrediting the opinions or arguments of a Jewish person on social issues by suggesting their wealth makes them out of touch with 'real' problems.",
-    "archetype": "appeal_to"
+    "archetype": "appeal_to",
+    "how_to_spot": [
+      "'They're just regular folks, so they must be right.'",
+      "Wealth alone cited to discredit an argument.",
+      "Virtue assigned to poverty, vice to riches, with no further reasoning.",
+      "Speaker's modest background offered as evidence of correctness."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Argumentum_ad_crumenam",
+        "title": "Argumentum ad crumenam / ad lazarum",
+        "mins": 5
+      }
+    ],
+    "related_canonical_ids": [
+      "ad_hominem",
+      "genetic_fallacy",
+      "appeal_to_pity",
+      "halo_effect",
+      "appeal_to_emotion"
+    ]
   },
   {
     "canonical_id": "appeal_to_purity",
@@ -456,7 +1533,29 @@
     "display": "Appeal to Purity",
     "definition": "(No True Scotsman): Making an appeal to purity as a way to dismiss relevant criticisms or flaws of an argument.",
     "example": "Arguing \"you can't be a true Torah Jew and support the secular Zionist state,\" as members of the radical Neturei Karta sect repeatedly do.",
-    "archetype": "false_binary"
+    "archetype": "false_binary",
+    "how_to_spot": [
+      "Listen for 'No real X would...' or 'A true believer would never...'",
+      "Counterexamples get dismissed as not counting or being inauthentic.",
+      "The definition of the group tightens precisely when a flaw is exposed.",
+      "Speaker invokes 'genuine,' 'authentic,' or 'real' to exclude inconvenient cases."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "No_true_Scotsman",
+        "title": "No True Scotsman",
+        "mins": 8
+      }
+    ],
+    "related_canonical_ids": [
+      "no_true_scotsman",
+      "special_pleading",
+      "moving_the_goalposts",
+      "circular_reasoning",
+      "ambiguity_fallacy"
+    ],
+    "wikipedia_slug": "No_true_Scotsman"
   },
   {
     "canonical_id": "appeal_to_tradition",
@@ -465,7 +1564,28 @@
     "display": "Appeal to Tradition",
     "definition": "Arguing that something must be done a certain way because it has always been done that way.",
     "example": "\"These antisemitic jokes have been part of our culture for decades. They're not meant to be taken seriously; it's just how things have always been.\" In this case, the longevity of certain cultural expressions is used to excuse content that perpetuates antisemitic stereotypes.",
-    "archetype": "appeal_to"
+    "archetype": "appeal_to",
+    "how_to_spot": [
+      "Phrases like 'we've always done it this way' or 'it's tradition.'",
+      "Age or longevity is offered as the main justification, not evidence.",
+      "Proposals to change are framed as disrespectful to ancestors or heritage.",
+      "No engagement with whether the practice actually works today."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Appeal_to_tradition",
+        "title": "Appeal to Tradition",
+        "mins": 5
+      }
+    ],
+    "related_canonical_ids": [
+      "status_quo_bias",
+      "appeal_to_nature",
+      "appeal_to_popularity",
+      "appeal_to_authority",
+      "naive_realism"
+    ]
   },
   {
     "canonical_id": "equivocation",
@@ -474,7 +1594,34 @@
     "display": "Equivocation",
     "definition": "Using an ambiguous term in more than one sense, thus rendering an argument misleading.",
     "example": "When the intention behind \"Palestinian liberation\" implies the destruction of the Jewish state.",
-    "archetype": "vagueness"
+    "archetype": "vagueness",
+    "how_to_spot": [
+      "A key word shifts meaning between premise and conclusion.",
+      "Watch for terms like 'natural,' 'free,' 'theory,' 'right' used loosely.",
+      "Argument seems valid only if you don't pin down definitions.",
+      "Asking 'which sense do you mean?' makes the argument collapse."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Equivocation",
+        "title": "Equivocation",
+        "mins": 7
+      },
+      {
+        "source": "sep",
+        "slug_or_path": "fallacies",
+        "title": "Fallacies",
+        "mins": 30
+      }
+    ],
+    "related_canonical_ids": [
+      "ambiguity_fallacy",
+      "vagueness",
+      "weasel_words",
+      "etymological_fallacy",
+      "straw_man"
+    ]
   },
   {
     "canonical_id": "moving_the_goalposts",
@@ -483,7 +1630,28 @@
     "display": "Moving the Goalposts",
     "definition": "Changing the criteria of a proposition when it appears to be met.",
     "example": "Initially demanding specific evidence to prove antisemitism in an incident, then, once provided, asking for even more detailed proof, making it impossible to satisfy the criteria.",
-    "archetype": "burden"
+    "archetype": "burden",
+    "how_to_spot": [
+      "After evidence is provided, speaker demands a new, stricter standard.",
+      "'Yes but what about...' followed by an entirely new criterion.",
+      "Original challenge is forgotten as the bar keeps rising.",
+      "Concessions are never accepted as settling the question."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Moving_the_goalposts",
+        "title": "Moving the Goalposts",
+        "mins": 5
+      }
+    ],
+    "related_canonical_ids": [
+      "special_pleading",
+      "no_true_scotsman",
+      "appeal_to_purity",
+      "belief_perseverance",
+      "backfire_effect"
+    ]
   },
   {
     "canonical_id": "reductive_fallacy",
@@ -492,6 +1660,28 @@
     "display": "Reductive Fallacy",
     "definition": "Oversimplifying a complex issue to make it seem that there's a single cause or solution.",
     "example": "Simplifying the cause of a complex geopolitical conflict involving Israel to simply being about religious or ethnic differences, ignoring historical, territorial, and political nuances.",
-    "archetype": "false_causation"
+    "archetype": "false_causation",
+    "how_to_spot": [
+      "'It all comes down to...' or 'the real issue is just...'",
+      "Multi-causal problems get blamed on one factor (greed, culture, genes).",
+      "Nuance and trade-offs are dismissed as overcomplicating things.",
+      "Proposed solution is a single lever for a system with many."
+    ],
+    "further_reading": [
+      {
+        "source": "wikipedia",
+        "slug_or_path": "Fallacy_of_the_single_cause",
+        "title": "Fallacy of the Single Cause",
+        "mins": 5
+      }
+    ],
+    "related_canonical_ids": [
+      "single_cause_fallacy",
+      "false_cause",
+      "hasty_generalization",
+      "sweeping_generalization",
+      "false_dilemma"
+    ],
+    "wikipedia_slug": "Fallacy_of_the_single_cause"
   }
 ]

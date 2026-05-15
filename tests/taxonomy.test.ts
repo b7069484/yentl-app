@@ -37,3 +37,33 @@ describe("taxonomy — archetype coverage", () => {
     expect(missing.map((e) => e.canonical_id)).toEqual([]);
   });
 });
+
+describe("taxonomy — enrichment coverage", () => {
+  it("every entry has at least 2 how_to_spot bullets", () => {
+    const missing = ALL.filter((e) => !e.how_to_spot || e.how_to_spot.length < 2);
+    expect(missing.map((e) => e.canonical_id)).toEqual([]);
+  });
+
+  it("every entry has at least 1 further_reading entry", () => {
+    const missing = ALL.filter((e) => !e.further_reading || e.further_reading.length < 1);
+    expect(missing.map((e) => e.canonical_id)).toEqual([]);
+  });
+
+  it("every entry has at least 3 related_canonical_ids", () => {
+    const missing = ALL.filter(
+      (e) => !e.related_canonical_ids || e.related_canonical_ids.length < 3,
+    );
+    expect(missing.map((e) => e.canonical_id)).toEqual([]);
+  });
+
+  it("all related_canonical_ids resolve to real entries", () => {
+    const allIds = new Set(ALL.map((e) => e.canonical_id));
+    const dangling: Array<{ from: string; to: string }> = [];
+    for (const e of ALL) {
+      for (const id of e.related_canonical_ids ?? []) {
+        if (!allIds.has(id)) dangling.push({ from: e.canonical_id, to: id });
+      }
+    }
+    expect(dangling).toEqual([]);
+  });
+});

@@ -8,12 +8,12 @@ interface Props {
 
 export function ListeningEmptyState({ micStream }: Props) {
   return (
-    <div className="py-12">
+    <div role="status" aria-live="polite" className="py-12">
       <div className="max-w-[480px] mx-auto flex flex-col items-center gap-4 text-center">
         {/* Pulsing amber dot */}
         <span
           aria-hidden="true"
-          className="block w-3 h-3 rounded-full bg-amber-400 animate-pulse"
+          className="block w-3 h-3 rounded-full bg-amber-400 motion-safe:animate-pulse"
         />
 
         {/* Headline */}
@@ -34,19 +34,19 @@ export function ListeningEmptyState({ micStream }: Props) {
           {/* Synthesis hint ~80% width */}
           <div
             aria-hidden="true"
-            className="bg-cream-2 rounded h-2.5 animate-pulse"
+            className="bg-cream-2 rounded h-2.5 motion-safe:animate-pulse"
             style={{ width: "80%" }}
           />
           {/* Claims hint ~60% width */}
           <div
             aria-hidden="true"
-            className="bg-cream-2 rounded h-2.5 animate-pulse"
+            className="bg-cream-2 rounded h-2.5 motion-safe:animate-pulse"
             style={{ width: "60%" }}
           />
           {/* Markers hint ~70% width */}
           <div
             aria-hidden="true"
-            className="bg-cream-2 rounded h-2.5 animate-pulse"
+            className="bg-cream-2 rounded h-2.5 motion-safe:animate-pulse"
             style={{ width: "70%" }}
           />
         </div>

@@ -33,13 +33,10 @@ describe("ListeningEmptyState", () => {
     ).toBeTruthy();
   });
 
-  it("renders exactly 3 skeleton rows with animate-pulse class", () => {
+  it("renders exactly 3 skeleton rows", () => {
     const { container } = render(<ListeningEmptyState micStream={null} />);
-    const skeletons = container.querySelectorAll(".animate-pulse");
-    // 3 skeleton hint rows + any pulse on the dot = at least 3
-    // The spec requires exactly 3 skeleton hint rows; we count elements
-    // that are the skeleton rows (bg-cream-2 rounded h-2.5 animate-pulse)
-    const skeletonRows = container.querySelectorAll(".bg-cream-2.rounded.h-2\\.5.animate-pulse");
+    // Skeleton rows are aria-hidden divs with bg-cream-2 class inside the skeleton wrapper
+    const skeletonRows = container.querySelectorAll(".bg-cream-2.rounded.h-2\\.5");
     expect(skeletonRows.length).toBe(3);
   });
 
@@ -62,13 +59,13 @@ describe("ListeningEmptyState", () => {
     expect(meter.getAttribute("data-stream")).toBe("present");
   });
 
-  it("has py-12 padding and centers content in max-w-[480px]", () => {
+  it("wraps content in a status region with headline and meter", () => {
     const { container } = render(<ListeningEmptyState micStream={null} />);
-    // Outer wrapper has py-12
+    // The outer element must be a status region for screen-reader phase announcements
     const outer = container.firstElementChild;
-    expect(outer?.className).toContain("py-12");
-    // Inner centered div
-    const inner = outer?.firstElementChild;
-    expect(inner?.className).toContain("max-w-[480px]");
+    expect(outer?.getAttribute("role")).toBe("status");
+    expect(outer?.getAttribute("aria-live")).toBe("polite");
+    // Inner content area exists (structural sanity — not class-bound)
+    expect(outer?.firstElementChild).toBeTruthy();
   });
 });

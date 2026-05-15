@@ -244,7 +244,8 @@ describe("SessionLayout – lifecycle: pre-record", () => {
 describe("SessionLayout – lifecycle: unmount teardown", () => {
   it("calls mic.stop and dg.close on unmount after recording started", async () => {
     const startedAt = new Date().toISOString();
-    mockStore(makeStore({ startedAt, isRecording: true }));
+    const store = makeStore({ startedAt, isRecording: true });
+    mockStore(store);
 
     let unmount: () => void;
     await act(async () => {
@@ -263,6 +264,7 @@ describe("SessionLayout – lifecycle: unmount teardown", () => {
     // Both teardown paths called
     expect(mockMicStop).toHaveBeenCalled();
     expect(mockDgClose).toHaveBeenCalled();
+    expect(store.setMicStream).toHaveBeenCalledWith(null);
   });
 });
 
@@ -271,7 +273,8 @@ describe("SessionLayout – lifecycle: unmount teardown", () => {
 describe("SessionLayout – lifecycle: start on isRecording", () => {
   it("opens deepgram stream and mic when startedAt set + isRecording true", async () => {
     const startedAt = new Date().toISOString();
-    mockStore(makeStore({ startedAt, isRecording: true }));
+    const store = makeStore({ startedAt, isRecording: true });
+    mockStore(store);
 
     await act(async () => {
       render(
@@ -283,5 +286,6 @@ describe("SessionLayout – lifecycle: start on isRecording", () => {
 
     expect(mockOpenDeepgramStream).toHaveBeenCalledOnce();
     expect(mockStartMic).toHaveBeenCalledOnce();
+    expect(store.setMicStream).toHaveBeenCalledWith(expect.any(Object));
   });
 });

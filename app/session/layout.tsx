@@ -50,7 +50,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
         (chunk) => dg.current?.send(chunk),
         { speakersMode: session.speakersMode },
       );
-      session.setMicStream(mic.current.stream);
+      if (mic.current) session.setMicStream(mic.current.stream);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       const friendly = /permission|denied|notallowed/i.test(msg)

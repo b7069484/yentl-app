@@ -16,6 +16,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.76",
     "@deepgram/sdk": "^5.1.0",
+    "@vercel/blob": "^2.3.3",
     "ai": "^6.0.177",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

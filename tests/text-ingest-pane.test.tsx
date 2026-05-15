@@ -6,7 +6,7 @@ import type { TranscriptSegment } from "@/lib/types";
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 // Use vi.hoisted() so mock fns are available inside vi.mock() factories.
 
-const { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx } =
+const { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx, mockPush } =
   vi.hoisted(() => {
     const mockSetPrerecordStage = vi.fn();
     const mockParsePlainText = vi.fn((): TranscriptSegment[] => [
@@ -14,8 +14,13 @@ const { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx
     ]);
     const mockBulkIngest = vi.fn().mockResolvedValue(undefined);
     const mockParseDocx = vi.fn().mockResolvedValue("Extracted docx text");
-    return { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx };
+    const mockPush = vi.fn();
+    return { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx, mockPush };
   });
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: unknown) => unknown) => {
@@ -45,6 +50,7 @@ beforeEach(() => {
   ]);
   mockBulkIngest.mockResolvedValue(undefined);
   mockParseDocx.mockResolvedValue("Extracted docx text");
+  mockPush.mockReset();
 });
 
 // ─── 1. Renders ───────────────────────────────────────────────────────────────

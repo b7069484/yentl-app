@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { ClaimDetail } from "./claim-detail";
@@ -200,6 +200,12 @@ export function ItemDetail({
   const markers = useSession((s) => s.markers);
   const speakers = useSession((s) => s.speakers);
 
+  // Guard against the server/first-render window where the Zustand store
+  // hasn't hydrated yet. Without this, claims/markers are empty on first
+  // paint and the NotFound fallback fires prematurely (Bug 2).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const fromQuery = parseFromQuery(searchParams.get("from"));
   const siblings =
     type === "claim"
@@ -231,6 +237,9 @@ export function ItemDetail({
 
   const onBack = useCallback(() => router.back(), [router]);
   const breadcrumbLabel = originLabel(fromQuery);
+
+  // Wait for client hydration before checking the store (see mounted state above).
+  if (!mounted) return null;
 
   if (type === "claim") {
     const claim = claims.find((c) => c.id === id);

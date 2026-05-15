@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
 import type { TranscriptSegment } from "@/lib/types";
@@ -53,6 +54,7 @@ interface YoutubeIngestResponse {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function YoutubeIngestPane() {
+  const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setSource = useSession((s) => s.setSource);
 
@@ -117,6 +119,7 @@ export function YoutubeIngestPane() {
 
       if (!ac.signal.aborted) {
         setPhase({ kind: "done" });
+        router.push("/session?view=overview");
       }
     } catch (e: unknown) {
       if ((e as Error).name === "AbortError") return;
@@ -160,7 +163,7 @@ export function YoutubeIngestPane() {
           onChange={handleUrlChange}
           placeholder="https://www.youtube.com/watch?v=..."
           disabled={isBusy || phase.kind === "done"}
-          className="flex-1 rounded-lg border border-ink-5 bg-surface px-3 py-2 text-[14px] text-ink placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink-3 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 rounded-lg border border-ink-5 bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-ink-4 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink-3 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="YouTube URL"
         />
         <button

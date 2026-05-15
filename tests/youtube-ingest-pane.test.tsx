@@ -3,10 +3,15 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 
 // ─── Mocks (hoisted) ──────────────────────────────────────────────────────────
 
-const { mockSetPrerecordStage, mockSetSource, mockBulkIngest } = vi.hoisted(() => ({
+const { mockSetPrerecordStage, mockSetSource, mockBulkIngest, mockPush } = vi.hoisted(() => ({
   mockSetPrerecordStage: vi.fn(),
   mockSetSource: vi.fn(),
   mockBulkIngest: vi.fn().mockResolvedValue(undefined),
+  mockPush: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
 }));
 
 vi.mock("@/lib/client/session-store", () => ({

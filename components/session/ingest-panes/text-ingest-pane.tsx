@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { parsePlainText, parseDocx } from "@/lib/client/text-ingest";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
@@ -23,6 +24,7 @@ function isSupportedFile(file: File): boolean {
 }
 
 export function TextIngestPane() {
+  const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
 
   const [text, setText] = useState("");
@@ -137,6 +139,9 @@ export function TextIngestPane() {
     try {
       const segments = parsePlainText(text, { withSpeakers });
       await bulkIngest(segments, { signal: controller.signal });
+      if (!controller.signal.aborted) {
+        router.push("/session?view=overview");
+      }
     } catch (e) {
       setError(`Processing failed: ${String(e)}`);
     } finally {
@@ -190,13 +195,13 @@ export function TextIngestPane() {
           className={[
             "relative rounded-lg border transition-colors",
             isDragOver
-              ? "border-primary bg-primary/5"
-              : "border-border bg-surface",
+              ? "border-teal bg-teal/5"
+              : "border-border bg-paper",
           ].join(" ")}
         >
           {isDragOver && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-lg pointer-events-none z-10 bg-primary/10">
-              <span className="text-[14px] font-medium text-primary">Drop file here</span>
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg pointer-events-none z-10 bg-teal/10">
+              <span className="text-[14px] font-medium text-teal">Drop file here</span>
             </div>
           )}
           <textarea
@@ -208,7 +213,7 @@ export function TextIngestPane() {
             className={[
               "w-full min-h-[280px] p-3 bg-transparent rounded-lg resize-y",
               "font-mono text-[13px] text-ink placeholder:text-ink-3",
-              "focus:outline-none focus:ring-2 focus:ring-primary/40",
+              "focus:outline-none focus:ring-2 focus:ring-teal/40",
             ].join(" ")}
             disabled={isProcessing}
           />
@@ -233,7 +238,7 @@ export function TextIngestPane() {
           type="checkbox"
           checked={withSpeakers}
           onChange={(e) => setWithSpeakers(e.target.checked)}
-          className="w-4 h-4 rounded accent-primary"
+          className="w-4 h-4 rounded accent-teal"
           disabled={isProcessing}
         />
         <span className="text-[13px] text-ink-2">
@@ -252,8 +257,8 @@ export function TextIngestPane() {
             "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg",
             "text-[13px] font-medium transition-colors",
             canProcess
-              ? "bg-primary text-white hover:bg-primary/90"
-              : "bg-surface-2 text-ink-3 cursor-not-allowed",
+              ? "bg-teal text-white hover:bg-teal-2"
+              : "bg-cream-2 text-ink-3 cursor-not-allowed",
           ].join(" ")}
         >
           {isProcessing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

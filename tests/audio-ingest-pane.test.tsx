@@ -10,6 +10,7 @@ const {
   mockBulkIngest,
   mockProbeAudioDuration,
   mockUploadToBlob,
+  mockPush,
 } = vi.hoisted(() => {
   return {
     mockSetPrerecordStage: vi.fn(),
@@ -17,8 +18,13 @@ const {
     mockBulkIngest: vi.fn().mockResolvedValue(undefined),
     mockProbeAudioDuration: vi.fn().mockResolvedValue(120), // 2 minutes default
     mockUploadToBlob: vi.fn().mockResolvedValue({ url: "https://blob.vercel-storage.com/audio.mp3" }),
+    mockPush: vi.fn(),
   };
 });
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: unknown) => unknown) => {

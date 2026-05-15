@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Upload, FileAudio, Loader2, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
 import {
@@ -48,6 +49,7 @@ function isAudioMime(type: string): boolean {
 }
 
 export function AudioIngestPane() {
+  const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setSource = useSession((s) => s.setSource);
 
@@ -173,6 +175,7 @@ export function AudioIngestPane() {
 
       if (!ac.signal.aborted) {
         setPhase({ kind: "done" });
+        router.push("/session?view=overview");
       }
     } catch (e: unknown) {
       if ((e as Error).name === "AbortError") return;
@@ -247,7 +250,7 @@ export function AudioIngestPane() {
 
       {/* Staged file preview card */}
       {staged && !isProcessing && phase.kind !== "done" && (
-        <div className="border border-ink-6 rounded-xl p-5 bg-surface">
+        <div className="border border-ink-6 rounded-xl p-5 bg-paper">
           <div className="flex items-start gap-3">
             <FileAudio className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" />
             <div className="flex-1 min-w-0">

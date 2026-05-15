@@ -76,12 +76,30 @@ describe("session store — speakers", () => {
     expect(useSession.getState().speakers).toHaveLength(0);
   });
 
-  it("startSession resets speakers and source to defaults", () => {
+  it("startSession resets speakers but preserves the chosen source", () => {
     useSession.getState().reset();
     useSession.getState().ensureSpeaker(0);
-    useSession.getState().setSource({ kind: "audio_file", blob_url: "x", duration_sec: 1, filename: "a.mp3", mime: "audio/mp3" });
+    const ytSource = { kind: "youtube", video_id: "abc", url: "https://youtu.be/abc" } as const;
+    useSession.getState().setSource(ytSource);
     useSession.getState().startSession();
     expect(useSession.getState().speakers).toEqual([]);
-    expect(useSession.getState().source).toEqual({ kind: "mic" });
+    // Source must survive startSession — multi-source ingest depends on it
+    expect(useSession.getState().source).toEqual(ytSource);
+    // Stage advances to "selected" so the picker doesn't reappear
+    expect(useSession.getState().prerecordStage).toBe("selected");
+  });
+
+  it("startSession sets isRecording=true for mic source, false otherwise", () => {
+    useSession.getState().reset();
+    // mic: should record
+    useSession.getState().setSource({ kind: "mic" });
+    useSession.getState().startSession();
+    expect(useSession.getState().isRecording).toBe(true);
+
+    // non-mic: bulk-loaded, not "recording"
+    useSession.getState().reset();
+    useSession.getState().setSource({ kind: "youtube", video_id: "abc", url: "https://youtu.be/abc" });
+    useSession.getState().startSession();
+    expect(useSession.getState().isRecording).toBe(false);
   });
 });

@@ -85,12 +85,21 @@ const initialState: Omit<State,
 export const useSession = create<State>((set, get) => ({
   ...initialState,
 
-  startSession: (title) => set({
+  startSession: (title) => set((s) => ({
     ...initialState,
+    // Preserve the source the picker chose — startSession should not wipe it
+    // back to mic. For non-mic ingest paths (text/audio/youtube/media), the
+    // pane sets source via setSource() before startSession() runs.
+    source: s.source,
+    // We've moved past the picker — the session is now "selected" stage.
+    prerecordStage: "selected",
     title: title ?? new Date().toISOString(),
     startedAt: new Date().toISOString(),
-    isRecording: true,
-  }),
+    // Only the mic path is actually "recording". Non-mic sources are bulk-
+    // loaded and the pill should show "Paused" (or a future "Loaded" state)
+    // rather than implying we're capturing.
+    isRecording: s.source.kind === "mic",
+  })),
 
   endSession: () => set({
     endedAt: new Date().toISOString(),

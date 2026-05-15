@@ -77,12 +77,20 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
+const PLAYABLE_SOURCE_KINDS = new Set(["youtube", "audio_file", "media_url"]);
+
 function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   const sp = useSearchParams();
   const view = sp.get("view") || "overview";
+  const sourceKind = useSession((s) => s.source.kind);
+
+  const showWatch = PLAYABLE_SOURCE_KINDS.has(sourceKind);
 
   const tabs = [
     { key: "overview", label: "Overview", href: "/session" },
+    ...(showWatch
+      ? [{ key: "watch", label: "Watch", href: "/session?view=watch" }]
+      : []),
     { key: "transcript", label: "Transcript", href: "/session?view=transcript" },
     {
       key: "claims",
@@ -96,10 +104,11 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
     },
   ];
 
-  // Active state: exact match for overview/transcript, prefix match for claims/markers
+  // Active state: exact match for overview/transcript/watch, prefix match for claims/markers
   // so that deep-linked filtered lists (e.g., ?view=claims&filter=...) still highlight.
   function isActive(tabKey: string): boolean {
     if (tabKey === "overview") return view === "overview";
+    if (tabKey === "watch") return view === "watch";
     if (tabKey === "transcript") return view === "transcript";
     if (tabKey === "claims") return view === "claims" || view.startsWith("claims");
     if (tabKey === "markers") return view === "markers" || view.startsWith("markers");

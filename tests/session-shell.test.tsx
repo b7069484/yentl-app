@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import type { ClaimCard, RhetoricMarker, Speaker, TranscriptSegment } from "@/lib/types";
+import type { ClaimCard, RhetoricMarker, Speaker, TranscriptSegment, SessionSource } from "@/lib/types";
 
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
@@ -104,6 +104,7 @@ type StoreState = {
   claims: ClaimCard[];
   markers: RhetoricMarker[];
   speakers: Speaker[];
+  source: SessionSource;
   setRecording: (b: boolean) => void;
   renameSpeaker: (id: number, label: string) => void;
 };
@@ -117,6 +118,7 @@ function makeDefaultStoreState(overrides: Partial<StoreState> = {}): StoreState 
     claims: [],
     markers: [],
     speakers: [],
+    source: { kind: "mic" },
     setRecording: vi.fn(),
     renameSpeaker: vi.fn(),
     ...overrides,

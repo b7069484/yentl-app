@@ -115,7 +115,7 @@ export function MediaUrlIngestPane() {
 
       if (!ac.signal.aborted) {
         setPhase({ kind: "done" });
-        router.push("/session?view=overview");
+        router.push("/session?view=watch");
       }
     } catch (e: unknown) {
       if ((e as Error).name === "AbortError") return;

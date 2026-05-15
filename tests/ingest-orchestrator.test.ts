@@ -78,91 +78,118 @@ describe("bulkIngest — session start", () => {
 });
 
 describe("bulkIngest — segment processing", () => {
-  it("calls appendFinal() for each segment", async () => {
+  it("calls appendFinal() for each segment synchronously before resolving", async () => {
     const segs = [makeSeg("One.", 0), makeSeg("Two.", 1), makeSeg("Three.", 2)];
     await bulkIngest(segs);
+    // All appendFinal calls are made before bulkIngest resolves —
+    // this is the contract Watch view depends on (full transcript visible immediately)
     expect(mockAppendFinal).toHaveBeenCalledTimes(3);
     expect(mockAppendFinal).toHaveBeenNthCalledWith(1, segs[0]);
     expect(mockAppendFinal).toHaveBeenNthCalledWith(2, segs[1]);
     expect(mockAppendFinal).toHaveBeenNthCalledWith(3, segs[2]);
   });
 
-  it("calls onFinalUtterance() for each segment", async () => {
+  it("eventually calls onFinalUtterance() for each segment (parallel, background)", async () => {
     const segs = [makeSeg("One.", 0), makeSeg("Two.", 1)];
     await bulkIngest(segs);
-    expect(mockOnFinalUtterance).toHaveBeenCalledTimes(2);
-    expect(mockOnFinalUtterance).toHaveBeenNthCalledWith(1, segs[0]);
-    expect(mockOnFinalUtterance).toHaveBeenNthCalledWith(2, segs[1]);
+    // Wait for the background workers to drain
+    await vi.waitFor(() => {
+      expect(mockOnFinalUtterance).toHaveBeenCalledTimes(2);
+    });
+    // Both segments should appear in the call list (order not guaranteed since
+    // workers race; just assert presence)
+    const calledArgs = mockOnFinalUtterance.mock.calls.map((c) => c[0]);
+    expect(calledArgs).toContain(segs[0]);
+    expect(calledArgs).toContain(segs[1]);
   });
 
-  it("calls runSynthesisNow() exactly once at the end", async () => {
-    const segs = [makeSeg("A.", 0), makeSeg("B.", 1)];
-    await bulkIngest(segs);
-    expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+  it("schedules runSynthesisNow() after the delay", async () => {
+    vi.useFakeTimers();
+    try {
+      const segs = [makeSeg("A.", 0), makeSeg("B.", 1)];
+      await bulkIngest(segs);
+      // Synthesis is delayed — not called immediately
+      expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+      // Advance past the synthesis delay
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("handles empty segment array: startSession called, no appendFinal/onFinalUtterance, runSynthesisNow once", async () => {
-    sessionState.startedAt = null;
-    await bulkIngest([]);
-    expect(mockStartSession).toHaveBeenCalledTimes(1);
-    expect(mockAppendFinal).not.toHaveBeenCalled();
-    expect(mockOnFinalUtterance).not.toHaveBeenCalled();
-    expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+  it("handles empty segment array: startSession called, no appendFinal/onFinalUtterance, synthesis still scheduled", async () => {
+    vi.useFakeTimers();
+    try {
+      sessionState.startedAt = null;
+      await bulkIngest([]);
+      expect(mockStartSession).toHaveBeenCalledTimes(1);
+      expect(mockAppendFinal).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(mockOnFinalUtterance).not.toHaveBeenCalled();
+      // Synthesis is still scheduled — produces a "nothing on the floor yet" read
+      expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
 describe("bulkIngest — ordering", () => {
-  it("order: startSession → appendFinal/onFinalUtterance loop → runSynthesisNow", async () => {
+  it("appendFinal calls all complete before bulkIngest resolves; analysis runs after", async () => {
     const calls: string[] = [];
     mockStartSession.mockImplementation(() => calls.push("startSession"));
     mockAppendFinal.mockImplementation(() => calls.push("appendFinal"));
     mockOnFinalUtterance.mockImplementation(async () => { calls.push("onFinalUtterance"); });
-    mockRunSynthesisNow.mockImplementation(async () => { calls.push("runSynthesisNow"); });
 
     sessionState.startedAt = null;
     await bulkIngest([makeSeg("Seg 1.", 0), makeSeg("Seg 2.", 1)]);
 
-    expect(calls).toEqual([
-      "startSession",
-      "appendFinal",
-      "onFinalUtterance",
-      "appendFinal",
-      "onFinalUtterance",
-      "runSynthesisNow",
-    ]);
+    // Before resolution: startSession + all appendFinal calls done.
+    // onFinalUtterance dispatched but its async resolution may or may not
+    // have happened yet — that's OK; the Watch view doesn't depend on it.
+    const beforeAnalysis = calls.slice(0, 3);
+    expect(beforeAnalysis).toEqual(["startSession", "appendFinal", "appendFinal"]);
+
+    // Wait for analysis to drain
+    await vi.waitFor(() => {
+      expect(mockOnFinalUtterance).toHaveBeenCalledTimes(2);
+    });
   });
 });
 
 describe("bulkIngest — AbortSignal", () => {
-  it("aborted signal before start: skips all segments and runSynthesisNow", async () => {
-    const controller = new AbortController();
-    controller.abort();
+  it("aborted before start: skips all appendFinal, no analysis, no synthesis", async () => {
+    vi.useFakeTimers();
+    try {
+      const controller = new AbortController();
+      controller.abort();
 
-    await bulkIngest([makeSeg("A.", 0), makeSeg("B.", 1)], { signal: controller.signal });
+      await bulkIngest([makeSeg("A.", 0), makeSeg("B.", 1)], { signal: controller.signal });
 
-    expect(mockAppendFinal).not.toHaveBeenCalled();
-    expect(mockOnFinalUtterance).not.toHaveBeenCalled();
-    expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+      expect(mockAppendFinal).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(mockOnFinalUtterance).not.toHaveBeenCalled();
+      expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it("aborts mid-loop: segments after abort point are skipped and runSynthesisNow is NOT called", async () => {
+  it("aborted mid-append: stops appending and does not dispatch analysis", async () => {
     const controller = new AbortController();
-
-    // Abort after the first segment is processed
-    let callCount = 0;
-    mockOnFinalUtterance.mockImplementation(async () => {
-      callCount++;
-      if (callCount === 1) {
-        controller.abort();
-      }
+    let appendCount = 0;
+    mockAppendFinal.mockImplementation(() => {
+      appendCount++;
+      if (appendCount === 1) controller.abort();
     });
 
-    const segs = [makeSeg("Seg 1.", 0), makeSeg("Seg 2.", 1), makeSeg("Seg 3.", 2)];
+    const segs = [makeSeg("A.", 0), makeSeg("B.", 1), makeSeg("C.", 2)];
     await bulkIngest(segs, { signal: controller.signal });
 
-    // Only the first segment should have been processed before abort was detected
+    // Only the first appendFinal landed; loop bailed after detecting abort
     expect(mockAppendFinal).toHaveBeenCalledTimes(1);
-    expect(mockOnFinalUtterance).toHaveBeenCalledTimes(1);
-    expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+    // Analysis was never dispatched because we aborted before reaching that step
+    expect(mockOnFinalUtterance).not.toHaveBeenCalled();
   });
 });

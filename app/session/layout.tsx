@@ -17,6 +17,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   const isRecording = useSession((s) => s.isRecording);
   const startedAt = useSession((s) => s.startedAt);
   const speakersMode = useSession((s) => s.speakersMode);
+  const sourceKind = useSession((s) => s.source.kind);
 
   const mic = useRef<MicHandle | null>(null);
   const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
@@ -67,10 +68,11 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   // React to isRecording transitions
   useEffect(() => {
     if (!startedAt) return;        // pre-record: nothing to start
+    if (sourceKind !== "mic") return;  // non-mic sources handle their own streams
     if (isRecording && !mic.current) void start();
     else if (!isRecording && mic.current) teardown();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRecording, startedAt]);
+  }, [isRecording, startedAt, sourceKind]);
 
   // Cleanup on unmount
   useEffect(() => () => teardown(), []);

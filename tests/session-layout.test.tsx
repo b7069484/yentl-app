@@ -79,6 +79,7 @@ type StoreState = {
   startedAt: string | null;
   isRecording: boolean;
   speakersMode: boolean;
+  source: { kind: string };
   setInterim: (t: string) => void;
   appendFinal: (seg: unknown) => void;
   setRecording: (b: boolean) => void;
@@ -90,6 +91,7 @@ function makeStore(overrides: Partial<StoreState> = {}): StoreState {
     startedAt: null,
     isRecording: false,
     speakersMode: false,
+    source: { kind: "mic" },
     setInterim: vi.fn(),
     appendFinal: vi.fn(),
     setRecording: vi.fn(),
@@ -287,5 +289,30 @@ describe("SessionLayout – lifecycle: start on isRecording", () => {
     expect(mockOpenDeepgramStream).toHaveBeenCalledOnce();
     expect(mockStartMic).toHaveBeenCalledOnce();
     expect(store.setMicStream).toHaveBeenCalledWith(expect.any(Object));
+  });
+});
+
+// ─── 6. Mic guard: non-mic source does not start mic ─────────────────────────
+
+describe("SessionLayout – mic guard: non-mic source", () => {
+  it("does NOT call startMic when source.kind is 'audio_file' and isRecording becomes true", async () => {
+    const startedAt = new Date().toISOString();
+    const store = makeStore({
+      startedAt,
+      isRecording: true,
+      source: { kind: "audio_file" },
+    });
+    mockStore(store);
+
+    await act(async () => {
+      render(
+        <SessionLayout>
+          <div>child</div>
+        </SessionLayout>,
+      );
+    });
+
+    expect(mockStartMic).not.toHaveBeenCalled();
+    expect(mockOpenDeepgramStream).not.toHaveBeenCalled();
   });
 });

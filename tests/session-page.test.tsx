@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
@@ -45,6 +45,12 @@ vi.mock("@/components/session/filtered-list", () => ({
   FilteredList: () => <div data-testid="filtered-list">FilteredList</div>,
 }));
 
+// ─── Mock SourceRouter ────────────────────────────────────────────────────────
+
+vi.mock("@/lib/client/source-router", () => ({
+  SourceRouter: () => <div data-testid="source-router">SourceRouter</div>,
+}));
+
 // ─── Mock session store ───────────────────────────────────────────────────────
 
 vi.mock("@/lib/client/session-store", () => ({
@@ -83,31 +89,21 @@ beforeEach(() => {
   mockStore(makeStore());
 });
 
-// ─── 1. PreRecord renders when startedAt === null ─────────────────────────────
+// ─── 1. SourceRouter renders when startedAt === null ─────────────────────────
 
-describe("SessionPage – PreRecord state", () => {
-  it("renders PreRecord when startedAt is null", () => {
+describe("SessionPage – SourceRouter state (pre-record)", () => {
+  it("renders SourceRouter when startedAt is null", () => {
     mockStore(makeStore({ startedAt: null }));
     render(<SessionPage />);
-    expect(
-      screen.getByText("Yenta is ready to listen."),
-    ).toBeTruthy();
+    expect(screen.getByTestId("source-router")).toBeTruthy();
   });
 
-  it("renders Start a session button in PreRecord", () => {
+  it("does not render view content when startedAt is null", () => {
     mockStore(makeStore({ startedAt: null }));
     render(<SessionPage />);
-    expect(
-      screen.getByRole("button", { name: /Start a session/i }),
-    ).toBeTruthy();
-  });
-
-  it("PreRecord onClick calls startSession", () => {
-    const startSession = vi.fn();
-    mockStore(makeStore({ startedAt: null, startSession }));
-    render(<SessionPage />);
-    fireEvent.click(screen.getByRole("button", { name: /Start a session/i }));
-    expect(startSession).toHaveBeenCalledOnce();
+    expect(screen.queryByTestId("home-overview")).toBeNull();
+    expect(screen.queryByTestId("transcript-view")).toBeNull();
+    expect(screen.queryByTestId("filtered-list")).toBeNull();
   });
 });
 
@@ -162,14 +158,12 @@ describe("SessionPage – view dispatch (startedAt set)", () => {
   });
 });
 
-// ─── 3. PreRecord does not render when startedAt is set ──────────────────────
+// ─── 3. SourceRouter does not render after start ─────────────────────────────
 
-describe("SessionPage – no PreRecord after start", () => {
-  it("does not show PreRecord heading when startedAt is set", () => {
+describe("SessionPage – no SourceRouter after start", () => {
+  it("does not show SourceRouter when startedAt is set", () => {
     mockStore(makeStore({ startedAt: new Date().toISOString() }));
     render(<SessionPage />);
-    expect(
-      screen.queryByText("Yenta is ready to listen."),
-    ).toBeNull();
+    expect(screen.queryByTestId("source-router")).toBeNull();
   });
 });

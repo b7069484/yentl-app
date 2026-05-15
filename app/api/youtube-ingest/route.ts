@@ -77,6 +77,21 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // plain Error objects with a .code property and still trigger the right branch.
     const code = isCaptionError(e) ? e.code : "NETWORK_ERROR";
     const message = e instanceof Error ? e.message : String(e);
+
+    // YT_DLP_MISSING is a server misconfiguration — return 500 with a clear message.
+    if (code === "YT_DLP_MISSING") {
+      return NextResponse.json(
+        {
+          error: {
+            code: "YT_DLP_MISSING",
+            message:
+              "Server is not configured for YouTube ingest (yt-dlp binary missing).",
+          },
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json({ error: { code, message } });
   }
 }

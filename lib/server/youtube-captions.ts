@@ -1,11 +1,14 @@
+import { join } from "node:path";
+import { spawn, mkdtemp, readFile, rm, tmpdir } from "./yt-dlp-runner";
 import type { TranscriptSegment } from "@/lib/types";
 
 // ─── Custom error class ────────────────────────────────────────────────────────
 
 export type CaptionErrorCode =
   | "NO_CAPTIONS"
-  | "PRIVATE"
-  | "NETWORK_ERROR";
+  | "PRIVATE" // age-restricted / login-required / region-locked
+  | "NETWORK_ERROR"
+  | "YT_DLP_MISSING"; // yt-dlp binary not on PATH
 
 export class CaptionError extends Error {
   constructor(
@@ -71,31 +74,11 @@ export function parseYouTubeUrl(url: string): string | null {
 }
 
 /** YouTube video IDs are exactly 11 chars: letters, digits, -, _ */
-function isValidVideoId(id: string): boolean {
+export function isValidVideoId(id: string): boolean {
   return /^[A-Za-z0-9_-]{11}$/.test(id);
 }
 
-// ─── Watch-page scrape helpers ────────────────────────────────────────────────
-
-type CaptionTrack = {
-  baseUrl: string;
-  languageCode: string;
-  kind?: string; // "asr" = auto-generated; absent = manual
-  name?: { simpleText?: string } | { runs?: Array<{ text: string }> };
-};
-
-const BROWSER_UA =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-
-/**
- * Matches `var ytInitialPlayerResponse = {...};` in YouTube watch-page HTML.
- * The trailing `;` followed by `var` or `</script>` is a reliable terminator
- * that avoids over-capturing when other JS vars follow on the same line.
- */
-const PLAYER_RESPONSE_RE =
-  /var\s+ytInitialPlayerResponse\s*=\s*(\{[\s\S]+?\})\s*;\s*(?:var|<\/script>)/;
-
-// ─── HTML entity decoder ───────────────────────────────────────────────────────
+// ─── HTML entity decoder (kept for parseCaptionsXml) ──────────────────────────
 
 const HTML_ENTITIES: Record<string, string> = {
   "&amp;": "&",
@@ -119,7 +102,7 @@ function decodeHtmlEntities(text: string): string {
   return result;
 }
 
-// ─── XML parser ───────────────────────────────────────────────────────────────
+// ─── XML parser (kept for reference; no longer called from fetchCaptions) ─────
 
 /**
  * Parses a timedtext XML response body into TranscriptSegment[].
@@ -130,8 +113,11 @@ function decodeHtmlEntities(text: string): string {
  *     <text start="0.5" dur="2.3">Caption text</text>
  *     ...
  *   </transcript>
+ *
+ * @deprecated No longer called from fetchCaptions (now uses yt-dlp + SRT).
+ * Kept here as a reference and for tests that may exercise it directly.
  */
-function parseCaptionsXml(xml: string): TranscriptSegment[] {
+export function parseCaptionsXml(xml: string): TranscriptSegment[] {
   const segments: TranscriptSegment[] = [];
 
   // Match each <text ...>...</text> element, capturing the full attribute string
@@ -167,140 +153,240 @@ function parseCaptionsXml(xml: string): TranscriptSegment[] {
   return segments;
 }
 
+// ─── SRT parser ───────────────────────────────────────────────────────────────
+
+/**
+ * Parses an SRT subtitle file into TranscriptSegment[].
+ *
+ * SRT format:
+ *   1
+ *   00:00:00,570 --> 00:00:19,310
+ *   [Music]
+ *
+ *   2
+ *   00:00:19,320 --> 00:00:22,990
+ *   the uh uniform code of military
+ *
+ * yt-dlp's SRT output for auto-generated captions often produces overlapping/duplicate
+ * segments (a "carousel" effect — same text appearing in 2-3 consecutive segments with
+ * slightly shifted timing). These are deduped: consecutive segments with identical text
+ * are collapsed into one segment with extended end.
+ */
+export function parseSrt(srt: string): TranscriptSegment[] {
+  const segments: TranscriptSegment[] = [];
+  // Normalize line endings
+  const normalized = srt.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  // Each block is separated by a blank line
+  const blocks = normalized.split(/\n\s*\n/).filter((b) => b.trim().length > 0);
+
+  for (const block of blocks) {
+    const lines = block.split("\n");
+    // First line: index number (we ignore it)
+    // Second line: timestamps
+    // Remaining lines: caption text
+    if (lines.length < 3) continue;
+
+    const timeline = lines[1];
+    const match =
+      /^(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})/.exec(
+        timeline,
+      );
+    if (!match) continue;
+
+    const [, h1, m1, s1, ms1, h2, m2, s2, ms2] = match;
+    const start =
+      parseInt(h1) * 3600 +
+      parseInt(m1) * 60 +
+      parseInt(s1) +
+      parseInt(ms1) / 1000;
+    const end =
+      parseInt(h2) * 3600 +
+      parseInt(m2) * 60 +
+      parseInt(s2) +
+      parseInt(ms2) / 1000;
+
+    if (end < start) continue;
+
+    // Join remaining lines, strip <c>, <c.colorXX> tags but keep cue markers like [Music]
+    let text = lines.slice(2).join(" ").trim();
+    text = text.replace(/<[^>]+>/g, ""); // strip <c>, <c.color>, etc.
+    text = text.replace(/\s+/g, " "); // collapse whitespace
+
+    if (!text) continue;
+
+    segments.push({
+      text,
+      start,
+      end,
+      is_final: true,
+      speaker_id: 0,
+    });
+  }
+
+  // Dedupe: collapse consecutive segments with identical text by extending the
+  // first one's end to cover them all (yt-dlp carousel effect).
+  const deduped: TranscriptSegment[] = [];
+  for (const seg of segments) {
+    const last = deduped[deduped.length - 1];
+    if (last && last.text === seg.text) {
+      last.end = Math.max(last.end, seg.end);
+    } else {
+      deduped.push(seg);
+    }
+  }
+
+  return deduped;
+}
+
+// ─── yt-dlp runner ────────────────────────────────────────────────────────────
+
+const YT_DLP_TIMEOUT_MS = 60_000;
+
+function spawnYtDlp(
+  args: string[],
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  return new Promise((resolve, reject) => {
+    let proc: ReturnType<typeof spawn>;
+    try {
+      proc = spawn("yt-dlp", args);
+    } catch (err) {
+      // spawn() itself throws synchronously if the binary is missing on some platforms
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "ENOENT") {
+        reject(
+          new CaptionError("YT_DLP_MISSING", "yt-dlp is not installed on the server"),
+        );
+      } else {
+        reject(
+          new CaptionError(
+            "NETWORK_ERROR",
+            `yt-dlp spawn failed: ${(err as Error).message}`,
+          ),
+        );
+      }
+      return;
+    }
+
+    let stdout = "";
+    let stderr = "";
+    let timer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+      timer = null;
+      proc.kill("SIGKILL");
+      reject(new CaptionError("NETWORK_ERROR", "yt-dlp timed out after 60s"));
+    }, YT_DLP_TIMEOUT_MS);
+
+    proc.stdout?.on("data", (chunk: Buffer) => {
+      stdout += chunk;
+    });
+    proc.stderr?.on("data", (chunk: Buffer) => {
+      stderr += chunk;
+    });
+
+    proc.on("error", (err: NodeJS.ErrnoException) => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      if (err.code === "ENOENT") {
+        reject(
+          new CaptionError("YT_DLP_MISSING", "yt-dlp is not installed on the server"),
+        );
+      } else {
+        reject(
+          new CaptionError("NETWORK_ERROR", `yt-dlp spawn failed: ${err.message}`),
+        );
+      }
+    });
+
+    proc.on("close", (exitCode: number | null) => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      resolve({ exitCode: exitCode ?? -1, stdout, stderr });
+    });
+  });
+}
+
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 /**
- * Fetches captions for a YouTube video by scraping the watch page and
- * extracting captionTracks from ytInitialPlayerResponse. This is the robust
- * approach used by youtube-transcript libraries: the baseUrl in the track is
- * pre-authenticated and reliably returns the caption XML.
+ * Fetches captions for a YouTube video using yt-dlp.
  *
- * Track preference order:
- *   1. Manual English (languageCode === "en", no kind)
- *   2. Manual en-region (languageCode starts with "en", no kind)
- *   3. Auto-generated English (languageCode === "en", kind === "asr")
- *   4. Auto-generated en-region (languageCode starts with "en", kind === "asr")
+ * yt-dlp is spawned with --write-auto-sub --write-sub --sub-lang en
+ * --skip-download --convert-subs srt, writing output to a temp directory.
+ * The resulting SRT is parsed and returned as TranscriptSegment[].
  *
- * @throws CaptionError({ code: "NO_CAPTIONS" }) when no English track found or XML is empty
- * @throws CaptionError({ code: "PRIVATE" }) when video is not playable (age-restricted, private, etc.)
- * @throws CaptionError({ code: "NETWORK_ERROR" }) on fetch failure or non-2xx
+ * Requires yt-dlp on the server PATH (locally: brew install yt-dlp).
+ *
+ * @throws CaptionError({ code: "NO_CAPTIONS" }) when no English captions available
+ * @throws CaptionError({ code: "PRIVATE" }) when video is private, age-restricted, or unavailable
+ * @throws CaptionError({ code: "NETWORK_ERROR" }) on spawn failure or timeout
+ * @throws CaptionError({ code: "YT_DLP_MISSING" }) when yt-dlp binary is not on PATH
  */
 export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
-  // 1. Fetch the watch page
-  const watchUrl = `https://www.youtube.com/watch?v=${videoId}&hl=en`;
-  let html: string;
+  const tmpDir = await mkdtemp(join(tmpdir(), "yenta-yt-"));
   try {
-    const res = await fetch(watchUrl, {
-      headers: {
-        "User-Agent": BROWSER_UA,
-        "Accept-Language": "en-US,en;q=0.9",
-      },
-    });
-    if (!res.ok) {
+    const outPattern = join(tmpDir, "captions.%(ext)s");
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+    const args = [
+      "--write-auto-sub", // include auto-generated as fallback
+      "--write-sub", // prefer manual
+      "--sub-lang",
+      "en",
+      "--skip-download",
+      "--convert-subs",
+      "srt",
+      "--no-warnings",
+      "-o",
+      outPattern,
+      videoUrl,
+    ];
+
+    const result = await spawnYtDlp(args);
+
+    if (result.exitCode !== 0) {
+      // Categorize known yt-dlp errors via stderr matching
+      const stderr = result.stderr.toLowerCase();
+      if (stderr.includes("private video") || stderr.includes("sign in") || stderr.includes("login required")) {
+        throw new CaptionError("PRIVATE", "Video is private or login-required");
+      }
+      if (stderr.includes("age-restricted") || stderr.includes("age restricted")) {
+        throw new CaptionError("PRIVATE", "Video is age-restricted");
+      }
+      if (
+        stderr.includes("unavailable") ||
+        stderr.includes("not available")
+      ) {
+        throw new CaptionError("PRIVATE", "Video is unavailable");
+      }
       throw new CaptionError(
         "NETWORK_ERROR",
-        `Watch page returned ${res.status} for video ${videoId}`,
+        `yt-dlp exited ${result.exitCode}: ${result.stderr.slice(0, 200)}`,
       );
     }
-    html = await res.text();
-  } catch (e) {
-    if (e instanceof CaptionError) throw e;
-    throw new CaptionError(
-      "NETWORK_ERROR",
-      `Watch page fetch failed: ${String(e)}`,
-    );
-  }
 
-  // 2. Extract ytInitialPlayerResponse
-  const match = PLAYER_RESPONSE_RE.exec(html);
-  if (!match) {
-    throw new CaptionError(
-      "NETWORK_ERROR",
-      `Could not locate ytInitialPlayerResponse in watch page for video ${videoId}`,
-    );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let playerResponse: any;
-  try {
-    playerResponse = JSON.parse(match[1]);
-  } catch {
-    throw new CaptionError(
-      "NETWORK_ERROR",
-      `Failed to parse ytInitialPlayerResponse JSON for video ${videoId}`,
-    );
-  }
-
-  // 3. Detect playability issues (private, age-restricted, unavailable)
-  const status = playerResponse?.playabilityStatus?.status;
-  if (status && status !== "OK") {
-    const reason = playerResponse?.playabilityStatus?.reason ?? status;
-    throw new CaptionError("PRIVATE", `Video not playable: ${reason}`);
-  }
-
-  // 4. Extract caption tracks
-  const tracks: CaptionTrack[] =
-    playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? [];
-
-  if (tracks.length === 0) {
-    throw new CaptionError(
-      "NO_CAPTIONS",
-      `No caption tracks listed for video ${videoId}`,
-    );
-  }
-
-  // 5. Pick the best English track
-  const englishManual = tracks.find(
-    (t) => t.languageCode === "en" && !t.kind,
-  );
-  const enRegionManual = tracks.find(
-    (t) => t.languageCode.startsWith("en") && !t.kind,
-  );
-  const englishAsr = tracks.find(
-    (t) => t.languageCode === "en" && t.kind === "asr",
-  );
-  const enRegionAsr = tracks.find(
-    (t) => t.languageCode.startsWith("en") && t.kind === "asr",
-  );
-
-  const chosen = englishManual ?? enRegionManual ?? englishAsr ?? enRegionAsr;
-
-  if (!chosen) {
-    throw new CaptionError(
-      "NO_CAPTIONS",
-      `No English caption track found for video ${videoId}`,
-    );
-  }
-
-  // 6. Fetch the caption XML from the pre-authenticated baseUrl
-  let xml: string;
-  try {
-    const captionRes = await fetch(chosen.baseUrl, {
-      headers: { "User-Agent": BROWSER_UA },
-    });
-    if (!captionRes.ok) {
+    // Read the SRT file (yt-dlp writes captions.en.srt)
+    const srtPath = join(tmpDir, "captions.en.srt");
+    let srtContent: string;
+    try {
+      srtContent = await readFile(srtPath, "utf-8");
+    } catch {
+      // yt-dlp succeeded but didn't write the SRT — means no captions
       throw new CaptionError(
-        "NETWORK_ERROR",
-        `Caption track fetch returned ${captionRes.status} for video ${videoId}`,
+        "NO_CAPTIONS",
+        "No English captions available for this video",
       );
     }
-    xml = await captionRes.text();
-  } catch (e) {
-    if (e instanceof CaptionError) throw e;
-    throw new CaptionError(
-      "NETWORK_ERROR",
-      `Caption track fetch failed: ${String(e)}`,
-    );
-  }
 
-  // 7. Parse and return
-  const segments = parseCaptionsXml(xml);
-  if (segments.length === 0) {
-    throw new CaptionError(
-      "NO_CAPTIONS",
-      `Caption track was empty for video ${videoId}`,
-    );
+    const segments = parseSrt(srtContent);
+    if (segments.length === 0) {
+      throw new CaptionError("NO_CAPTIONS", "Caption file was empty");
+    }
+    return segments;
+  } finally {
+    // Clean up temp dir
+    await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   }
-
-  return segments;
 }

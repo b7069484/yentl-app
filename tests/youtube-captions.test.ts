@@ -1,372 +1,498 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { EventEmitter } from "node:events";
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
+// ─── Module mocks ─────────────────────────────────────────────────────────────
+// Mock the thin adapter module rather than node: built-ins directly, which
+// are immutable ESM namespaces. vi.hoisted() lets us reference the stubs
+// inside the factory closure even though vi.mock() is hoisted to the top.
 
-/** Caption XML used for happy-path tests */
-const VALID_CAPTION_XML = `<?xml version="1.0"?><transcript><text start="0.5" dur="2.3">Hello world.</text><text start="3.0" dur="1.5">This is a test.</text></transcript>`;
+const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn } = vi.hoisted(() => ({
+  spawnFn: vi.fn(),
+  mkdtempFn: vi.fn(),
+  readFileFn: vi.fn(),
+  rmFn: vi.fn(),
+  tmpdirFn: vi.fn(),
+}));
 
-/** Two tracks: first has kind="asr" (auto-generated), second has no kind (manual) */
-const VALID_HTML = `<html><head></head><body><script>var ytInitialPlayerResponse = ${JSON.stringify({
-  playabilityStatus: { status: "OK" },
-  captions: {
-    playerCaptionsTracklistRenderer: {
-      captionTracks: [
-        {
-          baseUrl: "https://www.youtube.com/api/timedtext?caps=asr&v=dQw4w9WgXcQ",
-          languageCode: "en",
-          kind: "asr",
-        },
-        {
-          baseUrl: "https://www.youtube.com/api/timedtext?v=dQw4w9WgXcQ",
-          languageCode: "en",
-        },
-      ],
-    },
-  },
-})};var ytcfg = {};</script></body></html>`;
+vi.mock("@/lib/server/yt-dlp-runner", () => ({
+  spawn: spawnFn,
+  mkdtemp: mkdtempFn,
+  readFile: readFileFn,
+  rm: rmFn,
+  tmpdir: tmpdirFn,
+}));
 
-/** Only one track, ASR */
-const ASR_ONLY_HTML = `<html><body><script>var ytInitialPlayerResponse = ${JSON.stringify({
-  playabilityStatus: { status: "OK" },
-  captions: {
-    playerCaptionsTracklistRenderer: {
-      captionTracks: [
-        {
-          baseUrl: "https://www.youtube.com/api/timedtext?caps=asr&v=dQw4w9WgXcQ",
-          languageCode: "en",
-          kind: "asr",
-        },
-      ],
-    },
-  },
-})};var x = 1;</script></body></html>`;
+// ─── Import under test (after mocks) ─────────────────────────────────────────
 
-/** Watch page with no captionTracks (captions key missing) */
-const NO_CAPTIONS_HTML = `<html><body><script>var ytInitialPlayerResponse = ${JSON.stringify({
-  playabilityStatus: { status: "OK" },
-  captions: undefined,
-})};var x = 1;</script></body></html>`;
+import { fetchCaptions, parseSrt } from "@/lib/server/youtube-captions";
 
-/** Watch page where playabilityStatus is LOGIN_REQUIRED */
-const PRIVATE_HTML = `<html><body><script>var ytInitialPlayerResponse = ${JSON.stringify({
-  playabilityStatus: {
-    status: "LOGIN_REQUIRED",
-    reason: "Sign in to confirm your age",
-  },
-})};var x = 1;</script></body></html>`;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Non-English tracks only */
-const NON_ENGLISH_HTML = `<html><body><script>var ytInitialPlayerResponse = ${JSON.stringify({
-  playabilityStatus: { status: "OK" },
-  captions: {
-    playerCaptionsTracklistRenderer: {
-      captionTracks: [
-        {
-          baseUrl: "https://www.youtube.com/api/timedtext?v=dQw4w9WgXcQ&lang=fr",
-          languageCode: "fr",
-        },
-        {
-          baseUrl: "https://www.youtube.com/api/timedtext?v=dQw4w9WgXcQ&lang=de",
-          languageCode: "de",
-        },
-      ],
-    },
-  },
-})};var x = 1;</script></body></html>`;
+type MockSpawnProc = EventEmitter & {
+  stdout: EventEmitter;
+  stderr: EventEmitter;
+  kill: ReturnType<typeof vi.fn>;
+};
 
-/** HTML that does not contain ytInitialPlayerResponse at all */
-const NO_PLAYER_RESPONSE_HTML = `<html><body><p>Error: Something went wrong</p></body></html>`;
+/**
+ * Builds a fake child_process handle that the spawn mock returns.
+ */
+function makeFakeProc(): {
+  proc: MockSpawnProc;
+  emitStdout: (data: string) => void;
+  emitStderr: (data: string) => void;
+  emitError: (err: Error) => void;
+  emitClose: (code: number | null) => void;
+} {
+  const stdout = new EventEmitter();
+  const stderr = new EventEmitter();
+  const proc = Object.assign(new EventEmitter(), {
+    stdout,
+    stderr,
+    kill: vi.fn(),
+  }) as MockSpawnProc;
 
-/** An empty caption XML */
-const EMPTY_CAPTION_XML = `<?xml version="1.0"?><transcript/>`;
-
-/** dur before start — attribute order independence check */
-const DUR_BEFORE_START_XML = `<?xml version="1.0"?><transcript><text dur="2.0" start="1.0">hi</text></transcript>`;
-
-/** No dur attribute */
-const NO_DUR_XML = `<?xml version="1.0"?><transcript><text start="3.0">no-dur</text></transcript>`;
-
-/** Caption XML with HTML entities */
-const ENTITIES_XML = `<?xml version="1.0" encoding="utf-8"?>
-<transcript>
-  <text start="0.5" dur="2.3">Hello &amp; welcome</text>
-  <text start="2.8" dur="1.5">It&#39;s a &lt;test&gt;</text>
-  <text start="4.3" dur="3.1">&quot;Quoted&quot; text</text>
-</transcript>`;
-
-function okResponse(body: string) {
-  return { ok: true, status: 200, text: () => Promise.resolve(body) };
+  return {
+    proc,
+    emitStdout: (data) => stdout.emit("data", Buffer.from(data)),
+    emitStderr: (data) => stderr.emit("data", Buffer.from(data)),
+    emitError: (err) => proc.emit("error", err),
+    emitClose: (code) => proc.emit("close", code),
+  };
 }
 
-function notFoundResponse() {
-  return { ok: false, status: 404, text: () => Promise.resolve("Not Found") };
-}
+const VALID_SRT = `1
+00:00:00,570 --> 00:00:04,310
+Hello world.
 
-// ─── Import under test ─────────────────────────────────────────────────────────
+2
+00:00:04,320 --> 00:00:08,990
+This is a test.
 
-import { fetchCaptions } from "@/lib/server/youtube-captions";
+3
+00:00:09,000 --> 00:00:12,000
+Final line.
+`;
 
-// ─── Reset mocks between tests ─────────────────────────────────────────────────
+// ─── Reset mocks between tests ────────────────────────────────────────────────
 
 beforeEach(() => {
-  vi.unstubAllGlobals();
+  spawnFn.mockReset();
+  mkdtempFn.mockReset();
+  readFileFn.mockReset();
+  rmFn.mockReset();
+  tmpdirFn.mockReset();
+
+  // Sensible defaults
+  tmpdirFn.mockReturnValue("/tmp");
+  mkdtempFn.mockResolvedValue("/tmp/yenta-yt-abc123");
+  rmFn.mockResolvedValue(undefined);
 });
 
-// ─── fetchCaptions — happy path ────────────────────────────────────────────────
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-describe("fetchCaptions — picks manual English over auto-generated", () => {
-  it("returns 2 segments from VALID_CAPTION_XML", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+// ─── fetchCaptions — happy path ───────────────────────────────────────────────
 
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
+describe("fetchCaptions — happy path", () => {
+  it("returns parsed segments when spawn exits 0 and SRT file exists", async () => {
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
 
-    expect(segments).toHaveLength(2);
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    // Wait for mkdtemp + spawn to run, then emit close
+    await Promise.resolve();
+    emitClose(0);
+
+    const segments = await promise;
+    expect(segments).toHaveLength(3);
     expect(segments[0].text).toBe("Hello world.");
-    expect(segments[0].start).toBeCloseTo(0.5);
-    expect(segments[0].end).toBeCloseTo(0.5 + 2.3);
-    expect(segments[1].text).toBe("This is a test.");
-    expect(segments[1].start).toBeCloseTo(3.0);
-  });
-
-  it("makes exactly 2 fetch calls (watch page + caption URL)", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await fetchCaptions("dQw4w9WgXcQ");
-
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-  });
-
-  it("second fetch uses the manual (non-asr) track baseUrl", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await fetchCaptions("dQw4w9WgXcQ");
-
-    const secondCallUrl = fetchMock.mock.calls[1][0] as string;
-    // Manual track baseUrl does not contain "caps=asr"
-    expect(secondCallUrl).not.toContain("caps=asr");
+    expect(segments[0].start).toBeCloseTo(0.57);
+    expect(segments[0].end).toBeCloseTo(4.31);
+    expect(segments[2].text).toBe("Final line.");
   });
 
   it("sets is_final: true on all segments", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
 
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
 
+    const segments = await promise;
     for (const seg of segments) {
       expect(seg.is_final).toBe(true);
     }
   });
 
   it("sets speaker_id: 0 on all segments", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
 
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
 
+    const segments = await promise;
     for (const seg of segments) {
       expect(seg.speaker_id).toBe(0);
     }
   });
-});
 
-describe("fetchCaptions — falls back to ASR English when no manual track", () => {
-  it("returns segments when only an ASR track is available", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(ASR_ONLY_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+  it("cleans up the temp dir even on success", async () => {
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
 
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
+    await promise;
 
-    expect(segments).toHaveLength(2);
+    expect(rmFn).toHaveBeenCalledWith(
+      "/tmp/yenta-yt-abc123",
+      { recursive: true, force: true },
+    );
   });
 
-  it("second fetch uses the ASR track baseUrl (contains caps=asr)", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(ASR_ONLY_HTML))
-      .mockResolvedValueOnce(okResponse(VALID_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+  it("passes the video URL and required flags to yt-dlp args", async () => {
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
 
-    await fetchCaptions("dQw4w9WgXcQ");
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
+    await promise;
 
-    const secondCallUrl = fetchMock.mock.calls[1][0] as string;
-    expect(secondCallUrl).toContain("caps=asr");
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+    const args = spawnFn.mock.calls[0][1] as string[];
+    expect(args).toContain("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    expect(args).toContain("--skip-download");
+    expect(args).toContain("--convert-subs");
+    expect(args).toContain("srt");
+    expect(args).toContain("--sub-lang");
+    expect(args).toContain("en");
   });
 });
 
-// ─── fetchCaptions — PRIVATE ───────────────────────────────────────────────────
+// ─── fetchCaptions — NO_CAPTIONS ─────────────────────────────────────────────
 
-describe("fetchCaptions — throws PRIVATE on LOGIN_REQUIRED", () => {
-  it("throws CaptionError with code PRIVATE", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(okResponse(PRIVATE_HTML));
-    vi.stubGlobal("fetch", fetchMock);
+describe("fetchCaptions — throws NO_CAPTIONS when SRT file is absent", () => {
+  it("throws NO_CAPTIONS when spawn exits 0 but readFile throws ENOENT", async () => {
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    const enoent = Object.assign(new Error("ENOENT: no such file"), { code: "ENOENT" });
+    readFileFn.mockRejectedValue(enoent);
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "PRIVATE",
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
+
+    await expect(promise).rejects.toMatchObject({ code: "NO_CAPTIONS" });
+  });
+
+  it("throws NO_CAPTIONS when SRT parses to zero segments (empty file)", async () => {
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue("");
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitClose(0);
+
+    await expect(promise).rejects.toMatchObject({ code: "NO_CAPTIONS" });
+  });
+});
+
+// ─── fetchCaptions — PRIVATE ─────────────────────────────────────────────────
+
+describe("fetchCaptions — throws PRIVATE on private/restricted videos", () => {
+  it("throws PRIVATE when stderr contains 'Private video'", async () => {
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitStderr("ERROR: [youtube] dQw4w9WgXcQ: Private video. Sign in if you've been granted access");
+    emitClose(1);
+
+    await expect(promise).rejects.toMatchObject({ code: "PRIVATE" });
+  });
+
+  it("throws PRIVATE when stderr contains 'age-restricted'", async () => {
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitStderr("ERROR: [youtube] This video is age-restricted");
+    emitClose(1);
+
+    await expect(promise).rejects.toMatchObject({ code: "PRIVATE" });
+  });
+
+  it("throws PRIVATE when stderr contains 'login required'", async () => {
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitStderr("ERROR: Login required to access this content");
+    emitClose(1);
+
+    await expect(promise).rejects.toMatchObject({ code: "PRIVATE" });
+  });
+
+  it("throws PRIVATE when stderr contains 'not available'", async () => {
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitStderr("ERROR: This video is not available in your country");
+    emitClose(1);
+
+    await expect(promise).rejects.toMatchObject({ code: "PRIVATE" });
+  });
+});
+
+// ─── fetchCaptions — YT_DLP_MISSING ─────────────────────────────────────────
+
+describe("fetchCaptions — throws YT_DLP_MISSING when yt-dlp binary is absent", () => {
+  it("throws YT_DLP_MISSING when the proc 'error' event fires with ENOENT", async () => {
+    const { proc, emitError } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    const enoent = Object.assign(new Error("spawn yt-dlp ENOENT"), {
+      code: "ENOENT",
     });
-  });
+    emitError(enoent);
 
-  it("error message includes the playabilityStatus reason", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(okResponse(PRIVATE_HTML));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      message: expect.stringContaining("Sign in"),
-    });
+    await expect(promise).rejects.toMatchObject({ code: "YT_DLP_MISSING" });
   });
 });
 
-// ─── fetchCaptions — NO_CAPTIONS ──────────────────────────────────────────────
+// ─── fetchCaptions — NETWORK_ERROR ───────────────────────────────────────────
 
-describe("fetchCaptions — throws NO_CAPTIONS when captionTracks is missing", () => {
-  it("throws NO_CAPTIONS when captions key is absent from playerResponse", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(okResponse(NO_CAPTIONS_HTML));
-    vi.stubGlobal("fetch", fetchMock);
+describe("fetchCaptions — throws NETWORK_ERROR for generic non-zero exit", () => {
+  it("throws NETWORK_ERROR when yt-dlp exits non-zero with unknown stderr", async () => {
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "NO_CAPTIONS",
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    emitStderr("ERROR: Something unexpected happened");
+    emitClose(2);
+
+    await expect(promise).rejects.toMatchObject({ code: "NETWORK_ERROR" });
+  });
+
+  it("throws NETWORK_ERROR when the proc 'error' event fires with non-ENOENT", async () => {
+    const { proc, emitError } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await Promise.resolve();
+    const err = Object.assign(new Error("EACCES: permission denied"), {
+      code: "EACCES",
     });
+    emitError(err);
+
+    await expect(promise).rejects.toMatchObject({ code: "NETWORK_ERROR" });
   });
 });
 
-describe("fetchCaptions — throws NO_CAPTIONS when no English track available", () => {
-  it("throws NO_CAPTIONS when only French and German tracks exist", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(okResponse(NON_ENGLISH_HTML));
-    vi.stubGlobal("fetch", fetchMock);
+// ─── fetchCaptions — timeout ─────────────────────────────────────────────────
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "NO_CAPTIONS",
-    });
-  });
-});
+describe("fetchCaptions — throws NETWORK_ERROR on timeout", () => {
+  it("kills the process and throws NETWORK_ERROR after 60s", async () => {
+    vi.useFakeTimers();
 
-describe("fetchCaptions — throws NO_CAPTIONS when caption XML is empty", () => {
-  it("throws NO_CAPTIONS when the caption XML has no text nodes", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(EMPTY_CAPTION_XML));
-    vi.stubGlobal("fetch", fetchMock);
+    const { proc } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "NO_CAPTIONS",
-    });
-  });
-});
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    // Suppress unhandled-rejection noise — we will assert on it below
+    promise.catch(() => {});
 
-// ─── fetchCaptions — NETWORK_ERROR ────────────────────────────────────────────
+    // Drain microtasks so mkdtemp resolves and the setTimeout is installed
+    await Promise.resolve();
 
-describe("fetchCaptions — throws NETWORK_ERROR on watch page non-2xx", () => {
-  it("throws NETWORK_ERROR when watch page returns 403", async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(notFoundResponse());
-    vi.stubGlobal("fetch", fetchMock);
+    // Advance past the 60s timeout — fires the SIGKILL + reject
+    await vi.advanceTimersByTimeAsync(61_000);
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
+    await expect(promise).rejects.toMatchObject({
       code: "NETWORK_ERROR",
+      message: expect.stringContaining("timed out"),
     });
-  });
-
-  it("throws NETWORK_ERROR when fetch() itself rejects (network down)", async () => {
-    const fetchMock = vi.fn().mockRejectedValueOnce(new TypeError("Failed to fetch"));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "NETWORK_ERROR",
-    });
-  });
+    expect(proc.kill).toHaveBeenCalledWith("SIGKILL");
+  }, 15_000); // generous wall-clock timeout for fake timer tests
 });
 
-describe("fetchCaptions — throws NETWORK_ERROR when ytInitialPlayerResponse is absent", () => {
-  it("throws NETWORK_ERROR when the HTML has no ytInitialPlayerResponse", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(NO_PLAYER_RESPONSE_HTML));
-    vi.stubGlobal("fetch", fetchMock);
+// ─── parseSrt — standard cases ────────────────────────────────────────────────
 
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "NETWORK_ERROR",
-    });
+describe("parseSrt — standard SRT with 3 blocks", () => {
+  it("returns 3 segments with correct timestamps", () => {
+    const segments = parseSrt(VALID_SRT);
+    expect(segments).toHaveLength(3);
+    expect(segments[0].start).toBeCloseTo(0.57);
+    expect(segments[0].end).toBeCloseTo(4.31);
+    expect(segments[1].start).toBeCloseTo(4.32);
+    expect(segments[1].end).toBeCloseTo(8.99);
+    expect(segments[2].start).toBeCloseTo(9.0);
+    expect(segments[2].end).toBeCloseTo(12.0);
   });
-});
 
-// ─── parseCaptionsXml — attribute order independence ──────────────────────────
-
-describe("parseCaptionsXml — attribute order independence (via fetchCaptions)", () => {
-  it("parses <text dur='2.0' start='1.0'> (dur before start) correctly", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(DUR_BEFORE_START_XML));
-    vi.stubGlobal("fetch", fetchMock);
-
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
-
+  it("preserves [Music] cue markers (not stripped)", () => {
+    const srt = `1
+00:00:00,000 --> 00:00:03,000
+[Music]
+`;
+    const segments = parseSrt(srt);
     expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("[Music]");
+  });
+
+  it("strips <c.colorE5E5E5> tags but keeps the text inside them", () => {
+    const srt = `1
+00:00:00,000 --> 00:00:05,000
+<c.colorE5E5E5>hello</c.colorE5E5E5> world
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("hello world");
+  });
+
+  it("strips generic <c> tags", () => {
+    const srt = `1
+00:00:00,000 --> 00:00:05,000
+<c>tagged</c> text
+`;
+    const segments = parseSrt(srt);
+    expect(segments[0].text).toBe("tagged text");
+  });
+
+  it("handles sub-second offsets with correct decimal precision", () => {
+    const srt = `1
+00:00:00,570 --> 00:00:19,310
+Content here.
+`;
+    const segments = parseSrt(srt);
+    expect(segments[0].start).toBeCloseTo(0.57, 2);
+    expect(segments[0].end).toBeCloseTo(19.31, 2);
+  });
+
+  it("returns empty array for empty SRT string", () => {
+    expect(parseSrt("")).toEqual([]);
+    expect(parseSrt("   \n\n   ")).toEqual([]);
+  });
+
+  it("skips blocks with malformed timeline (no -->)", () => {
+    const srt = `1
+BAD TIMELINE LINE
+Caption text.
+
+2
+00:00:01,000 --> 00:00:02,000
+Good line.
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("Good line.");
+  });
+
+  it("joins multi-line caption text with a space", () => {
+    const srt = `1
+00:00:00,000 --> 00:00:05,000
+line one
+line two
+line three
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("line one line two line three");
+  });
+});
+
+// ─── parseSrt — deduplication (yt-dlp carousel) ───────────────────────────────
+
+describe("parseSrt — deduplication of consecutive identical text", () => {
+  it("collapses 3 consecutive identical segments into 1 with extended end", () => {
+    const srt = `1
+00:00:01,000 --> 00:00:03,000
+the same text
+
+2
+00:00:02,000 --> 00:00:04,000
+the same text
+
+3
+00:00:03,000 --> 00:00:05,000
+the same text
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("the same text");
     expect(segments[0].start).toBeCloseTo(1.0);
-    expect(segments[0].end).toBeCloseTo(3.0); // 1.0 + 2.0
-    expect(segments[0].text).toBe("hi");
+    expect(segments[0].end).toBeCloseTo(5.0);
   });
 
-  it("parses <text start='3.0'> (no dur) as end === start", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(NO_DUR_XML));
-    vi.stubGlobal("fetch", fetchMock);
+  it("does not dedupe non-consecutive identical segments", () => {
+    const srt = `1
+00:00:01,000 --> 00:00:02,000
+hello
 
-    const segments = await fetchCaptions("dQw4w9WgXcQ");
+2
+00:00:02,000 --> 00:00:03,000
+world
 
-    expect(segments).toHaveLength(1);
-    expect(segments[0].start).toBeCloseTo(3.0);
+3
+00:00:03,000 --> 00:00:04,000
+hello
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(3);
+    expect(segments[0].text).toBe("hello");
+    expect(segments[1].text).toBe("world");
+    expect(segments[2].text).toBe("hello");
+  });
+
+  it("collapses a run of 2 but keeps a separate non-matching segment", () => {
+    const srt = `1
+00:00:00,000 --> 00:00:02,000
+first
+
+2
+00:00:01,000 --> 00:00:03,000
+first
+
+3
+00:00:03,000 --> 00:00:05,000
+second
+`;
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(2);
+    expect(segments[0].text).toBe("first");
     expect(segments[0].end).toBeCloseTo(3.0);
-    expect(segments[0].text).toBe("no-dur");
+    expect(segments[1].text).toBe("second");
   });
 });
 
-// ─── parseCaptionsXml — HTML entity decoding ──────────────────────────────────
+// ─── parseSrt — Windows CRLF line endings ────────────────────────────────────
 
-describe("parseCaptionsXml — HTML entity decoding (via fetchCaptions)", () => {
-  async function fetchWithXml(xml: string) {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(okResponse(VALID_HTML))
-      .mockResolvedValueOnce(okResponse(xml));
-    vi.stubGlobal("fetch", fetchMock);
-    return fetchCaptions("dQw4w9WgXcQ");
-  }
-
-  it("decodes &amp; → &", async () => {
-    const segments = await fetchWithXml(ENTITIES_XML);
-    expect(segments[0].text).toBe("Hello & welcome");
-  });
-
-  it("decodes &#39; → ' and &lt; &gt; → < >", async () => {
-    const segments = await fetchWithXml(ENTITIES_XML);
-    expect(segments[1].text).toBe("It's a <test>");
-  });
-
-  it("decodes &quot; → \"", async () => {
-    const segments = await fetchWithXml(ENTITIES_XML);
-    expect(segments[2].text).toBe('"Quoted" text');
+describe("parseSrt — CRLF line endings", () => {
+  it("handles \\r\\n line endings correctly", () => {
+    const srt = "1\r\n00:00:00,000 --> 00:00:02,000\r\nHello CRLF.\r\n\r\n";
+    const segments = parseSrt(srt);
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("Hello CRLF.");
   });
 });

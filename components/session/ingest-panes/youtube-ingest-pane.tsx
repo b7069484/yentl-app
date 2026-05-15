@@ -220,6 +220,13 @@ export function YoutubeIngestPane() {
               <span className="text-amber-800">
                 This video is private, age-restricted, or unavailable in your region.
               </span>
+            ) : phase.code === "YT_DLP_MISSING" ? (
+              <span className="text-amber-800">
+                Couldn&rsquo;t reach YouTube &mdash; the server isn&rsquo;t configured for YouTube
+                ingest right now. Try downloading the audio with a YouTube downloader and
+                using the{" "}
+                <strong>Audio file</strong> source instead.
+              </span>
             ) : (
               <span className="text-amber-800">
                 Could not fetch captions: {phase.message}

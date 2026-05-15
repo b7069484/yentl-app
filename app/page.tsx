@@ -27,10 +27,9 @@ export default function Home() {
         </h1>
 
         <p className="max-w-prose text-[15.5px] leading-relaxed text-ink-3 md:text-[17px]">
-          Live fact-checking with a Yiddish soul. Yenta transcribes the
-          conversation in real time, separates speakers, scores every claim
-          against the open web, and surfaces the biases and fallacies tucked
-          into the rhetoric.
+          A live fact-checker for any conversation. Yenta transcribes in real
+          time, separates speakers, scores every claim against the open web,
+          and surfaces the biases and fallacies tucked into the rhetoric.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3 pt-1">

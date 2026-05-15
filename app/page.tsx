@@ -19,10 +19,8 @@ export default function Home() {
           <span className="ml-0.5 inline-block h-2.5 w-2.5 -translate-y-1 rounded-full bg-amber align-baseline ring-2 ring-[rgba(216,155,44,0.18)] md:h-3 md:w-3" />
         </div>
 
-        <h1 className="text-balance font-serif text-[34px] font-medium leading-[1.1] tracking-tight text-ink md:text-[48px]">
-          Hear what&apos;s said.
-          <br />
-          See what&apos;s <span className="text-teal-2 italic">true</span>.
+        <h1 className="font-serif text-[48px] font-medium leading-none tracking-tight text-ink md:text-[68px]">
+          speak <span className="italic text-teal-2">truth</span>.
         </h1>
 
         <p className="max-w-prose text-[15.5px] leading-relaxed text-ink-3 md:text-[17px]">

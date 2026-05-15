@@ -37,7 +37,7 @@ export function SourceCard({ source }: { source: Source }) {
         </div>
         <div className="flex items-center gap-2 text-[11px] text-ink-4 mt-1 flex-wrap">
           <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${STANCE_DOT[source.stance]}`}
+            className={`w-2 h-2 rounded-full flex-shrink-0 ring-1 ring-paper ${STANCE_DOT[source.stance]}`}
           />
           <span className="truncate">{source.domain}</span>
           <span>·</span>

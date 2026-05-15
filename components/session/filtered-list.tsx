@@ -335,8 +335,8 @@ export function FilteredList() {
           <ActiveFilterChip
             label={
               activeVerdictValues.length === 1
-                ? `Verdict: ${activeVerdictValues[0].toUpperCase().replace("_", " ")}`
-                : `Verdict: ${activeVerdictValues.length}`
+                ? activeVerdictValues[0].toUpperCase().replace("_", " ")
+                : activeVerdictValues.map((v) => v.toUpperCase().replace("_", " ")).join(", ")
             }
             onRemove={() => updateParams({ verdict: null })}
           />
@@ -345,7 +345,7 @@ export function FilteredList() {
         {/* Claims view: topic chip */}
         {!isMarkersView && claimFilters.topic && (
           <ActiveFilterChip
-            label={`Topic: ${claimFilters.topic}`}
+            label={claimFilters.topic.charAt(0).toUpperCase() + claimFilters.topic.slice(1)}
             onRemove={() => updateParams({ topic: null })}
           />
         )}
@@ -355,8 +355,8 @@ export function FilteredList() {
           <ActiveFilterChip
             label={
               activeMarkerTypeValues.length === 1
-                ? `Type: ${activeMarkerTypeValues[0]}`
-                : `Type: ${activeMarkerTypeValues.length}`
+                ? activeMarkerTypeValues[0].charAt(0).toUpperCase() + activeMarkerTypeValues[0].slice(1)
+                : activeMarkerTypeValues.map((v) => v.charAt(0).toUpperCase() + v.slice(1)).join(", ")
             }
             onRemove={() => updateParams({ type: null })}
           />
@@ -367,8 +367,8 @@ export function FilteredList() {
           <ActiveFilterChip
             label={
               activeSeverityValues.length === 1
-                ? `Severity: ${activeSeverityValues[0]}`
-                : `Severity: ${activeSeverityValues.length}`
+                ? activeSeverityValues[0].charAt(0).toUpperCase() + activeSeverityValues[0].slice(1)
+                : activeSeverityValues.map((v) => v.charAt(0).toUpperCase() + v.slice(1)).join(", ")
             }
             onRemove={() => updateParams({ severity: null })}
           />
@@ -379,8 +379,8 @@ export function FilteredList() {
           <ActiveFilterChip
             label={
               activeSpeakerValues.length === 1
-                ? `Speaker: ${getSpeakerLabel(Number(activeSpeakerValues[0]))}`
-                : `Speakers: ${activeSpeakerValues.length}`
+                ? getSpeakerLabel(Number(activeSpeakerValues[0]))
+                : activeSpeakerValues.map((id) => getSpeakerLabel(Number(id))).join(", ")
             }
             onRemove={() => updateParams({ speaker: null })}
           />

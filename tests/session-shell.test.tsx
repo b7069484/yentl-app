@@ -211,13 +211,20 @@ describe("SessionShell – basic render", () => {
     expect(screen.getByText(/Markers/)).toBeTruthy();
   });
 
-  it("renders Pause and Export and End buttons", () => {
+  it("renders Export button always, hides Pause/Resume and End when startedAt is null", () => {
     mockStore(makeDefaultStoreState());
     render(<SessionShell>Body</SessionShell>);
-    // Pause/Resume
-    expect(
-      screen.getByRole("button", { name: /Pause|Resume/ }),
-    ).toBeTruthy();
+    // Pause/Resume and End are hidden when startedAt is null
+    expect(screen.queryByRole("button", { name: /Pause|Resume/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /End/ })).toBeNull();
+    // Export always renders
+    expect(screen.getByRole("button", { name: /Export/ })).toBeTruthy();
+  });
+
+  it("renders Pause/Resume and End when startedAt is set", () => {
+    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+    render(<SessionShell>Body</SessionShell>);
+    expect(screen.getByRole("button", { name: /Pause|Resume/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Export/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /End/ })).toBeTruthy();
   });
@@ -381,9 +388,13 @@ describe("SessionShell – tab counts", () => {
 // ─── 7. Pause/Resume button calls setRecording ───────────────────────────────
 
 describe("SessionShell – Pause/Resume button", () => {
-  it("shows Resume when not recording; clicking calls setRecording(true)", () => {
+  it("shows Resume when startedAt is set but not recording; clicking calls setRecording(true)", () => {
     const setRecording = vi.fn();
-    mockStore(makeDefaultStoreState({ isRecording: false, setRecording }));
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      isRecording: false,
+      setRecording,
+    }));
     render(<SessionShell>Body</SessionShell>);
     const btn = screen.getByRole("button", { name: /Resume/ });
     fireEvent.click(btn);

@@ -199,18 +199,18 @@ describe("FilteredList – sort change → URL push", () => {
 });
 
 describe("FilteredList – filter chip interactions", () => {
-  it("active verdict filter shows chip and X removes it", () => {
+  it("active verdict filter shows chip without key prefix and X removes it", () => {
     mockSearchParamsRaw = new URLSearchParams("view=claims&verdict=false");
     mockStore({});
 
     render(<FilteredList />);
 
-    // There should be an active filter chip for verdict
-    const chip = screen.getByText(/Verdict:/);
+    // Chip shows just the value, no "Verdict:" prefix
+    const chip = screen.getByText("FALSE");
     expect(chip).toBeTruthy();
 
-    // Find remove button
-    const removeBtn = screen.getByLabelText(/Remove Verdict/i);
+    // Find remove button (aria-label still references the label text)
+    const removeBtn = screen.getByLabelText(/Remove FALSE/i);
     fireEvent.click(removeBtn);
 
     // Should push URL without verdict

@@ -17,14 +17,12 @@ const HIGHLIGHT_TONE: Record<ClaimCard["primary_label"], string> = {
 };
 
 const SPEAKER_PALETTE = [
-  { dot: "bg-sky-600",     label: "text-sky-700",     border: "border-sky-500" },
-  { dot: "bg-fuchsia-600", label: "text-fuchsia-700", border: "border-fuchsia-500" },
-  { dot: "bg-amber-600",   label: "text-amber-700",   border: "border-amber-500" },
-  { dot: "bg-emerald-600", label: "text-emerald-700", border: "border-emerald-500" },
-  { dot: "bg-violet-600",  label: "text-violet-700",  border: "border-violet-500" },
-  { dot: "bg-rose-600",    label: "text-rose-700",    border: "border-rose-500" },
-  { dot: "bg-cyan-600",    label: "text-cyan-700",    border: "border-cyan-500" },
-  { dot: "bg-lime-600",    label: "text-lime-700",    border: "border-lime-500" },
+  { dot: "bg-spk-1", label: "text-ink",     border: "border-spk-1" },
+  { dot: "bg-spk-2", label: "text-amber-2", border: "border-spk-2" },
+  { dot: "bg-spk-3", label: "text-teal-2",  border: "border-spk-3" },
+  { dot: "bg-spk-4", label: "text-purple",  border: "border-spk-4" },
+  { dot: "bg-spk-5", label: "text-pink",    border: "border-spk-5" },
+  { dot: "bg-spk-6", label: "text-orange",  border: "border-spk-6" },
 ];
 
 export function paletteFor(id: SpeakerId): (typeof SPEAKER_PALETTE)[number] {

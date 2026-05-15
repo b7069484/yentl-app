@@ -129,6 +129,7 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
 function TopControls() {
   const isRecording = useSession((s) => s.isRecording);
   const endedAt = useSession((s) => s.endedAt);
+  const startedAt = useSession((s) => s.startedAt);
   const setRecording = useSession((s) => s.setRecording);
   const [exportOpen, setExportOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
@@ -136,31 +137,35 @@ function TopControls() {
   return (
     <>
       <div className="ml-auto inline-flex items-center gap-1.5">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={!!endedAt}
-          onClick={() => setRecording(!isRecording)}
-        >
-          {isRecording ? (
-            <Pause className="h-3.5 w-3.5" />
-          ) : (
-            <Play className="h-3.5 w-3.5" />
-          )}
-          {isRecording ? "Pause" : "Resume"}
-        </Button>
+        {startedAt && (
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={!!endedAt}
+            onClick={() => setRecording(!isRecording)}
+          >
+            {isRecording ? (
+              <Pause className="h-3.5 w-3.5" />
+            ) : (
+              <Play className="h-3.5 w-3.5" />
+            )}
+            {isRecording ? "Pause" : "Resume"}
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
           <Download className="h-3.5 w-3.5" /> Export
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-red-600 border border-transparent hover:bg-red-50 hover:text-red-700"
-          disabled={!!endedAt}
-          onClick={() => setEndOpen(true)}
-        >
-          <Square className="h-3.5 w-3.5" /> End
-        </Button>
+        {startedAt && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-600 border border-transparent hover:bg-red-50 hover:text-red-700"
+            disabled={!!endedAt}
+            onClick={() => setEndOpen(true)}
+          >
+            <Square className="h-3.5 w-3.5" /> End
+          </Button>
+        )}
       </div>
       <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
       <EndSessionDialog open={endOpen} onClose={() => setEndOpen(false)} />

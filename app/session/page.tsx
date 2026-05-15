@@ -1,5 +1,6 @@
 "use client";
 import { Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { HomeOverview } from "@/components/session/home-overview";
@@ -39,14 +40,14 @@ function SessionPageInner() {
 function PreRecord({ onStart }: { onStart: () => void }) {
   return (
     <div className="px-6 pt-12 pb-12 max-w-[680px] mx-auto w-full text-center">
-      <div className="mx-auto w-24 h-24 rounded-full bg-paper border border-line flex items-center justify-center mb-6 shadow-sm">
-        <svg viewBox="0 0 24 24" className="w-12 h-12 text-teal" fill="none" stroke="currentColor" strokeWidth={1.8}>
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-          <line x1="12" y1="19" x2="12" y2="23" />
-          <line x1="8" y1="23" x2="16" y2="23" />
-        </svg>
-      </div>
+      <Image
+        src="/yenta-y-mark.png"
+        alt="Yenta"
+        width={600}
+        height={340}
+        priority
+        className="mx-auto mb-6 h-24 w-auto"
+      />
       <h1 className="font-serif text-[28px] font-medium tracking-tight text-ink">Yenta is ready to listen.</h1>
       <p className="text-[14px] text-ink-3 mt-2 max-w-prose mx-auto">
         Tap below to start a session. Yenta transcribes the conversation in real time, fact-checks every claim against the open web, and surfaces the biases and fallacies tucked into the rhetoric.

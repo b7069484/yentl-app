@@ -1,300 +1,68 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { SessionHeader } from "@/components/session/SessionHeader";
-import { TranscriptView } from "@/components/session/TranscriptView";
-import { ClaimCardStack } from "@/components/session/ClaimCardStack";
-import { MarkersPanel } from "@/components/session/MarkersPanel";
-import { MarkerTicker } from "@/components/session/MarkerTicker";
-import { ClaimCard } from "@/components/session/ClaimCard";
-import { EndSessionDialog } from "@/components/session/EndSessionDialog";
-import { ExportDialog } from "@/components/session/ExportDialog";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
-import { startMic, type MicHandle } from "@/lib/client/mic";
-import { openDeepgramStream } from "@/lib/client/deepgram-stream";
-import { onFinalUtterance } from "@/lib/client/orchestrator";
+import { HomeOverview } from "@/components/session/home-overview";
+import { TranscriptView } from "@/components/session/TranscriptView";
+import { FilteredList } from "@/components/session/filtered-list";
 
 export default function SessionPage() {
-  const mic = useRef<MicHandle | null>(null);
-  const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
-  const session = useSession();
-  const [error, setError] = useState<string | null>(null);
-  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-  const [highlightedClaimId, setHighlightedClaimId] = useState<string | null>(null);
-  const [endDialogOpen, setEndDialogOpen] = useState(false);
-  const [exportDialogOpen, setExportDialogOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const teardown = () => {
-    try { mic.current?.stop(); } catch {}
-    try { dg.current?.close(); } catch {}
-    mic.current = null;
-    dg.current = null;
-    setAudioStream(null);
-  };
-
-  const start = async () => {
-    setError(null);
-    session.startSession();
-    try {
-      dg.current = await openDeepgramStream({
-        onInterim: (t) => session.setInterim(t),
-        onFinal: (seg) => {
-          session.appendFinal(seg);
-          void onFinalUtterance(seg);
-        },
-        onError: () => {
-          setError(
-            "Lost connection to Deepgram. Check your network or refresh and try again.",
-          );
-          teardown();
-          session.setRecording(false);
-        },
-        onClose: () => {},
-      });
-      mic.current = await startMic(
-        (chunk) => dg.current?.send(chunk),
-        { speakersMode: session.speakersMode },
-      );
-      setAudioStream(mic.current.stream);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      const friendly = /permission|denied|notallowed/i.test(msg)
-        ? "Microphone access was blocked. Allow mic permission in your browser and click Record again."
-        : /token/i.test(msg)
-          ? "Couldn't reach the transcription service. Check that the dev server has VERCEL_OIDC_TOKEN and DEEPGRAM_API_KEY set."
-          : `Couldn't start the session: ${msg}`;
-      setError(friendly);
-      teardown();
-      session.setRecording(false);
-    }
-  };
-
-  const stop = () => {
-    teardown();
-    session.setRecording(false);
-  };
-
-  const end = () => {
-    stop();
-    setEndDialogOpen(true);
-  };
-
-  useEffect(() => () => teardown(), []);
-
-  // Restart mic + Deepgram stream when speakersMode flips mid-session.
-  // Chrome's getUserMedia constraints can't be updated on an open stream.
-  //
-  // RACE-SAFETY: teardown() calls dg.current.close(), which (per Task 11's hardened
-  // openDeepgramStream) aborts any in-flight JWT refresh via AbortController and
-  // gracefully drains the active socket. Without that cancellation contract this
-  // effect would race the refresh timer — DO NOT weaken Task 11's AbortController
-  // without also rewriting this effect to coordinate explicitly.
-  const lastSpeakersMode = useRef(session.speakersMode);
-  const restarting = useRef(false);
-  useEffect(() => {
-    if (lastSpeakersMode.current === session.speakersMode) return;
-    lastSpeakersMode.current = session.speakersMode;
-    if (!session.isRecording) return;
-    if (restarting.current) return;
-    restarting.current = true;
-    void (async () => {
-      try {
-        teardown();
-        await start();
-      } finally {
-        restarting.current = false;
-      }
-    })();
-    // start/teardown are stable in this component scope; intentionally not in deps.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session.speakersMode]);
-
-  // Dev-only shim for end-to-end testing without a real microphone.
-  useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
-    const w = window as unknown as {
-      __yenta?: Record<string, unknown>;
-      __factify?: Record<string, unknown>;
-    };
-    w.__yenta = { ...(w.__yenta ?? {}), onFinalUtterance };
-    w.__factify = w.__yenta;
-  }, []);
-
-  // Click a claim card → scroll its corresponding transcript segment into view.
-  const focusTranscriptAt = useCallback((utteranceStart: number) => {
-    const root = containerRef.current;
-    if (!root) return;
-    const el = root.querySelector<HTMLElement>(
-      `[data-segment-start="${utteranceStart}"]`,
-    );
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-    // Briefly highlight the segment's own claim, if any.
-    const claimId = el?.dataset.claimId;
-    if (claimId) {
-      setHighlightedClaimId(claimId);
-      window.setTimeout(() => setHighlightedClaimId(null), 1800);
-    }
-  }, []);
-
-  // Click a transcript highlight → scroll the card stack to that claim.
-  const focusCard = useCallback((claimId: string) => {
-    const root = containerRef.current;
-    if (!root) return;
-    const el = root.querySelector<HTMLElement>(`[data-claim-id="${claimId}"]`);
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-    setHighlightedClaimId(claimId);
-    window.setTimeout(() => setHighlightedClaimId(null), 1800);
-  }, []);
-
-  // Click a marker → scroll the transcript to that timestamp (nearest segment).
-  const focusTranscriptAtTime = useCallback((time: number) => {
-    const { transcript } = useSession.getState();
-    if (transcript.length === 0) return;
-    const nearest = transcript.reduce((best, s) =>
-      Math.abs(s.start - time) < Math.abs(best.start - time) ? s : best,
-    );
-    focusTranscriptAt(nearest.start);
-  }, [focusTranscriptAt]);
-
-  const mode = session.mode;
-
   return (
-    <div
-      ref={containerRef}
-      className="flex h-screen flex-col bg-background"
-    >
-      <SessionHeader
-        onStart={start}
-        onStop={stop}
-        onEnd={end}
-        onExport={() => setExportDialogOpen(true)}
-        audioStream={audioStream}
-      />
-      {error && (
-        <div
-          role="alert"
-          className="flex items-start justify-between gap-3 border-b border-red-200 bg-red-50 px-5 py-2 text-sm text-red-900"
-        >
-          <span>{error}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            className="rounded px-2 py-0.5 text-xs font-medium text-red-900/80 hover:bg-red-100"
-            aria-label="Dismiss error"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {mode === "A" ? (
-        <main className="grid flex-1 grid-cols-[1.05fr_1fr_340px] divide-x divide-border/60 overflow-hidden">
-          <Panel label="Transcript" hint="Highlights are clickable">
-            <TranscriptView variant="compact" onClaimSegmentClick={focusCard} />
-          </Panel>
-          <Panel label="Claims" hint="Scored against the open web">
-            <ClaimCardStack
-              highlightedId={highlightedClaimId}
-              onCardClick={(_id, start) => focusTranscriptAt(start)}
-            />
-          </Panel>
-          <Panel label="Markers" hint="Click to jump in transcript">
-            <MarkersPanel onMarkerClick={focusTranscriptAtTime} />
-          </Panel>
-        </main>
-      ) : (
-        <main className="flex flex-1 flex-col overflow-hidden">
-          <section
-            aria-label="Transcript (present)"
-            className="flex-1 min-h-0 overflow-hidden bg-background"
-          >
-            <TranscriptView variant="present" onClaimSegmentClick={focusCard} />
-          </section>
-          <PresentClaimStrip
-            highlightedId={highlightedClaimId}
-            onCardClick={(_id, start) => focusTranscriptAt(start)}
-          />
-          <MarkerTicker onMarkerClick={focusTranscriptAtTime} />
-        </main>
-      )}
-
-      <EndSessionDialog
-        open={endDialogOpen}
-        onClose={() => setEndDialogOpen(false)}
-      />
-      <ExportDialog
-        open={exportDialogOpen}
-        onClose={() => setExportDialogOpen(false)}
-      />
-    </div>
+    <Suspense>
+      <SessionPageInner />
+    </Suspense>
   );
 }
 
-function Panel({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section
-      aria-label={label}
-      className="flex min-h-0 flex-col overflow-hidden bg-background"
-    >
-      <div className="flex items-baseline justify-between border-b border-border/50 bg-card/40 px-4 py-2">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          {label}
-        </span>
-        {hint && (
-          <span className="text-[10px] text-muted-foreground/80">{hint}</span>
-        )}
-      </div>
-      <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
-    </section>
-  );
-}
+function SessionPageInner() {
+  const sp = useSearchParams();
+  const view = sp.get("view") || "overview";
+  const startedAt = useSession((s) => s.startedAt);
+  const startSession = useSession((s) => s.startSession);
 
-function PresentClaimStrip({
-  highlightedId,
-  onCardClick,
-}: {
-  highlightedId: string | null;
-  onCardClick: (id: string, start: number) => void;
-}) {
-  const claims = useSession((s) => s.claims);
-  if (claims.length === 0) {
-    return (
-      <div className="flex shrink-0 items-center gap-3 border-t border-border/60 bg-card/40 px-5 py-3 text-[12px] italic text-muted-foreground">
-        Claims will appear here as you speak.
-      </div>
-    );
+  if (!startedAt) {
+    return <PreRecord onStart={() => startSession()} />;
   }
+
+  switch (view) {
+    case "transcript":
+      return <TranscriptView variant="compact" />;
+    case "claims":
+    case "markers":
+      return <FilteredList />;
+    case "overview":
+    default:
+      return <HomeOverview />;
+  }
+}
+
+function PreRecord({ onStart }: { onStart: () => void }) {
   return (
-    <ScrollArea className="shrink-0 border-t border-border/60 bg-card/40">
-      <div className="flex gap-3 px-4 py-3">
-        {claims
-          .slice()
-          .reverse()
-          .map((c) => (
-            <div
-              key={c.id}
-              data-claim-id={c.id}
-              className="w-[280px] shrink-0 animate-in fade-in slide-in-from-bottom-1 duration-300"
-            >
-              <ClaimCard
-                card={c}
-                compact
-                highlighted={highlightedId === c.id}
-                onClick={() => onCardClick(c.id, c.utterance_start)}
-              />
-            </div>
-          ))}
+    <div className="px-6 pt-12 pb-12 max-w-[680px] mx-auto w-full text-center">
+      <div className="mx-auto w-24 h-24 rounded-full bg-paper border border-line flex items-center justify-center mb-6 shadow-sm">
+        <svg viewBox="0 0 24 24" className="w-12 h-12 text-teal" fill="none" stroke="currentColor" strokeWidth={1.8}>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <line x1="12" y1="19" x2="12" y2="23" />
+          <line x1="8" y1="23" x2="16" y2="23" />
+        </svg>
       </div>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+      <h1 className="font-serif text-[28px] font-medium tracking-tight text-ink">Yenta is ready to listen.</h1>
+      <p className="text-[14px] text-ink-3 mt-2 max-w-prose mx-auto">
+        Tap below to start a session. Yenta transcribes the conversation in real time, fact-checks every claim against the open web, and surfaces the biases and fallacies tucked into the rhetoric.
+      </p>
+      <button
+        type="button"
+        onClick={onStart}
+        className="mt-7 inline-flex items-center gap-2 px-5 py-3 bg-teal text-white rounded-xl text-[14px] font-medium hover:bg-teal-2 shadow-md"
+      >
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2}>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        </svg>
+        Start a session
+      </button>
+      <div className="mt-4 text-[11.5px] text-ink-4">Multi-speaker · English · Browser mic</div>
+    </div>
   );
 }

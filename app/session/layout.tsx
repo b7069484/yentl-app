@@ -1,0 +1,120 @@
+"use client";
+// The session segment is always fully dynamic: it depends on mic/WebSocket state
+// that cannot exist at build time. Disabling static prerendering also prevents
+// the useSearchParams-without-Suspense build error that fires for all
+// components in this segment (SessionShell > Tabs, FilteredList, etc.).
+export const dynamic = "force-dynamic";
+
+import { useEffect, useRef, useState } from "react";
+import { SessionShell } from "@/components/session/session-shell";
+import { useSession } from "@/lib/client/session-store";
+import { startMic, type MicHandle } from "@/lib/client/mic";
+import { openDeepgramStream } from "@/lib/client/deepgram-stream";
+import { onFinalUtterance } from "@/lib/client/orchestrator";
+
+export default function SessionLayout({ children }: { children: React.ReactNode }) {
+  const session = useSession();
+  const isRecording = useSession((s) => s.isRecording);
+  const startedAt = useSession((s) => s.startedAt);
+  const speakersMode = useSession((s) => s.speakersMode);
+
+  const mic = useRef<MicHandle | null>(null);
+  const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const teardown = () => {
+    try { mic.current?.stop(); } catch {}
+    try { dg.current?.close(); } catch {}
+    mic.current = null;
+    dg.current = null;
+  };
+
+  const start = async () => {
+    setError(null);
+    try {
+      dg.current = await openDeepgramStream({
+        onInterim: (t) => session.setInterim(t),
+        onFinal: (seg) => {
+          session.appendFinal(seg);
+          void onFinalUtterance(seg);
+        },
+        onError: () => {
+          setError("Lost connection to Deepgram. Check your network or refresh and try again.");
+          teardown();
+          session.setRecording(false);
+        },
+        onClose: () => {},
+      });
+      mic.current = await startMic(
+        (chunk) => dg.current?.send(chunk),
+        { speakersMode: session.speakersMode },
+      );
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      const friendly = /permission|denied|notallowed/i.test(msg)
+        ? "Microphone access was blocked. Allow mic permission in your browser and try again."
+        : /token/i.test(msg)
+          ? "Couldn't reach the transcription service. Check that the dev server has VERCEL_OIDC_TOKEN and DEEPGRAM_API_KEY set."
+          : `Couldn't start the session: ${msg}`;
+      setError(friendly);
+      teardown();
+      session.setRecording(false);
+    }
+  };
+
+  // React to isRecording transitions
+  useEffect(() => {
+    if (!startedAt) return;        // pre-record: nothing to start
+    if (isRecording && !mic.current) void start();
+    else if (!isRecording && mic.current) teardown();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRecording, startedAt]);
+
+  // Cleanup on unmount
+  useEffect(() => () => teardown(), []);
+
+  // Restart on speakersMode flip while recording (same race-safety contract as before)
+  const lastSpeakersMode = useRef(speakersMode);
+  const restarting = useRef(false);
+  useEffect(() => {
+    if (lastSpeakersMode.current === speakersMode) return;
+    lastSpeakersMode.current = speakersMode;
+    if (!isRecording) return;
+    if (restarting.current) return;
+    restarting.current = true;
+    void (async () => {
+      try { teardown(); await start(); } finally { restarting.current = false; }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speakersMode]);
+
+  // Dev-only shim
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    const w = window as unknown as { __yenta?: Record<string, unknown>; __factify?: Record<string, unknown> };
+    w.__yenta = { ...(w.__yenta ?? {}), onFinalUtterance };
+    w.__factify = w.__yenta;
+  }, []);
+
+  return (
+    <SessionShell>
+      {error && (
+        <div
+          role="alert"
+          className="flex items-start justify-between gap-3 border-b border-red-soft bg-red-soft/40 px-6 py-2.5 text-[12.5px] text-red"
+        >
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="rounded px-2 py-0.5 text-[11px] font-medium text-red/80 hover:bg-red-soft"
+            aria-label="Dismiss error"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      {children}
+    </SessionShell>
+  );
+}

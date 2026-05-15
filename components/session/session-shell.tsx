@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Pause, Play, Download, Square } from "lucide-react";
@@ -231,7 +231,9 @@ export function SessionShell({ children }: { children: ReactNode }) {
         <div className="px-6 md:px-8 py-3 flex items-center gap-4 flex-wrap max-w-[1280px] mx-auto w-full">
           <BrandMark size="md" />
           <LivePill state={pillState} elapsed={elapsed} />
-          <Tabs counts={{ claims: claimsCount, markers: markersCount }} />
+          <Suspense fallback={null}>
+            <Tabs counts={{ claims: claimsCount, markers: markersCount }} />
+          </Suspense>
           <TopControls />
         </div>
       </header>

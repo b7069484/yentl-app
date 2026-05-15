@@ -27,6 +27,10 @@ function abortError() {
   return Promise.reject(Object.assign(new Error("The operation was aborted"), { name: "AbortError" }));
 }
 
+function timeoutError() {
+  return Promise.reject(Object.assign(new Error("The operation timed out"), { name: "TimeoutError" }));
+}
+
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
@@ -199,10 +203,17 @@ describe("checkMediaMime — network errors", () => {
     expect(result.reason).toBe("Network error");
   });
 
-  it("returns ok: false with 'Network error' on AbortError (timeout)", async () => {
+  it("returns ok: false with 'Timeout' on AbortError (AbortSignal.timeout expired)", async () => {
     mockFetch.mockReturnValueOnce(abortError());
     const result = await checkMediaMime("https://slow.example.com/ep.mp3");
     expect(result.ok).toBe(false);
-    expect(result.reason).toBe("Network error");
+    expect(result.reason).toBe("Timeout");
+  });
+
+  it("returns ok: false with 'Timeout' on TimeoutError (Node 18+ AbortSignal.timeout)", async () => {
+    mockFetch.mockReturnValueOnce(timeoutError());
+    const result = await checkMediaMime("https://slow.example.com/ep.mp3");
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe("Timeout");
   });
 });

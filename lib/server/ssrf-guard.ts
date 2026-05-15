@@ -1,11 +1,21 @@
 import dns from "node:dns/promises";
 import net from "node:net";
 
+/** Returns true if the URL uses the http or https scheme; false otherwise. */
+export function isHttpScheme(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Checks whether an IP address string (IPv4 or IPv6) is in a private/reserved range.
  * Fail-closed: malformed input returns true (= private).
  */
-function isPrivateIp(ip: string): boolean {
+export function isPrivateIp(ip: string): boolean {
   if (!ip) return true;
   const version = net.isIP(ip);
   if (version === 4) return isPrivateIpv4(ip);
@@ -70,6 +80,13 @@ function makeError(
  * - "SSRF_BLOCKED"  — hostname resolves to a private/reserved IP address
  *
  * Safe URLs (https://example.com/foo.mp3) return void.
+ *
+ * SECURITY NOTE: This validates DNS at submission time. The downstream consumer
+ * (e.g., Deepgram) will resolve DNS independently when it fetches the URL,
+ * creating a TOCTOU window for DNS-rebinding attacks. Full mitigation requires
+ * server-side proxying (fetching the bytes ourselves and re-validating the
+ * resolved IP) — out of scope for v1.2. Acceptable for now given the limited
+ * attack surface (no fetch-back, no auth cookies forwarded).
  */
 export async function assertSafeUrl(url: string): Promise<void> {
   // 1. Parse and validate
@@ -89,12 +106,19 @@ export async function assertSafeUrl(url: string): Promise<void> {
 
   const { hostname } = parsed;
 
-  // 2. If hostname is a literal IP, check it directly without DNS
-  if (net.isIP(hostname)) {
-    if (isPrivateIp(hostname)) {
+  // 2. If hostname is a literal IP, check it directly without DNS.
+  // URL.hostname wraps IPv6 addresses in brackets (e.g. "[::1]") — strip them
+  // before passing to net.isIP / isPrivateIp.
+  const bareHost =
+    hostname.startsWith("[") && hostname.endsWith("]")
+      ? hostname.slice(1, -1)
+      : hostname;
+
+  if (net.isIP(bareHost)) {
+    if (isPrivateIp(bareHost)) {
       throw makeError(
         "SSRF_BLOCKED",
-        `URL resolved to a private address: ${hostname}`,
+        `URL resolved to a private address: ${bareHost}`,
       );
     }
     return;
@@ -103,12 +127,12 @@ export async function assertSafeUrl(url: string): Promise<void> {
   // 3. Resolve via DNS and check every returned address
   let addrs: { address: string; family: number }[];
   try {
-    addrs = await dns.lookup(hostname, { all: true });
+    addrs = await dns.lookup(bareHost, { all: true });
   } catch (e) {
     // DNS failure → fail closed to avoid bypasses via NXDOMAIN tricks
     throw makeError(
       "SSRF_BLOCKED",
-      `DNS lookup failed for "${hostname}": ${(e as Error).message}`,
+      `DNS lookup failed for "${bareHost}": ${(e as Error).message}`,
     );
   }
 
@@ -116,8 +140,25 @@ export async function assertSafeUrl(url: string): Promise<void> {
     if (isPrivateIp(address)) {
       throw makeError(
         "SSRF_BLOCKED",
-        `"${hostname}" resolves to a private address (${address})`,
+        `"${bareHost}" resolves to a private address (${address})`,
       );
     }
+  }
+}
+
+/**
+ * Compat wrapper for callers that prefer a null-on-success / string-on-error
+ * contract (e.g. app/api/source-preview/route.ts).
+ *
+ * Returns null when the URL is safe; returns a short reason string when it is
+ * blocked. This preserves the existing source-preview API contract while
+ * delegating all logic to the canonical assertSafeUrl() above.
+ */
+export async function ssrfReject(url: string): Promise<string | null> {
+  try {
+    await assertSafeUrl(url);
+    return null;
+  } catch (e: unknown) {
+    return (e as Error).message ?? "blocked";
   }
 }

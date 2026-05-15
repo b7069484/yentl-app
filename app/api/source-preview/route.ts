@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchPreview } from "@/lib/server/og-fetch";
-import { ssrfReject } from "./ssrf-guard";
+import { ssrfReject } from "@/lib/server/ssrf-guard";
 import type { SourcePreview } from "@/lib/types";
 
 export const runtime = "nodejs";

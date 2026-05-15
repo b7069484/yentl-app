@@ -85,12 +85,6 @@ describe("assertSafeUrl — literal IP addresses (no DNS)", () => {
     vi.clearAllMocks();
   });
 
-  it("throws SSRF_BLOCKED for http://localhost/foo (requires DNS)", async () => {
-    // localhost resolves via DNS to 127.0.0.1
-    lookupReturns(["127.0.0.1"]);
-    await expectSsrfBlocked("http://localhost/foo");
-  });
-
   it("throws SSRF_BLOCKED for literal 127.0.0.1", async () => {
     // literal IP → skips DNS
     await expectSsrfBlocked("http://127.0.0.1/foo");
@@ -124,6 +118,12 @@ describe("assertSafeUrl — literal IP addresses (no DNS)", () => {
 describe("assertSafeUrl — DNS resolution to private IPs", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("throws SSRF_BLOCKED for http://localhost/foo (localhost requires DNS)", async () => {
+    // localhost is resolved via the OS resolver (hosts file / DNS), not a literal IP
+    lookupReturns(["127.0.0.1"]);
+    await expectSsrfBlocked("http://localhost/foo");
   });
 
   it("throws SSRF_BLOCKED when hostname resolves to 10.x.x.x", async () => {

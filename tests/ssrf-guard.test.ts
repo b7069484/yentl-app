@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isPrivateIp, isHttpScheme } from "@/app/api/source-preview/ssrf-guard";
+import { isPrivateIp, isHttpScheme } from "@/lib/server/ssrf-guard";
 
 describe("isHttpScheme", () => {
   it("allows http and https", () => {

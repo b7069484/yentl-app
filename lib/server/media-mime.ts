@@ -1,5 +1,4 @@
 const FETCH_TIMEOUT_MS = 5_000;
-const MAX_REDIRECTS = 3;
 
 const ALLOWED_EXTENSIONS = new Set([
   "mp3",
@@ -46,22 +45,14 @@ export interface MimeCheckResult {
 export async function checkMediaMime(url: string): Promise<MimeCheckResult> {
   let response: Response;
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
     response = await fetch(url, {
       method: "HEAD",
       redirect: "follow",
-      signal: controller.signal,
-      // Node 18+ respects this; older runtimes ignore it
-      // @ts-expect-error — non-standard but supported in Node's fetch
-      follow: MAX_REDIRECTS,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
-
-    clearTimeout(timer);
   } catch (e: unknown) {
-    if ((e as Error).name === "AbortError") {
-      return { ok: false, reason: "Network error" };
+    if ((e as Error).name === "AbortError" || (e as Error).name === "TimeoutError") {
+      return { ok: false, reason: "Timeout" };
     }
     return { ok: false, reason: "Network error" };
   }

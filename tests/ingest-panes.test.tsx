@@ -23,8 +23,6 @@ vi.mock("@/lib/client/ingest-orchestrator", () => ({
   bulkIngest: vi.fn().mockResolvedValue(undefined),
 }));
 
-import { TextIngestPane } from "@/components/session/ingest-panes/text-ingest-pane";
-import { YoutubeIngestPane } from "@/components/session/ingest-panes/youtube-ingest-pane";
 import { MediaUrlIngestPane } from "@/components/session/ingest-panes/media-url-ingest-pane";
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
@@ -36,9 +34,11 @@ beforeEach(() => {
 // ─── Parametrized stub pane tests ─────────────────────────────────────────────
 
 // AudioIngestPane is now fully implemented (T4) — its own test suite lives in
-// tests/audio-ingest-pane.test.tsx. Only stub panes remain here.
+// tests/audio-ingest-pane.test.tsx.
+// YoutubeIngestPane is now fully implemented (T5) — its own test suite lives in
+// tests/youtube-ingest-pane.test.tsx.
+// Only remaining stub panes are listed here.
 const panes = [
-  { name: "YoutubeIngestPane", Component: YoutubeIngestPane, comingText: "Coming in T5" },
   { name: "MediaUrlIngestPane", Component: MediaUrlIngestPane, comingText: "Coming in T6" },
 ] as const;
 

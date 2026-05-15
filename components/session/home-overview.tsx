@@ -19,6 +19,7 @@ import {
   recentActivityEvents,
 } from "@/lib/client/overview-selectors";
 import type { SpeakerShare } from "@/lib/client/overview-selectors";
+import { ListeningEmptyState } from "./listening-empty-state";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -74,6 +75,8 @@ export function HomeOverview() {
   const speakers = useSession((s) => s.speakers);
   const synthesis = useSession((s) => s.synthesis);
   const startedAt = useSession((s) => s.startedAt);
+  const source = useSession((s) => s.source);
+  const micStream = useSession((s) => s.micStream);
 
   // ── Derived data ──────────────────────────────────────────────────────────
   const claimsCounts = countClaimsByBucket(claims);
@@ -101,6 +104,15 @@ export function HomeOverview() {
       router.push("/session?view=claims");
     }
   };
+
+  // Show listening state when session just started (mic, no transcript yet)
+  if (startedAt && transcript.length === 0 && source.kind === "mic") {
+    return (
+      <div className="px-6 md:px-8 max-w-[1200px] mx-auto w-full">
+        <ListeningEmptyState micStream={micStream} />
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 md:px-8 pt-6 pb-12 flex flex-col gap-5 max-w-[1200px] mx-auto w-full">

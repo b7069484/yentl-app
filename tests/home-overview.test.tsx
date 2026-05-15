@@ -20,7 +20,18 @@ vi.mock("@/lib/client/session-store", () => ({
 
 import { useSession } from "@/lib/client/session-store";
 
+// ─── Mock ListeningEmptyState ─────────────────────────────────────────────────
+// Avoids AudioContext/RAF in jsdom and gives us a stable test handle.
+
+vi.mock("@/components/session/listening-empty-state", () => ({
+  ListeningEmptyState: () => (
+    <div data-testid="listening-empty-state">Listening for first words…</div>
+  ),
+}));
+
 // ─── Fixture helpers ──────────────────────────────────────────────────────────
+
+import type { SessionSource } from "@/lib/types";
 
 function makeDefaultStoreState(overrides: {
   transcript?: TranscriptSegment[];
@@ -29,6 +40,8 @@ function makeDefaultStoreState(overrides: {
   speakers?: Speaker[];
   synthesis?: SynthesisState;
   startedAt?: string | null;
+  source?: SessionSource;
+  micStream?: MediaStream | null;
 } = {}) {
   return {
     transcript: overrides.transcript ?? [],
@@ -37,6 +50,8 @@ function makeDefaultStoreState(overrides: {
     speakers: overrides.speakers ?? [],
     synthesis: overrides.synthesis ?? null,
     startedAt: overrides.startedAt ?? null,
+    source: overrides.source ?? ({ kind: "mic" } as SessionSource),
+    micStream: overrides.micStream ?? null,
   };
 }
 
@@ -307,5 +322,74 @@ describe("HomeOverview – speaker legend empty", () => {
 
     render(<HomeOverview />);
     expect(screen.getByText(/No utterances yet/)).toBeTruthy();
+  });
+});
+
+// 9. ListeningEmptyState conditional rendering
+
+describe("HomeOverview – listening empty state", () => {
+  it("shows ListeningEmptyState and hides MetricTiles when startedAt set, transcript empty, source=mic", () => {
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: new Date().toISOString(),
+        transcript: [],
+        source: { kind: "mic" },
+      }),
+    );
+
+    render(<HomeOverview />);
+
+    // ListeningEmptyState should be present
+    expect(screen.getByTestId("listening-empty-state")).toBeTruthy();
+    // MetricTiles should NOT be rendered
+    expect(screen.queryByText("CLAIMS")).toBeNull();
+    expect(screen.queryByText("MARKERS")).toBeNull();
+  });
+
+  it("hides ListeningEmptyState and shows MetricTiles when transcript has items", () => {
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: new Date().toISOString(),
+        transcript: [
+          {
+            text: "Hello world",
+            start: 0,
+            end: 1,
+            is_final: true,
+            speaker_id: null,
+          },
+        ],
+        source: { kind: "mic" },
+      }),
+    );
+
+    render(<HomeOverview />);
+
+    // ListeningEmptyState should be gone
+    expect(screen.queryByTestId("listening-empty-state")).toBeNull();
+    // MetricTiles should be present
+    expect(screen.getByText("CLAIMS")).toBeTruthy();
+  });
+
+  it("does not show ListeningEmptyState when source is audio_file even with empty transcript", () => {
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: new Date().toISOString(),
+        transcript: [],
+        source: {
+          kind: "audio_file",
+          blob_url: "blob:x",
+          duration_sec: 60,
+          filename: "talk.mp3",
+          mime: "audio/mp3",
+        },
+      }),
+    );
+
+    render(<HomeOverview />);
+
+    expect(screen.queryByTestId("listening-empty-state")).toBeNull();
+    // Normal content should render
+    expect(screen.getByText("CLAIMS")).toBeTruthy();
   });
 });

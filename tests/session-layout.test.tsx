@@ -82,6 +82,7 @@ type StoreState = {
   setInterim: (t: string) => void;
   appendFinal: (seg: unknown) => void;
   setRecording: (b: boolean) => void;
+  setMicStream: (stream: MediaStream | null) => void;
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
@@ -92,6 +93,7 @@ function makeStore(overrides: Partial<StoreState> = {}): StoreState {
     setInterim: vi.fn(),
     appendFinal: vi.fn(),
     setRecording: vi.fn(),
+    setMicStream: vi.fn(),
     ...overrides,
   };
 }

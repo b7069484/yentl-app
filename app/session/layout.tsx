@@ -23,6 +23,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   const [error, setError] = useState<string | null>(null);
 
   const teardown = () => {
+    session.setMicStream(null);
     try { mic.current?.stop(); } catch {}
     try { dg.current?.close(); } catch {}
     mic.current = null;
@@ -49,6 +50,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
         (chunk) => dg.current?.send(chunk),
         { speakersMode: session.speakersMode },
       );
+      session.setMicStream(mic.current.stream);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       const friendly = /permission|denied|notallowed/i.test(msg)

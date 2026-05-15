@@ -30,6 +30,7 @@ type State = {
   isRecording: boolean;
   mode: "A" | "D";
   synthesis: SynthesisState;
+  micStream: MediaStream | null;
 
   // actions
   startSession: (title?: string) => void;
@@ -46,6 +47,7 @@ type State = {
   toggleMode: () => void;
   setRecording: (b: boolean) => void;
   setSynthesis: (s: SynthesisState) => void;
+  setMicStream: (stream: MediaStream | null) => void;
   toSession: () => Session;
   reset: () => void;
 };
@@ -58,7 +60,7 @@ const initialState: Omit<State,
   | "startSession" | "endSession" | "setInterim" | "appendFinal"
   | "addClaim" | "updateClaim" | "addMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
-  | "toggleMode" | "setRecording" | "setSynthesis" | "toSession" | "reset"
+  | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream" | "toSession" | "reset"
 > = {
   title: "",
   startedAt: null,
@@ -73,6 +75,7 @@ const initialState: Omit<State,
   isRecording: false,
   mode: "A",
   synthesis: null,
+  micStream: null,
 };
 
 export const useSession = create<State>((set, get) => ({
@@ -145,6 +148,8 @@ export const useSession = create<State>((set, get) => ({
   setRecording: (b) => set({ isRecording: b }),
 
   setSynthesis: (s) => set({ synthesis: s }),
+
+  setMicStream: (stream) => set({ micStream: stream }),
 
   toSession: () => {
     const s = get();

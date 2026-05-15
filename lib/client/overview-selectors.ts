@@ -54,29 +54,31 @@ export function countClaimsByBucket(claims: ClaimCard[]): ClaimsCounts {
 }
 
 export function claimsSegments(c: ClaimsCounts): MetricSegment[] {
+  // MetricTile auto-legend prepends seg.flex to the label, so labels are
+  // bare verdict names. Zero-count buckets get no label so the legend hides them.
   return [
     {
       flex: c.trueCount,
       colorClass: "bg-green",
-      label: `${c.trueCount} TRUE`,
+      label: c.trueCount > 0 ? "TRUE" : undefined,
       labelColorClass: "text-green",
     },
     {
       flex: c.partialCount,
       colorClass: "bg-orange",
-      label: `${c.partialCount} PARTIAL`,
+      label: c.partialCount > 0 ? "PARTIAL" : undefined,
       labelColorClass: "text-orange",
     },
     {
       flex: c.falseCount,
       colorClass: "bg-red",
-      label: `${c.falseCount} FALSE`,
+      label: c.falseCount > 0 ? "FALSE" : undefined,
       labelColorClass: "text-red",
     },
     {
       flex: c.otherCount,
-      colorClass: "bg-slate-400",
-      label: `${c.otherCount} OTHER`,
+      colorClass: "bg-slate",
+      label: c.otherCount > 0 ? "UNV" : undefined,
       labelColorClass: "text-ink-3",
     },
   ];
@@ -111,20 +113,20 @@ export function markersSegments(c: MarkerCounts): MetricSegment[] {
     {
       flex: c.fallacyCount,
       colorClass: "bg-purple",
-      label: `${c.fallacyCount} FALLACY`,
+      label: c.fallacyCount > 0 ? "FALLACY" : undefined,
       labelColorClass: "text-purple",
     },
     {
       flex: c.biasCount,
       colorClass: "bg-amber-2",
-      label: `${c.biasCount} BIAS`,
+      label: c.biasCount > 0 ? "BIAS" : undefined,
       labelColorClass: "text-amber-2",
     },
     {
       flex: c.rhetoricCount,
-      colorClass: "bg-pink-400",
-      label: `${c.rhetoricCount} RHETORIC`,
-      labelColorClass: "text-pink-500",
+      colorClass: "bg-pink",
+      label: c.rhetoricCount > 0 ? "RHETORIC" : undefined,
+      labelColorClass: "text-pink",
     },
   ];
 }

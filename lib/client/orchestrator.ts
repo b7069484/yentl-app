@@ -17,6 +17,10 @@ const recentMarkerHashes = new RecentSet(40);
 let utteranceCounter = 0;
 let lastRhetoricRunAt = 0;
 
+let synthesisUtteranceCounter = 0;
+let lastSynthesisRunAt = 0;
+let synthesisAbortController: AbortController | null = null;
+
 type ExtractedClaim = {
   claim_text: string;
   utterance_start: number;
@@ -39,6 +43,7 @@ export function attributeMarker(
 
 export async function onFinalUtterance(segment: TranscriptSegment) {
   maybeRunRhetoric();
+  maybeRunSynthesis();
 
   const { transcript } = useSession.getState();
 
@@ -106,6 +111,119 @@ export function maybeRunRhetoric() {
     lastRhetoricRunAt = now;
     void runRhetoric();
   }
+}
+
+export function maybeRunSynthesis() {
+  synthesisUtteranceCounter += 1;
+  const now = Date.now();
+  const timeSince = now - lastSynthesisRunAt;
+  if (synthesisUtteranceCounter % 5 === 0 || timeSince > 30_000) {
+    lastSynthesisRunAt = now;
+    void runSynthesis();
+  }
+}
+
+export function abortSynthesis() {
+  synthesisAbortController?.abort();
+}
+
+async function runSynthesis() {
+  const state = useSession.getState();
+  const { transcript, claims, markers, speakers } = state;
+
+  // Signal warming/refreshing state before the fetch
+  const current = state.synthesis;
+  if (current === null) {
+    state.setSynthesis({ state: "warming", at: Date.now() });
+  } else if (current.state === "fresh" || current.state === "refreshing") {
+    state.setSynthesis({ state: "refreshing", text: current.text, headlines: current.headlines, at: Date.now() });
+  }
+
+  // Last 20 utterances
+  const utterances = transcript.slice(-20).map((s) => ({
+    speaker_id: s.speaker_id,
+    text: s.text,
+    start: s.start,
+    end: s.end,
+  }));
+
+  // Build counters from claims
+  let trueCount = 0;
+  let partialCount = 0;
+  let falseCount = 0;
+  for (const c of claims) {
+    const lbl = c.primary_label;
+    if (lbl === "TRUE" || lbl === "MOSTLY_TRUE") trueCount += 1;
+    else if (lbl === "PARTIAL" || lbl === "MISLEADING" || lbl === "OMISSION") partialCount += 1;
+    else if (lbl === "FALSE") falseCount += 1;
+  }
+  let fallacyCount = 0;
+  let biasCount = 0;
+  let rhetoricCount = 0;
+  for (const m of markers) {
+    if (m.type === "fallacy") fallacyCount += 1;
+    else if (m.type === "bias") biasCount += 1;
+    else if (m.type === "rhetoric") rhetoricCount += 1;
+  }
+
+  const counters = {
+    claims: claims.length,
+    false: falseCount,
+    partial: partialCount,
+    true: trueCount,
+    fallacy: fallacyCount,
+    bias: biasCount,
+    rhetoric: rhetoricCount,
+  };
+
+  const speakersPayload = speakers.map((s) => ({ id: s.id, label: s.label }));
+
+  // Abort any previous in-flight request
+  synthesisAbortController?.abort();
+  synthesisAbortController = new AbortController();
+  const signal = synthesisAbortController.signal;
+
+  let res: Response;
+  try {
+    res = await fetch("/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ utterances, counters, speakers: speakersPayload }),
+      signal,
+    });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") {
+      // Aborted — no state change, keep prior state
+      return;
+    }
+    console.error("synthesize fetch failed", e);
+    const prev = useSession.getState().synthesis;
+    useSession.getState().setSynthesis({
+      state: "error",
+      at: Date.now(),
+      ...(prev && "text" in prev ? { text: prev.text, headlines: prev.headlines } : {}),
+      lastError: String(e),
+    });
+    return;
+  }
+
+  if (!res.ok) {
+    const prev = useSession.getState().synthesis;
+    useSession.getState().setSynthesis({
+      state: "error",
+      at: Date.now(),
+      ...(prev && "text" in prev ? { text: prev.text, headlines: prev.headlines } : {}),
+    });
+    return;
+  }
+
+  const data = (await res.json()) as { text: string; headlines: string[] };
+  useSession.getState().setSynthesis({
+    state: "fresh",
+    text: data.text,
+    headlines: data.headlines,
+    at: Date.now(),
+  });
 }
 
 async function runRhetoric() {

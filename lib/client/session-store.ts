@@ -9,6 +9,13 @@ import type {
   TranscriptSegment,
 } from "@/lib/types";
 
+export type SynthesisState =
+  | null
+  | { state: "warming"; at: number }
+  | { state: "fresh"; text: string; headlines: string[]; at: number }
+  | { state: "refreshing"; text: string; headlines: string[]; at: number }
+  | { state: "error"; text?: string; headlines?: string[]; at: number; lastError?: string };
+
 type State = {
   title: string;
   startedAt: string | null;
@@ -22,6 +29,7 @@ type State = {
   speakersMode: boolean;
   isRecording: boolean;
   mode: "A" | "D";
+  synthesis: SynthesisState;
 
   // actions
   startSession: (title?: string) => void;
@@ -37,6 +45,7 @@ type State = {
   setSpeakersMode: (b: boolean) => void;
   toggleMode: () => void;
   setRecording: (b: boolean) => void;
+  setSynthesis: (s: SynthesisState) => void;
   toSession: () => Session;
   reset: () => void;
 };
@@ -49,7 +58,7 @@ const initialState: Omit<State,
   | "startSession" | "endSession" | "setInterim" | "appendFinal"
   | "addClaim" | "updateClaim" | "addMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
-  | "toggleMode" | "setRecording" | "toSession" | "reset"
+  | "toggleMode" | "setRecording" | "setSynthesis" | "toSession" | "reset"
 > = {
   title: "",
   startedAt: null,
@@ -63,6 +72,7 @@ const initialState: Omit<State,
   speakersMode: false,
   isRecording: false,
   mode: "A",
+  synthesis: null,
 };
 
 export const useSession = create<State>((set, get) => ({
@@ -133,6 +143,8 @@ export const useSession = create<State>((set, get) => ({
   toggleMode: () => set((s) => ({ mode: s.mode === "A" ? "D" : "A" })),
 
   setRecording: (b) => set({ isRecording: b }),
+
+  setSynthesis: (s) => set({ synthesis: s }),
 
   toSession: () => {
     const s = get();

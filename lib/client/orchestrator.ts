@@ -127,6 +127,16 @@ export function abortSynthesis() {
   synthesisAbortController?.abort();
 }
 
+/**
+ * Bypasses the synthesis pacer and runs synthesis immediately once.
+ * Used by bulkIngest after processing all segments so the full imported
+ * document gets a synthesis pass without waiting for the throttle timer.
+ * The existing pacer (maybeRunSynthesis) is unaffected.
+ */
+export async function runSynthesisNow(): Promise<void> {
+  await runSynthesis();
+}
+
 async function runSynthesis() {
   const state = useSession.getState();
   const { transcript, claims, markers, speakers } = state;

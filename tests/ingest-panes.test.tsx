@@ -14,6 +14,15 @@ vi.mock("@/lib/client/session-store", () => ({
   }),
 }));
 
+vi.mock("@/lib/client/text-ingest", () => ({
+  parsePlainText: vi.fn(() => []),
+  parseDocx: vi.fn().mockResolvedValue(""),
+}));
+
+vi.mock("@/lib/client/ingest-orchestrator", () => ({
+  bulkIngest: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { TextIngestPane } from "@/components/session/ingest-panes/text-ingest-pane";
 import { AudioIngestPane } from "@/components/session/ingest-panes/audio-ingest-pane";
 import { YoutubeIngestPane } from "@/components/session/ingest-panes/youtube-ingest-pane";
@@ -28,7 +37,6 @@ beforeEach(() => {
 // ─── Parametrized stub pane tests ─────────────────────────────────────────────
 
 const panes = [
-  { name: "TextIngestPane", Component: TextIngestPane, comingText: "Coming in T3" },
   { name: "AudioIngestPane", Component: AudioIngestPane, comingText: "Coming in T4" },
   { name: "YoutubeIngestPane", Component: YoutubeIngestPane, comingText: "Coming in T5" },
   { name: "MediaUrlIngestPane", Component: MediaUrlIngestPane, comingText: "Coming in T6" },

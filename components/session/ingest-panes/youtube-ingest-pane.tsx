@@ -216,6 +216,10 @@ export function YoutubeIngestPane() {
                 That doesn&rsquo;t look like a YouTube URL. Paste a link from{" "}
                 youtube.com or youtu.be.
               </span>
+            ) : phase.code === "PRIVATE" ? (
+              <span className="text-amber-800">
+                This video is private, age-restricted, or unavailable in your region.
+              </span>
             ) : (
               <span className="text-amber-800">
                 Could not fetch captions: {phase.message}

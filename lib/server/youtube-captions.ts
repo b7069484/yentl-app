@@ -4,7 +4,7 @@ import type { TranscriptSegment } from "@/lib/types";
 
 export type CaptionErrorCode =
   | "NO_CAPTIONS"
-  | "PRIVATE" // PRIVATE — reserved for future detection of private/age-restricted videos; currently mapped to NETWORK_ERROR
+  | "PRIVATE"
   | "NETWORK_ERROR";
 
 export class CaptionError extends Error {
@@ -75,15 +75,25 @@ function isValidVideoId(id: string): boolean {
   return /^[A-Za-z0-9_-]{11}$/.test(id);
 }
 
-// ─── Timedtext endpoint variants ──────────────────────────────────────────────
+// ─── Watch-page scrape helpers ────────────────────────────────────────────────
 
-function captionUrls(videoId: string): string[] {
-  return [
-    `https://www.youtube.com/api/timedtext?lang=en&v=${videoId}`,
-    `https://www.youtube.com/api/timedtext?lang=en-US&v=${videoId}`,
-    `https://www.youtube.com/api/timedtext?lang=en&v=${videoId}&kind=asr`,
-  ];
-}
+type CaptionTrack = {
+  baseUrl: string;
+  languageCode: string;
+  kind?: string; // "asr" = auto-generated; absent = manual
+  name?: { simpleText?: string } | { runs?: Array<{ text: string }> };
+};
+
+const BROWSER_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+/**
+ * Matches `var ytInitialPlayerResponse = {...};` in YouTube watch-page HTML.
+ * The trailing `;` followed by `var` or `</script>` is a reliable terminator
+ * that avoids over-capturing when other JS vars follow on the same line.
+ */
+const PLAYER_RESPONSE_RE =
+  /var\s+ytInitialPlayerResponse\s*=\s*(\{[\s\S]+?\})\s*;\s*(?:var|<\/script>)/;
 
 // ─── HTML entity decoder ───────────────────────────────────────────────────────
 
@@ -160,54 +170,137 @@ function parseCaptionsXml(xml: string): TranscriptSegment[] {
 // ─── Main export ──────────────────────────────────────────────────────────────
 
 /**
- * Fetches captions for a YouTube video using the timedtext endpoint.
- * Tries lang=en → lang=en-US → lang=en&kind=asr in sequence.
+ * Fetches captions for a YouTube video by scraping the watch page and
+ * extracting captionTracks from ytInitialPlayerResponse. This is the robust
+ * approach used by youtube-transcript libraries: the baseUrl in the track is
+ * pre-authenticated and reliably returns the caption XML.
  *
- * @throws CaptionError({ code: "NO_CAPTIONS" }) when all tracks return empty
+ * Track preference order:
+ *   1. Manual English (languageCode === "en", no kind)
+ *   2. Manual en-region (languageCode starts with "en", no kind)
+ *   3. Auto-generated English (languageCode === "en", kind === "asr")
+ *   4. Auto-generated en-region (languageCode starts with "en", kind === "asr")
+ *
+ * @throws CaptionError({ code: "NO_CAPTIONS" }) when no English track found or XML is empty
+ * @throws CaptionError({ code: "PRIVATE" }) when video is not playable (age-restricted, private, etc.)
  * @throws CaptionError({ code: "NETWORK_ERROR" }) on fetch failure or non-2xx
  */
 export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
-  const urls = captionUrls(videoId);
-
-  let anyNonOk = false;
-
-  for (const url of urls) {
-    let response: Response;
-    try {
-      response = await fetch(url);
-    } catch (e) {
-      // Network-level failure (DNS, TCP, etc.) — try remaining variants
-      anyNonOk = true;
-      continue;
+  // 1. Fetch the watch page
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}&hl=en`;
+  let html: string;
+  try {
+    const res = await fetch(watchUrl, {
+      headers: {
+        "User-Agent": BROWSER_UA,
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+    });
+    if (!res.ok) {
+      throw new CaptionError(
+        "NETWORK_ERROR",
+        `Watch page returned ${res.status} for video ${videoId}`,
+      );
     }
-
-    if (!response.ok) {
-      // Non-2xx (e.g. 404) — fall through to the next variant
-      anyNonOk = true;
-      continue;
-    }
-
-    const xml = await response.text();
-    const segments = parseCaptionsXml(xml);
-
-    if (segments.length > 0) {
-      return segments;
-    }
-    // Empty 200 transcript — try the next URL variant
-  }
-
-  // All variants exhausted — determine the best error to surface
-  if (anyNonOk) {
-    // At least one URL returned non-200 or network-failed; no variant had captions
+    html = await res.text();
+  } catch (e) {
+    if (e instanceof CaptionError) throw e;
     throw new CaptionError(
       "NETWORK_ERROR",
-      `All timedtext endpoints failed or returned non-2xx for video ${videoId}.`,
+      `Watch page fetch failed: ${String(e)}`,
     );
   }
 
-  // All returned 200 but empty — no captions available
-  throw new CaptionError(
-    "NO_CAPTIONS",
-    `No captions found for video ${videoId}. The video may not have captions enabled.`,
+  // 2. Extract ytInitialPlayerResponse
+  const match = PLAYER_RESPONSE_RE.exec(html);
+  if (!match) {
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Could not locate ytInitialPlayerResponse in watch page for video ${videoId}`,
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let playerResponse: any;
+  try {
+    playerResponse = JSON.parse(match[1]);
+  } catch {
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Failed to parse ytInitialPlayerResponse JSON for video ${videoId}`,
+    );
+  }
+
+  // 3. Detect playability issues (private, age-restricted, unavailable)
+  const status = playerResponse?.playabilityStatus?.status;
+  if (status && status !== "OK") {
+    const reason = playerResponse?.playabilityStatus?.reason ?? status;
+    throw new CaptionError("PRIVATE", `Video not playable: ${reason}`);
+  }
+
+  // 4. Extract caption tracks
+  const tracks: CaptionTrack[] =
+    playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? [];
+
+  if (tracks.length === 0) {
+    throw new CaptionError(
+      "NO_CAPTIONS",
+      `No caption tracks listed for video ${videoId}`,
+    );
+  }
+
+  // 5. Pick the best English track
+  const englishManual = tracks.find(
+    (t) => t.languageCode === "en" && !t.kind,
   );
+  const enRegionManual = tracks.find(
+    (t) => t.languageCode.startsWith("en") && !t.kind,
+  );
+  const englishAsr = tracks.find(
+    (t) => t.languageCode === "en" && t.kind === "asr",
+  );
+  const enRegionAsr = tracks.find(
+    (t) => t.languageCode.startsWith("en") && t.kind === "asr",
+  );
+
+  const chosen = englishManual ?? enRegionManual ?? englishAsr ?? enRegionAsr;
+
+  if (!chosen) {
+    throw new CaptionError(
+      "NO_CAPTIONS",
+      `No English caption track found for video ${videoId}`,
+    );
+  }
+
+  // 6. Fetch the caption XML from the pre-authenticated baseUrl
+  let xml: string;
+  try {
+    const captionRes = await fetch(chosen.baseUrl, {
+      headers: { "User-Agent": BROWSER_UA },
+    });
+    if (!captionRes.ok) {
+      throw new CaptionError(
+        "NETWORK_ERROR",
+        `Caption track fetch returned ${captionRes.status} for video ${videoId}`,
+      );
+    }
+    xml = await captionRes.text();
+  } catch (e) {
+    if (e instanceof CaptionError) throw e;
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Caption track fetch failed: ${String(e)}`,
+    );
+  }
+
+  // 7. Parse and return
+  const segments = parseCaptionsXml(xml);
+  if (segments.length === 0) {
+    throw new CaptionError(
+      "NO_CAPTIONS",
+      `Caption track was empty for video ${videoId}`,
+    );
+  }
+
+  return segments;
 }

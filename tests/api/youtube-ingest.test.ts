@@ -169,6 +169,20 @@ describe("POST /api/youtube-ingest", () => {
     });
   });
 
+  describe("error: PRIVATE", () => {
+    it("returns error with PRIVATE code when video is private/age-restricted", async () => {
+      const err = Object.assign(new Error("Video not playable"), { code: "PRIVATE" });
+      mockFetchCaptions.mockRejectedValue(err);
+
+      const { POST } = await import("@/app/api/youtube-ingest/route");
+      const req = makeRequest({ url: TEST_URL });
+      const res = await POST(req as never);
+
+      const json = await res.json();
+      expect(json.error.code).toBe("PRIVATE");
+    });
+  });
+
   describe("error: NETWORK_ERROR", () => {
     it("returns error with NETWORK_ERROR code when captions throw NETWORK_ERROR", async () => {
       const err = Object.assign(new Error("Network fail"), { code: "NETWORK_ERROR" });

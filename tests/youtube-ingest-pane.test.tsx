@@ -233,6 +233,24 @@ describe("YoutubeIngestPane — error states", () => {
     });
   });
 
+  it("shows private/age-restricted message on PRIVATE", async () => {
+    render(<YoutubeIngestPane />);
+    const input = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+    fireEvent.change(input, { target: { value: VALID_URL } });
+
+    mockFetch.mockResolvedValueOnce(
+      errorFetchResponse("PRIVATE", "Video not playable: Sign in to confirm your age"),
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Fetch captions/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/private, age-restricted/i)).toBeTruthy();
+    });
+  });
+
   it("shows error message on NETWORK_ERROR", async () => {
     render(<YoutubeIngestPane />);
     const input = screen.getByPlaceholderText(/youtube\.com\/watch/i);

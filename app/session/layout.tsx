@@ -96,6 +96,25 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
     w.__factify = w.__yenta;
   }, []);
 
+  // Keyboard shortcut: Space toggles record/pause. Ignored when focus is in an editable element
+  // (input/textarea/contenteditable) so it doesn't fight with text entry.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.code !== "Space") return;
+      const t = e.target as HTMLElement | null;
+      if (!t) return;
+      if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) return;
+      e.preventDefault();
+      if (!startedAt) {
+        session.startSession();
+      } else if (!session.endedAt) {
+        session.setRecording(!session.isRecording);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [startedAt, session]);
+
   return (
     <SessionShell>
       {error && (

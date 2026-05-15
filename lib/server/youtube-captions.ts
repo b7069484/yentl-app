@@ -2,7 +2,10 @@ import type { TranscriptSegment } from "@/lib/types";
 
 // ─── Custom error class ────────────────────────────────────────────────────────
 
-export type CaptionErrorCode = "NO_CAPTIONS" | "PRIVATE" | "NETWORK_ERROR";
+export type CaptionErrorCode =
+  | "NO_CAPTIONS"
+  | "PRIVATE" // PRIVATE — reserved for future detection of private/age-restricted videos; currently mapped to NETWORK_ERROR
+  | "NETWORK_ERROR";
 
 export class CaptionError extends Error {
   constructor(
@@ -67,9 +70,9 @@ export function parseYouTubeUrl(url: string): string | null {
   return null;
 }
 
-/** YouTube video IDs are 11 chars: letters, digits, -, _ */
+/** YouTube video IDs are exactly 11 chars: letters, digits, -, _ */
 function isValidVideoId(id: string): boolean {
-  return /^[A-Za-z0-9_-]{1,}$/.test(id) && id.length > 0;
+  return /^[A-Za-z0-9_-]{11}$/.test(id);
 }
 
 // ─── Timedtext endpoint variants ──────────────────────────────────────────────
@@ -121,16 +124,25 @@ function decodeHtmlEntities(text: string): string {
 function parseCaptionsXml(xml: string): TranscriptSegment[] {
   const segments: TranscriptSegment[] = [];
 
-  // Match each <text start="X" dur="Y">...</text> element
-  const textPattern = /<text\s[^>]*start="([^"]*)"[^>]*dur="([^"]*)"[^>]*>([\s\S]*?)<\/text>/g;
+  // Match each <text ...>...</text> element, capturing the full attribute string
+  // so we can extract start/dur in any order (real YouTube timedtext varies).
+  const TEXT_TAG_RE = /<text\s+([^>]*)>([\s\S]*?)<\/text>/g;
   let match: RegExpExecArray | null;
 
-  while ((match = textPattern.exec(xml)) !== null) {
-    const start = parseFloat(match[1]);
-    const dur = parseFloat(match[2]);
-    const rawText = match[3].trim();
+  while ((match = TEXT_TAG_RE.exec(xml)) !== null) {
+    const attrs = match[1];
+    const rawText = match[2].trim();
 
     if (!rawText) continue;
+
+    // Extract start (required) and dur (optional) order-independently
+    const startMatch = /\bstart="([^"]*)"/.exec(attrs);
+    const durMatch = /\bdur="([^"]*)"/.exec(attrs);
+
+    const start = startMatch ? parseFloat(startMatch[1]) : NaN;
+    if (!Number.isFinite(start) || start < 0) continue; // skip malformed
+
+    const dur = durMatch ? parseFloat(durMatch[1]) : 0; // missing dur → 0
 
     const text = decodeHtmlEntities(rawText);
     segments.push({
@@ -157,24 +169,22 @@ function parseCaptionsXml(xml: string): TranscriptSegment[] {
 export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
   const urls = captionUrls(videoId);
 
+  let anyNonOk = false;
+
   for (const url of urls) {
     let response: Response;
     try {
       response = await fetch(url);
     } catch (e) {
-      // Network failure — throw immediately, no point trying remaining URLs
-      throw new CaptionError(
-        "NETWORK_ERROR",
-        `Network request failed for ${url}: ${e instanceof Error ? e.message : String(e)}`,
-      );
+      // Network-level failure (DNS, TCP, etc.) — try remaining variants
+      anyNonOk = true;
+      continue;
     }
 
     if (!response.ok) {
-      // Non-2xx — treat as network error and throw (private/unavailable video)
-      throw new CaptionError(
-        "NETWORK_ERROR",
-        `HTTP ${response.status} from timedtext endpoint for video ${videoId}`,
-      );
+      // Non-2xx (e.g. 404) — fall through to the next variant
+      anyNonOk = true;
+      continue;
     }
 
     const xml = await response.text();
@@ -183,10 +193,19 @@ export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[
     if (segments.length > 0) {
       return segments;
     }
-    // Empty transcript — try the next URL variant
+    // Empty 200 transcript — try the next URL variant
   }
 
-  // All tracks exhausted with empty responses
+  // All variants exhausted — determine the best error to surface
+  if (anyNonOk) {
+    // At least one URL returned non-200 or network-failed; no variant had captions
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `All timedtext endpoints failed or returned non-2xx for video ${videoId}.`,
+    );
+  }
+
+  // All returned 200 but empty — no captions available
   throw new CaptionError(
     "NO_CAPTIONS",
     `No captions found for video ${videoId}. The video may not have captions enabled.`,

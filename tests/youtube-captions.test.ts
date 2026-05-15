@@ -15,6 +15,18 @@ const FIXTURE_XML = `<?xml version="1.0" encoding="utf-8"?>
   <text start="4.3" dur="3.1">&quot;Quoted&quot; text</text>
 </transcript>`;
 
+/** dur comes before start (real YouTube timedtext shape) */
+const FIXTURE_DUR_BEFORE_START_XML = `<?xml version="1.0" encoding="utf-8"?>
+<transcript>
+  <text dur="2.0" start="1.0">hi</text>
+</transcript>`;
+
+/** No dur attribute — should be treated as dur=0 */
+const FIXTURE_NO_DUR_XML = `<?xml version="1.0" encoding="utf-8"?>
+<transcript>
+  <text start="3.0">no-dur</text>
+</transcript>`;
+
 /** Empty transcript (no captions) */
 const EMPTY_XML = `<?xml version="1.0" encoding="utf-8"?><transcript/>`;
 
@@ -187,5 +199,51 @@ describe("fetchCaptions — NETWORK_ERROR", () => {
     await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
       code: "NETWORK_ERROR",
     });
+  });
+});
+
+// ─── XML attribute order fixtures ─────────────────────────────────────────────
+
+describe("parseCaptionsXml — attribute order independence", () => {
+  it("parses <text dur='2.0' start='1.0'> (dur before start) correctly", async () => {
+    mockFetch.mockResolvedValue(okResponse(FIXTURE_DUR_BEFORE_START_XML));
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(1);
+    expect(segments[0].start).toBeCloseTo(1.0);
+    expect(segments[0].end).toBeCloseTo(3.0); // start + dur = 1.0 + 2.0
+    expect(segments[0].text).toBe("hi");
+  });
+
+  it("parses <text start='3.0'> (no dur) as end === start (dur = 0)", async () => {
+    mockFetch.mockResolvedValue(okResponse(FIXTURE_NO_DUR_XML));
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(1);
+    expect(segments[0].start).toBeCloseTo(3.0);
+    expect(segments[0].end).toBeCloseTo(3.0); // start + 0
+    expect(segments[0].text).toBe("no-dur");
+  });
+});
+
+// ─── Fallback chain: non-2xx falls through ────────────────────────────────────
+
+describe("fetchCaptions — fallback chain on non-2xx", () => {
+  it("falls through on 404 and returns segments from second URL", async () => {
+    mockFetch
+      .mockResolvedValueOnce(notFoundResponse())
+      .mockResolvedValueOnce(okResponse(FIXTURE_XML));
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(3);
+    expect(segments[0].text).toBe("Hello & welcome");
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("throws NETWORK_ERROR when all URLs return 404", async () => {
+    mockFetch.mockResolvedValue(notFoundResponse());
+
+    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
+      code: "NETWORK_ERROR",
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 });

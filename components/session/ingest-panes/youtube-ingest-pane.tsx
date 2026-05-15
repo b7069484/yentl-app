@@ -149,7 +149,7 @@ export function YoutubeIngestPane() {
 
       <h1 className="font-serif text-[22px] text-ink mb-1">Paste a YouTube URL</h1>
       <p className="text-[13px] text-ink-3 mb-6">
-        Captions are fetched automatically — no download required.
+        Captions are fetched from YouTube — no download required.
       </p>
 
       {/* URL input */}

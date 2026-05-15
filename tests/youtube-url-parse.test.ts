@@ -83,4 +83,14 @@ describe("parseYouTubeUrl", () => {
   it("returns null for youtube.com channel URL", () => {
     expect(parseYouTubeUrl("https://www.youtube.com/@SomeChannel")).toBeNull();
   });
+
+  // ── Exact 11-char ID enforcement ────────────────────────────────────────────
+
+  it("returns null for a 10-char video ID (too short)", () => {
+    expect(parseYouTubeUrl("https://www.youtube.com/watch?v=dQw4w9WgXc")).toBeNull();
+  });
+
+  it("returns null for a 12-char video ID (too long)", () => {
+    expect(parseYouTubeUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQQ")).toBeNull();
+  });
 });

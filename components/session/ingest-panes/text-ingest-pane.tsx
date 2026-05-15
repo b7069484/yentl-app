@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, type DragEvent, type ChangeEvent } from "react";
+import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { parsePlainText, parseDocx } from "@/lib/client/text-ingest";
@@ -14,6 +14,8 @@ const ACCEPTED_MIME = [
   "text/markdown",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
+
+const FILE_INPUT_ID = "text-ingest-file-input";
 
 function isSupportedFile(file: File): boolean {
   const name = file.name.toLowerCase();
@@ -30,6 +32,15 @@ export function TextIngestPane() {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Holds the AbortController for the currently running bulkIngest call.
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Abort any in-progress ingest on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   const charCount = text.length;
   const tokenEst = Math.ceil(charCount / 4);
@@ -74,6 +85,18 @@ export function TextIngestPane() {
     }
   }, []);
 
+  // ── file input (keyboard a11y) ────────────────────────────────────────────
+  const handleFileInputChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      await loadFile(file);
+      // Reset so the same file can be re-selected if the user wants
+      e.target.value = "";
+    },
+    [loadFile],
+  );
+
   // ── drag-drop ─────────────────────────────────────────────────────────────
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -103,17 +126,29 @@ export function TextIngestPane() {
   // ── process ──────────────────────────────────────────────────────────────────
   const handleProcess = useCallback(async () => {
     if (!text.trim() || isProcessing) return;
+
+    // Abort any previous run (shouldn't be one, but safety net)
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setIsProcessing(true);
     setError(null);
     try {
       const segments = parsePlainText(text, { withSpeakers });
-      await bulkIngest(segments);
+      await bulkIngest(segments, { signal: controller.signal });
     } catch (e) {
       setError(`Processing failed: ${String(e)}`);
     } finally {
       setIsProcessing(false);
     }
   }, [text, withSpeakers, isProcessing]);
+
+  // ── back navigation ────────────────────────────────────────────────────────
+  const handleBack = useCallback(() => {
+    abortControllerRef.current?.abort();
+    setPrerecordStage("picker");
+  }, [setPrerecordStage]);
 
   const canProcess = text.trim().length > 0 && !isProcessing;
 
@@ -122,7 +157,7 @@ export function TextIngestPane() {
       {/* Back link */}
       <button
         type="button"
-        onClick={() => setPrerecordStage("picker")}
+        onClick={handleBack}
         className="inline-flex items-center gap-1.5 text-[12px] text-ink-3 hover:text-ink-2 mb-6"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
@@ -135,37 +170,50 @@ export function TextIngestPane() {
         <span className="font-mono">David:</span> are auto-detected.
       </p>
 
-      {/* Drop zone + textarea */}
-      <div
-        data-testid="drop-zone"
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={[
-          "relative rounded-lg border transition-colors",
-          isDragOver
-            ? "border-primary bg-primary/5"
-            : "border-border bg-surface",
-        ].join(" ")}
-      >
-        {isDragOver && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg pointer-events-none z-10 bg-primary/10">
-            <span className="text-[14px] font-medium text-primary">Drop file here</span>
-          </div>
-        )}
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={handleTextChange}
-          placeholder="Paste your transcript here…"
-          className={[
-            "w-full min-h-[280px] p-3 bg-transparent rounded-lg resize-y",
-            "font-mono text-[13px] text-ink placeholder:text-ink-3",
-            "focus:outline-none focus:ring-2 focus:ring-primary/40",
-          ].join(" ")}
+      {/* Drop zone + textarea (wrapped in label for keyboard file-pick a11y) */}
+      <label htmlFor={FILE_INPUT_ID}>
+        {/* Hidden file input — keyboard users activate via the label */}
+        <input
+          id={FILE_INPUT_ID}
+          type="file"
+          accept={[...ACCEPTED_EXTENSIONS, ...ACCEPTED_MIME].join(",")}
+          className="sr-only"
+          aria-label="Choose a transcript file"
+          onChange={handleFileInputChange}
           disabled={isProcessing}
         />
-      </div>
+        <div
+          data-testid="drop-zone"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={[
+            "relative rounded-lg border transition-colors",
+            isDragOver
+              ? "border-primary bg-primary/5"
+              : "border-border bg-surface",
+          ].join(" ")}
+        >
+          {isDragOver && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg pointer-events-none z-10 bg-primary/10">
+              <span className="text-[14px] font-medium text-primary">Drop file here</span>
+            </div>
+          )}
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={handleTextChange}
+            placeholder="Paste your transcript here…"
+            onClick={(e) => e.stopPropagation()}
+            className={[
+              "w-full min-h-[280px] p-3 bg-transparent rounded-lg resize-y",
+              "font-mono text-[13px] text-ink placeholder:text-ink-3",
+              "focus:outline-none focus:ring-2 focus:ring-primary/40",
+            ].join(" ")}
+            disabled={isProcessing}
+          />
+        </div>
+      </label>
 
       {/* Char / token count */}
       <div className="mt-2 flex items-center gap-3 text-[12px] text-ink-3">

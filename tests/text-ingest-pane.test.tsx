@@ -121,6 +121,7 @@ describe("TextIngestPane — Process flow", () => {
       expect(mockParsePlainText).toHaveBeenCalledWith("Hello world.", expect.any(Object));
       expect(mockBulkIngest).toHaveBeenCalledWith(
         expect.arrayContaining([expect.objectContaining({ text: "Hello." })]),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
       );
     });
   });

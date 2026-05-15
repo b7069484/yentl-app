@@ -132,3 +132,37 @@ describe("bulkIngest — ordering", () => {
     ]);
   });
 });
+
+describe("bulkIngest — AbortSignal", () => {
+  it("aborted signal before start: skips all segments and runSynthesisNow", async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    await bulkIngest([makeSeg("A.", 0), makeSeg("B.", 1)], { signal: controller.signal });
+
+    expect(mockAppendFinal).not.toHaveBeenCalled();
+    expect(mockOnFinalUtterance).not.toHaveBeenCalled();
+    expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+  });
+
+  it("aborts mid-loop: segments after abort point are skipped and runSynthesisNow is NOT called", async () => {
+    const controller = new AbortController();
+
+    // Abort after the first segment is processed
+    let callCount = 0;
+    mockOnFinalUtterance.mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) {
+        controller.abort();
+      }
+    });
+
+    const segs = [makeSeg("Seg 1.", 0), makeSeg("Seg 2.", 1), makeSeg("Seg 3.", 2)];
+    await bulkIngest(segs, { signal: controller.signal });
+
+    // Only the first segment should have been processed before abort was detected
+    expect(mockAppendFinal).toHaveBeenCalledTimes(1);
+    expect(mockOnFinalUtterance).toHaveBeenCalledTimes(1);
+    expect(mockRunSynthesisNow).not.toHaveBeenCalled();
+  });
+});

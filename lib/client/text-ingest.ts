@@ -1,9 +1,13 @@
+"use client";
+
 import type { TranscriptSegment } from "@/lib/types";
 
 // ─── Speaker label regex ──────────────────────────────────────────────────────
 // Matches: "David: ...", "David — ...", "David – ..."
-// Captures group 1 = speaker name (1–31 chars, title-case start), group 2 = text after delimiter
-const SPEAKER_LABEL_RE = /^([A-Z][a-zA-Z .'\\-]{0,30})\s*[:—–]\s*(.+)$/;
+// Captures group 1 = speaker name (2–31 chars, title-case start), group 2 = text after delimiter
+// {1,30} requires at least one char after the initial uppercase — min name length is 2 chars,
+// which prevents first-person "I:" from being treated as a speaker label.
+const SPEAKER_LABEL_RE = /^([A-Z][a-zA-Z .'\\-]{1,30})\s*[:—–]\s*(.+)$/;
 
 // ─── Word count helper ────────────────────────────────────────────────────────
 function wordCount(text: string): number {

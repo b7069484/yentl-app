@@ -1,4 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// ─── Mammoth mock ─────────────────────────────────────────────────────────────
+// Must be at module level so vitest hoists it before any imports execute.
+// text-ingest.ts does: mammoth = await import("mammoth"); mammoth.extractRawText(...)
+// The default export is cast to an object with extractRawText, so we expose it on
+// both the named export and the default export to cover both access patterns.
+vi.mock("mammoth", () => {
+  const extractRawText = vi.fn().mockResolvedValue({ value: "Extracted text" });
+  return {
+    default: { extractRawText },
+    extractRawText,
+  };
+});
+
 import { parsePlainText, parseDocx } from "@/lib/client/text-ingest";
 
 // ─── parsePlainText ──────────────────────────────────────────────────────────
@@ -141,12 +155,22 @@ describe("parsePlainText — timestamps", () => {
 // ─── parseDocx ───────────────────────────────────────────────────────────────
 
 describe("parseDocx — mammoth integration (mocked)", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  // Helper: get the mocked extractRawText function with correct type
+  async function getMockedExtractRawText() {
+    const mod = (await import("mammoth")).default as unknown as {
+      extractRawText: ReturnType<typeof vi.fn>;
+    };
+    return mod.extractRawText;
+  }
+
+  beforeEach(async () => {
+    // Reset call history between tests without replacing the implementation.
+    const fn = await getMockedExtractRawText();
+    fn.mockClear();
+    fn.mockResolvedValue({ value: "Extracted text" });
   });
 
   it("calls mammoth extractRawText with arrayBuffer from the file and returns value", async () => {
-    // Mock mammoth dynamic import
     const mockArrayBuffer = new ArrayBuffer(8);
     const mockFile = {
       arrayBuffer: vi.fn().mockResolvedValue(mockArrayBuffer),
@@ -154,19 +178,18 @@ describe("parseDocx — mammoth integration (mocked)", () => {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     } as unknown as File;
 
-    const mockExtractRawText = vi.fn().mockResolvedValue({ value: "Extracted text" });
+    const result = await parseDocx(mockFile);
 
-    vi.doMock("mammoth", () => ({
-      default: { extractRawText: mockExtractRawText },
-      extractRawText: mockExtractRawText,
-    }));
+    // Verify the file's arrayBuffer() was called
+    expect(mockFile.arrayBuffer).toHaveBeenCalledTimes(1);
 
-    // We need to re-import with the mock — test the integration via spying instead
-    // Since vi.doMock can't retroactively affect already-loaded modules in vitest,
-    // we test by verifying the function signature contract: parseDocx returns a string.
-    // The actual mammoth call is tested via a spy on the module's internal import.
+    // Verify mammoth.extractRawText was called with the arrayBuffer
+    const fn = await getMockedExtractRawText();
+    expect(fn).toHaveBeenCalledWith({
+      arrayBuffer: expect.any(ArrayBuffer),
+    });
 
-    // Verify the function exists and is callable
-    expect(typeof parseDocx).toBe("function");
+    // Verify the extracted text is returned
+    expect(result).toBe("Extracted text");
   });
 });

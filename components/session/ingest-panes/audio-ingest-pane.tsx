@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { ArrowLeft, Upload, FileAudio, Loader2, AlertCircle } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
@@ -56,6 +56,9 @@ export function AudioIngestPane() {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Abort any in-flight upload/transcribe when the component unmounts
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
 
   const handleFile = useCallback(async (file: File) => {
     // Validate type
@@ -207,7 +210,7 @@ export function AudioIngestPane() {
       </p>
 
       {/* Drop zone */}
-      {!staged && !isProcessing && phase.kind !== "done" && (
+      {!staged && !isProcessing && phase.kind !== "done" && phase.kind !== "error" && (
         <label
           htmlFor="audio-file-input"
           onDrop={handleDrop}

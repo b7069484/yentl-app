@@ -15,10 +15,14 @@ export function probeAudioDuration(file: File): Promise<number> {
       audio.onloadedmetadata = () => {
         URL.revokeObjectURL(url);
         const dur = isFinite(audio.duration) ? audio.duration : 0;
+        audio.src = "";
+        audio.load();
         resolve(dur);
       };
       audio.onerror = () => {
         URL.revokeObjectURL(url);
+        audio.src = "";
+        audio.load();
         resolve(0);
       };
       audio.src = url;

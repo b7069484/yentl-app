@@ -70,6 +70,42 @@ describe("POST /api/transcribe-batch", () => {
     expect(res.status).toBe(400);
   });
 
+  it("returns 400 when duration_sec is missing", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeRequest({ blob_url: "https://blob.vercel-storage.com/audio.mp3" });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/duration_sec/);
+  });
+
+  it("returns 400 when duration_sec is a non-number (string)", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeRequest({
+      blob_url: "https://blob.vercel-storage.com/audio.mp3",
+      duration_sec: "120",
+    });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/duration_sec/);
+  });
+
+  it("returns 400 when duration_sec is negative", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeRequest({
+      blob_url: "https://blob.vercel-storage.com/audio.mp3",
+      duration_sec: -1,
+    });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/duration_sec/);
+  });
+
   it("returns 400 when duration_sec exceeds 4 hours (14400)", async () => {
     const { POST } = await import("@/app/api/transcribe-batch/route");
     const req = makeRequest({
@@ -80,7 +116,7 @@ describe("POST /api/transcribe-batch", () => {
 
     expect(res.status).toBe(400);
     const json = await res.json();
-    expect(json.error).toMatch(/maximum allowed duration/i);
+    expect(json.error).toMatch(/4-hour cap/i);
   });
 
   it("accepts duration_sec exactly at 4 hours (14400) — boundary passes", async () => {
@@ -109,7 +145,7 @@ describe("POST /api/transcribe-batch", () => {
     mockTranscribeUrl.mockRejectedValue(new Error("Deepgram quota exceeded"));
 
     const { POST } = await import("@/app/api/transcribe-batch/route");
-    const req = makeRequest({ blob_url: "https://blob.vercel-storage.com/audio.mp3" });
+    const req = makeRequest({ blob_url: "https://blob.vercel-storage.com/audio.mp3", duration_sec: 120 });
     const res = await POST(req as never);
 
     expect(res.status).toBe(500);

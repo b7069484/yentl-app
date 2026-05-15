@@ -249,6 +249,19 @@ describe("AudioIngestPane — Process flow", () => {
     });
   });
 
+  it("calls setSource with exact audio_file shape after successful transcribe", async () => {
+    await stageAndProcess();
+    await waitFor(() => {
+      expect(mockSetSource).toHaveBeenCalledWith({
+        kind: "audio_file",
+        blob_url: "https://blob.vercel-storage.com/audio.mp3",
+        duration_sec: 120,
+        filename: "audio.mp3",
+        mime: "audio/mpeg",
+      });
+    });
+  });
+
   it("shows error message when transcribe-batch returns non-ok", async () => {
     mockFetch.mockResolvedValue({
       ok: false,

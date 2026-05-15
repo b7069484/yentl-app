@@ -14,7 +14,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { blob_url, duration_sec } = body as Record<string, unknown>;
+  const { blob_url, duration_sec: dur } = body as Record<string, unknown>;
 
   if (!blob_url || typeof blob_url !== "string") {
     return NextResponse.json(
@@ -23,15 +23,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  if (
-    duration_sec !== undefined &&
-    typeof duration_sec === "number" &&
-    duration_sec > MAX_DURATION_SEC
-  ) {
+  if (typeof dur !== "number" || !Number.isFinite(dur) || dur < 0) {
     return NextResponse.json(
-      {
-        error: `Audio exceeds maximum allowed duration of 4 hours (${duration_sec}s > ${MAX_DURATION_SEC}s)`,
-      },
+      { error: "duration_sec must be a non-negative number" },
+      { status: 400 },
+    );
+  }
+
+  if (dur > MAX_DURATION_SEC) {
+    return NextResponse.json(
+      { error: "audio exceeds 4-hour cap" },
       { status: 400 },
     );
   }

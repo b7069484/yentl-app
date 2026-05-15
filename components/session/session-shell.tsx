@@ -15,7 +15,7 @@ import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 
 function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   const fontMap = { sm: "text-[18px]", md: "text-[22px]", lg: "text-[32px]" };
-  const dotMap = { sm: "w-1.5 h-1.5", md: "w-2 h-2", lg: "w-2.5 h-2.5" };
+  const dotMap = { sm: "w-1.5 h-1.5 ml-1.5", md: "w-2 h-2 ml-1.5", lg: "w-2.5 h-2.5 ml-2" };
   return (
     <Link
       href="/session"
@@ -23,7 +23,8 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     >
       <span>yenta</span>
       <span
-        className={`inline-block ${dotMap[size]} rounded-full bg-amber ml-0.5 ring-2 ring-[rgba(216,155,44,0.18)] self-end mb-1`}
+        aria-hidden
+        className={`yenta-dot inline-block ${dotMap[size]} self-baseline`}
       />
     </Link>
   );

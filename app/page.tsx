@@ -17,9 +17,9 @@ export default function Home() {
           className="h-32 w-auto md:h-40"
         />
 
-        <div className="font-serif text-[44px] font-medium leading-none tracking-tight text-ink md:text-[56px]">
+        <div className="inline-flex items-baseline font-serif text-[44px] font-medium leading-none tracking-tight text-ink md:text-[56px]">
           <span>yenta</span>
-          <span className="ml-0.5 inline-block h-2.5 w-2.5 -translate-y-1 rounded-full bg-amber align-baseline ring-2 ring-[rgba(216,155,44,0.18)] md:h-3 md:w-3" />
+          <span aria-hidden className="yenta-dot ml-2 inline-block h-2.5 w-2.5 self-baseline md:ml-2.5 md:h-3 md:w-3" />
         </div>
 
         <h1 className="font-serif text-[48px] font-medium leading-none tracking-tight text-ink md:text-[68px]">

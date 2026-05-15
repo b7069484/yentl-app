@@ -177,3 +177,33 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+/* ─── Wordmark "smart dot" — looping AI-agent glow ─── */
+@layer components {
+  .yenta-dot {
+    background-color: var(--amber);
+    border-radius: 9999px;
+    animation: yenta-dot-pulse 2.4s ease-in-out infinite;
+    will-change: box-shadow;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .yenta-dot {
+      animation: none;
+      box-shadow: 0 0 4px 1px rgba(216, 155, 44, 0.35);
+    }
+  }
+}
+
+@keyframes yenta-dot-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(216, 155, 44, 0),
+      0 0 4px 1px rgba(216, 155, 44, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px rgba(216, 155, 44, 0),
+      0 0 10px 3px rgba(216, 155, 44, 0.7);
+  }
+}

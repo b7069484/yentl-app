@@ -9,12 +9,20 @@ import type {
   TranscriptSegment,
 } from "@/lib/types";
 
+export type SpeakerVerdict = {
+  speaker_id: number;
+  label: string;
+  factual_grade: "mostly_factual" | "mixed" | "mostly_inaccurate" | "insufficient";
+  faith_grade: "good_faith" | "mixed" | "bad_faith" | "insufficient";
+  one_liner: string;
+};
+
 export type SynthesisState =
   | null
   | { state: "warming"; at: number }
-  | { state: "fresh"; text: string; headlines: string[]; at: number }
-  | { state: "refreshing"; text: string; headlines: string[]; at: number }
-  | { state: "error"; text?: string; headlines?: string[]; at: number; lastError?: string };
+  | { state: "fresh"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
+  | { state: "refreshing"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
+  | { state: "error"; text?: string; headlines?: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number; lastError?: string };
 
 type State = {
   title: string;

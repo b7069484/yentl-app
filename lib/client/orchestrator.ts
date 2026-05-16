@@ -227,11 +227,12 @@ async function runSynthesis() {
     return;
   }
 
-  const data = (await res.json()) as { text: string; headlines: string[] };
+  const data = (await res.json()) as { text: string; headlines: string[]; per_speaker_verdicts?: import("@/lib/client/session-store").SpeakerVerdict[] };
   useSession.getState().setSynthesis({
     state: "fresh",
     text: data.text,
     headlines: data.headlines,
+    ...(data.per_speaker_verdicts !== undefined ? { per_speaker_verdicts: data.per_speaker_verdicts } : {}),
     at: Date.now(),
   });
 }

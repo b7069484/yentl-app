@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { SynthesisState } from "@/lib/client/session-store";
+import type { SynthesisState, SpeakerVerdict } from "@/lib/client/session-store";
 
 // ─── Time-ago helper ──────────────────────────────────────────────────────────
 
@@ -63,6 +63,96 @@ const HEADLINE_DOTS: string[] = [
   "bg-amber-2",// 2 — topic concentration
 ];
 
+// ─── Per-speaker verdict block ────────────────────────────────────────────────
+
+const FACTUAL_GRADE_STYLE: Record<
+  SpeakerVerdict["factual_grade"],
+  { bg: string; text: string; label: string }
+> = {
+  mostly_factual:    { bg: "bg-green-soft",  text: "text-green",   label: "Mostly Factual" },
+  mixed:             { bg: "bg-amber-soft",   text: "text-amber-2", label: "Mixed" },
+  mostly_inaccurate: { bg: "bg-red-soft",     text: "text-red",     label: "Mostly Inaccurate" },
+  insufficient:      { bg: "bg-slate-soft",   text: "text-ink-3",   label: "Insufficient data" },
+};
+
+const FAITH_GRADE_STYLE: Record<
+  SpeakerVerdict["faith_grade"],
+  { bg: string; text: string; label: string }
+> = {
+  good_faith:   { bg: "bg-green-soft", text: "text-green",   label: "Good Faith" },
+  mixed:        { bg: "bg-amber-soft",  text: "text-amber-2", label: "Mixed" },
+  bad_faith:    { bg: "bg-red-soft",    text: "text-red",     label: "Bad Faith" },
+  insufficient: { bg: "bg-slate-soft",  text: "text-ink-3",   label: "Insufficient data" },
+};
+
+const CHIP_BASE =
+  "inline-flex items-center px-2 py-px rounded-full text-[10px] font-semibold leading-snug border whitespace-nowrap";
+
+function GradeChip({
+  style,
+}: {
+  style: { bg: string; text: string; label: string };
+}) {
+  return (
+    <span className={`${CHIP_BASE} ${style.bg} ${style.text} border-transparent`}>
+      {style.label}
+    </span>
+  );
+}
+
+function SpeakerVerdictCard({ verdict, index }: { verdict: SpeakerVerdict; index: number }) {
+  const paletteIndex = (verdict.speaker_id % 6) + 1;
+  const factualStyle = FACTUAL_GRADE_STYLE[verdict.factual_grade];
+  const faithStyle = FAITH_GRADE_STYLE[verdict.faith_grade];
+
+  return (
+    <div
+      className="flex-1 min-w-0 border border-line rounded-lg px-3.5 py-3 bg-paper flex flex-col gap-2"
+      data-testid={`speaker-verdict-card-${index}`}
+    >
+      {/* Speaker label row */}
+      <div className="flex items-center gap-1.5">
+        <span
+          aria-hidden
+          className="h-[7px] w-[7px] rounded-full shrink-0"
+          style={{ backgroundColor: `var(--spk-${paletteIndex})` }}
+        />
+        <span className="text-[11.5px] font-semibold text-ink-2 truncate">
+          {verdict.label}
+        </span>
+      </div>
+
+      {/* Grade chips */}
+      <div className="flex flex-wrap gap-1.5">
+        <GradeChip style={factualStyle} />
+        <GradeChip style={faithStyle} />
+      </div>
+
+      {/* One-liner */}
+      <p className="font-serif text-[13px] italic leading-snug text-ink-2 m-0">
+        {verdict.one_liner}
+      </p>
+    </div>
+  );
+}
+
+function PerSpeakerVerdicts({ verdicts }: { verdicts: SpeakerVerdict[] }) {
+  if (verdicts.length === 0) return null;
+
+  return (
+    <div className="mt-4 border-t border-line pt-3.5" data-testid="per-speaker-verdicts">
+      <span className="block text-[10px] font-semibold uppercase tracking-wide text-ink-4 mb-2.5">
+        Per-Speaker Verdict
+      </span>
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
+        {verdicts.map((v, i) => (
+          <SpeakerVerdictCard key={v.speaker_id} verdict={v} index={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Skeleton (warming state) ─────────────────────────────────────────────────
 
 function WarmingSkeleton() {
@@ -122,6 +212,7 @@ export function SynthesisCard({
 
   const text = synthesis.text;
   const headlines = synthesis.headlines ?? [];
+  const perSpeakerVerdicts = ("per_speaker_verdicts" in synthesis && synthesis.per_speaker_verdicts) ? synthesis.per_speaker_verdicts : [];
 
   // Age label
   let ageSuffix: string;
@@ -188,6 +279,11 @@ export function SynthesisCard({
             </button>
           ))}
         </div>
+      )}
+
+      {/* Per-speaker verdicts */}
+      {perSpeakerVerdicts.length > 0 && (
+        <PerSpeakerVerdicts verdicts={perSpeakerVerdicts} />
       )}
 
       {/* Error notice */}

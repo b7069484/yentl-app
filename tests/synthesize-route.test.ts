@@ -48,6 +48,76 @@ describe("SynthesizeResponse schema", () => {
       }),
     ).toThrow();
   });
+
+  it("accepts valid payload with per_speaker_verdicts", () => {
+    const parsed = SynthesizeResponse.parse({
+      text: "A paragraph.",
+      headlines: ["H1", "H2", "H3"],
+      per_speaker_verdicts: [
+        {
+          speaker_id: 0,
+          label: "Alice",
+          factual_grade: "mostly_factual",
+          faith_grade: "good_faith",
+          one_liner: "Alice made well-sourced, accurate claims throughout.",
+        },
+        {
+          speaker_id: 1,
+          label: "Bob",
+          factual_grade: "mostly_inaccurate",
+          faith_grade: "bad_faith",
+          one_liner: "Bob repeatedly used fallacies and misleading statistics.",
+        },
+      ],
+    });
+    expect(parsed.per_speaker_verdicts).toHaveLength(2);
+    expect(parsed.per_speaker_verdicts![0].factual_grade).toBe("mostly_factual");
+    expect(parsed.per_speaker_verdicts![1].faith_grade).toBe("bad_faith");
+  });
+
+  it("accepts valid payload without per_speaker_verdicts (optional)", () => {
+    const parsed = SynthesizeResponse.parse({
+      text: "A paragraph.",
+      headlines: ["H1", "H2", "H3"],
+    });
+    expect(parsed.per_speaker_verdicts).toBeUndefined();
+  });
+
+  it("rejects per_speaker_verdicts entry with invalid factual_grade", () => {
+    expect(() =>
+      SynthesizeResponse.parse({
+        text: "A paragraph.",
+        headlines: ["H1", "H2", "H3"],
+        per_speaker_verdicts: [
+          {
+            speaker_id: 0,
+            label: "Alice",
+            factual_grade: "perfect",   // invalid
+            faith_grade: "good_faith",
+            one_liner: "Short.",
+          },
+        ],
+      }),
+    ).toThrow();
+  });
+
+  it("rejects per_speaker_verdicts entry with invalid faith_grade", () => {
+    expect(() =>
+      SynthesizeResponse.parse({
+        text: "A paragraph.",
+        headlines: ["H1", "H2", "H3"],
+        per_speaker_verdicts: [
+          {
+            speaker_id: 0,
+            label: "Alice",
+            factual_grade: "mixed",
+            faith_grade: "dishonest",   // invalid
+            one_liner: "Short.",
+          },
+        ],
+      }),
+    ).toThrow();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -101,6 +171,68 @@ describe("POST /api/synthesize route", () => {
     const json = await res.json();
     expect(json.text).toBe("A synthesis paragraph.");
     expect(json.headlines).toHaveLength(3);
+  });
+
+  it("forwards per_speaker_verdicts from model output", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const mockVerdicts = [
+      {
+        speaker_id: 0,
+        label: "Alice",
+        factual_grade: "mostly_factual",
+        faith_grade: "good_faith",
+        one_liner: "Alice backed claims with solid evidence.",
+      },
+    ];
+    mockGenerateText.mockResolvedValue({
+      output: {
+        text: "A synthesis paragraph.",
+        headlines: ["Insight one", "Insight two", "Insight three"],
+        per_speaker_verdicts: mockVerdicts,
+      },
+    });
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.per_speaker_verdicts).toHaveLength(1);
+    expect(json.per_speaker_verdicts[0].factual_grade).toBe("mostly_factual");
+    expect(json.per_speaker_verdicts[0].faith_grade).toBe("good_faith");
+    expect(json.per_speaker_verdicts[0].one_liner).toBe("Alice backed claims with solid evidence.");
+  });
+
+  it("returns 200 when per_speaker_verdicts is absent from model output", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    mockGenerateText.mockResolvedValue({
+      output: {
+        text: "A synthesis paragraph.",
+        headlines: ["Insight one", "Insight two", "Insight three"],
+        // no per_speaker_verdicts
+      },
+    });
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toBe("A synthesis paragraph.");
+    // per_speaker_verdicts absent or undefined is fine
+    expect(json.per_speaker_verdicts == null || Array.isArray(json.per_speaker_verdicts)).toBe(true);
   });
 
   it("returns 400 when body is missing required fields", async () => {

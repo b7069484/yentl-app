@@ -272,3 +272,170 @@ describe("SynthesisCard – mobile toggle", () => {
     expect(para?.className).not.toContain("hidden");
   });
 });
+
+// ─── 12. per_speaker_verdicts: undefined → no per-speaker block ───────────────
+
+describe("SynthesisCard – per_speaker_verdicts absent", () => {
+  it("renders no per-speaker block when per_speaker_verdicts is undefined", () => {
+    render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
+    expect(screen.queryByTestId("per-speaker-verdicts")).toBeNull();
+  });
+});
+
+// ─── 13. per_speaker_verdicts: empty array → no per-speaker block ─────────────
+
+describe("SynthesisCard – per_speaker_verdicts empty", () => {
+  it("renders no per-speaker block when per_speaker_verdicts is empty", () => {
+    const synthesis: SynthesisState = {
+      state: "fresh",
+      text: "Text.",
+      headlines: HEADLINES,
+      per_speaker_verdicts: [],
+      at: Date.now(),
+    };
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.queryByTestId("per-speaker-verdicts")).toBeNull();
+  });
+});
+
+// ─── 14. per_speaker_verdicts: 1 speaker ─────────────────────────────────────
+
+describe("SynthesisCard – per_speaker_verdicts single speaker", () => {
+  const synthesis: SynthesisState = {
+    state: "fresh",
+    text: "Text.",
+    headlines: HEADLINES,
+    per_speaker_verdicts: [
+      {
+        speaker_id: 0,
+        label: "Alice",
+        factual_grade: "mostly_factual",
+        faith_grade: "good_faith",
+        one_liner: "Alice made well-sourced, accurate claims throughout.",
+      },
+    ],
+    at: Date.now(),
+  };
+
+  it("renders the per-speaker verdicts block", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByTestId("per-speaker-verdicts")).toBeTruthy();
+  });
+
+  it("renders one speaker card", () => {
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    const cards = container.querySelectorAll("[data-testid^='speaker-verdict-card-']");
+    expect(cards.length).toBe(1);
+  });
+
+  it("shows the speaker label", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Alice")).toBeTruthy();
+  });
+
+  it("shows the factual grade chip label", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Mostly Factual")).toBeTruthy();
+  });
+
+  it("shows the faith grade chip label", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Good Faith")).toBeTruthy();
+  });
+
+  it("shows the one-liner", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Alice made well-sourced, accurate claims throughout.")).toBeTruthy();
+  });
+});
+
+// ─── 15. per_speaker_verdicts: 2 speakers ────────────────────────────────────
+
+describe("SynthesisCard – per_speaker_verdicts two speakers", () => {
+  const synthesis: SynthesisState = {
+    state: "fresh",
+    text: "Text.",
+    headlines: HEADLINES,
+    per_speaker_verdicts: [
+      {
+        speaker_id: 0,
+        label: "Alice",
+        factual_grade: "mostly_factual",
+        faith_grade: "good_faith",
+        one_liner: "Alice backed claims with solid evidence.",
+      },
+      {
+        speaker_id: 1,
+        label: "Bob",
+        factual_grade: "mostly_inaccurate",
+        faith_grade: "bad_faith",
+        one_liner: "Bob repeatedly used fallacies and misleading statistics.",
+      },
+    ],
+    at: Date.now(),
+  };
+
+  it("renders two speaker verdict cards", () => {
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    const cards = container.querySelectorAll("[data-testid^='speaker-verdict-card-']");
+    expect(cards.length).toBe(2);
+  });
+
+  it("renders both speaker labels", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Alice")).toBeTruthy();
+    expect(screen.getByText("Bob")).toBeTruthy();
+  });
+
+  it("renders red chip for mostly_inaccurate grade", () => {
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    const card1 = container.querySelector("[data-testid='speaker-verdict-card-1']")!;
+    const chips = card1.querySelectorAll("span.bg-red-soft");
+    expect(chips.length).toBeGreaterThan(0);
+  });
+
+  it("renders red chip for bad_faith grade", () => {
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    const card1 = container.querySelector("[data-testid='speaker-verdict-card-1']")!;
+    const chips = card1.querySelectorAll("span.bg-red-soft");
+    expect(chips.length).toBeGreaterThan(1);
+  });
+
+  it("renders green chips for Alice's good grades", () => {
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    const card0 = container.querySelector("[data-testid='speaker-verdict-card-0']")!;
+    const greenChips = card0.querySelectorAll("span.bg-green-soft");
+    expect(greenChips.length).toBe(2);
+  });
+});
+
+// ─── 16. grade chip colors for all grades ────────────────────────────────────
+
+describe("SynthesisCard – grade chip colors", () => {
+  function renderSingleVerdict(
+    factual_grade: "mostly_factual" | "mixed" | "mostly_inaccurate" | "insufficient",
+    faith_grade: "good_faith" | "mixed" | "bad_faith" | "insufficient",
+  ) {
+    const synthesis: SynthesisState = {
+      state: "fresh",
+      text: "T.",
+      headlines: HEADLINES,
+      per_speaker_verdicts: [{ speaker_id: 0, label: "X", factual_grade, faith_grade, one_liner: "Short." }],
+      at: Date.now(),
+    };
+    const { container } = render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    return container.querySelector("[data-testid='speaker-verdict-card-0']")!;
+  }
+
+  it("mixed factual_grade uses amber chip", () => {
+    const card = renderSingleVerdict("mixed", "good_faith");
+    const amberChip = card.querySelector("span.bg-amber-soft");
+    expect(amberChip).not.toBeNull();
+  });
+
+  it("insufficient grades use slate chip", () => {
+    const card = renderSingleVerdict("insufficient", "insufficient");
+    const slateChips = card.querySelectorAll("span.bg-slate-soft");
+    expect(slateChips.length).toBe(2);
+  });
+});

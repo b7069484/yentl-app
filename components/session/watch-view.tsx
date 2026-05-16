@@ -74,19 +74,22 @@ function AnnotationRow({
 
 // ── TranscriptLine ────────────────────────────────────────────────────────────
 
+type LineState = "past" | "current" | "future";
+
 function TranscriptLine({
   segment,
-  isCurrent,
+  state,
   annotations,
   onSeek,
   lineRef,
 }: {
   segment: TranscriptSegment;
-  isCurrent: boolean;
+  state: LineState;
   annotations: AnnotationItem[];
   onSeek: (seconds: number) => void;
   lineRef?: (el: HTMLButtonElement | null) => void;
 }) {
+  const isCurrent = state === "current";
   return (
     <div className="flex flex-col gap-1">
       <button
@@ -101,9 +104,13 @@ function TranscriptLine({
         ].join(" ")}
         data-testid={`transcript-seg-${segment.start}`}
         data-is-current={isCurrent ? "true" : undefined}
+        data-line-state={state}
       >
         {/* Timecode */}
-        <span className="text-[10px] tabular-nums mt-0.5 flex-shrink-0 w-8 text-ink-4">
+        <span className={[
+          "text-[10px] tabular-nums mt-0.5 flex-shrink-0 w-8",
+          state === "future" ? "text-ink-5" : "text-ink-4",
+        ].join(" ")}>
           {formatTime(segment.start)}
         </span>
 
@@ -120,15 +127,18 @@ function TranscriptLine({
         <span
           className={[
             "text-[13px] leading-snug flex-1 min-w-0",
-            isCurrent ? "text-ink font-medium" : "text-ink-3",
-          ].join(" ")}
+            state === "current" && "text-ink font-medium",
+            state === "past" && "text-ink-2",
+            state === "future" && "text-ink-4",
+          ].filter(Boolean).join(" ")}
         >
           {segment.text}
         </span>
       </button>
 
-      {/* Inline annotations for this line */}
-      {annotations.length > 0 && (
+      {/* Inline annotations for this line (only when the line is past or current —
+          future annotations would be a spoiler) */}
+      {state !== "future" && annotations.length > 0 && (
         <div className="flex flex-col gap-1 ml-3 mb-1">
           {annotations.map((ann) => (
             <AnnotationRow
@@ -243,38 +253,39 @@ export function WatchView() {
     }
   }, [currentTime]);
 
-  // Visible segments: only those with start <= currentTime + 0.3
-  const visibleSegments = useMemo((): TranscriptSegment[] => {
-    return transcript.filter((seg) => seg.start <= currentTime + 0.3);
-  }, [transcript, currentTime]);
-
-  // Current segment: the one where start <= currentTime <= end
+  // Current segment: the LAST one whose start <= currentTime.
+  // When currentTime is 0 (no playback yet), this is null — no line highlighted.
   const currentSegStart = useMemo((): number | null => {
-    // Find the last segment whose start is <= currentTime (not looking past end
-    // since many SRT segments overlap or have generous ends)
     let cur: TranscriptSegment | null = null;
-    for (const seg of visibleSegments) {
+    for (const seg of transcript) {
       if (seg.start <= currentTime) {
         cur = seg;
       }
     }
     return cur ? cur.start : null;
-  }, [visibleSegments, currentTime]);
+  }, [transcript, currentTime]);
 
-  // Build annotation map: segment.start → list of AnnotationItems
+  // Classify each transcript line as past / current / future based on
+  // currentTime + the chosen current segment.
+  const lineState = useCallback((seg: TranscriptSegment): LineState => {
+    if (currentSegStart !== null && seg.start === currentSegStart) return "current";
+    if (seg.start < currentTime) return "past";
+    return "future";
+  }, [currentSegStart, currentTime]);
+
+  // Build annotation map: segment.start → list of AnnotationItems.
+  // Annotations are anchored to the segment whose time range covers their
+  // utterance_start (claim) or start_time (marker). They render only when the
+  // anchor line is past or current — future-line annotations would be spoilers.
   const annotationMap = useMemo((): Map<number, AnnotationItem[]> => {
     const map = new Map<number, AnnotationItem[]>();
 
-    if (visibleSegments.length === 0) return map;
+    if (transcript.length === 0) return map;
 
-    const ANNOTATION_OVERLAP = 1.0; // seconds of grace past segment.end
+    const ANNOTATION_OVERLAP = 1.0;
 
-    // Find the visible segment whose time range covers the given time.
-    // A claim/marker is anchored to the segment where
-    //   segment.start <= time <= segment.end + ANNOTATION_OVERLAP
-    // If no segment range covers it, the annotation is not yet visible.
     function findSegmentStart(time: number): number | null {
-      for (const seg of visibleSegments) {
+      for (const seg of transcript) {
         if (seg.start <= time && time <= seg.end + ANNOTATION_OVERLAP) {
           return seg.start;
         }
@@ -301,7 +312,7 @@ export function WatchView() {
     }
 
     return map;
-  }, [visibleSegments, claims, markers]);
+  }, [transcript, claims, markers]);
 
   const totalCount = claims.length + markers.length;
 
@@ -411,18 +422,18 @@ export function WatchView() {
               </div>
             )}
 
-            {/* Transcript lines */}
-            {visibleSegments.map((seg) => {
-              const isCurrent = seg.start === currentSegStart;
+            {/* Transcript lines — all visible; past/current/future styled differently */}
+            {transcript.map((seg) => {
+              const state = lineState(seg);
               const annotations = annotationMap.get(seg.start) ?? [];
               return (
                 <TranscriptLine
                   key={seg.start}
                   segment={seg}
-                  isCurrent={isCurrent}
+                  state={state}
                   annotations={annotations}
                   onSeek={handleSeek}
-                  lineRef={isCurrent ? setCurrentSegRef(seg.start) : undefined}
+                  lineRef={state === "current" ? setCurrentSegRef(seg.start) : undefined}
                 />
               );
             })}

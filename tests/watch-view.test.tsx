@@ -211,25 +211,33 @@ describe("WatchView — karaoke transcript (segments revealed by currentTime)", 
     render(<WatchView />);
   }
 
-  it("with currentTime=0 → only segment at t=0 is rendered (others have start > 0 + 0.3)", async () => {
+  it("with currentTime=0 → all segments rendered; all start in 'future' state until playback begins", async () => {
     setup();
 
     await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
-    // currentTime starts at 0 by default (no onTimeUpdate fired yet)
-    // Segment at t=0: start(0) <= 0 + 0.3 → rendered
-    // Segment at t=5: start(5) > 0 + 0.3 → hidden
-
+    // All segments visible from the start so the user can read what's coming.
+    // None are "current" yet because currentTime hasn't advanced past any start.
     await waitFor(() => {
       expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-10")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-15")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-20")).toBeTruthy();
     });
-    expect(screen.queryByTestId("transcript-seg-5")).toBeNull();
-    expect(screen.queryByTestId("transcript-seg-10")).toBeNull();
-    expect(screen.queryByTestId("transcript-seg-15")).toBeNull();
-    expect(screen.queryByTestId("transcript-seg-20")).toBeNull();
+
+    // t=0 (start=0) IS reached by currentTime=0, so t=0 is "current"
+    // (start <= currentTime, last such segment).
+    expect(
+      screen.getByTestId("transcript-seg-0").getAttribute("data-is-current"),
+    ).toBe("true");
+    // Later segments: future
+    expect(
+      screen.getByTestId("transcript-seg-5").getAttribute("data-line-state"),
+    ).toBe("future");
   });
 
-  it("currentTime=7 → segments at t=0 and t=5 rendered, t=5 is current (highlighted)", async () => {
+  it("currentTime=7 → t=5 is current; t=0 is past; t=10+ are future", async () => {
     setup();
 
     await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
@@ -239,46 +247,58 @@ describe("WatchView — karaoke transcript (segments revealed by currentTime)", 
     });
 
     await waitFor(() => {
-      // t=0 and t=5 should be visible (5 <= 7 + 0.3)
+      // All segments still rendered
       expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
       expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
-      // t=10: 10 > 7.3 → hidden
-      expect(screen.queryByTestId("transcript-seg-10")).toBeNull();
+      expect(screen.getByTestId("transcript-seg-10")).toBeTruthy();
     });
 
-    // t=5 is current (last visible whose start <= currentTime=7)
-    const currentEl = screen.getByTestId("transcript-seg-5");
-    expect(currentEl.getAttribute("data-is-current")).toBe("true");
+    // t=5 is current (last segment whose start <= currentTime=7)
+    expect(
+      screen.getByTestId("transcript-seg-5").getAttribute("data-is-current"),
+    ).toBe("true");
+    expect(
+      screen.getByTestId("transcript-seg-5").getAttribute("data-line-state"),
+    ).toBe("current");
 
-    // t=0 is past — no current marker
-    const pastEl = screen.getByTestId("transcript-seg-0");
-    expect(pastEl.getAttribute("data-is-current")).toBeNull();
+    // t=0: past
+    expect(
+      screen.getByTestId("transcript-seg-0").getAttribute("data-line-state"),
+    ).toBe("past");
+
+    // t=10: future
+    expect(
+      screen.getByTestId("transcript-seg-10").getAttribute("data-line-state"),
+    ).toBe("future");
   });
 
-  it("currentTime backward from 7 to 4 → segment at t=5 hidden again", async () => {
+  it("seek backward from 7 to 4 → t=5 returns to 'future', t=0 becomes 'current'", async () => {
     setup();
 
     await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
-    // First advance to 7
+    // Advance to 7 (t=5 becomes current)
     act(() => {
       ytCallbacks.onTimeUpdate!(7);
     });
-
     await waitFor(() => {
-      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
+      expect(
+        screen.getByTestId("transcript-seg-5").getAttribute("data-is-current"),
+      ).toBe("true");
     });
 
-    // Seek back to 4
+    // Seek back to 4 (t=0 becomes current, t=5 flips back to future)
     act(() => {
       ytCallbacks.onTimeUpdate!(4);
     });
 
     await waitFor(() => {
-      // t=0: visible (0 <= 4 + 0.3)
-      expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
-      // t=5: 5 > 4.3 → hidden
-      expect(screen.queryByTestId("transcript-seg-5")).toBeNull();
+      expect(
+        screen.getByTestId("transcript-seg-0").getAttribute("data-is-current"),
+      ).toBe("true");
+      expect(
+        screen.getByTestId("transcript-seg-5").getAttribute("data-line-state"),
+      ).toBe("future");
     });
   });
 });

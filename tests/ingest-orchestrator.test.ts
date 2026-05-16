@@ -90,6 +90,9 @@ describe("bulkIngest — segment processing", () => {
   });
 
   it("eventually calls onFinalUtterance() for each segment (parallel, background)", async () => {
+    // These two segments have a gap of 1000s (i * 1000 - (i-1) * 1000 + 800 = 200s)
+    // which is >> 1.5s, so mergeIntoUtterances keeps them as separate utterances.
+    // The merge reconstructs them as new objects, so we use toContainEqual for deep equality.
     const segs = [makeSeg("One.", 0), makeSeg("Two.", 1)];
     await bulkIngest(segs);
     // Wait for the background workers to drain
@@ -97,10 +100,11 @@ describe("bulkIngest — segment processing", () => {
       expect(mockOnFinalUtterance).toHaveBeenCalledTimes(2);
     });
     // Both segments should appear in the call list (order not guaranteed since
-    // workers race; just assert presence)
+    // workers race; just assert presence via deep equality — merge produces
+    // new object references even when no merging occurs)
     const calledArgs = mockOnFinalUtterance.mock.calls.map((c) => c[0]);
-    expect(calledArgs).toContain(segs[0]);
-    expect(calledArgs).toContain(segs[1]);
+    expect(calledArgs).toContainEqual(segs[0]);
+    expect(calledArgs).toContainEqual(segs[1]);
   });
 
   it("schedules runSynthesisNow() after the delay", async () => {

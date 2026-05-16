@@ -2,6 +2,7 @@
 
 import { useSession } from "@/lib/client/session-store";
 import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { mergeIntoUtterances } from "@/lib/client/utterance-merge";
 import type { TranscriptSegment } from "@/lib/types";
 
 const ANALYSIS_CONCURRENCY = 4;
@@ -44,13 +45,19 @@ export async function bulkIngest(
 
   if (opts?.signal?.aborted) return;
 
-  // 2. Fire analysis in the background with a small concurrency cap so
+  // 2. Merge fine-grained caption fragments into utterance-sized chunks for
+  //    analysis. The transcript already holds the fine-grained segments (for
+  //    karaoke display); we only send merged utterances to the extractor so
+  //    it has full-sentence context to work with.
+  const analysisUtterances = mergeIntoUtterances(segments);
+
+  // 3. Fire analysis in the background with a small concurrency cap so
   //    the Anthropic endpoint isn't slammed. We don't await completion —
   //    the caller (ingest pane) wants to redirect to Watch immediately;
   //    claims will populate as each /api/extract-claims call resolves.
-  void runAnalysisInBackground(segments, opts?.signal);
+  void runAnalysisInBackground(analysisUtterances, opts?.signal);
 
-  // 3. Schedule the first synthesis pass after a brief delay so it has
+  // 4. Schedule the first synthesis pass after a brief delay so it has
   //    a few claims to work with. Subsequent synthesis runs are paced by
   //    the orchestrator naturally.
   scheduleSynthesis(opts?.signal);

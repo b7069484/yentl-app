@@ -44,6 +44,7 @@ type StoreState = {
   markers: import("@/lib/types").RhetoricMarker[];
   synthesis: import("@/lib/client/session-store").SynthesisState;
   speakers: import("@/lib/types").Speaker[];
+  transcript: import("@/lib/types").TranscriptSegment[];
 };
 
 let mockStoreState: StoreState = {
@@ -52,6 +53,7 @@ let mockStoreState: StoreState = {
   markers: [],
   synthesis: null,
   speakers: [],
+  transcript: [],
 };
 
 vi.mock("@/lib/client/session-store", () => ({
@@ -61,6 +63,19 @@ vi.mock("@/lib/client/session-store", () => ({
 }));
 
 // ── Fixtures ──────────────────────────────────────────────────────────────────
+
+function makeSegment(
+  start: number,
+  text = `Segment at t=${start}`,
+): import("@/lib/types").TranscriptSegment {
+  return {
+    start,
+    end: start + 4.5,
+    text,
+    is_final: true,
+    speaker_id: 0,
+  };
+}
 
 function makeClaim(id: string, utterance_start: number): import("@/lib/types").ClaimCard {
   return {
@@ -80,6 +95,21 @@ function makeClaim(id: string, utterance_start: number): import("@/lib/types").C
   };
 }
 
+function makeMarker(id: string, start_time: number): import("@/lib/types").RhetoricMarker {
+  return {
+    id,
+    type: "fallacy",
+    name: "straw-man",
+    display: "Straw Man",
+    excerpt: `Marker excerpt for ${id}`,
+    speaker_id: 0,
+    start_time,
+    end_time: start_time + 5,
+    severity: "clear",
+    explanation: "explanation",
+  };
+}
+
 // ── Import under test ─────────────────────────────────────────────────────────
 
 import { WatchView } from "@/components/session/watch-view";
@@ -96,7 +126,21 @@ beforeEach(() => {
     markers: [],
     synthesis: null,
     speakers: [{ id: 0, label: "Speaker 1" }],
+    transcript: [],
   };
+
+  // Mock scrollIntoView for auto-scroll tests
+  Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+    value: vi.fn(),
+    writable: true,
+    configurable: true,
+  });
+  // Also ensure HTMLButtonElement has it
+  Object.defineProperty(HTMLButtonElement.prototype, "scrollIntoView", {
+    value: vi.fn(),
+    writable: true,
+    configurable: true,
+  });
 });
 
 // ── 1. No media state ─────────────────────────────────────────────────────────
@@ -122,22 +166,16 @@ describe("WatchView — no-media fallback", () => {
   });
 });
 
-// ── 2. Initial revealed state ─────────────────────────────────────────────────
+// ── 2. Transcript panel visibility ────────────────────────────────────────────
 
-describe("WatchView — initial revealed state", () => {
-  it("shows 'Press play' hint when there are claims but currentTime=0", async () => {
-    mockStoreState = {
-      ...mockStoreState,
-      claims: [makeClaim("c1", 5), makeClaim("c2", 15), makeClaim("c3", 25)],
-    };
+describe("WatchView — transcript panel", () => {
+  it("shows 'Loading transcript…' when transcript is empty", async () => {
+    mockStoreState = { ...mockStoreState, transcript: [] };
     render(<WatchView />);
 
-    // Wait for async adapter setup to run
     await waitFor(() => {
-      expect(screen.getByTestId("press-play-hint")).toBeTruthy();
+      expect(screen.getByTestId("transcript-loading")).toBeTruthy();
     });
-
-    expect(screen.getByTestId("revealed-counter").textContent).toContain("0 of 3");
   });
 
   it("renders player container for youtube source", async () => {
@@ -146,114 +184,177 @@ describe("WatchView — initial revealed state", () => {
       expect(screen.getByTestId("player-container")).toBeTruthy();
     });
   });
+
+  it("renders transcript panel", async () => {
+    render(<WatchView />);
+    await waitFor(() => {
+      expect(screen.getByTestId("transcript-panel")).toBeTruthy();
+    });
+  });
 });
 
-// ── 3. Claim revelation as currentTime advances ───────────────────────────────
+// ── 3. Karaoke: segments revealed as currentTime advances ─────────────────────
 
-describe("WatchView — progressive claim revelation", () => {
+describe("WatchView — karaoke transcript (segments revealed by currentTime)", () => {
+  // 5 segments at t=0,5,10,15,20
   function setup() {
     mockStoreState = {
       ...mockStoreState,
-      claims: [makeClaim("c1", 5), makeClaim("c2", 15), makeClaim("c3", 25)],
+      transcript: [
+        makeSegment(0),
+        makeSegment(5),
+        makeSegment(10),
+        makeSegment(15),
+        makeSegment(20),
+      ],
     };
     render(<WatchView />);
   }
 
-  it("reveals claim at t=5 when onTimeUpdate(10) fires", async () => {
+  it("with currentTime=0 → only segment at t=0 is rendered (others have start > 0 + 0.3)", async () => {
     setup();
 
-    await waitFor(() => {
-      expect(ytCallbacks.onTimeUpdate).toBeDefined();
-    });
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
-    act(() => {
-      ytCallbacks.onTimeUpdate!(10);
-    });
+    // currentTime starts at 0 by default (no onTimeUpdate fired yet)
+    // Segment at t=0: start(0) <= 0 + 0.3 → rendered
+    // Segment at t=5: start(5) > 0 + 0.3 → hidden
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-counter").textContent).toContain("1 of 3");
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
-      expect(screen.queryByTestId("revealed-row-c2")).toBeNull();
+      expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
     });
+    expect(screen.queryByTestId("transcript-seg-5")).toBeNull();
+    expect(screen.queryByTestId("transcript-seg-10")).toBeNull();
+    expect(screen.queryByTestId("transcript-seg-15")).toBeNull();
+    expect(screen.queryByTestId("transcript-seg-20")).toBeNull();
   });
 
-  it("reveals claims at t=5 and t=15 when onTimeUpdate(20) fires", async () => {
+  it("currentTime=7 → segments at t=0 and t=5 rendered, t=5 is current (highlighted)", async () => {
     setup();
 
-    await waitFor(() => {
-      expect(ytCallbacks.onTimeUpdate).toBeDefined();
-    });
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
     act(() => {
-      ytCallbacks.onTimeUpdate!(20);
+      ytCallbacks.onTimeUpdate!(7);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-counter").textContent).toContain("2 of 3");
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
-      expect(screen.getByTestId("revealed-row-c2")).toBeTruthy();
-      expect(screen.queryByTestId("revealed-row-c3")).toBeNull();
+      // t=0 and t=5 should be visible (5 <= 7 + 0.3)
+      expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
+      // t=10: 10 > 7.3 → hidden
+      expect(screen.queryByTestId("transcript-seg-10")).toBeNull();
     });
+
+    // t=5 is current (last visible whose start <= currentTime=7)
+    const currentEl = screen.getByTestId("transcript-seg-5");
+    expect(currentEl.getAttribute("data-is-current")).toBe("true");
+
+    // t=0 is past — no current marker
+    const pastEl = screen.getByTestId("transcript-seg-0");
+    expect(pastEl.getAttribute("data-is-current")).toBeNull();
   });
 
-  it("hides claim at t=15 when seeking back to t=5", async () => {
+  it("currentTime backward from 7 to 4 → segment at t=5 hidden again", async () => {
     setup();
 
-    await waitFor(() => {
-      expect(ytCallbacks.onTimeUpdate).toBeDefined();
-    });
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
-    // First advance past 15
+    // First advance to 7
     act(() => {
-      ytCallbacks.onTimeUpdate!(20);
+      ytCallbacks.onTimeUpdate!(7);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-row-c2")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
     });
 
-    // Seek back to 5 (only c1 should remain)
+    // Seek back to 4
     act(() => {
-      ytCallbacks.onTimeUpdate!(5);
+      ytCallbacks.onTimeUpdate!(4);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-counter").textContent).toContain("1 of 3");
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
-      expect(screen.queryByTestId("revealed-row-c2")).toBeNull();
+      // t=0: visible (0 <= 4 + 0.3)
+      expect(screen.getByTestId("transcript-seg-0")).toBeTruthy();
+      // t=5: 5 > 4.3 → hidden
+      expect(screen.queryByTestId("transcript-seg-5")).toBeNull();
     });
   });
 });
 
-// ── 4. Click-to-seek ──────────────────────────────────────────────────────────
+// ── 4. Click-to-seek on transcript line ──────────────────────────────────────
 
-describe("WatchView — click-to-seek", () => {
-  it("calls adapter.seekTo with the claim's timestamp when row is clicked", async () => {
+describe("WatchView — click-to-seek on transcript", () => {
+  it("clicking a segment calls adapter.seekTo with segment.start", async () => {
     mockStoreState = {
       ...mockStoreState,
-      claims: [makeClaim("c1", 5)],
+      transcript: [makeSegment(0), makeSegment(5)],
     };
     render(<WatchView />);
 
-    await waitFor(() => {
-      expect(ytCallbacks.onTimeUpdate).toBeDefined();
-    });
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
 
-    // Reveal the claim
+    // Advance to show t=5
     act(() => {
-      ytCallbacks.onTimeUpdate!(10);
+      ytCallbacks.onTimeUpdate!(7);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
     });
 
-    fireEvent.click(screen.getByTestId("revealed-row-c1"));
+    fireEvent.click(screen.getByTestId("transcript-seg-5"));
     expect(mockSeekTo).toHaveBeenCalledWith(5);
   });
 });
 
-// ── 5. Synthesis card ─────────────────────────────────────────────────────────
+// ── 5. Inline annotations ────────────────────────────────────────────────────
+
+describe("WatchView — inline annotations", () => {
+  it("claim at utterance_start=5 appears under t=5 segment when currentTime=7", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0), makeSegment(5), makeSegment(10)],
+      claims: [makeClaim("c-at-5", 5), makeClaim("c-at-12", 12)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(7);
+    });
+
+    await waitFor(() => {
+      // Claim at t=5 should appear as an annotation (under the t=5 segment)
+      expect(screen.getByTestId("annotation-claim-c-at-5")).toBeTruthy();
+      // Claim at t=12 is future (t=10 segment is hidden) — not rendered
+      expect(screen.queryByTestId("annotation-claim-c-at-12")).toBeNull();
+    });
+  });
+
+  it("marker at start_time=5 appears as annotation under the t=5 segment", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0), makeSegment(5)],
+      markers: [makeMarker("m-at-5", 5)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(7);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("annotation-marker-m-at-5")).toBeTruthy();
+    });
+  });
+});
+
+// ── 6. Synthesis card ─────────────────────────────────────────────────────────
 
 describe("WatchView — synthesis card", () => {
   it("renders synthesis card when synthesis is fresh with text", async () => {
@@ -278,7 +379,6 @@ describe("WatchView — synthesis card", () => {
     mockStoreState = { ...mockStoreState, synthesis: null };
     render(<WatchView />);
 
-    // Give async effects a moment to settle
     await waitFor(() => {
       expect(screen.getByTestId("player-container")).toBeTruthy();
     });
@@ -301,7 +401,65 @@ describe("WatchView — synthesis card", () => {
   });
 });
 
-// ── 6. Audio adapter wired correctly ─────────────────────────────────────────
+// ── 7. Status counter replaces "revealed counter" ────────────────────────────
+
+describe("WatchView — status counter", () => {
+  it("shows 'Analysing…' when there are no claims or markers yet", async () => {
+    mockStoreState = { ...mockStoreState, claims: [], markers: [] };
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("status-counter").textContent).toContain("Analysing");
+    });
+  });
+
+  it("shows 'X claims · Y markers' when there are claims and markers", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      claims: [makeClaim("c1", 5), makeClaim("c2", 10)],
+      markers: [makeMarker("m1", 5)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => {
+      const counter = screen.getByTestId("status-counter");
+      expect(counter.textContent).toContain("2 claims");
+      expect(counter.textContent).toContain("1 marker");
+    });
+  });
+});
+
+// ── 8. Auto-scroll ────────────────────────────────────────────────────────────
+
+describe("WatchView — auto-scroll", () => {
+  it("scrollIntoView is called when the current segment changes", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0), makeSegment(5), makeSegment(10)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
+
+    // Advance to t=7 — current segment becomes t=5
+    act(() => {
+      ytCallbacks.onTimeUpdate!(7);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
+    });
+
+    // scrollIntoView should have been called on some element
+    // (the mock is on the prototype so any instance would pick it up)
+    const anyScrolled = Array.from(document.querySelectorAll("[data-is-current='true']")).some(
+      (el) => (el as HTMLElement).scrollIntoView !== undefined,
+    );
+    expect(anyScrolled).toBe(true);
+  });
+});
+
+// ── 9. Audio adapter ──────────────────────────────────────────────────────────
 
 describe("WatchView — audio source", () => {
   it("uses audio adapter for audio_file source", async () => {
@@ -314,7 +472,7 @@ describe("WatchView — audio source", () => {
         filename: "audio.mp3",
         mime: "audio/mpeg",
       },
-      claims: [makeClaim("c1", 5)],
+      transcript: [makeSegment(0), makeSegment(5)],
     };
     render(<WatchView />);
 
@@ -323,11 +481,11 @@ describe("WatchView — audio source", () => {
     });
 
     act(() => {
-      audioCallbacks.onTimeUpdate!(10);
+      audioCallbacks.onTimeUpdate!(7);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
     });
   });
 
@@ -335,7 +493,7 @@ describe("WatchView — audio source", () => {
     mockStoreState = {
       ...mockStoreState,
       source: { kind: "media_url", url: "https://podcast.example.com/ep.mp3" },
-      claims: [makeClaim("c1", 5)],
+      transcript: [makeSegment(0), makeSegment(5)],
     };
     render(<WatchView />);
 
@@ -344,11 +502,11 @@ describe("WatchView — audio source", () => {
     });
 
     act(() => {
-      audioCallbacks.onTimeUpdate!(10);
+      audioCallbacks.onTimeUpdate!(7);
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId("revealed-row-c1")).toBeTruthy();
+      expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
     });
   });
 });

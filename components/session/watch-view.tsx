@@ -13,7 +13,7 @@ import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
 import { createAudioAdapter } from "@/lib/client/audio-adapter";
 import { VerdictChip } from "@/components/session/chips";
 import { MarkerChip } from "@/components/session/chips";
-import type { ClaimCard, RhetoricMarker, Speaker } from "@/lib/types";
+import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -23,96 +23,123 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
-function speakerLabel(speakerId: number | null, speakers: Speaker[]): string {
-  if (speakerId === null) return "?";
-  const found = speakers.find((sp) => sp.id === speakerId);
-  return found?.label ?? `Speaker ${speakerId + 1}`;
-}
+// ── Annotation row (claim or marker rendered under a transcript line) ─────────
 
-// ── Event union ───────────────────────────────────────────────────────────────
+type AnnotationItem =
+  | { kind: "claim"; item: ClaimCard }
+  | { kind: "marker"; item: RhetoricMarker };
 
-type RevealedClaimEvent = {
-  kind: "claim";
-  item: ClaimCard;
-  ts: number;
-};
-
-type RevealedMarkerEvent = {
-  kind: "marker";
-  item: RhetoricMarker;
-  ts: number;
-};
-
-type RevealedEvent = RevealedClaimEvent | RevealedMarkerEvent;
-
-// ── RevealedRow ───────────────────────────────────────────────────────────────
-
-function RevealedRow({
-  event,
-  isLatest,
+function AnnotationRow({
+  annotation,
   onSeek,
-  speakers,
 }: {
-  event: RevealedEvent;
-  isLatest: boolean;
+  annotation: AnnotationItem;
   onSeek: (seconds: number) => void;
-  speakers: Speaker[];
 }) {
-  const label =
-    event.kind === "claim"
-      ? speakerLabel(event.item.speaker_id, speakers)
-      : speakerLabel(event.item.speaker_id, speakers);
-
-  const quote =
-    event.kind === "claim" ? event.item.claim_text : event.item.excerpt;
-
-  const avatarIndex =
-    ((event.kind === "claim" ? (event.item.speaker_id ?? 0) : (event.item.speaker_id ?? 0)) % 6) + 1;
+  const ts =
+    annotation.kind === "claim"
+      ? annotation.item.utterance_start
+      : annotation.item.start_time;
+  const text =
+    annotation.kind === "claim"
+      ? annotation.item.claim_text
+      : annotation.item.excerpt;
 
   return (
     <button
       type="button"
-      onClick={() => onSeek(event.ts)}
-      className={[
-        "w-full text-left flex items-center gap-3 px-3.5 py-2.5 bg-paper border rounded-[10px] cursor-pointer hover:border-line-strong transition-all",
-        isLatest
-          ? "border-amber/60 ring-1 ring-amber/20 animate-fade-in"
-          : "border-line",
-      ].join(" ")}
-      data-testid={`revealed-row-${event.item.id}`}
+      onClick={() => onSeek(ts)}
+      className="flex items-center gap-2 pl-4 text-left w-full group cursor-pointer"
+      data-testid={`annotation-${annotation.kind}-${annotation.item.id}`}
     >
-      {/* Timestamp */}
-      <span className="text-[10px] text-ink-4 tabular-nums flex-shrink-0 w-9">
-        {formatTime(event.ts)}
-      </span>
-
-      {/* Speaker avatar */}
-      <span
-        className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-semibold flex-shrink-0 bg-spk-${avatarIndex}`}
-        aria-hidden
-      >
-        {label[0]}
-      </span>
-
-      {/* Chip */}
-      {event.kind === "claim" ? (
+      <span className="w-px self-stretch bg-line-strong flex-shrink-0" aria-hidden />
+      {annotation.kind === "claim" ? (
         <VerdictChip
-          verdict={event.item.primary_label}
-          score={event.item.score}
+          verdict={annotation.item.primary_label}
+          score={annotation.item.score}
         />
       ) : (
         <MarkerChip
-          type={event.item.type}
-          display={event.item.display}
-          severity={event.item.severity}
+          type={annotation.item.type}
+          display={annotation.item.display}
+          severity={annotation.item.severity}
         />
       )}
-
-      {/* Quote */}
-      <span className="font-serif italic text-[13px] text-ink-3 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
-        &ldquo;{quote}&rdquo;
+      <span className="font-serif italic text-[11px] text-ink-3 truncate flex-1 min-w-0 group-hover:text-ink-2 transition-colors">
+        &ldquo;{text}&rdquo;
       </span>
     </button>
+  );
+}
+
+// ── TranscriptLine ────────────────────────────────────────────────────────────
+
+function TranscriptLine({
+  segment,
+  isCurrent,
+  annotations,
+  onSeek,
+  lineRef,
+}: {
+  segment: TranscriptSegment;
+  isCurrent: boolean;
+  annotations: AnnotationItem[];
+  onSeek: (seconds: number) => void;
+  lineRef?: (el: HTMLButtonElement | null) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        type="button"
+        ref={lineRef}
+        onClick={() => onSeek(segment.start)}
+        className={[
+          "w-full text-left flex items-start gap-2.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer",
+          isCurrent
+            ? "ring-2 ring-teal/50 bg-teal-soft"
+            : "hover:bg-paper-2",
+        ].join(" ")}
+        data-testid={`transcript-seg-${segment.start}`}
+        data-is-current={isCurrent ? "true" : undefined}
+      >
+        {/* Timecode */}
+        <span className="text-[10px] tabular-nums mt-0.5 flex-shrink-0 w-8 text-ink-4">
+          {formatTime(segment.start)}
+        </span>
+
+        {/* Current marker */}
+        {isCurrent ? (
+          <span className="text-[10px] text-teal mt-0.5 flex-shrink-0" aria-hidden>
+            ▶
+          </span>
+        ) : (
+          <span className="w-[10px] flex-shrink-0" aria-hidden />
+        )}
+
+        {/* Text */}
+        <span
+          className={[
+            "text-[13px] leading-snug flex-1 min-w-0",
+            isCurrent ? "text-ink font-medium" : "text-ink-3",
+          ].join(" ")}
+        >
+          {segment.text}
+        </span>
+      </button>
+
+      {/* Inline annotations for this line */}
+      {annotations.length > 0 && (
+        <div className="flex flex-col gap-1 ml-3 mb-1">
+          {annotations.map((ann) => (
+            <AnnotationRow
+              key={`${ann.kind}-${ann.item.id}`}
+              annotation={ann}
+              onSeek={onSeek}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -123,12 +150,16 @@ export function WatchView() {
   const claims = useSession((s) => s.claims);
   const markers = useSession((s) => s.markers);
   const synthesis = useSession((s) => s.synthesis);
-  const speakers = useSession((s) => s.speakers);
+  const transcript = useSession((s) => s.transcript);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const adapterRef = useRef<MediaAdapter | null>(null);
+  const transcriptPanelRef = useRef<HTMLDivElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [ready, setReady] = useState(false);
+
+  // Track current segment ref for auto-scroll
+  const currentSegRef = useRef<HTMLButtonElement | null>(null);
 
   // Derive the "source key" to re-mount the adapter only when the actual
   // media changes (not on every render).
@@ -205,26 +236,88 @@ export function WatchView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceKey]);
 
-  // Merge claims + markers into a chronological list of events.
-  const revealed = useMemo((): RevealedEvent[] => {
-    const events: RevealedEvent[] = [
-      ...claims.map(
-        (c): RevealedClaimEvent => ({ kind: "claim", item: c, ts: c.utterance_start }),
-      ),
-      ...markers.map(
-        (m): RevealedMarkerEvent => ({ kind: "marker", item: m, ts: m.start_time }),
-      ),
-    ];
-    return events
-      .filter((e) => e.ts <= currentTime + 0.5)
-      .sort((a, b) => a.ts - b.ts);
-  }, [claims, markers, currentTime]);
+  // Auto-scroll to current segment when it changes
+  useEffect(() => {
+    if (currentSegRef.current) {
+      currentSegRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, [currentTime]);
+
+  // Visible segments: only those with start <= currentTime + 0.3
+  const visibleSegments = useMemo((): TranscriptSegment[] => {
+    return transcript.filter((seg) => seg.start <= currentTime + 0.3);
+  }, [transcript, currentTime]);
+
+  // Current segment: the one where start <= currentTime <= end
+  const currentSegStart = useMemo((): number | null => {
+    // Find the last segment whose start is <= currentTime (not looking past end
+    // since many SRT segments overlap or have generous ends)
+    let cur: TranscriptSegment | null = null;
+    for (const seg of visibleSegments) {
+      if (seg.start <= currentTime) {
+        cur = seg;
+      }
+    }
+    return cur ? cur.start : null;
+  }, [visibleSegments, currentTime]);
+
+  // Build annotation map: segment.start → list of AnnotationItems
+  const annotationMap = useMemo((): Map<number, AnnotationItem[]> => {
+    const map = new Map<number, AnnotationItem[]>();
+
+    if (visibleSegments.length === 0) return map;
+
+    const ANNOTATION_OVERLAP = 1.0; // seconds of grace past segment.end
+
+    // Find the visible segment whose time range covers the given time.
+    // A claim/marker is anchored to the segment where
+    //   segment.start <= time <= segment.end + ANNOTATION_OVERLAP
+    // If no segment range covers it, the annotation is not yet visible.
+    function findSegmentStart(time: number): number | null {
+      for (const seg of visibleSegments) {
+        if (seg.start <= time && time <= seg.end + ANNOTATION_OVERLAP) {
+          return seg.start;
+        }
+      }
+      return null;
+    }
+
+    for (const claim of claims) {
+      const segStart = findSegmentStart(claim.utterance_start);
+      if (segStart !== null) {
+        const arr = map.get(segStart) ?? [];
+        arr.push({ kind: "claim", item: claim });
+        map.set(segStart, arr);
+      }
+    }
+
+    for (const marker of markers) {
+      const segStart = findSegmentStart(marker.start_time);
+      if (segStart !== null) {
+        const arr = map.get(segStart) ?? [];
+        arr.push({ kind: "marker", item: marker });
+        map.set(segStart, arr);
+      }
+    }
+
+    return map;
+  }, [visibleSegments, claims, markers]);
 
   const totalCount = claims.length + markers.length;
 
   const handleSeek = useCallback((seconds: number) => {
     adapterRef.current?.seekTo(seconds);
   }, []);
+
+  // Capture ref to the current segment's button for auto-scroll
+  const setCurrentSegRef = useCallback(
+    (start: number) => (el: HTMLButtonElement | null) => {
+      if (start === currentSegStart) {
+        currentSegRef.current = el;
+      }
+    },
+    [currentSegStart],
+  );
 
   // ── No-media fallback ────────────────────────────────────────────────────────
 
@@ -246,7 +339,7 @@ export function WatchView() {
     );
   }
 
-  // ── Player + analysis layout ──────────────────────────────────────────────────
+  // ── Player + transcript layout ───────────────────────────────────────────────
 
   return (
     <div className="px-6 md:px-8 pt-4 pb-12 max-w-[1280px] mx-auto w-full">
@@ -265,7 +358,7 @@ export function WatchView() {
           )}
         </div>
 
-        {/* Analysis column */}
+        {/* Transcript + synthesis column */}
         <div className="flex flex-col gap-4 min-h-0">
 
           {/* Synthesis card */}
@@ -290,38 +383,49 @@ export function WatchView() {
               {" · "}
               {ready ? "playing" : "loading"}
             </span>
-            <span data-testid="revealed-counter">
-              {revealed.length} of {totalCount} revealed
+            <span data-testid="status-counter">
+              {totalCount > 0
+                ? `${claims.length} claim${claims.length !== 1 ? "s" : ""} · ${markers.length} marker${markers.length !== 1 ? "s" : ""}`
+                : "Analysing…"}
             </span>
           </div>
 
-          {/* Revealed events list */}
+          {/* Transcript panel */}
           <div
-            className="flex flex-col gap-2 overflow-y-auto max-h-[60vh]"
-            data-testid="revealed-list"
+            ref={transcriptPanelRef}
+            className="flex flex-col gap-0.5 overflow-y-auto max-h-[60vh] rounded-lg bg-paper border border-line p-2"
+            data-testid="transcript-panel"
           >
-            {revealed.length === 0 && totalCount > 0 && (
+            {/* Header */}
+            <div className="text-[9.5px] tracking-[.12em] uppercase text-ink-4 font-bold px-3 py-1.5 border-b border-line mb-1">
+              Transcript
+            </div>
+
+            {/* Empty state */}
+            {transcript.length === 0 && (
               <div
-                className="text-[12px] italic text-ink-4 py-3 text-center"
-                data-testid="press-play-hint"
+                className="text-[12px] italic text-ink-4 py-4 text-center"
+                data-testid="transcript-loading"
               >
-                Press play. Claims and markers will appear as the playhead reaches them.
+                Loading transcript…
               </div>
             )}
-            {revealed.length === 0 && totalCount === 0 && (
-              <div className="text-[12px] italic text-ink-4 py-3 text-center">
-                No claims or markers extracted from this media.
-              </div>
-            )}
-            {revealed.map((event, idx) => (
-              <RevealedRow
-                key={event.item.id}
-                event={event}
-                isLatest={idx === revealed.length - 1}
-                onSeek={handleSeek}
-                speakers={speakers}
-              />
-            ))}
+
+            {/* Transcript lines */}
+            {visibleSegments.map((seg) => {
+              const isCurrent = seg.start === currentSegStart;
+              const annotations = annotationMap.get(seg.start) ?? [];
+              return (
+                <TranscriptLine
+                  key={seg.start}
+                  segment={seg}
+                  isCurrent={isCurrent}
+                  annotations={annotations}
+                  onSeek={handleSeek}
+                  lineRef={isCurrent ? setCurrentSegRef(seg.start) : undefined}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

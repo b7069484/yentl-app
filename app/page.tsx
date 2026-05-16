@@ -51,6 +51,12 @@ export default function Home() {
             </svg>
             Start a session
           </Link>
+          <Link
+            href="/sessions"
+            className="inline-flex items-center gap-2 rounded-xl border border-line px-5 py-3 text-[14px] font-medium text-ink-2 transition-colors hover:bg-cream-2 hover:text-ink"
+          >
+            Sessions library
+          </Link>
           <span className="text-[12.5px] text-ink-4">
             Multi-speaker · English · Browser mic
           </span>

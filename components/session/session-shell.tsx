@@ -4,12 +4,13 @@ import type { ReactNode } from "react";
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Pause, Play, Download, Square } from "lucide-react";
+import { Pause, Play, Download, Square, Save, Library } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { Button } from "@/components/ui/button";
 import { SpeakerRail } from "@/components/session/speaker-rail";
 import { ExportDialog } from "@/components/session/ExportDialog";
 import { EndSessionDialog } from "@/components/session/EndSessionDialog";
+import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
 
 // ─── BrandMark ────────────────────────────────────────────────────────────────
 
@@ -17,16 +18,26 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   const fontMap = { sm: "text-[18px]", md: "text-[22px]", lg: "text-[32px]" };
   const dotMap = { sm: "w-1.5 h-1.5 ml-1.5", md: "w-2 h-2 ml-1.5", lg: "w-2.5 h-2.5 ml-2" };
   return (
-    <Link
-      href="/session"
-      className={`font-serif ${fontMap[size]} font-medium tracking-tight text-ink inline-flex items-baseline`}
-    >
-      <span>yenta</span>
-      <span
-        aria-hidden
-        className={`yenta-dot inline-block ${dotMap[size]} self-baseline`}
-      />
-    </Link>
+    <span className="inline-flex items-baseline gap-3">
+      <Link
+        href="/session"
+        className={`font-serif ${fontMap[size]} font-medium tracking-tight text-ink inline-flex items-baseline`}
+      >
+        <span>yenta</span>
+        <span
+          aria-hidden
+          className={`yenta-dot inline-block ${dotMap[size]} self-baseline`}
+        />
+      </Link>
+      <Link
+        href="/sessions"
+        className="inline-flex items-center gap-1 text-[11px] font-medium text-ink-3 hover:text-ink-2 transition-colors self-center"
+        title="Sessions library"
+      >
+        <Library className="h-3 w-3" />
+        Library
+      </Link>
+    </span>
   );
 }
 
@@ -143,6 +154,7 @@ function TopControls() {
   const setRecording = useSession((s) => s.setRecording);
   const [exportOpen, setExportOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
 
   return (
     <>
@@ -162,6 +174,11 @@ function TopControls() {
             {isRecording ? "Pause" : "Resume"}
           </Button>
         )}
+        {startedAt && (
+          <Button variant="ghost" size="sm" onClick={() => setSaveOpen(true)}>
+            <Save className="h-3.5 w-3.5" /> Save
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
           <Download className="h-3.5 w-3.5" /> Export
         </Button>
@@ -177,6 +194,7 @@ function TopControls() {
           </Button>
         )}
       </div>
+      <SaveSessionDialog open={saveOpen} onClose={() => setSaveOpen(false)} />
       <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
       <EndSessionDialog open={endOpen} onClose={() => setEndOpen(false)} />
     </>

@@ -30,6 +30,26 @@ const REFRESH_MAX_ATTEMPTS = 3;
 const REFRESH_BACKOFF_BASE_MS = 500;
 const DRAIN_FALLBACK_MS = 5_000;
 const NULL_SPEAKER_WARN_THRESHOLD = 5;
+/**
+ * WebSocket query params for the live Deepgram stream.
+ *
+ * Diarization quality notes (nova-3 live path):
+ *   diarize:true         — per-word speaker tags; dominantSpeaker() picks the
+ *                          majority speaker for each final utterance.
+ *   utterance_end_ms:1000 — treat 1 s of silence as utterance boundary. Lower
+ *                          values fragment utterances; higher values delay output.
+ *   numerals:true        — spoken numbers → digits; improves factual accuracy
+ *                          of claims involving statistics, dates, vote counts.
+ *   interim_results:true — interim transcripts for live feedback (not stored).
+ *   smart_format:true    — applies punctuation + entity formatting. Compatible
+ *                          with diarize in nova-3.
+ *
+ * Params NOT set (and why):
+ *   diarize_version — not a URL query param in the v5 API; omitted.
+ *   vad_events      — VAD endpoint events are separate from Results messages;
+ *                     adding them without handling would create unprocessed
+ *                     traffic. Keep false until we need silence detection.
+ */
 const PARAMS = new URLSearchParams({
   model: "nova-3",
   language: "en",
@@ -38,6 +58,7 @@ const PARAMS = new URLSearchParams({
   interim_results: "true",
   utterance_end_ms: "1000",
   diarize: "true",
+  numerals: "true",
 });
 
 type TokenResponse = { key: string; expires_at: string };

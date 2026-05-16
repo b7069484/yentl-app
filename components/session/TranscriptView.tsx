@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useSession } from "@/lib/client/session-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { VERDICT } from "@/lib/client/verdict-theme";
+import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
 import type { ClaimCard, SpeakerId, TranscriptSegment } from "@/lib/types";
 
 const HIGHLIGHT_TONE: Record<ClaimCard["primary_label"], string> = {
@@ -29,16 +30,22 @@ export function paletteFor(id: SpeakerId): (typeof SPEAKER_PALETTE)[number] {
   return SPEAKER_PALETTE[id % SPEAKER_PALETTE.length];
 }
 
-type Block = { speakerId: SpeakerId | null; segments: TranscriptSegment[] };
+type Block = {
+  speakerId: SpeakerId | null;
+  /** Index of the first segment in this block within the flat transcript array. */
+  firstIndex: number;
+  segments: TranscriptSegment[];
+};
 
 function groupBySpeaker(segments: TranscriptSegment[]): Block[] {
   const blocks: Block[] = [];
-  for (const seg of segments) {
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
     const last = blocks[blocks.length - 1];
     if (last && last.speakerId === seg.speaker_id) {
       last.segments.push(seg);
     } else {
-      blocks.push({ speakerId: seg.speaker_id, segments: [seg] });
+      blocks.push({ speakerId: seg.speaker_id, firstIndex: i, segments: [seg] });
     }
   }
   return blocks;
@@ -110,9 +117,20 @@ export function TranscriptView({
               {showHeader && palette && (
                 <div className="mb-1 flex items-center gap-1.5">
                   <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${palette.dot}`} />
-                  <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${palette.label}`}>
-                    {speakerLabel.get(block.speakerId!) ?? `Speaker ${block.speakerId! + 1}`}
-                  </span>
+                  {/*
+                    The ReassignSpeakerMenu replaces the plain speaker label.
+                    It renders as the same label but is clickable to open a
+                    dropdown that lets the user correct mis-attributed utterances.
+                    The firstIndex points to the first segment of this block; the
+                    user's selection reassigns from that segment onward only if
+                    all segments in the block share the same speaker — which they
+                    always do by construction (groupBySpeaker).
+                  */}
+                  <ReassignSpeakerMenu
+                    transcriptIndex={block.firstIndex}
+                    speakerId={block.speakerId}
+                    className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${palette.label} border-0 bg-transparent px-0 hover:bg-transparent`}
+                  />
                 </div>
               )}
               <p className="whitespace-pre-wrap text-foreground/90">

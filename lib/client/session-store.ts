@@ -61,6 +61,19 @@ type State = {
   restoreSession: (session: Session) => void;
   toSession: () => Session;
   reset: () => void;
+  /**
+   * Reassigns a transcript segment (by index) to a different speaker.
+   * Cascades the change to any claims whose utterance_start matches the
+   * segment's start time, and any markers whose time range falls within
+   * the segment's time range (with 1 s tolerance).
+   * No-ops when index is out of bounds or speaker is already assigned.
+   */
+  reassignUtterance: (transcriptIndex: number, newSpeakerId: SpeakerId) => void;
+  /**
+   * Creates the next speaker (max existing id + 1), registers it, and
+   * returns its id. Useful for the "Add new speaker" affordance.
+   */
+  addNewSpeaker: () => SpeakerId;
 };
 
 const DEFAULT_SOURCE: SessionSource = { kind: "mic" };
@@ -73,6 +86,7 @@ const initialState: Omit<State,
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
   | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream"
   | "setPrerecordStage" | "restoreSession" | "toSession" | "reset"
+  | "reassignUtterance" | "addNewSpeaker"
 > = {
   title: "",
   startedAt: null,
@@ -206,6 +220,43 @@ export const useSession = create<State>((set, get) => ({
   },
 
   reset: () => set({ ...initialState }),
+
+  reassignUtterance: (transcriptIndex, newSpeakerId) => set((s) => {
+    if (transcriptIndex < 0 || transcriptIndex >= s.transcript.length) return s;
+    const target = s.transcript[transcriptIndex];
+    if (target.speaker_id === newSpeakerId) return s;
+
+    // Update the transcript segment
+    const newTranscript = s.transcript.slice();
+    newTranscript[transcriptIndex] = { ...target, speaker_id: newSpeakerId };
+
+    // Cascade to claims whose utterance_start matches this segment's start
+    const newClaims = s.claims.map((c) =>
+      c.utterance_start === target.start ? { ...c, speaker_id: newSpeakerId } : c,
+    );
+
+    // Cascade to markers whose time range falls within this segment's range (1 s tolerance)
+    const newMarkers = s.markers.map((m) =>
+      m.start_time >= target.start && m.end_time <= target.end + 1.0
+        ? { ...m, speaker_id: newSpeakerId }
+        : m,
+    );
+
+    // Ensure the new speaker is registered (idempotent)
+    const speakers = s.speakers.some((sp) => sp.id === newSpeakerId)
+      ? s.speakers
+      : [...s.speakers, { id: newSpeakerId, label: `Speaker ${newSpeakerId + 1}` }];
+
+    return { transcript: newTranscript, claims: newClaims, markers: newMarkers, speakers };
+  }),
+
+  addNewSpeaker: () => {
+    const s = useSession.getState();
+    const maxId = s.speakers.reduce((m, sp) => Math.max(m, sp.id), -1);
+    const newId: SpeakerId = maxId + 1;
+    useSession.getState().ensureSpeaker(newId);
+    return newId;
+  },
 }));
 
 // Dev-only handle on the store (unchanged from prior version)

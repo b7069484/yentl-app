@@ -13,6 +13,7 @@ import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
 import { createAudioAdapter } from "@/lib/client/audio-adapter";
 import { VerdictChip } from "@/components/session/chips";
 import { MarkerChip } from "@/components/session/chips";
+import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -78,16 +79,20 @@ type LineState = "past" | "current" | "future";
 
 function TranscriptLine({
   segment,
+  transcriptIndex,
   state,
   annotations,
   onSeek,
   lineRef,
+  showSpeakers,
 }: {
   segment: TranscriptSegment;
+  transcriptIndex: number;
   state: LineState;
   annotations: AnnotationItem[];
   onSeek: (seconds: number) => void;
   lineRef?: (el: HTMLButtonElement | null) => void;
+  showSpeakers: boolean;
 }) {
   const isCurrent = state === "current";
   return (
@@ -136,6 +141,17 @@ function TranscriptLine({
         </span>
       </button>
 
+      {/* Speaker reassign badge — only visible when diarization is active and
+          the segment is past or current so future lines don't get spoilers. */}
+      {showSpeakers && state !== "future" && segment.speaker_id !== null && (
+        <div className="ml-10 mb-0.5" onClick={(e) => e.stopPropagation()}>
+          <ReassignSpeakerMenu
+            transcriptIndex={transcriptIndex}
+            speakerId={segment.speaker_id}
+          />
+        </div>
+      )}
+
       {/* Inline annotations for this line (only when the line is past or current —
           future annotations would be a spoiler) */}
       {state !== "future" && annotations.length > 0 && (
@@ -161,6 +177,10 @@ export function WatchView() {
   const markers = useSession((s) => s.markers);
   const synthesis = useSession((s) => s.synthesis);
   const transcript = useSession((s) => s.transcript);
+  const speakers = useSession((s) => s.speakers);
+
+  // Show speaker badges + reassign affordance once there are ≥2 distinct speakers
+  const showSpeakers = speakers.length >= 2;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const adapterRef = useRef<MediaAdapter | null>(null);
@@ -423,17 +443,19 @@ export function WatchView() {
             )}
 
             {/* Transcript lines — all visible; past/current/future styled differently */}
-            {transcript.map((seg) => {
+            {transcript.map((seg, segIdx) => {
               const state = lineState(seg);
               const annotations = annotationMap.get(seg.start) ?? [];
               return (
                 <TranscriptLine
                   key={seg.start}
                   segment={seg}
+                  transcriptIndex={segIdx}
                   state={state}
                   annotations={annotations}
                   onSeek={handleSeek}
                   lineRef={state === "current" ? setCurrentSegRef(seg.start) : undefined}
+                  showSpeakers={showSpeakers}
                 />
               );
             })}

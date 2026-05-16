@@ -5,13 +5,34 @@ import type {
 } from "@deepgram/sdk";
 import type { TranscriptSegment, Speaker } from "@/lib/types";
 
-/** Shared Deepgram transcription options for both URL and file paths. */
+/**
+ * Shared Deepgram transcription options for both URL and file paths.
+ *
+ * Diarization quality notes (v5 SDK, nova-3):
+ *   diarize:true   — speaker segmentation; each word gets a speaker index 0…N.
+ *   utterances:true — groups words into utterance objects with per-utterance
+ *                     speaker, start, end. Required for our TranscriptSegment
+ *                     mapping; without it we only get channel-level transcripts.
+ *   numerals:true  — converts spoken numbers ("forty-seven") to digits ("47"),
+ *                    which reduces mis-transcription of numerical claims (vote
+ *                    counts, statistics, dates) that are common in debate audio.
+ *   smart_format:true — applies Deepgram's post-processing rules (dates, times,
+ *                    phone numbers, currency). Pair with numerals for best
+ *                    factual accuracy. Note: smart_format is compatible with
+ *                    diarize in nova-3; earlier models had edge cases.
+ *
+ * Params NOT set (and why):
+ *   diarize_version — not a field in the v5 SDK type; omitted.
+ *   vad_events      — WebSocket-only feature; irrelevant for prerecorded path.
+ *   paragraphs      — conflicts with utterances grouping; keep utterances.
+ */
 const TRANSCRIBE_OPTIONS = {
   model: "nova-3" as const,
   punctuate: true,
   smart_format: true,
   diarize: true,
   utterances: true,
+  numerals: true,
   language: "en",
 };
 

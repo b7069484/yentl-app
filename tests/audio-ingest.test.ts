@@ -1,20 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-// ─── Mock @vercel/blob/client ─────────────────────────────────────────────────
-// Use vi.hoisted so the mock function is available when the factory runs.
-
-const { mockUpload } = vi.hoisted(() => ({
-  mockUpload: vi.fn(),
-}));
-
-vi.mock("@vercel/blob/client", () => ({
-  upload: mockUpload,
-}));
+import { describe, it, expect, vi } from "vitest";
 
 import {
   estimateDeepgramCost,
   formatDuration,
   formatBytes,
+  transcribeAudioFile,
   uploadToBlob,
 } from "@/lib/client/audio-ingest";
 
@@ -104,42 +94,105 @@ describe("formatBytes", () => {
   });
 });
 
-// ─── uploadToBlob ──────────────────────────────────────────────────────────────
+// ─── transcribeAudioFile ───────────────────────────────────────────────────────
 
-describe("uploadToBlob", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockUpload.mockResolvedValue({
-      url: "https://blob.vercel-storage.com/audio-abc123.mp3",
-      pathname: "audio-abc123.mp3",
-      contentType: "audio/mpeg",
-      contentDisposition: "attachment",
-      downloadUrl: "https://blob.vercel-storage.com/audio-abc123.mp3?download=1",
+describe("transcribeAudioFile", () => {
+  it("POSTs multipart/form-data to /api/transcribe-batch and returns utterances + speakers", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          utterances: [{ text: "Hello.", start: 0, end: 1, is_final: true, speaker_id: 0 }],
+          speakers: [{ id: 0, label: "Speaker 1" }],
+        }),
     });
-  });
+    vi.stubGlobal("fetch", mockFetch);
 
-  it("calls upload with correct args and returns { url }", async () => {
     const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
-    const result = await uploadToBlob(file);
+    const result = await transcribeAudioFile(file, 120);
 
-    expect(mockUpload).toHaveBeenCalledWith(
-      "test.mp3",
-      file,
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/transcribe-batch",
       expect.objectContaining({
-        access: "public",
-        handleUploadUrl: "/api/upload-audio",
-        contentType: "audio/mpeg",
+        method: "POST",
+        body: expect.any(FormData),
       }),
     );
 
-    expect(result).toEqual({
-      url: "https://blob.vercel-storage.com/audio-abc123.mp3",
-    });
+    expect(result.utterances).toHaveLength(1);
+    expect(result.utterances[0].text).toBe("Hello.");
+    expect(result.speakers).toEqual([{ id: 0, label: "Speaker 1" }]);
+
+    vi.unstubAllGlobals();
   });
 
-  it("propagates upload errors", async () => {
-    mockUpload.mockRejectedValue(new Error("Network error"));
-    const file = new File(["data"], "test.wav", { type: "audio/wav" });
-    await expect(uploadToBlob(file)).rejects.toThrow("Network error");
+  it("includes file and duration_sec in the FormData", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const file = new File(["data"], "audio.wav", { type: "audio/wav" });
+    await transcribeAudioFile(file, 300);
+
+    const [, opts] = mockFetch.mock.calls[0] as [string, RequestInit];
+    const body = opts.body as FormData;
+    expect(body.get("file")).toBe(file);
+    expect(body.get("duration_sec")).toBe("300");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("throws with the server error message when response is not ok", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ error: "audio exceeds 4-hour cap" }),
+    }));
+
+    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    await expect(transcribeAudioFile(file, 100)).rejects.toThrow("audio exceeds 4-hour cap");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("falls back to 'Transcription failed (N)' when response has no error field", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({}),
+    }));
+
+    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    await expect(transcribeAudioFile(file, 60)).rejects.toThrow("Transcription failed (500)");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("passes the AbortSignal to fetch", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const controller = new AbortController();
+    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    await transcribeAudioFile(file, 60, controller.signal);
+
+    const [, opts] = mockFetch.mock.calls[0] as [string, RequestInit];
+    expect(opts.signal).toBe(controller.signal);
+
+    vi.unstubAllGlobals();
+  });
+});
+
+// ─── uploadToBlob (deprecated) ────────────────────────────────────────────────
+
+describe("uploadToBlob (deprecated)", () => {
+  it("throws a deprecation error pointing to transcribeAudioFile", async () => {
+    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    await expect(uploadToBlob(file)).rejects.toThrow(/uploadToBlob is no longer supported/);
   });
 });

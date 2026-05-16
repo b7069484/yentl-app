@@ -5,6 +5,16 @@ import type {
 } from "@deepgram/sdk";
 import type { TranscriptSegment, Speaker } from "@/lib/types";
 
+/** Shared Deepgram transcription options for both URL and file paths. */
+const TRANSCRIBE_OPTIONS = {
+  model: "nova-3" as const,
+  punctuate: true,
+  smart_format: true,
+  diarize: true,
+  utterances: true,
+  language: "en",
+};
+
 let _client: DeepgramClient | null = null;
 
 function getClient(): DeepgramClient {
@@ -40,18 +50,23 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeUrl({
       url,
-      model: "nova-3",
-      punctuate: true,
-      smart_format: true,
-      diarize: true,
-      utterances: true,
-      language: "en",
+      ...TRANSCRIBE_OPTIONS,
     });
 
-  // Handle async callback responses (ListenV1AcceptedResponse has no `results`)
+  return parseDeepgramResponse(response, url);
+}
+
+/**
+ * Parses a Deepgram synchronous response into TranscriptSegment[] + Speaker[].
+ * Shared by both transcribeUrl and transcribeFile.
+ */
+function parseDeepgramResponse(
+  response: ListenV1Response | ListenV1AcceptedResponse,
+  source: string,
+): TranscribeResult {
   if (!("results" in response) || !response.results) {
     throw new Error(
-      `Deepgram did not return synchronous results. URL: ${url}. ` +
+      `Deepgram did not return synchronous results. Source: ${source}. ` +
         "Ensure the file is publicly accessible and no callback= is set.",
     );
   }
@@ -79,4 +94,29 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
     }));
 
   return { utterances, speakers };
+}
+
+/**
+ * Transcribes an in-memory audio buffer using Deepgram nova-3 with diarization.
+ *
+ * Uses client.listen.v1.media.transcribeFile (v5 SDK path).
+ * The buffer is passed directly — no external storage required.
+ * Same options and response parsing as transcribeUrl.
+ *
+ * Trade-off: the serverless function holds the buffer in memory during upload.
+ * For local dev this is fine. For production at scale, consider Blob storage.
+ */
+export async function transcribeFile(
+  buffer: Buffer | Uint8Array,
+  mime: string,
+): Promise<TranscribeResult> {
+  const client = getClient();
+
+  const response: ListenV1Response | ListenV1AcceptedResponse =
+    await client.listen.v1.media.transcribeFile(
+      { data: buffer, contentType: mime },
+      TRANSCRIBE_OPTIONS,
+    );
+
+  return parseDeepgramResponse(response, `[buffer:${mime}]`);
 }

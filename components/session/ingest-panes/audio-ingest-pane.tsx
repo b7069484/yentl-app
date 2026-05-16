@@ -10,9 +10,8 @@ import {
   estimateDeepgramCost,
   formatDuration,
   formatBytes,
-  uploadToBlob,
+  transcribeAudioFile,
 } from "@/lib/client/audio-ingest";
-import type { TranscriptSegment, Speaker } from "@/lib/types";
 
 const ACCEPTED_TYPES = new Set([
   "audio/mpeg",
@@ -32,8 +31,7 @@ const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
 type Phase =
   | { kind: "idle" }
   | { kind: "probing" }
-  | { kind: "uploading" }
-  | { kind: "transcribing" }
+  | { kind: "processing" } // uploading + transcribing in one server-mediated step
   | { kind: "ingesting" }
   | { kind: "done" }
   | { kind: "error"; message: string };
@@ -129,47 +127,30 @@ export function AudioIngestPane() {
     const ac = new AbortController();
     abortRef.current = ac;
 
+    // Create a blob: URL for in-app audio playback (Watch view audio adapter).
+    // URL.createObjectURL gives a playable local reference with no server roundtrip.
+    const localBlobUrl = URL.createObjectURL(staged.file);
+
     try {
-      // 1 — Upload
-      setPhase({ kind: "uploading" });
-      const { url: blobUrl } = await uploadToBlob(staged.file);
+      // 1 — Upload + transcribe in one server-mediated step (no Vercel Blob needed)
+      setPhase({ kind: "processing" });
+      const data = await transcribeAudioFile(staged.file, staged.duration, ac.signal);
 
-      if (ac.signal.aborted) return;
-
-      // 2 — Transcribe
-      setPhase({ kind: "transcribing" });
-      const res = await fetch("/api/transcribe-batch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          blob_url: blobUrl,
-          duration_sec: staged.duration,
-        }),
-        signal: ac.signal,
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error((err as { error?: string }).error ?? res.statusText);
+      if (ac.signal.aborted) {
+        URL.revokeObjectURL(localBlobUrl);
+        return;
       }
 
-      const data = (await res.json()) as {
-        utterances: TranscriptSegment[];
-        speakers: Speaker[];
-      };
-
-      if (ac.signal.aborted) return;
-
-      // 3 — Set session source
+      // 2 — Set session source (blob_url points to the in-memory file for playback)
       setSource({
         kind: "audio_file",
-        blob_url: blobUrl,
+        blob_url: localBlobUrl,
         duration_sec: staged.duration,
         filename: staged.file.name,
         mime: staged.file.type,
       });
 
-      // 4 — Bulk ingest
+      // 3 — Bulk ingest
       setPhase({ kind: "ingesting" });
       await bulkIngest(data.utterances, { signal: ac.signal });
 
@@ -178,6 +159,7 @@ export function AudioIngestPane() {
         router.push("/session?view=watch");
       }
     } catch (e: unknown) {
+      URL.revokeObjectURL(localBlobUrl);
       if ((e as Error).name === "AbortError") return;
       const message = e instanceof Error ? e.message : String(e);
       setPhase({ kind: "error", message });
@@ -191,8 +173,7 @@ export function AudioIngestPane() {
   }, []);
 
   const isProcessing =
-    phase.kind === "uploading" ||
-    phase.kind === "transcribing" ||
+    phase.kind === "processing" ||
     phase.kind === "ingesting" ||
     phase.kind === "probing";
 
@@ -288,8 +269,7 @@ export function AudioIngestPane() {
           <Loader2 className="w-5 h-5 text-ink-3 animate-spin shrink-0" />
           <div className="text-[13px] text-ink-2">
             {phase.kind === "probing" && "Checking audio…"}
-            {phase.kind === "uploading" && "Uploading to Vercel Blob…"}
-            {phase.kind === "transcribing" && "Transcribing on Deepgram…"}
+            {phase.kind === "processing" && "Uploading & transcribing…"}
             {phase.kind === "ingesting" && "Feeding to fact-checker…"}
           </div>
         </div>

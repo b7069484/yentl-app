@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // Must be hoisted before any imports that pull in the module.
 
 const mockTranscribeUrl = vi.fn();
+const mockTranscribeFile = vi.fn();
 
 vi.mock("@deepgram/sdk", () => {
   const DeepgramClient = vi.fn(function (this: unknown) {
@@ -11,6 +12,7 @@ vi.mock("@deepgram/sdk", () => {
       v1: {
         media: {
           transcribeUrl: mockTranscribeUrl,
+          transcribeFile: mockTranscribeFile,
         },
       },
     };
@@ -19,7 +21,7 @@ vi.mock("@deepgram/sdk", () => {
 });
 
 // Import under test AFTER mock is registered
-import { transcribeUrl } from "@/lib/server/deepgram-batch";
+import { transcribeUrl, transcribeFile } from "@/lib/server/deepgram-batch";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -205,6 +207,123 @@ describe("transcribeUrl — error handling", () => {
 
     await expect(transcribeUrl("https://example.com/audio.mp3")).rejects.toThrow(
       /did not return synchronous results/,
+    );
+  });
+});
+
+// ─── transcribeFile tests ─────────────────────────────────────────────────────
+
+describe("transcribeFile — result mapping", () => {
+  beforeEach(() => {
+    process.env.DEEPGRAM_API_KEY = "test-key";
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    delete process.env.DEEPGRAM_API_KEY;
+  });
+
+  it("maps Deepgram utterances to TranscriptSegment[] for a buffer upload", async () => {
+    mockTranscribeFile.mockResolvedValue(
+      makeDeepgramResponse([
+        { transcript: "Hello world.", start: 0.0, end: 1.5, speaker: 0 },
+        { transcript: "This is a test.", start: 1.8, end: 3.2, speaker: 1 },
+      ]),
+    );
+
+    const buffer = Buffer.from("fake-audio-data");
+    const { utterances } = await transcribeFile(buffer, "audio/mpeg");
+
+    expect(utterances).toHaveLength(2);
+    expect(utterances[0]).toEqual({
+      text: "Hello world.",
+      start: 0.0,
+      end: 1.5,
+      is_final: true,
+      speaker_id: 0,
+    });
+    expect(utterances[1]).toEqual({
+      text: "This is a test.",
+      start: 1.8,
+      end: 3.2,
+      is_final: true,
+      speaker_id: 1,
+    });
+  });
+
+  it("passes the buffer as { data: buffer, contentType: mime } to transcribeFile", async () => {
+    mockTranscribeFile.mockResolvedValue(makeDeepgramResponse([]));
+
+    const buffer = Buffer.from("audio-bytes");
+    await transcribeFile(buffer, "audio/wav");
+
+    expect(mockTranscribeFile).toHaveBeenCalledWith(
+      { data: buffer, contentType: "audio/wav" },
+      expect.objectContaining({
+        model: "nova-3",
+        diarize: true,
+        utterances: true,
+        punctuate: true,
+        smart_format: true,
+        language: "en",
+      }),
+    );
+  });
+
+  it("builds Speaker[] correctly from buffer transcription", async () => {
+    mockTranscribeFile.mockResolvedValue(
+      makeDeepgramResponse([
+        { transcript: "A", start: 0, end: 1, speaker: 1 },
+        { transcript: "B", start: 1, end: 2, speaker: 0 },
+      ]),
+    );
+
+    const { speakers } = await transcribeFile(Buffer.from("x"), "audio/webm");
+    expect(speakers).toEqual([
+      { id: 0, label: "Speaker 1" },
+      { id: 1, label: "Speaker 2" },
+    ]);
+  });
+
+  it("returns empty arrays for empty utterances", async () => {
+    mockTranscribeFile.mockResolvedValue(makeDeepgramResponse([]));
+
+    const { utterances, speakers } = await transcribeFile(Buffer.from("x"), "audio/mpeg");
+    expect(utterances).toEqual([]);
+    expect(speakers).toEqual([]);
+  });
+
+  it("also accepts Uint8Array", async () => {
+    mockTranscribeFile.mockResolvedValue(makeDeepgramResponse([]));
+
+    const uint8 = new Uint8Array([1, 2, 3]);
+    await expect(transcribeFile(uint8, "audio/ogg")).resolves.toBeDefined();
+  });
+});
+
+describe("transcribeFile — error handling", () => {
+  beforeEach(() => {
+    process.env.DEEPGRAM_API_KEY = "test-key";
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    delete process.env.DEEPGRAM_API_KEY;
+  });
+
+  it("throws when Deepgram returns no results (async callback path)", async () => {
+    mockTranscribeFile.mockResolvedValue({ request_id: "abc123" });
+
+    await expect(transcribeFile(Buffer.from("x"), "audio/mpeg")).rejects.toThrow(
+      /did not return synchronous results/,
+    );
+  });
+
+  it("propagates Deepgram SDK errors", async () => {
+    mockTranscribeFile.mockRejectedValue(new Error("Quota exceeded"));
+
+    await expect(transcribeFile(Buffer.from("x"), "audio/mpeg")).rejects.toThrow(
+      "Quota exceeded",
     );
   });
 });

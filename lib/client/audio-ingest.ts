@@ -1,6 +1,6 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
+import type { TranscriptSegment, Speaker } from "@/lib/types";
 
 /**
  * Probes an audio file's duration in seconds using an HTMLAudioElement.
@@ -72,14 +72,45 @@ export function formatBytes(bytes: number): string {
 }
 
 /**
- * Uploads a File to Vercel Blob via the client-direct upload flow.
- * The server-side token is fetched from /api/upload-audio.
+ * Uploads a File directly to the server and transcribes it via Deepgram.
+ * The server route accepts multipart/form-data and streams the buffer into
+ * Deepgram's transcribeFile API — no external storage (Vercel Blob) required.
+ *
+ * The caller should create a blob: URL from URL.createObjectURL(file) for
+ * in-app audio playback before calling this function.
  */
-export async function uploadToBlob(file: File): Promise<{ url: string }> {
-  const result = await upload(file.name, file, {
-    access: "public",
-    handleUploadUrl: "/api/upload-audio",
-    contentType: file.type,
+export async function transcribeAudioFile(
+  file: File,
+  durationSec: number,
+  signal?: AbortSignal,
+): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("duration_sec", String(durationSec));
+
+  const res = await fetch("/api/transcribe-batch", {
+    method: "POST",
+    body: formData,
+    signal,
   });
-  return { url: result.url };
+
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(
+      (errBody as { error?: string }).error ?? `Transcription failed (${res.status})`,
+    );
+  }
+
+  return res.json() as Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }>;
+}
+
+/**
+ * @deprecated Use transcribeAudioFile instead.
+ * Kept for back-compat. Will be removed once all callers are migrated.
+ */
+export async function uploadToBlob(_file: File): Promise<{ url: string }> {
+  throw new Error(
+    "uploadToBlob is no longer supported. Use transcribeAudioFile instead. " +
+      "Vercel Blob client-direct upload requires BLOB_READ_WRITE_TOKEN which is not required for local dev.",
+  );
 }

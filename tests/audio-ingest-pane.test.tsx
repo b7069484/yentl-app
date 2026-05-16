@@ -9,16 +9,23 @@ const {
   mockSetSource,
   mockBulkIngest,
   mockProbeAudioDuration,
-  mockUploadToBlob,
+  mockTranscribeAudioFile,
   mockPush,
+  mockCreateObjectURL,
+  mockRevokeObjectURL,
 } = vi.hoisted(() => {
   return {
     mockSetPrerecordStage: vi.fn(),
     mockSetSource: vi.fn(),
     mockBulkIngest: vi.fn().mockResolvedValue(undefined),
     mockProbeAudioDuration: vi.fn().mockResolvedValue(120), // 2 minutes default
-    mockUploadToBlob: vi.fn().mockResolvedValue({ url: "https://blob.vercel-storage.com/audio.mp3" }),
+    mockTranscribeAudioFile: vi.fn().mockResolvedValue({
+      utterances: [{ text: "Hello.", start: 0, end: 1, is_final: true, speaker_id: 0 }],
+      speakers: [{ id: 0, label: "Speaker 1" }],
+    }),
     mockPush: vi.fn(),
+    mockCreateObjectURL: vi.fn().mockReturnValue("blob:mock-url"),
+    mockRevokeObjectURL: vi.fn(),
   };
 });
 
@@ -52,21 +59,17 @@ vi.mock("@/lib/client/audio-ingest", () => ({
     return `${m}:${String(s).padStart(2, "0")}`;
   }),
   formatBytes: vi.fn((bytes: number) => `${(bytes / 1024).toFixed(1)} KB`),
-  uploadToBlob: mockUploadToBlob,
+  transcribeAudioFile: mockTranscribeAudioFile,
 }));
 
-// Mock global fetch
-const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
+// Stub URL.createObjectURL / revokeObjectURL (not available in jsdom)
+vi.stubGlobal("URL", {
+  ...URL,
+  createObjectURL: mockCreateObjectURL,
+  revokeObjectURL: mockRevokeObjectURL,
+});
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
-
-function setupFetchSuccess(utterances: TranscriptSegment[] = [], speakers: Speaker[] = []) {
-  mockFetch.mockResolvedValue({
-    ok: true,
-    json: () => Promise.resolve({ utterances, speakers }),
-  });
-}
 
 import { AudioIngestPane } from "@/components/session/ingest-panes/audio-ingest-pane";
 
@@ -84,12 +87,12 @@ function makeAudioFile(name = "speech.mp3", type = "audio/mpeg", size = 1024 * 1
 beforeEach(() => {
   vi.clearAllMocks();
   mockProbeAudioDuration.mockResolvedValue(120);
-  mockUploadToBlob.mockResolvedValue({ url: "https://blob.vercel-storage.com/audio.mp3" });
+  mockTranscribeAudioFile.mockResolvedValue({
+    utterances: [{ text: "Hello.", start: 0, end: 1, is_final: true, speaker_id: 0 }],
+    speakers: [{ id: 0, label: "Speaker 1" }],
+  });
   mockBulkIngest.mockResolvedValue(undefined);
-  setupFetchSuccess(
-    [{ text: "Hello.", start: 0, end: 1, is_final: true, speaker_id: 0 }],
-    [{ id: 0, label: "Speaker 1" }],
-  );
+  mockCreateObjectURL.mockReturnValue("blob:mock-url");
 });
 
 describe("AudioIngestPane — renders", () => {
@@ -221,29 +224,51 @@ describe("AudioIngestPane — Process flow", () => {
     });
   }
 
-  it("calls uploadToBlob with the staged file", async () => {
+  it("calls transcribeAudioFile with the staged file and duration", async () => {
     await stageAndProcess();
     await waitFor(() => {
-      expect(mockUploadToBlob).toHaveBeenCalledWith(
+      expect(mockTranscribeAudioFile).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "audio.mp3" }),
+        120, // duration from mockProbeAudioDuration
+        expect.any(AbortSignal),
+      );
+    });
+  });
+
+  it("does NOT call fetch directly (transcribeAudioFile handles the request)", async () => {
+    // fetch should not be called — transcribeAudioFile is the abstraction now
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    await stageAndProcess();
+    await waitFor(() => {
+      expect(mockTranscribeAudioFile).toHaveBeenCalled();
+    });
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it("calls URL.createObjectURL to create a local blob: URL for playback", async () => {
+    await stageAndProcess();
+    await waitFor(() => {
+      expect(mockCreateObjectURL).toHaveBeenCalledWith(
         expect.objectContaining({ name: "audio.mp3" }),
       );
     });
   });
 
-  it("calls fetch /api/transcribe-batch with blob_url and duration_sec", async () => {
+  it("calls setSource with blob: URL (from createObjectURL) for in-app playback", async () => {
     await stageAndProcess();
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        "/api/transcribe-batch",
-        expect.objectContaining({
-          method: "POST",
-          body: expect.stringContaining("blob.vercel-storage.com"),
-        }),
-      );
+      expect(mockSetSource).toHaveBeenCalledWith({
+        kind: "audio_file",
+        blob_url: "blob:mock-url",
+        duration_sec: 120,
+        filename: "audio.mp3",
+        mime: "audio/mpeg",
+      });
     });
   });
 
-  it("calls bulkIngest with utterances from the API response", async () => {
+  it("calls bulkIngest with utterances from transcribeAudioFile response", async () => {
     await stageAndProcess();
     await waitFor(() => {
       expect(mockBulkIngest).toHaveBeenCalledWith(
@@ -255,25 +280,8 @@ describe("AudioIngestPane — Process flow", () => {
     });
   });
 
-  it("calls setSource with exact audio_file shape after successful transcribe", async () => {
-    await stageAndProcess();
-    await waitFor(() => {
-      expect(mockSetSource).toHaveBeenCalledWith({
-        kind: "audio_file",
-        blob_url: "https://blob.vercel-storage.com/audio.mp3",
-        duration_sec: 120,
-        filename: "audio.mp3",
-        mime: "audio/mpeg",
-      });
-    });
-  });
-
-  it("shows error message when transcribe-batch returns non-ok", async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      statusText: "Internal Server Error",
-      json: () => Promise.resolve({ error: "Deepgram quota exceeded" }),
-    });
+  it("shows error message when transcribeAudioFile rejects", async () => {
+    mockTranscribeAudioFile.mockRejectedValue(new Error("Deepgram quota exceeded"));
 
     render(<AudioIngestPane />);
     const input = screen.getByLabelText(/Select audio file/i);
@@ -294,11 +302,12 @@ describe("AudioIngestPane — Process flow", () => {
     });
   });
 
-  it("shows uploading state during upload", async () => {
-    // Make upload take a tick so we can catch the intermediate state
-    let resolveUpload!: (v: { url: string }) => void;
-    const uploadPromise = new Promise<{ url: string }>((r) => { resolveUpload = r; });
-    mockUploadToBlob.mockReturnValue(uploadPromise);
+  it("shows processing state during transcribeAudioFile (single combined phase)", async () => {
+    let resolveTranscribe!: (v: { utterances: TranscriptSegment[]; speakers: Speaker[] }) => void;
+    const transcribePromise = new Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }>(
+      (r) => { resolveTranscribe = r; },
+    );
+    mockTranscribeAudioFile.mockReturnValue(transcribePromise);
 
     render(<AudioIngestPane />);
     const input = screen.getByLabelText(/Select audio file/i);
@@ -315,11 +324,11 @@ describe("AudioIngestPane — Process flow", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Uploading/i)).toBeTruthy();
+      expect(screen.getByText(/Uploading & transcribing/i)).toBeTruthy();
     });
 
     // Resolve so we don't leave hanging promises
-    act(() => resolveUpload({ url: "https://blob.vercel-storage.com/audio.mp3" }));
+    act(() => resolveTranscribe({ utterances: [], speakers: [] }));
   });
 });
 

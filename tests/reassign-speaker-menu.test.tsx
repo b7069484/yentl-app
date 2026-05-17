@@ -175,7 +175,7 @@ describe("ReassignSpeakerMenu — edge cases", () => {
 // ── Split & reassign UI flow ───────────────────────────────────────────────────
 
 // computeSplitTime is exported for unit-testing the formula directly
-import { computeSplitTime } from "@/components/session/reassign-speaker-menu";
+import { computeSplitTime } from "@/lib/client/utterance-split";
 
 describe("computeSplitTime", () => {
   it("splits at the midpoint for word index 1 of 4", () => {

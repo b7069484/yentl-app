@@ -27,28 +27,14 @@ import { DropdownMenu } from "radix-ui";
 import type { SpeakerId } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { PlusIcon, ScissorsIcon, ChevronRightIcon, ArrowLeftIcon } from "lucide-react";
+export { computeSplitTime } from "@/lib/client/utterance-split";
+import { computeSplitTime } from "@/lib/client/utterance-split";
 
 interface ReassignSpeakerMenuProps {
   transcriptIndex: number;
   speakerId: SpeakerId | null;
   /** Extra class names on the trigger badge */
   className?: string;
-}
-
-/**
- * Compute the split time for a boundary AFTER word at `wordIndex`.
- *
- * Formula: splitTime = start + ((wordIndex + 1) / wordCount) * (end - start)
- */
-export function computeSplitTime(
-  text: string,
-  start: number,
-  end: number,
-  wordIndex: number,
-): number {
-  const words = text.trim().split(/\s+/).filter((w) => w.length > 0);
-  const wordCount = words.length;
-  return start + ((wordIndex + 1) / wordCount) * (end - start);
 }
 
 export function ReassignSpeakerMenu({

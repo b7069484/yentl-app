@@ -2,7 +2,7 @@
 import { ulid } from "ulid";
 import type { Session } from "@/lib/types";
 
-const DB_NAME = "yenta";
+const DB_NAME = "yentl";
 const DB_VERSION = 1;
 const STORE_NAME = "sessions";
 

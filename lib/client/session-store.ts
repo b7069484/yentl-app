@@ -390,10 +390,10 @@ export const useSession = create<State>((set, get) => ({
 // Dev-only handle on the store (unchanged from prior version)
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
   const w = window as unknown as {
-    __yenta?: Record<string, unknown>;
+    __yentl?: Record<string, unknown>;
     __factify?: Record<string, unknown>;
   };
-  w.__yenta = { ...(w.__yenta ?? {}), session: useSession };
+  w.__yentl = { ...(w.__yentl ?? {}), session: useSession };
   // Legacy alias preserved so existing scripts using window.__factify keep working.
-  w.__factify = w.__yenta;
+  w.__factify = w.__yentl;
 }

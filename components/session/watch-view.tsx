@@ -16,7 +16,7 @@ import { createAudioAdapter } from "@/lib/client/audio-adapter";
 import { VerdictChip } from "@/components/session/chips";
 import { MarkerChip } from "@/components/session/chips";
 import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
-import { paletteFor } from "@/components/session/TranscriptView";
+import { paletteFor } from "@/lib/client/speaker-palette";
 import { cn } from "@/lib/utils";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 

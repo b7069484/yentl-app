@@ -22,7 +22,7 @@
 
 import React, { useState, useCallback } from "react";
 import { useSession } from "@/lib/client/session-store";
-import { paletteFor } from "@/components/session/TranscriptView";
+import { paletteFor } from "@/lib/client/speaker-palette";
 import { DropdownMenu } from "radix-ui";
 import type { SpeakerId } from "@/lib/types";
 import { cn } from "@/lib/utils";

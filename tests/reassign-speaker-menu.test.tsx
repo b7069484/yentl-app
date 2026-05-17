@@ -26,8 +26,8 @@ vi.mock("@/lib/client/session-store", () => ({
   }),
 }));
 
-// paletteFor is imported from TranscriptView — mock it simply
-vi.mock("@/components/session/TranscriptView", () => ({
+// paletteFor is imported from lib/client/speaker-palette — mock it simply
+vi.mock("@/lib/client/speaker-palette", () => ({
   paletteFor: vi.fn((id: number) => ({
     dot: `bg-spk-${id + 1}`,
     label: "text-ink",

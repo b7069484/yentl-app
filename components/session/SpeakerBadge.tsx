@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "@/lib/client/session-store";
-import { paletteFor } from "@/components/session/TranscriptView";
+import { paletteFor } from "@/lib/client/speaker-palette";
 import type { SpeakerId } from "@/lib/types";
 
 export function SpeakerBadge({ speakerId }: { speakerId: SpeakerId | null }) {

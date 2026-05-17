@@ -4,7 +4,7 @@ import { Volume2 } from "lucide-react";
 import { AudioMeter } from "@/components/session/AudioMeter";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
-import { paletteFor } from "@/components/session/TranscriptView";
+import { paletteFor } from "@/lib/client/speaker-palette";
 
 export function SessionHeader({
   onStart, onStop, onEnd, onExport, audioStream,

@@ -61,6 +61,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
+    // Browsers occasionally omit the file's Content-Type — fall back to a sane
+    // default so Deepgram doesn't reject the upload with a vague error.
+    const mime = file.type || "audio/mpeg";
+
     // ── Branch: stream large files; buffer small ones ─────────────────────────
     if (file.size > STREAM_THRESHOLD_BYTES) {
       // Convert Web ReadableStream → Node Readable to avoid a 60MB+ Buffer.
@@ -69,7 +73,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         file.stream() as import("stream/web").ReadableStream,
       );
       try {
-        const result = await transcribeStream(nodeStream, file.type);
+        const result = await transcribeStream(nodeStream, mime);
         return NextResponse.json(result);
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
@@ -85,7 +89,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     try {
-      const result = await transcribeFile(buffer, file.type);
+      const result = await transcribeFile(buffer, mime);
       return NextResponse.json(result);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);

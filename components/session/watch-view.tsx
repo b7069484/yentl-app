@@ -7,6 +7,8 @@ import {
   useCallback,
   useMemo,
 } from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import type { MediaAdapter } from "@/lib/client/media-adapter";
 import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
@@ -14,6 +16,8 @@ import { createAudioAdapter } from "@/lib/client/audio-adapter";
 import { VerdictChip } from "@/components/session/chips";
 import { MarkerChip } from "@/components/session/chips";
 import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
+import { paletteFor } from "@/components/session/TranscriptView";
+import { cn } from "@/lib/utils";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -46,30 +50,55 @@ function AnnotationRow({
       ? annotation.item.claim_text
       : annotation.item.excerpt;
 
+  const detailHref =
+    annotation.kind === "claim"
+      ? `/session/detail/claim/${annotation.item.id}`
+      : `/session/detail/marker/${annotation.item.id}`;
+
   return (
-    <button
-      type="button"
-      onClick={() => onSeek(ts)}
-      className="flex items-center gap-2 pl-4 text-left w-full group cursor-pointer"
+    <div
+      className="flex items-center gap-2 pl-4 w-full group"
       data-testid={`annotation-${annotation.kind}-${annotation.item.id}`}
     >
       <span className="w-px self-stretch bg-line-strong flex-shrink-0" aria-hidden />
-      {annotation.kind === "claim" ? (
-        <VerdictChip
-          verdict={annotation.item.primary_label}
-          score={annotation.item.score}
+
+      {/* Chip: seek on click */}
+      <button
+        type="button"
+        onClick={() => onSeek(ts)}
+        className="flex-shrink-0 cursor-pointer"
+        data-testid="annotation-chip-btn"
+      >
+        {annotation.kind === "claim" ? (
+          <VerdictChip
+            verdict={annotation.item.primary_label}
+            score={annotation.item.score}
+          />
+        ) : (
+          <MarkerChip
+            type={annotation.item.type}
+            display={annotation.item.display}
+            severity={annotation.item.severity}
+          />
+        )}
+      </button>
+
+      {/* Quote text + chevron: navigate to L3 detail */}
+      <Link
+        href={detailHref}
+        className="flex items-center gap-0.5 flex-1 min-w-0 group/link"
+        data-testid="annotation-detail-link"
+      >
+        <span className="font-serif italic text-[11px] text-ink-3 truncate flex-1 min-w-0 group-hover/link:underline group-hover/link:text-ink-2 transition-colors">
+          &ldquo;{text}&rdquo;
+        </span>
+        <ChevronRight
+          className="h-3 w-3 text-ink-4 group-hover/link:text-ink-2 transition-colors opacity-40 group-hover/link:opacity-100 flex-shrink-0"
+          data-testid="annotation-chevron"
+          aria-hidden
         />
-      ) : (
-        <MarkerChip
-          type={annotation.item.type}
-          display={annotation.item.display}
-          severity={annotation.item.severity}
-        />
-      )}
-      <span className="font-serif italic text-[11px] text-ink-3 truncate flex-1 min-w-0 group-hover:text-ink-2 transition-colors">
-        &ldquo;{text}&rdquo;
-      </span>
-    </button>
+      </Link>
+    </div>
   );
 }
 
@@ -285,6 +314,13 @@ export function WatchView() {
     return cur ? cur.start : null;
   }, [transcript, currentTime]);
 
+  // Derive the active speaker from the current segment (for the player ring).
+  const currentSpeakerId = useMemo((): number | null => {
+    if (currentSegStart === null) return null;
+    const seg = transcript.find((s) => s.start === currentSegStart);
+    return seg?.speaker_id ?? null;
+  }, [transcript, currentSegStart]);
+
   // Classify each transcript line as past / current / future based on
   // currentTime + the chosen current segment.
   const lineState = useCallback((seg: TranscriptSegment): LineState => {
@@ -357,16 +393,26 @@ export function WatchView() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
         {/* Player column */}
-        <div className="bg-ink rounded-lg overflow-hidden">
-          {source.kind === "youtube" ? (
-            <div className="aspect-video w-full" ref={containerRef} data-testid="player-container" />
-          ) : (
-            <div
-              className="p-4 flex items-center justify-center min-h-[120px]"
-              ref={containerRef}
-              data-testid="player-container"
-            />
+        <div
+          className={cn(
+            "rounded-lg overflow-hidden border-[3px] transition-colors duration-300",
+            currentSpeakerId !== null
+              ? paletteFor(currentSpeakerId).border
+              : "border-transparent",
           )}
+          data-testid="player-wrapper"
+        >
+          <div className="bg-ink rounded-sm overflow-hidden">
+            {source.kind === "youtube" ? (
+              <div className="aspect-video w-full" ref={containerRef} data-testid="player-container" />
+            ) : (
+              <div
+                className="p-4 flex items-center justify-center min-h-[120px]"
+                ref={containerRef}
+                data-testid="player-container"
+              />
+            )}
+          </div>
         </div>
 
         {/* Transcript + synthesis column */}

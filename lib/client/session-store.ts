@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type {
   ClaimCard,
+  PersistedSynthesis,
   RhetoricMarker,
   Session,
   SessionSource,
@@ -201,12 +202,26 @@ export const useSession = create<State>((set, get) => ({
     prerecordStage: "selected",
     isRecording: false,
     interim: "",
-    synthesis: null,
+    // If the session carries a persisted synthesis, restore it as "fresh".
+    // "refreshing" is downgraded to "fresh" since no refresh job is running.
+    synthesis: session.synthesis
+      ? { state: "fresh" as const, ...session.synthesis }
+      : null,
     micStream: null,
   }),
 
   toSession: () => {
     const s = get();
+    // Persist synthesis only when there is valid text (fresh or refreshing).
+    // Discard "warming" (no text yet) and "error" (no actionable text to show).
+    let persistedSynthesis: PersistedSynthesis | undefined;
+    if (
+      s.synthesis?.state === "fresh" ||
+      s.synthesis?.state === "refreshing"
+    ) {
+      const { text, headlines, per_speaker_verdicts, at } = s.synthesis;
+      persistedSynthesis = { text, headlines, per_speaker_verdicts, at };
+    }
     return {
       title: s.title,
       started_at: s.startedAt ?? "",
@@ -216,6 +231,7 @@ export const useSession = create<State>((set, get) => ({
       markers: s.markers,
       speakers: s.speakers,
       source: s.source,
+      ...(persistedSynthesis !== undefined && { synthesis: persistedSynthesis }),
     };
   },
 

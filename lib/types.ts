@@ -64,6 +64,30 @@ export type TranscriptSegment = {
   speaker_id: SpeakerId | null;
 };
 
+/**
+ * Persistable synthesis snapshot — a strict subset of SynthesisState that
+ * contains only the fields safe to store. The discriminant `state` field is
+ * intentionally absent; on restore we always load as "fresh".
+ */
+export type PersistedSynthesis = {
+  text: string;
+  headlines: string[];
+  per_speaker_verdicts?: SpeakerVerdict[];
+  at: number;
+};
+
+/**
+ * SpeakerVerdict mirrors the type in session-store.ts to avoid a circular
+ * dependency between lib/types.ts and lib/client/session-store.ts.
+ */
+export type SpeakerVerdict = {
+  speaker_id: number;
+  label: string;
+  factual_grade: "mostly_factual" | "mixed" | "mostly_inaccurate" | "insufficient";
+  faith_grade: "good_faith" | "mixed" | "bad_faith" | "insufficient";
+  one_liner: string;
+};
+
 export type Session = {
   title: string;
   started_at: string;   // ISO8601
@@ -73,6 +97,8 @@ export type Session = {
   markers: RhetoricMarker[];
   speakers: Speaker[];
   source: SessionSource;
+  /** Persisted synthesis snapshot. Present only when state was "fresh" or "refreshing". */
+  synthesis?: PersistedSynthesis;
 };
 
 /* ── Speakers (added in Sprint 1) ─────────────────────────────── */

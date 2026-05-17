@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => mockSearchParamsRaw,
 }));
 
-vi.mock("@/components/session/session-shell", () => ({
+vi.mock("@/lib/source-kinds", () => ({
   PLAYABLE_SOURCE_KINDS: new Set(["youtube", "audio_file", "media_url"]),
 }));
 

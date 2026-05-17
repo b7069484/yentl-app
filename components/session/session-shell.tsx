@@ -11,6 +11,8 @@ import { SpeakerRail } from "@/components/session/speaker-rail";
 import { ExportDialog } from "@/components/session/ExportDialog";
 import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
+export { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
+import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 
 // ─── BrandMark ────────────────────────────────────────────────────────────────
 
@@ -87,8 +89,6 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
-
-export const PLAYABLE_SOURCE_KINDS = new Set(["youtube", "audio_file", "media_url"]);
 
 function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   const sp = useSearchParams();

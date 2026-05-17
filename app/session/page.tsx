@@ -7,7 +7,7 @@ import { TranscriptView } from "@/components/session/TranscriptView";
 import { FilteredList } from "@/components/session/filtered-list";
 import { WatchView } from "@/components/session/watch-view";
 import { SourceRouter } from "@/lib/client/source-router";
-import { PLAYABLE_SOURCE_KINDS } from "@/components/session/session-shell";
+import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 
 export default function SessionPage() {
   return (

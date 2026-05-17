@@ -6,9 +6,13 @@ import { render, screen } from "@testing-library/react";
 let mockSearchParamsRaw = new URLSearchParams("");
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
   usePathname: () => "/session",
   useSearchParams: () => mockSearchParamsRaw,
+}));
+
+vi.mock("@/components/session/session-shell", () => ({
+  PLAYABLE_SOURCE_KINDS: new Set(["youtube", "audio_file", "media_url"]),
 }));
 
 vi.mock("next/link", () => ({
@@ -45,6 +49,10 @@ vi.mock("@/components/session/filtered-list", () => ({
   FilteredList: () => <div data-testid="filtered-list">FilteredList</div>,
 }));
 
+vi.mock("@/components/session/watch-view", () => ({
+  WatchView: () => <div data-testid="watch-view">WatchView</div>,
+}));
+
 // ─── Mock SourceRouter ────────────────────────────────────────────────────────
 
 vi.mock("@/lib/client/source-router", () => ({
@@ -65,12 +73,15 @@ import SessionPage from "@/app/session/page";
 type StoreState = {
   startedAt: string | null;
   startSession: () => void;
+  source: { kind: string };
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
   return {
     startedAt: null,
     startSession: vi.fn(),
+    // Default to a playable kind so view=watch tests don't redirect unexpectedly.
+    source: { kind: "youtube" },
     ...overrides,
   };
 }

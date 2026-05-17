@@ -350,26 +350,6 @@ export function WatchView() {
     [currentSegStart],
   );
 
-  // ── No-media fallback ────────────────────────────────────────────────────────
-
-  if (source.kind === "mic" || source.kind === "text_doc") {
-    return (
-      <div
-        className="px-6 pt-12 pb-12 max-w-[680px] mx-auto text-center text-ink-3"
-        data-testid="no-media-message"
-      >
-        <div className="font-serif text-[20px] text-ink-2 mb-2">
-          No media to watch
-        </div>
-        <div className="text-[13px]">
-          This session was ingested from{" "}
-          {source.kind === "mic" ? "live microphone" : "text"} — there&rsquo;s
-          no playable media. See the Overview or Transcript tabs.
-        </div>
-      </div>
-    );
-  }
-
   // ── Player + transcript layout ───────────────────────────────────────────────
 
   return (

@@ -143,26 +143,24 @@ beforeEach(() => {
   });
 });
 
-// ── 1. No media state ─────────────────────────────────────────────────────────
+// ── 1. No-media fallback removed (redirect now handled in page.tsx) ──────────
+// WatchView is only ever rendered for PLAYABLE_SOURCE_KINDS. The mic/text_doc
+// dead block has been deleted; these tests verify it is truly gone.
 
-describe("WatchView — no-media fallback", () => {
-  it("renders 'No media to watch' for mic source", () => {
+describe("WatchView — no-media fallback removed", () => {
+  it("does NOT render a no-media-message for mic source (redirect is upstream)", () => {
     mockStoreState = { ...mockStoreState, source: { kind: "mic" } };
     render(<WatchView />);
-    expect(screen.getByTestId("no-media-message")).toBeTruthy();
-    expect(screen.getByText(/No media to watch/i)).toBeTruthy();
-    expect(screen.getByText(/live microphone/i)).toBeTruthy();
+    expect(screen.queryByTestId("no-media-message")).toBeNull();
   });
 
-  it("renders 'No media to watch' for text_doc source", () => {
+  it("does NOT render a no-media-message for text_doc source (redirect is upstream)", () => {
     mockStoreState = {
       ...mockStoreState,
       source: { kind: "text_doc", filename: "doc.txt", mime: "text/plain", byte_count: 1000 },
     };
     render(<WatchView />);
-    expect(screen.getByTestId("no-media-message")).toBeTruthy();
-    expect(screen.getByText(/No media to watch/i)).toBeTruthy();
-    expect(screen.getByText(/text/i)).toBeTruthy();
+    expect(screen.queryByTestId("no-media-message")).toBeNull();
   });
 });
 

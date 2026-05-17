@@ -88,7 +88,7 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
 
-const PLAYABLE_SOURCE_KINDS = new Set(["youtube", "audio_file", "media_url"]);
+export const PLAYABLE_SOURCE_KINDS = new Set(["youtube", "audio_file", "media_url"]);
 
 function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   const sp = useSearchParams();

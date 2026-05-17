@@ -1,3 +1,4 @@
+import { Readable } from "stream";
 import { DeepgramClient } from "@deepgram/sdk";
 import type {
   ListenV1Response,
@@ -126,6 +127,7 @@ function parseDeepgramResponse(
  *
  * Trade-off: the serverless function holds the buffer in memory during upload.
  * For local dev this is fine. For production at scale, consider Blob storage.
+ * For files >50MB use transcribeStream instead.
  */
 export async function transcribeFile(
   buffer: Buffer | Uint8Array,
@@ -140,4 +142,30 @@ export async function transcribeFile(
     );
 
   return parseDeepgramResponse(response, `[buffer:${mime}]`);
+}
+
+/**
+ * Transcribes a large audio file via a Node.js Readable stream using Deepgram
+ * nova-3 with diarization. Use this for files >50MB to avoid allocating a
+ * large Buffer in the serverless function's memory.
+ *
+ * The Deepgram v5 SDK accepts a Node Readable directly as the uploadable
+ * argument — no tempfile required. The stream is converted from the Web
+ * ReadableStream (File.stream()) via Readable.fromWeb().
+ *
+ * Same options and response parsing as transcribeFile.
+ */
+export async function transcribeStream(
+  stream: Readable,
+  mime: string,
+): Promise<TranscribeResult> {
+  const client = getClient();
+
+  const response: ListenV1Response | ListenV1AcceptedResponse =
+    await client.listen.v1.media.transcribeFile(
+      { data: stream, contentType: mime },
+      TRANSCRIBE_OPTIONS,
+    );
+
+  return parseDeepgramResponse(response, `[stream:${mime}]`);
 }

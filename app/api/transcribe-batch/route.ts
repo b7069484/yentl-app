@@ -1,11 +1,18 @@
+import { Readable } from "stream";
 import { NextResponse } from "next/server";
-import { transcribeFile, transcribeUrl } from "@/lib/server/deepgram-batch";
+import {
+  transcribeFile,
+  transcribeStream,
+  transcribeUrl,
+} from "@/lib/server/deepgram-batch";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
 
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
+/** Files above this threshold are streamed to Deepgram rather than buffered. */
+const STREAM_THRESHOLD_BYTES = 50 * 1024 * 1024; // 50 MB
 
 export async function POST(req: Request): Promise<NextResponse> {
   const contentType = req.headers.get("content-type") ?? "";
@@ -54,6 +61,27 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
+    // ── Branch: stream large files; buffer small ones ─────────────────────────
+    if (file.size > STREAM_THRESHOLD_BYTES) {
+      // Convert Web ReadableStream → Node Readable to avoid a 60MB+ Buffer.
+      // The Deepgram v5 SDK accepts a Node Readable directly as `uploadable`.
+      const nodeStream = Readable.fromWeb(
+        file.stream() as import("stream/web").ReadableStream,
+      );
+      try {
+        const result = await transcribeStream(nodeStream, file.type);
+        return NextResponse.json(result);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        console.error("transcribe-batch: Deepgram stream error (large file)", message);
+        return NextResponse.json(
+          { error: `Transcription failed: ${message}` },
+          { status: 500 },
+        );
+      }
+    }
+
+    // ── Small file (≤50MB): existing Buffer path, unchanged ───────────────────
     const buffer = Buffer.from(await file.arrayBuffer());
 
     try {

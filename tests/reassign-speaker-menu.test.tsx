@@ -275,8 +275,12 @@ describe("ReassignSpeakerMenu — Split & reassign sub-menu", () => {
     // This fires onSelect with e.preventDefault(), keeping the sub-menu open
     // and updating splitWordIndex state to show the speaker picker
     const wordChip = await screen.findByTestId("split-word-1");
-    // Use fireEvent.click to bypass userEvent's pointer logic and directly
-    // trigger the item's onSelect without dismissing the menu via pointer events
+    // userEvent dispatches synthetic pointerdown, which Radix's DropdownMenu
+    // treats as an outside-click and closes the sub-menu BEFORE onSelect can
+    // fire. fireEvent.click skips the pointer phase and triggers onSelect
+    // directly, mirroring what a real click ultimately does in the browser
+    // (Radix's outside-click handler doesn't fire when the click target is
+    // inside the menu).
     fireEvent.click(wordChip);
 
     // After word pick, the sub-content should now show the speaker picker
@@ -298,6 +302,37 @@ describe("ReassignSpeakerMenu — Split & reassign sub-menu", () => {
   it("does not call splitSegmentAt when menu is opened but no word is selected", async () => {
     renderMenu(0, 0);
     await openMenu("reassign-trigger-0");
+    expect(mockSplitSegmentAt).not.toHaveBeenCalled();
+  });
+
+  it("Back button returns from speaker picker to word chips", async () => {
+    // Step through: open sub-menu → pick word → see speaker picker → click Back
+    // → assert word chips visible again, no splitSegmentAt call
+    const user = userEvent.setup();
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    const subTrigger = await screen.findByTestId("split-reassign-trigger");
+    await user.hover(subTrigger);
+
+    const wordChip = await screen.findByTestId("split-word-1");
+    fireEvent.click(wordChip);
+
+    // We're on the speaker picker now
+    await waitFor(() => {
+      expect(screen.getByTestId("split-speaker-option-1")).toBeTruthy();
+    });
+    expect(screen.getByTestId("split-back-button")).toBeTruthy();
+
+    // Click Back — should re-render the word chips
+    fireEvent.click(screen.getByTestId("split-back-button"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("split-word-chips")).toBeTruthy();
+    });
+    // Speaker picker is gone
+    expect(screen.queryByTestId("split-speaker-option-1")).toBeNull();
+    // And we never called splitSegmentAt
     expect(mockSplitSegmentAt).not.toHaveBeenCalled();
   });
 });

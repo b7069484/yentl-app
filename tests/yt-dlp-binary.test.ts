@@ -106,11 +106,26 @@ describe("getYtDlpBinaryPath — filesystem candidates", () => {
     expect(result).toContain("bin/yt-dlp");
   });
 
-  it("prefers symlinked path over pnpm real path when both would exist", () => {
+  it("prefers ./bin/yt-dlp (Vercel-bundled standalone) over node_modules candidates when all exist", () => {
     mockedExistsSync.mockReturnValue(true);
     mockedReaddirSync.mockReturnValue(["youtube-dl-exec@3.1.7"] as unknown as ReturnType<typeof _readdirSync>);
     const result = getYtDlpBinaryPath();
-    // Symlinked path (step 2) is checked before pnpm real path (step 3)
+    // The Vercel-bundled standalone at ./bin/yt-dlp (step 2) is the
+    // first filesystem candidate — it must win over node_modules paths.
+    expect(result).toContain("/bin/yt-dlp");
+    expect(result).not.toContain("node_modules");
+  });
+
+  it("prefers symlinked node_modules path over pnpm real path when ./bin/yt-dlp absent", () => {
+    mockedExistsSync.mockImplementation((p: unknown) => {
+      const path = String(p);
+      // ./bin/yt-dlp NOT present (Vercel-bundled scenario simulated as absent)
+      if (path.endsWith("/bin/yt-dlp") && !path.includes("node_modules")) return false;
+      return true;
+    });
+    mockedReaddirSync.mockReturnValue(["youtube-dl-exec@3.1.7"] as unknown as ReturnType<typeof _readdirSync>);
+    const result = getYtDlpBinaryPath();
+    // Symlinked path (step 3) is checked before pnpm real path (step 4)
     expect(result).not.toContain(".pnpm");
     expect(result).toContain("node_modules/youtube-dl-exec/bin/yt-dlp");
   });

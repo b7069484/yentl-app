@@ -43,7 +43,16 @@ export function getYtDlpBinaryPath(): string {
 
   const cwd = process.cwd();
 
-  // 2. Symlinked / hoisted path (npm flat layout or pnpm with hoisting)
+  // 2. Repo-bundled standalone binary at ./bin/yt-dlp — downloaded by the
+  //    vercel-build script from yt-dlp's GitHub releases (yt-dlp_linux is a
+  //    PyInstaller-built executable that bundles Python, so it runs on Vercel
+  //    where the youtube-dl-exec Python script does not).
+  const bundled = join(cwd, "bin/yt-dlp");
+  if (existsSync(bundled)) {
+    return bundled;
+  }
+
+  // 3. Symlinked / hoisted youtube-dl-exec path (npm flat or pnpm hoisted)
   const symlinked = join(cwd, "node_modules/youtube-dl-exec/bin/yt-dlp");
   if (existsSync(symlinked)) {
     return symlinked;

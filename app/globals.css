@@ -80,20 +80,22 @@
   --color-spk-5: var(--spk-5);
   --color-spk-6: var(--spk-6);
 
-  /* Fonts — Inter (sans) + Newsreader (serif), Geist retired */
+  /* Fonts — Inter (sans) + Fraunces (serif, V5 wordmark · WM-A), Geist retired */
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, "Cascadia Mono", monospace;
   --font-heading: var(--font-sans);
 }
 
 :root {
-  /* ─── Yentl brand palette (AST-010 §1) ─── */
-  --cream: #FAF6EC;
-  --cream-2: #F4EFE2;
-  --cream-3: #F0E9D6;
+  /* ─── Yentl brand palette v5.0 (LOCKED 2026-05-17 · R4 V3 "Brighter Trust") ─── */
+  /* Mark blue #2563EB · amber friendliness · green verified · red false      */
+  /* warm cream paper · near-black ink. Legacy var names preserved; values updated. */
+  --cream: #FAF9F5;       /* v5-paper · warm cream */
+  --cream-2: #F4F1E8;     /* v5-surface · light cream surface */
+  --cream-3: #EFEADB;     /* derived darker cream for hover/active fills */
   --paper: #FFFFFF;
-  --ink: #14171F;
+  --ink: #1A1A1F;         /* v5-ink · humane near-black */
   --ink-2: #2A2F40;
   --ink-3: #5B6075;
   --ink-4: #8B8FA0;
@@ -101,17 +103,19 @@
   --line: #E8E1CE;
   --line-soft: #F0E9D6;
   --line-strong: #D8CFB4;
-  --amber: #D89B2C;
-  --amber-2: #B07C1C;
-  --amber-soft: #FBF1DC;
-  --amber-glow: rgba(216, 155, 44, .18);
-  --teal: #2B9A8A;
-  --teal-2: #1F7466;
-  --teal-soft: #D7EBE7;
-  --green: #0F8A5F;
-  --green-soft: #DDF1E6;
-  --red: #B7372A;
-  --red-soft: #FAE2DD;
+  --amber: #F59E0B;             /* v5-amber · friendly, URL period accent */
+  --amber-2: #D97706;           /* amber-700 · darker variant for borders */
+  --amber-soft: #FEF3C7;        /* amber-100 · soft surface tint */
+  --amber-glow: rgba(245, 158, 11, .18);
+  /* `--teal` is repurposed as Brighter Trust Blue (v5-blue). Var name preserved
+     so existing classnames like `bg-teal`, `text-teal-2` keep working. */
+  --teal: #2563EB;              /* v5-blue · mark · trust */
+  --teal-2: #1D4ED8;            /* blue-700 · darker variant */
+  --teal-soft: #DBEAFE;         /* blue-100 · soft surface tint */
+  --green: #22C55E;             /* v5-green · verified */
+  --green-soft: rgba(34, 197, 94, .16);
+  --red: #EF4444;               /* v5-red · false */
+  --red-soft: rgba(239, 68, 68, .14);
   --orange: #C76B1F;
   --orange-soft: #FBEAD7;
   --slate: #5B6075;
@@ -121,10 +125,11 @@
   --pink: #C2407A;
   --pink-soft: #F9DDE7;
 
-  /* Speaker palette (6 — wraps with numeric badge after) */
+  /* Speaker palette (6 — wraps with numeric badge after).
+     spk-2 + spk-3 updated to match v5 brand amber/blue. */
   --spk-1: #5B6075;
-  --spk-2: #D89B2C;
-  --spk-3: #2B9A8A;
+  --spk-2: #F59E0B;
+  --spk-3: #2563EB;
   --spk-4: #6A50C8;
   --spk-5: #C2407A;
   --spk-6: #C76B1F;

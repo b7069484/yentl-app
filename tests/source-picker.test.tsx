@@ -40,7 +40,7 @@ describe("SourcePicker – card rendering", () => {
     render(<SourcePicker />);
     const img = screen.getByAltText("Yentl");
     expect(img).toBeTruthy();
-    expect(img.getAttribute("src")).toBe("/yentl-y-mark.png");
+    expect(img.getAttribute("src")).toBe("/yentl-mark.svg");
   });
 
   it("renders the headline", () => {

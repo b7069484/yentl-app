@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Newsreader } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,11 +8,16 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+// Brand v5.0 wordmark font (WM-A · Editorial Serif).
+// Fraunces is a variable serif — we load it as variable so all wght values are
+// available via CSS font-weight, plus the SOFT and opsz axes for the wordmark.
+// Apply axis values inline at the wordmark site with
+//   style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 50" }}.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
+  axes: ["SOFT", "opsz"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${newsreader.variable} h-full antialiased`}
+      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">{children}</body>
     </html>

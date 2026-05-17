@@ -339,6 +339,12 @@ export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[
       "--convert-subs",
       "srt",
       "--no-warnings",
+      // YouTube blocks data-center IPs from the default web client. The
+      // mweb (mobile-web) and tv_embedded clients use less-blocked endpoints
+      // and frequently succeed on cloud-hosted infra (Vercel, AWS Lambda).
+      // Order matters: mweb is tried first, then tv_embedded as fallback.
+      "--extractor-args",
+      "youtube:player_client=mweb,tv_embedded,web",
       "-o",
       outPattern,
       videoUrl,

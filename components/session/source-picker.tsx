@@ -58,7 +58,7 @@ export function SourcePicker() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/yenta-y-mark.png"
-        alt="Yenta"
+        alt="Yentl"
         width={600}
         height={340}
         className="mx-auto mb-6 h-24 w-auto"
@@ -71,7 +71,7 @@ export function SourcePicker() {
 
       {/* Subtitle */}
       <p className="text-[14px] text-ink-3 mt-2 mb-8 max-w-prose mx-auto text-center">
-        Yenta works with live conversations, recordings, transcripts, and online media.
+        Yentl works with live conversations, recordings, transcripts, and online media.
       </p>
 
       {/* Cards grid */}

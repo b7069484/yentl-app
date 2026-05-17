@@ -42,7 +42,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Yenta palette → Tailwind utilities */
+  /* Yentl palette → Tailwind utilities */
   --color-cream: var(--cream);
   --color-cream-2: var(--cream-2);
   --color-cream-3: var(--cream-3);
@@ -88,7 +88,7 @@
 }
 
 :root {
-  /* ─── Yenta brand palette (AST-010 §1) ─── */
+  /* ─── Yentl brand palette (AST-010 §1) ─── */
   --cream: #FAF6EC;
   --cream-2: #F4EFE2;
   --cream-3: #F0E9D6;
@@ -129,7 +129,7 @@
   --spk-5: #C2407A;
   --spk-6: #C76B1F;
 
-  /* REMAP shadcn semantic tokens to Yenta equivalents so existing
+  /* REMAP shadcn semantic tokens to Yentl equivalents so existing
      shadcn primitives (Button, Card, Dialog, etc.) inherit the brand. */
   --background: var(--cream);
   --foreground: var(--ink);
@@ -180,22 +180,22 @@
 
 /* ─── Wordmark "smart dot" — looping AI-agent glow ─── */
 @layer components {
-  .yenta-dot {
+  .yentl-dot {
     background-color: var(--amber);
     border-radius: 9999px;
-    animation: yenta-dot-pulse 2.4s ease-in-out infinite;
+    animation: yentl-dot-pulse 2.4s ease-in-out infinite;
     will-change: box-shadow;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .yenta-dot {
+    .yentl-dot {
       animation: none;
       box-shadow: 0 0 4px 1px rgba(216, 155, 44, 0.35);
     }
   }
 }
 
-@keyframes yenta-dot-pulse {
+@keyframes yentl-dot-pulse {
   0%, 100% {
     box-shadow:
       0 0 0 0 rgba(216, 155, 44, 0),

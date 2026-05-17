@@ -281,10 +281,10 @@ export default function SessionsLibraryPage() {
             href="/"
             className="font-serif text-[22px] font-medium tracking-tight text-ink inline-flex items-baseline"
           >
-            <span>yenta</span>
+            <span>yentl</span>
             <span
               aria-hidden
-              className="yenta-dot inline-block w-2 h-2 ml-1.5 self-baseline"
+              className="yentl-dot inline-block w-2 h-2 ml-1.5 self-baseline"
             />
           </Link>
           <span className="text-ink-4 text-[13px]">/</span>

@@ -23,7 +23,7 @@ export function ListeningEmptyState({ micStream }: Props) {
 
         {/* Subtitle */}
         <p className="text-[13px] text-ink-3">
-          Speak naturally. Yenta will transcribe, fact-check, and surface biases live.
+          Speak naturally. Yentl will transcribe, fact-check, and surface biases live.
         </p>
 
         {/* Live mic-level meter */}

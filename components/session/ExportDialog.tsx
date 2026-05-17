@@ -14,7 +14,7 @@ import { toMarkdown } from "@/lib/export/markdown";
 import { toJSON } from "@/lib/export/json";
 
 function fileSafe(s: string) {
-  return (s || "yenta-session").replace(/[^\w-]+/g, "_").slice(0, 60);
+  return (s || "yentl-session").replace(/[^\w-]+/g, "_").slice(0, 60);
 }
 
 function download(filename: string, content: string, type: string) {
@@ -37,7 +37,7 @@ function openHtml(content: string) {
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
   if (!win) {
     // Popup blocker — fall back to download so the user still gets the file.
-    download(`${fileSafe("yenta-report")}.html`, content, "text/html");
+    download(`${fileSafe("yentl-report")}.html`, content, "text/html");
   }
 }
 
@@ -56,7 +56,7 @@ export function ExportDialog({
 
   const doExport = (kind: "report" | "markdown" | "json") => {
     const data = useSession.getState().toSession();
-    const stem = fileSafe(data.title || "yenta-session");
+    const stem = fileSafe(data.title || "yentl-session");
     if (kind === "report") {
       openHtml(toReport(data));
     } else if (kind === "markdown") {

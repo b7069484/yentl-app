@@ -11,15 +11,15 @@ export default function Home() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/yenta-y-mark.png"
-          alt="Yenta"
+          alt="Yentl"
           width={600}
           height={340}
           className="h-32 w-auto md:h-40"
         />
 
         <div className="inline-flex items-baseline font-serif text-[44px] font-medium leading-none tracking-tight text-ink md:text-[56px]">
-          <span>yenta</span>
-          <span aria-hidden className="yenta-dot ml-2 inline-block h-2.5 w-2.5 self-baseline md:ml-2.5 md:h-3 md:w-3" />
+          <span>yentl</span>
+          <span aria-hidden className="yentl-dot ml-2 inline-block h-2.5 w-2.5 self-baseline md:ml-2.5 md:h-3 md:w-3" />
         </div>
 
         <h1 className="font-serif text-[48px] font-medium leading-none tracking-tight text-ink md:text-[68px]">
@@ -27,7 +27,7 @@ export default function Home() {
         </h1>
 
         <p className="max-w-prose text-[15.5px] leading-relaxed text-ink-3 md:text-[17px]">
-          A live fact-checker for any conversation. Yenta transcribes in real
+          A live fact-checker for any conversation. Yentl transcribes in real
           time, separates speakers, scores every claim against the open web,
           and surfaces the biases and fallacies tucked into the rhetoric.
         </p>

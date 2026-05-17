@@ -161,7 +161,7 @@ function WarmingSkeleton() {
       {/* Heading row */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-wide text-amber-2">
-          Yenta is listening…
+          Yentl is listening…
         </span>
       </div>
 
@@ -227,7 +227,7 @@ export function SynthesisCard({
       {/* Heading row */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-wide text-amber-2">
-          Yenta&apos;s read {ageSuffix}
+          Yentl&apos;s read {ageSuffix}
         </span>
         {onRefresh && (
           <button
@@ -257,7 +257,7 @@ export function SynthesisCard({
             expanded ? "block" : "hidden"
           } md:block`}
         >
-          Yenta&apos;s read isn&apos;t loading. Retrying in a moment.
+          Yentl&apos;s read isn&apos;t loading. Retrying in a moment.
         </p>
       ) : null}
 
@@ -300,7 +300,7 @@ export function SynthesisCard({
         onClick={() => setExpanded((v) => !v)}
         className="mt-3 inline-flex items-center gap-1 text-[11px] text-ink-3 hover:text-ink-2 md:hidden"
       >
-        {expanded ? "Hide Yenta's take ⌃" : "Read Yenta's take ⌄"}
+        {expanded ? "Hide Yentl's take ⌃" : "Read Yentl's take ⌄"}
       </button>
     </div>
   );

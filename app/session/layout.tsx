@@ -96,9 +96,9 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   // Dev-only shim
   useEffect(() => {
     if (process.env.NODE_ENV === "production") return;
-    const w = window as unknown as { __yenta?: Record<string, unknown>; __factify?: Record<string, unknown> };
-    w.__yenta = { ...(w.__yenta ?? {}), onFinalUtterance };
-    w.__factify = w.__yenta;
+    const w = window as unknown as { __yentl?: Record<string, unknown>; __factify?: Record<string, unknown> };
+    w.__yentl = { ...(w.__yentl ?? {}), onFinalUtterance };
+    w.__factify = w.__yentl;
   }, []);
 
   // Keyboard shortcut: Space toggles record/pause. Ignored when focus is in an editable element

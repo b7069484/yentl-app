@@ -425,7 +425,7 @@ export function WatchView() {
               data-testid="synthesis-card"
             >
               <div className="text-[10.5px] tracking-[.12em] uppercase text-ink-4 font-bold mb-2">
-                Yenta&rsquo;s read
+                Yentl&rsquo;s read
               </div>
               <p className="text-[13.5px] text-ink-2 leading-relaxed">
                 {synthesis.text}

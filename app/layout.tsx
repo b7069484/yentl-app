@@ -16,9 +16,9 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "Yenta — Live fact-check & rhetoric analysis",
+  title: "Yentl — Live fact-check & rhetoric analysis",
   description:
-    "Listen, check, learn. Yenta transcribes the conversation, scores every claim against the open web, and surfaces the biases and fallacies tucked into the rhetoric in real time.",
+    "Listen, check, learn. Yentl transcribes the conversation, scores every claim against the open web, and surfaces the biases and fallacies tucked into the rhetoric in real time.",
 };
 
 export default function RootLayout({

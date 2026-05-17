@@ -11,16 +11,16 @@ export function MicPreRecordPane() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/yenta-y-mark.png"
-        alt="Yenta"
+        alt="Yentl"
         width={600}
         height={340}
         className="mx-auto mb-6 h-24 w-auto"
       />
       <h1 className="font-serif text-[28px] font-medium tracking-tight text-ink">
-        Yenta is ready to listen.
+        Yentl is ready to listen.
       </h1>
       <p className="text-[14px] text-ink-3 mt-2 max-w-prose mx-auto">
-        Tap below to start a session. Yenta transcribes the conversation in real time, fact-checks
+        Tap below to start a session. Yentl transcribes the conversation in real time, fact-checks
         every claim against the open web, and surfaces the biases and fallacies tucked into the
         rhetoric.
       </p>

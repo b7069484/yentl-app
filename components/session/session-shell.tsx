@@ -23,10 +23,10 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
         href="/session"
         className={`font-serif ${fontMap[size]} font-medium tracking-tight text-ink inline-flex items-baseline`}
       >
-        <span>yenta</span>
+        <span>yentl</span>
         <span
           aria-hidden
-          className={`yenta-dot inline-block ${dotMap[size]} self-baseline`}
+          className={`yentl-dot inline-block ${dotMap[size]} self-baseline`}
         />
       </Link>
       <Link

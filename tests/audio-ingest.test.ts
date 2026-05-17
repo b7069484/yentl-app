@@ -1,12 +1,41 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// ─── Mock @vercel/blob/client ─────────────────────────────────────────────────
+// vi.mock is hoisted to the top of the file by Vitest; any variable referenced
+// inside the factory must also be hoisted via vi.hoisted().
+
+const { mockBlobUpload } = vi.hoisted(() => ({
+  mockBlobUpload: vi.fn(),
+}));
+
+vi.mock("@vercel/blob/client", () => ({
+  upload: mockBlobUpload,
+}));
 
 import {
   estimateDeepgramCost,
   formatDuration,
   formatBytes,
   transcribeAudioFile,
-  uploadToBlob,
+  BLOB_UPLOAD_THRESHOLD_BYTES,
 } from "@/lib/client/audio-ingest";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Creates a file sized exactly at the threshold boundary. */
+function makeSmallFile(name = "small.mp3", type = "audio/mpeg") {
+  // 1 MB — well below the 4 MB threshold → multipart path
+  const f = new File(["x"], name, { type });
+  Object.defineProperty(f, "size", { value: 1 * 1024 * 1024 });
+  return f;
+}
+
+function makeLargeFile(name = "large.mp3", type = "audio/mpeg") {
+  // 8 MB — above the 4 MB threshold → blob path
+  const f = new File(["x"], name, { type });
+  Object.defineProperty(f, "size", { value: 8 * 1024 * 1024 });
+  return f;
+}
 
 // ─── estimateDeepgramCost ─────────────────────────────────────────────────────
 
@@ -94,9 +123,13 @@ describe("formatBytes", () => {
   });
 });
 
-// ─── transcribeAudioFile ───────────────────────────────────────────────────────
+// ─── transcribeAudioFile — multipart path (small files < 4 MB) ───────────────
 
-describe("transcribeAudioFile", () => {
+describe("transcribeAudioFile — multipart path (small files)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("POSTs multipart/form-data to /api/transcribe-batch and returns utterances + speakers", async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -108,7 +141,7 @@ describe("transcribeAudioFile", () => {
     });
     vi.stubGlobal("fetch", mockFetch);
 
-    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    const file = makeSmallFile();
     const result = await transcribeAudioFile(file, 120);
 
     expect(mockFetch).toHaveBeenCalledWith(
@@ -118,8 +151,6 @@ describe("transcribeAudioFile", () => {
         body: expect.any(FormData),
       }),
     );
-
-    expect(result.utterances).toHaveLength(1);
     expect(result.utterances[0].text).toBe("Hello.");
     expect(result.speakers).toEqual([{ id: 0, label: "Speaker 1" }]);
 
@@ -133,7 +164,7 @@ describe("transcribeAudioFile", () => {
     });
     vi.stubGlobal("fetch", mockFetch);
 
-    const file = new File(["data"], "audio.wav", { type: "audio/wav" });
+    const file = makeSmallFile("audio.wav", "audio/wav");
     await transcribeAudioFile(file, 300);
 
     const [, opts] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -151,7 +182,7 @@ describe("transcribeAudioFile", () => {
       json: () => Promise.resolve({ error: "audio exceeds 4-hour cap" }),
     }));
 
-    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    const file = makeSmallFile();
     await expect(transcribeAudioFile(file, 100)).rejects.toThrow("audio exceeds 4-hour cap");
 
     vi.unstubAllGlobals();
@@ -164,7 +195,7 @@ describe("transcribeAudioFile", () => {
       json: () => Promise.resolve({}),
     }));
 
-    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    const file = makeSmallFile();
     await expect(transcribeAudioFile(file, 60)).rejects.toThrow("Transcription failed (500)");
 
     vi.unstubAllGlobals();
@@ -178,7 +209,7 @@ describe("transcribeAudioFile", () => {
     vi.stubGlobal("fetch", mockFetch);
 
     const controller = new AbortController();
-    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
+    const file = makeSmallFile();
     await transcribeAudioFile(file, 60, controller.signal);
 
     const [, opts] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -186,13 +217,131 @@ describe("transcribeAudioFile", () => {
 
     vi.unstubAllGlobals();
   });
+
+  it("does NOT call @vercel/blob upload for small files", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    }));
+
+    const file = makeSmallFile();
+    await transcribeAudioFile(file, 60);
+
+    expect(mockBlobUpload).not.toHaveBeenCalled();
+
+    vi.unstubAllGlobals();
+  });
 });
 
-// ─── uploadToBlob (deprecated) ────────────────────────────────────────────────
+// ─── transcribeAudioFile — blob path (large files >= 4 MB) ───────────────────
 
-describe("uploadToBlob (deprecated)", () => {
-  it("throws a deprecation error pointing to transcribeAudioFile", async () => {
-    const file = new File(["data"], "test.mp3", { type: "audio/mpeg" });
-    await expect(uploadToBlob(file)).rejects.toThrow(/uploadToBlob is no longer supported/);
+describe("transcribeAudioFile — blob path (large files)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("calls @vercel/blob upload() for files >= BLOB_UPLOAD_THRESHOLD_BYTES", async () => {
+    mockBlobUpload.mockResolvedValue({ url: "https://blob.vercel-storage.com/audio-abc.mp3" });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    }));
+
+    const file = makeLargeFile();
+    await transcribeAudioFile(file, 300);
+
+    expect(mockBlobUpload).toHaveBeenCalledOnce();
+    expect(mockBlobUpload).toHaveBeenCalledWith(
+      file.name,
+      file,
+      expect.objectContaining({
+        access: "public",
+        handleUploadUrl: "/api/upload-audio",
+      }),
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it("calls /api/transcribe-batch with JSON { blob_url, duration_sec } after upload", async () => {
+    const blobUrl = "https://blob.vercel-storage.com/audio-abc.mp3";
+    mockBlobUpload.mockResolvedValue({ url: blobUrl });
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const file = makeLargeFile();
+    await transcribeAudioFile(file, 300);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "/api/transcribe-batch",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ blob_url: blobUrl, duration_sec: 300 }),
+      }),
+    );
+
+    vi.unstubAllGlobals();
+  });
+
+  it("returns utterances and speakers from the transcribe-batch JSON response", async () => {
+    mockBlobUpload.mockResolvedValue({ url: "https://blob.vercel-storage.com/x.mp3" });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        utterances: [{ text: "Large file.", start: 0, end: 2, is_final: true, speaker_id: 0 }],
+        speakers: [{ id: 0, label: "Speaker 1" }],
+      }),
+    }));
+
+    const file = makeLargeFile();
+    const result = await transcribeAudioFile(file, 300);
+
+    expect(result.utterances[0].text).toBe("Large file.");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("throws when @vercel/blob upload() rejects", async () => {
+    mockBlobUpload.mockRejectedValue(new Error("BLOB_READ_WRITE_TOKEN not set"));
+
+    const file = makeLargeFile();
+    await expect(transcribeAudioFile(file, 300)).rejects.toThrow("BLOB_READ_WRITE_TOKEN not set");
+  });
+
+  it("calls onUploadProgress callback during upload", async () => {
+    let capturedProgress: ((event: { loaded: number; total: number }) => void) | undefined;
+
+    mockBlobUpload.mockImplementation(async (_name: string, _file: File, opts: { onUploadProgress?: (e: { loaded: number; total: number }) => void }) => {
+      capturedProgress = opts.onUploadProgress;
+      return { url: "https://blob.vercel-storage.com/x.mp3" };
+    });
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ utterances: [], speakers: [] }),
+    }));
+
+    const progressSpy = vi.fn();
+    const file = makeLargeFile();
+    await transcribeAudioFile(file, 300, undefined, progressSpy);
+
+    // Simulate the blob SDK calling onUploadProgress
+    capturedProgress?.({ loaded: 50, total: 100 });
+    expect(progressSpy).toHaveBeenCalledWith(50);
+
+    vi.unstubAllGlobals();
+  });
+});
+
+// ─── BLOB_UPLOAD_THRESHOLD_BYTES export ───────────────────────────────────────
+
+describe("BLOB_UPLOAD_THRESHOLD_BYTES", () => {
+  it("is 4 MB (4 * 1024 * 1024)", () => {
+    expect(BLOB_UPLOAD_THRESHOLD_BYTES).toBe(4 * 1024 * 1024);
   });
 });

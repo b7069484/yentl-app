@@ -11,6 +11,7 @@ import {
   formatDuration,
   formatBytes,
   transcribeAudioFile,
+  BLOB_UPLOAD_THRESHOLD_BYTES,
 } from "@/lib/client/audio-ingest";
 
 const ACCEPTED_TYPES = new Set([
@@ -31,7 +32,8 @@ const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
 type Phase =
   | { kind: "idle" }
   | { kind: "probing" }
-  | { kind: "processing" } // uploading + transcribing in one server-mediated step
+  | { kind: "uploading"; progress: number } // client-direct Blob upload (large files)
+  | { kind: "processing" }                  // transcribing via Deepgram
   | { kind: "ingesting" }
   | { kind: "done" }
   | { kind: "error"; message: string };
@@ -131,10 +133,32 @@ export function AudioIngestPane() {
     // URL.createObjectURL gives a playable local reference with no server roundtrip.
     const localBlobUrl = URL.createObjectURL(staged.file);
 
+    // Large files go via Vercel Blob (client-direct) to bypass the 4.5 MB
+    // serverless function body limit. Show distinct upload + processing phases.
+    const isLargeFile = staged.file.size >= BLOB_UPLOAD_THRESHOLD_BYTES;
+
     try {
-      // 1 — Upload + transcribe in one server-mediated step (no Vercel Blob needed)
-      setPhase({ kind: "processing" });
-      const data = await transcribeAudioFile(staged.file, staged.duration, ac.signal);
+      // 1 — Upload + transcribe
+      if (isLargeFile) {
+        setPhase({ kind: "uploading", progress: 0 });
+      } else {
+        setPhase({ kind: "processing" });
+      }
+
+      const data = await transcribeAudioFile(
+        staged.file,
+        staged.duration,
+        ac.signal,
+        isLargeFile
+          ? (pct) => {
+              if (pct >= 100) {
+                setPhase({ kind: "processing" });
+              } else {
+                setPhase({ kind: "uploading", progress: pct });
+              }
+            }
+          : undefined,
+      );
 
       if (ac.signal.aborted) {
         URL.revokeObjectURL(localBlobUrl);
@@ -173,6 +197,7 @@ export function AudioIngestPane() {
   }, []);
 
   const isProcessing =
+    phase.kind === "uploading" ||
     phase.kind === "processing" ||
     phase.kind === "ingesting" ||
     phase.kind === "probing";
@@ -265,13 +290,24 @@ export function AudioIngestPane() {
 
       {/* Processing states */}
       {isProcessing && (
-        <div className="border border-ink-6 rounded-xl p-5 bg-surface flex items-center gap-3">
-          <Loader2 className="w-5 h-5 text-ink-3 animate-spin shrink-0" />
-          <div className="text-[13px] text-ink-2">
-            {phase.kind === "probing" && "Checking audio…"}
-            {phase.kind === "processing" && "Uploading & transcribing…"}
-            {phase.kind === "ingesting" && "Feeding to fact-checker…"}
+        <div className="border border-ink-6 rounded-xl p-5 bg-surface flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-ink-3 animate-spin shrink-0" />
+            <div className="text-[13px] text-ink-2">
+              {phase.kind === "probing" && "Checking audio…"}
+              {phase.kind === "uploading" && `Uploading… ${phase.progress}%`}
+              {phase.kind === "processing" && "Transcribing…"}
+              {phase.kind === "ingesting" && "Feeding to fact-checker…"}
+            </div>
           </div>
+          {phase.kind === "uploading" && (
+            <div className="h-1 rounded-full bg-ink-6 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-accent transition-all duration-150"
+                style={{ width: `${phase.progress}%` }}
+              />
+            </div>
+          )}
         </div>
       )}
 

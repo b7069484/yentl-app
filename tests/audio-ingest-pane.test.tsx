@@ -60,6 +60,8 @@ vi.mock("@/lib/client/audio-ingest", () => ({
   }),
   formatBytes: vi.fn((bytes: number) => `${(bytes / 1024).toFixed(1)} KB`),
   transcribeAudioFile: mockTranscribeAudioFile,
+  // 4 MB threshold — exported constant used by the component
+  BLOB_UPLOAD_THRESHOLD_BYTES: 4 * 1024 * 1024,
 }));
 
 // Stub URL.createObjectURL / revokeObjectURL (not available in jsdom)
@@ -227,10 +229,12 @@ describe("AudioIngestPane — Process flow", () => {
   it("calls transcribeAudioFile with the staged file and duration", async () => {
     await stageAndProcess();
     await waitFor(() => {
+      // Small file (1 MB default) → 4th arg (onUploadProgress) is undefined
       expect(mockTranscribeAudioFile).toHaveBeenCalledWith(
         expect.objectContaining({ name: "audio.mp3" }),
         120, // duration from mockProbeAudioDuration
         expect.any(AbortSignal),
+        undefined,
       );
     });
   });
@@ -323,8 +327,9 @@ describe("AudioIngestPane — Process flow", () => {
       fireEvent.click(screen.getByRole("button", { name: /Process audio/i }));
     });
 
+    // Small file (1 MB) → skips blob upload, goes directly to "Transcribing…"
     await waitFor(() => {
-      expect(screen.getByText(/Uploading & transcribing/i)).toBeTruthy();
+      expect(screen.getByText(/Transcribing/i)).toBeTruthy();
     });
 
     // Resolve so we don't leave hanging promises
@@ -350,6 +355,144 @@ describe("AudioIngestPane — drag-and-drop", () => {
     await waitFor(() => {
       // Should show the process button after valid file
       expect(screen.getByRole("button", { name: /Process audio/i })).toBeTruthy();
+    });
+  });
+});
+
+describe("AudioIngestPane — large file blob upload path", () => {
+  it("shows Uploading phase text for large files during upload", async () => {
+    // Simulate a large file (> 4 MB threshold)
+    const LARGE_SIZE = 8 * 1024 * 1024; // 8 MB
+    let resolveTranscribe!: (v: { utterances: TranscriptSegment[]; speakers: Speaker[] }) => void;
+    const transcribePromise = new Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }>(
+      (r) => { resolveTranscribe = r; },
+    );
+
+    // transcribeAudioFile is called with onUploadProgress — we capture it and call
+    // it with pct=50 to simulate mid-upload, then resolve the outer promise.
+    let capturedProgress: ((pct: number) => void) | undefined;
+    mockTranscribeAudioFile.mockImplementation(
+      (_file: File, _dur: number, _signal: AbortSignal, onUploadProgress?: (pct: number) => void) => {
+        capturedProgress = onUploadProgress;
+        return transcribePromise;
+      },
+    );
+
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio file/i);
+    const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => screen.getByRole("button", { name: /Process audio/i }));
+
+    act(() => {
+      fireEvent.click(screen.getByRole("button", { name: /Process audio/i }));
+    });
+
+    // Simulate upload progress at 50%
+    await act(async () => {
+      capturedProgress?.(50);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Uploading.*50%/i)).toBeTruthy();
+    });
+
+    // Cleanup — resolve the promise to avoid hanging
+    act(() => resolveTranscribe({ utterances: [], speakers: [] }));
+  });
+
+  it("transitions from Uploading to Transcribing when progress hits 100%", async () => {
+    const LARGE_SIZE = 8 * 1024 * 1024;
+    let resolveTranscribe!: (v: { utterances: TranscriptSegment[]; speakers: Speaker[] }) => void;
+    const transcribePromise = new Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }>(
+      (r) => { resolveTranscribe = r; },
+    );
+
+    let capturedProgress: ((pct: number) => void) | undefined;
+    mockTranscribeAudioFile.mockImplementation(
+      (_file: File, _dur: number, _signal: AbortSignal, onUploadProgress?: (pct: number) => void) => {
+        capturedProgress = onUploadProgress;
+        return transcribePromise;
+      },
+    );
+
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio file/i);
+    const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => screen.getByRole("button", { name: /Process audio/i }));
+
+    act(() => {
+      fireEvent.click(screen.getByRole("button", { name: /Process audio/i }));
+    });
+
+    // Simulate upload completing
+    await act(async () => {
+      capturedProgress?.(100);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Transcribing/i)).toBeTruthy();
+    });
+
+    act(() => resolveTranscribe({ utterances: [], speakers: [] }));
+  });
+
+  it("passes onUploadProgress callback when file is large (>= 4 MB)", async () => {
+    const LARGE_SIZE = 5 * 1024 * 1024;
+    mockTranscribeAudioFile.mockResolvedValue({ utterances: [], speakers: [] });
+
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio file/i);
+    const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => screen.getByRole("button", { name: /Process audio/i }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Process audio/i }));
+    });
+
+    await waitFor(() => {
+      // 4th argument (onUploadProgress) should be a function for large files
+      const call = mockTranscribeAudioFile.mock.calls[0];
+      expect(typeof call[3]).toBe("function");
+    });
+  });
+
+  it("does NOT pass onUploadProgress callback when file is small (< 4 MB)", async () => {
+    const SMALL_SIZE = 1 * 1024 * 1024; // 1 MB
+    mockTranscribeAudioFile.mockResolvedValue({ utterances: [], speakers: [] });
+
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio file/i);
+    const file = makeAudioFile("small.mp3", "audio/mpeg", SMALL_SIZE);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => screen.getByRole("button", { name: /Process audio/i }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Process audio/i }));
+    });
+
+    await waitFor(() => {
+      const call = mockTranscribeAudioFile.mock.calls[0];
+      // 4th argument should be undefined for small files
+      expect(call[3]).toBeUndefined();
     });
   });
 });

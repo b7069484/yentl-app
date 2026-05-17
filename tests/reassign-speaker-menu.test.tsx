@@ -2,21 +2,25 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Speaker } from "@/lib/types";
+import type { Speaker, TranscriptSegment } from "@/lib/types";
 
 // ── Session store mock ────────────────────────────────────────────────────────
 
 const mockReassignUtterance = vi.fn();
 const mockAddNewSpeaker = vi.fn();
+const mockSplitSegmentAt = vi.fn();
 
 let mockSpeakers: Speaker[] = [];
+let mockTranscript: TranscriptSegment[] = [];
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector: (s: unknown) => unknown) => {
     const state = {
       speakers: mockSpeakers,
+      transcript: mockTranscript,
       reassignUtterance: mockReassignUtterance,
       addNewSpeaker: mockAddNewSpeaker,
+      splitSegmentAt: mockSplitSegmentAt,
     };
     return selector(state);
   }),
@@ -57,6 +61,16 @@ beforeEach(() => {
   mockSpeakers = [
     { id: 0, label: "Speaker 1" },
     { id: 1, label: "Speaker 2" },
+  ];
+  // Default transcript: a two-sentence, multi-word segment at index 0
+  mockTranscript = [
+    {
+      text: "Hello world. Goodbye now.",
+      start: 10,
+      end: 20,
+      is_final: true,
+      speaker_id: 0,
+    },
   ];
   mockAddNewSpeaker.mockReturnValue(2);
 });
@@ -155,5 +169,135 @@ describe("ReassignSpeakerMenu — edge cases", () => {
       expect(screen.getByTestId("reassign-option-0")).toBeTruthy();
       expect(screen.getByTestId("reassign-add-new")).toBeTruthy();
     });
+  });
+});
+
+// ── Split & reassign UI flow ───────────────────────────────────────────────────
+
+// computeSplitTime is exported for unit-testing the formula directly
+import { computeSplitTime } from "@/components/session/reassign-speaker-menu";
+
+describe("computeSplitTime", () => {
+  it("splits at the midpoint for word index 1 of 4", () => {
+    // text: "Hello world. Goodbye now." → 4 words
+    // split after word index 1 (zero-based) → (2/4) through the duration
+    const time = computeSplitTime("Hello world. Goodbye now.", 10, 20, 1);
+    expect(time).toBeCloseTo(15, 5); // 10 + (2/4)*10 = 15
+  });
+
+  it("splits at the first boundary for word index 0 of 4", () => {
+    const time = computeSplitTime("Hello world. Goodbye now.", 10, 20, 0);
+    expect(time).toBeCloseTo(12.5, 5); // 10 + (1/4)*10 = 12.5
+  });
+
+  it("handles two-word segment correctly", () => {
+    const time = computeSplitTime("Hello world", 0, 10, 0);
+    expect(time).toBeCloseTo(5, 5); // 0 + (1/2)*10 = 5
+  });
+});
+
+describe("ReassignSpeakerMenu — Split & reassign sub-menu", () => {
+  it("shows the 'Split & reassign…' sub-trigger when segment has multiple words", async () => {
+    // mockTranscript[0] has 4 words: "Hello world. Goodbye now."
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+    await waitFor(() => {
+      expect(screen.getByTestId("split-reassign-trigger")).toBeTruthy();
+    });
+  });
+
+  it("shows disabled split item when segment has only one word", async () => {
+    mockTranscript = [
+      { text: "Hello", start: 10, end: 20, is_final: true, speaker_id: 0 },
+    ];
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+    await waitFor(() => {
+      expect(screen.getByTestId("split-reassign-disabled")).toBeTruthy();
+    });
+  });
+
+  it("shows word chips when sub-menu is opened", async () => {
+    const user = userEvent.setup();
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    // hover the sub-trigger to open sub-content
+    const subTrigger = await screen.findByTestId("split-reassign-trigger");
+    await user.hover(subTrigger);
+
+    await waitFor(() => {
+      // segWords = ["Hello", "world.", "Goodbye", "now."]
+      // We show all but the last word as split points (3 chips: indices 0,1,2)
+      expect(screen.getByTestId("split-word-chips")).toBeTruthy();
+    });
+
+    // Verify individual word chips are in the DOM (indices 0,1,2 — not the last word)
+    const wordChips = screen.queryAllByTestId(/^split-word-\d+$/);
+    expect(wordChips.length).toBe(3); // 4 words → 3 split boundaries
+  });
+
+  it("shows split-word-chips only for all-but-last words", async () => {
+    mockTranscript = [
+      { text: "First Second Third", start: 0, end: 9, is_final: true, speaker_id: 0 },
+    ];
+    const user = userEvent.setup();
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    const subTrigger = await screen.findByTestId("split-reassign-trigger");
+    await user.hover(subTrigger);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("split-word-chips")).toBeTruthy();
+    });
+    // 3 words → 2 boundaries (chips at indices 0 and 1)
+    const chips = screen.queryAllByTestId(/^split-word-\d+$/);
+    expect(chips.length).toBe(2);
+  });
+
+  it("calls splitSegmentAt with correct args after word chip click then speaker pick", async () => {
+    // Segment: text="Hello world. Goodbye now." start=10 end=20 speaker_id=0
+    // Words: ["Hello", "world.", "Goodbye", "now."]
+    // Step 1: click word at index 1 ("world.") — e.preventDefault() keeps sub-menu open
+    //         and transitions to speaker-picker step
+    // Step 2: click Speaker 2 (id=1) → splitSegmentAt called
+    // Expected splitTime = 10 + (2/4)*(20-10) = 15
+    const user = userEvent.setup();
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    // Open the "Split & reassign…" sub-menu
+    const subTrigger = await screen.findByTestId("split-reassign-trigger");
+    await user.hover(subTrigger);
+
+    // Word chips are now in DOM — click word at index 1 ("world.")
+    // This fires onSelect with e.preventDefault(), keeping the sub-menu open
+    // and updating splitWordIndex state to show the speaker picker
+    const wordChip = await screen.findByTestId("split-word-1");
+    // Use fireEvent.click to bypass userEvent's pointer logic and directly
+    // trigger the item's onSelect without dismissing the menu via pointer events
+    fireEvent.click(wordChip);
+
+    // After word pick, the sub-content should now show the speaker picker
+    await waitFor(() => {
+      expect(screen.getByTestId("split-speaker-option-1")).toBeTruthy();
+    });
+
+    // Pick Speaker 2 (id=1) — use fireEvent to avoid userEvent's pointer dismiss
+    const speakerOption = screen.getByTestId("split-speaker-option-1");
+    fireEvent.click(speakerOption);
+
+    expect(mockSplitSegmentAt).toHaveBeenCalledTimes(1);
+    const [calledIndex, calledTime, calledSpeaker] = mockSplitSegmentAt.mock.calls[0];
+    expect(calledIndex).toBe(0);
+    expect(calledTime).toBeCloseTo(15, 5);
+    expect(calledSpeaker).toBe(1);
+  });
+
+  it("does not call splitSegmentAt when menu is opened but no word is selected", async () => {
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+    expect(mockSplitSegmentAt).not.toHaveBeenCalled();
   });
 });

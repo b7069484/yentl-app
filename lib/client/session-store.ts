@@ -72,6 +72,23 @@ type State = {
    * returns its id. Useful for the "Add new speaker" affordance.
    */
   addNewSpeaker: () => SpeakerId;
+  /**
+   * Splits a transcript segment at a given time boundary and re-attributes
+   * the post-split portion (and associated claims/markers) to a new speaker.
+   *
+   * Contract:
+   *  - index out of bounds → no-op
+   *  - splitTime not strictly inside (seg.start, seg.end) → no-op
+   *  - The segment text is split at the nearest WORD boundary to the split
+   *    fraction. Left half retains the original speaker; right half gets
+   *    newSpeakerId.
+   *  - Claims with utterance_start >= splitTime AND <= original seg.end get
+   *    the new speaker.
+   *  - Markers FULLY within [splitTime, original seg.end] get the new speaker.
+   *    Markers straddling the split boundary are left unchanged.
+   *  - newSpeakerId is registered idempotently in the speakers list.
+   */
+  splitSegmentAt: (index: number, splitTime: number, newSpeakerId: SpeakerId) => void;
 };
 
 const DEFAULT_SOURCE: SessionSource = { kind: "mic" };
@@ -84,7 +101,7 @@ const initialState: Omit<State,
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
   | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream"
   | "setPrerecordStage" | "restoreSession" | "toSession" | "reset"
-  | "reassignUtterance" | "addNewSpeaker"
+  | "reassignUtterance" | "addNewSpeaker" | "splitSegmentAt"
 > = {
   title: "",
   startedAt: null,
@@ -270,6 +287,104 @@ export const useSession = create<State>((set, get) => ({
     useSession.getState().ensureSpeaker(newId);
     return newId;
   },
+
+  splitSegmentAt: (index, splitTime, newSpeakerId) => set((s) => {
+    // Bounds check: index must be within transcript
+    if (index < 0 || index >= s.transcript.length) return s;
+
+    const seg = s.transcript[index];
+
+    // splitTime must be strictly inside the segment's time range
+    if (splitTime <= seg.start || splitTime >= seg.end) return s;
+
+    // ── Text split at nearest word boundary ────────────────────────────────
+    const words = seg.text.split(/(\s+)/); // preserves whitespace tokens
+    // Build word-only tokens with their cumulative char offsets
+    // We'll work with the flat split to find the best word boundary near the
+    // approximate character offset.
+    const fraction = (splitTime - seg.start) / (seg.end - seg.start);
+    const approxCharOffset = Math.round(fraction * seg.text.length);
+
+    // Collect word+whitespace pairs (non-empty)
+    const tokens = words.filter((t) => t.length > 0);
+    // Find which token index the approxCharOffset falls near
+    let cumulative = 0;
+    let bestBoundary = seg.text.length; // default: no split (treat as no clean boundary)
+    let bestDistance = Infinity;
+
+    // We look for whitespace-only tokens as word boundaries (between words)
+    for (let i = 0; i < tokens.length; i++) {
+      const tok = tokens[i];
+      const afterToken = cumulative + tok.length;
+      // If this is a whitespace token, it's a valid word boundary
+      if (/^\s+$/.test(tok)) {
+        const boundaryOffset = cumulative; // boundary is at the START of whitespace
+        const dist = Math.abs(boundaryOffset - approxCharOffset);
+        if (dist < bestDistance) {
+          bestDistance = dist;
+          bestBoundary = boundaryOffset;
+        }
+      }
+      cumulative = afterToken;
+    }
+
+    // If no whitespace boundary was found (single word), bestBoundary stays at
+    // seg.text.length — we can't split. Return state unchanged.
+    if (bestBoundary === 0 || bestBoundary >= seg.text.length) return s;
+
+    const leftText = seg.text.slice(0, bestBoundary).trimEnd();
+    const rightText = seg.text.slice(bestBoundary).trimStart();
+
+    // Both halves must be non-empty
+    if (leftText.length === 0 || rightText.length === 0) return s;
+
+    // ── Build the two new segments ─────────────────────────────────────────
+    const leftSeg: TranscriptSegment = {
+      ...seg,
+      end: splitTime,
+      text: leftText,
+    };
+    const rightSeg: TranscriptSegment = {
+      text: rightText,
+      start: splitTime,
+      end: seg.end,
+      is_final: true,
+      speaker_id: newSpeakerId,
+    };
+
+    // Insert: replace index with leftSeg, then insert rightSeg after
+    const newTranscript = [
+      ...s.transcript.slice(0, index),
+      leftSeg,
+      rightSeg,
+      ...s.transcript.slice(index + 1),
+    ];
+
+    // ── Cascade claims ─────────────────────────────────────────────────────
+    // Claims with utterance_start in [splitTime, seg.end] → newSpeakerId
+    const origEnd = seg.end;
+    const newClaims = s.claims.map((c) =>
+      c.utterance_start >= splitTime && c.utterance_start <= origEnd
+        ? { ...c, speaker_id: newSpeakerId }
+        : c,
+    );
+
+    // ── Cascade markers ────────────────────────────────────────────────────
+    // FULLY within [splitTime, seg.end] → newSpeakerId
+    // Straddling (start_time < splitTime < end_time) → unchanged
+    const newMarkers = s.markers.map((m) =>
+      m.start_time >= splitTime && m.end_time <= origEnd
+        ? { ...m, speaker_id: newSpeakerId }
+        : m,
+    );
+
+    // ── Register new speaker idempotently ──────────────────────────────────
+    const speakers = s.speakers.some((sp) => sp.id === newSpeakerId)
+      ? s.speakers
+      : [...s.speakers, { id: newSpeakerId, label: `Speaker ${newSpeakerId + 1}` }];
+
+    return { transcript: newTranscript, claims: newClaims, markers: newMarkers, speakers };
+  }),
 }));
 
 // Dev-only handle on the store (unchanged from prior version)

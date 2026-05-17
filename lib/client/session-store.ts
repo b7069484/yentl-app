@@ -7,16 +7,13 @@ import type {
   SessionSource,
   Speaker,
   SpeakerId,
+  SpeakerVerdict,
   TranscriptSegment,
 } from "@/lib/types";
 
-export type SpeakerVerdict = {
-  speaker_id: number;
-  label: string;
-  factual_grade: "mostly_factual" | "mixed" | "mostly_inaccurate" | "insufficient";
-  faith_grade: "good_faith" | "mixed" | "bad_faith" | "insufficient";
-  one_liner: string;
-};
+// Re-export so existing imports (`import type { SpeakerVerdict } from "@/lib/client/session-store"`)
+// keep working — single source of truth lives in lib/types.ts.
+export type { SpeakerVerdict };
 
 export type SynthesisState =
   | null

@@ -77,8 +77,8 @@ export type PersistedSynthesis = {
 };
 
 /**
- * SpeakerVerdict mirrors the type in session-store.ts to avoid a circular
- * dependency between lib/types.ts and lib/client/session-store.ts.
+ * SpeakerVerdict — per-speaker truthfulness + good-faith grading carried in
+ * the synthesis output. Single source of truth; session-store.ts re-exports it.
  */
 export type SpeakerVerdict = {
   speaker_id: number;

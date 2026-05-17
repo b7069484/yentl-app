@@ -57,7 +57,7 @@ export function SourcePicker() {
       {/* Brand mark */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/yenta-y-mark.png"
+        src="/yentl-y-mark.png"
         alt="Yentl"
         width={600}
         height={340}

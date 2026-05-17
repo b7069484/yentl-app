@@ -10,7 +10,7 @@ export function MicPreRecordPane() {
     <div className="px-6 pt-12 pb-12 max-w-[680px] mx-auto w-full text-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/yenta-y-mark.png"
+        src="/yentl-y-mark.png"
         alt="Yentl"
         width={600}
         height={340}

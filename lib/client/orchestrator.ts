@@ -137,7 +137,28 @@ export async function runSynthesisNow(): Promise<void> {
   await runSynthesis();
 }
 
-async function runSynthesis() {
+/**
+ * Triggers a synthesis pass over the FULL transcript for non-mic sources.
+ *
+ * Called when a session ends for bulk-ingest sources (YouTube, audio file,
+ * text doc, media URL). Because these sources load all content at once, the
+ * trailing-window pacer may have only synthesised the last ~30 s of material.
+ * This function bypasses the window and sends the complete transcript so the
+ * user's final read describes the whole session.
+ *
+ * Guards:
+ *  - source.kind === "mic" → no-op. Mic sessions are paced per-utterance;
+ *    calling this would double-fire synthesis at session end.
+ *  - empty transcript → no-op. Nothing to synthesise.
+ */
+export async function runFinalSynthesis(): Promise<void> {
+  const state = useSession.getState();
+  if (state.source.kind === "mic") return;
+  if (state.transcript.length === 0) return;
+  await runSynthesis({ fullTranscript: state.transcript });
+}
+
+async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
   const state = useSession.getState();
   const { transcript, claims, markers, speakers } = state;
 
@@ -149,8 +170,10 @@ async function runSynthesis() {
     state.setSynthesis({ state: "refreshing", text: current.text, headlines: current.headlines, at: Date.now() });
   }
 
-  // Last 20 utterances
-  const utterances = transcript.slice(-20).map((s) => ({
+  // Use the explicit full transcript when provided (endSession path),
+  // otherwise fall back to the trailing 20-utterance window (pacer path).
+  const source = opts?.fullTranscript ?? transcript.slice(-20);
+  const utterances = source.map((s) => ({
     speaker_id: s.speaker_id,
     text: s.text,
     start: s.start,

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
+import { runFinalSynthesis } from "@/lib/client/orchestrator";
 
 export function EndSessionDialog({
   open,
@@ -35,7 +36,14 @@ export function EndSessionDialog({
   }, [session.startedAt, session.endedAt]);
 
   const handleConfirm = () => {
-    if (!session.endedAt) session.endSession();
+    if (!session.endedAt) {
+      session.endSession();
+      // For non-mic sources (bulk-ingested content), trigger a final synthesis
+      // pass over the FULL transcript. The trailing-window pacer only covers
+      // the last ~30s; this gives users a read of the complete session.
+      // Mic sessions are excluded — they run synthesis per-utterance via the pacer.
+      void runFinalSynthesis();
+    }
     onClose();
   };
 

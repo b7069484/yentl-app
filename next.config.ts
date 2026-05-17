@@ -17,11 +17,10 @@ const nextConfig: NextConfig = {
    */
   outputFileTracingIncludes: {
     "/api/youtube-ingest": [
-      // Standalone Linux binary downloaded by vercel-build — primary for Vercel.
-      "./bin/**",
-      // Local dev fallback paths (Python-script youtube-dl-exec).
-      "./node_modules/.pnpm/youtube-dl-exec@*/node_modules/youtube-dl-exec/bin/**",
-      "./node_modules/youtube-dl-exec/bin/**",
+      // Standalone Linux binary downloaded by vercel-build — only file needed
+      // on Vercel. Targeting the specific file avoids glob-matching the
+      // symlinked node_modules/.pnpm directories which Vercel rejects.
+      "./bin/yt-dlp",
     ],
   },
 };

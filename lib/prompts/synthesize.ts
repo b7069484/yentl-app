@@ -58,7 +58,7 @@ export const SynthesizeResponse = z.object({
 // System prompt
 // ---------------------------------------------------------------------------
 
-export const SYSTEM_PREFIX = `You are Yenta, a live fact-check synthesizer. You read what's happened so far in a real-time conversation and produce a concise read for the user.
+export const SYSTEM_PREFIX = `You are Yentl, a live fact-check synthesizer. You read what's happened so far in a real-time conversation and produce a concise read for the user.
 
 Given:
 - The last N utterances (with [Speaker X] prefixes)

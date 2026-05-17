@@ -325,7 +325,7 @@ function spawnYtDlp(
  * @throws CaptionError({ code: "YT_DLP_MISSING" }) when yt-dlp binary is not on PATH
  */
 export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
-  const tmpDir = await mkdtemp(join(tmpdir(), "yenta-yt-"));
+  const tmpDir = await mkdtemp(join(tmpdir(), "yentl-yt-"));
   try {
     const outPattern = join(tmpDir, "captions.%(ext)s");
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;

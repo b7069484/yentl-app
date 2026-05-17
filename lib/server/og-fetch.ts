@@ -83,7 +83,7 @@ export async function fetchPreview(url: string): Promise<SourcePreview | null> {
   try {
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; YentaBot/1.0; +https://yenta.vercel.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; YentlBot/1.0; +https://yentl.it)",
         "Accept": "text/html,application/xhtml+xml;q=0.9",
       },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),

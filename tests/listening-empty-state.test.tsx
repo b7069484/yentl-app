@@ -28,7 +28,7 @@ describe("ListeningEmptyState", () => {
     render(<ListeningEmptyState micStream={null} />);
     expect(
       screen.getByText(
-        "Speak naturally. Yenta will transcribe, fact-check, and surface biases live.",
+        "Speak naturally. Yentl will transcribe, fact-check, and surface biases live.",
       ),
     ).toBeTruthy();
   });

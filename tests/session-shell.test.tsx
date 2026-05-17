@@ -188,11 +188,11 @@ beforeEach(() => {
 // ─── 1. Renders brand mark + live pill + tabs + controls ─────────────────────
 
 describe("SessionShell – basic render", () => {
-  it("renders brand mark (yenta link)", () => {
+  it("renders brand mark (yentl link)", () => {
     mockStore(makeDefaultStoreState());
     render(<SessionShell>Body</SessionShell>);
     const link = screen.getAllByRole("link").find((l) =>
-      l.textContent?.includes("yenta"),
+      l.textContent?.includes("yentl"),
     );
     expect(link).toBeTruthy();
   });

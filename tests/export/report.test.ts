@@ -59,7 +59,7 @@ describe("toReport", () => {
     expect(html.startsWith("<!doctype html>")).toBe(true);
     expect(html).toContain("<style>");
     expect(html).toContain("</html>");
-    expect(html).toContain("Yenta");
+    expect(html).toContain("Yentl");
   });
 
   it("includes title, transcript, claim, and marker content", () => {

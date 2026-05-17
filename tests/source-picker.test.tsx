@@ -38,7 +38,7 @@ describe("SourcePicker – card rendering", () => {
 
   it("renders the brand Y-mark image", () => {
     render(<SourcePicker />);
-    const img = screen.getByAltText("Yenta");
+    const img = screen.getByAltText("Yentl");
     expect(img).toBeTruthy();
     expect(img.getAttribute("src")).toBe("/yenta-y-mark.png");
   });
@@ -54,7 +54,7 @@ describe("SourcePicker – card rendering", () => {
     render(<SourcePicker />);
     expect(
       screen.getByText(
-        /Yenta works with live conversations, recordings, transcripts, and online media/i,
+        /Yentl works with live conversations, recordings, transcripts, and online media/i,
       ),
     ).toBeTruthy();
   });

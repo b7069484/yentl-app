@@ -10,7 +10,7 @@ const HEADLINES = ["5 fallacies detected", "70% verified", "Climate dominates"];
 function freshSynthesis(overrides?: Partial<{ at: number }>): SynthesisState {
   return {
     state: "fresh",
-    text: "Yenta sees a pattern of misdirection here.",
+    text: "Yentl sees a pattern of misdirection here.",
     headlines: HEADLINES,
     at: overrides?.at ?? Date.now(),
   };
@@ -42,9 +42,9 @@ describe("SynthesisCard – warming state", () => {
     expect(pulseEls.length).toBeGreaterThan(0);
   });
 
-  it('heading reads "Yenta is listening…"', () => {
+  it('heading reads "Yentl is listening…"', () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
-    expect(screen.getByText("Yenta is listening…")).toBeTruthy();
+    expect(screen.getByText("Yentl is listening…")).toBeTruthy();
   });
 
   it("does NOT render a refresh button", () => {
@@ -65,7 +65,7 @@ describe("SynthesisCard – fresh state", () => {
   it("renders the synthesis paragraph text", () => {
     render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
     expect(
-      screen.getByText("Yenta sees a pattern of misdirection here."),
+      screen.getByText("Yentl sees a pattern of misdirection here."),
     ).toBeTruthy();
   });
 
@@ -135,7 +135,7 @@ describe("SynthesisCard – refresh click", () => {
 describe("SynthesisCard – refreshing state", () => {
   const synthesis: SynthesisState = {
     state: "refreshing",
-    text: "Yenta sees a pattern of misdirection here.",
+    text: "Yentl sees a pattern of misdirection here.",
     headlines: HEADLINES,
     at: Date.now(),
   };
@@ -151,7 +151,7 @@ describe("SynthesisCard – refreshing state", () => {
   it("still shows the prior paragraph text", () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
     expect(
-      screen.getByText("Yenta sees a pattern of misdirection here."),
+      screen.getByText("Yentl sees a pattern of misdirection here."),
     ).toBeTruthy();
   });
 });
@@ -161,7 +161,7 @@ describe("SynthesisCard – refreshing state", () => {
 describe("SynthesisCard – error state with prior text", () => {
   const synthesis: SynthesisState = {
     state: "error",
-    text: "Yenta sees a pattern of misdirection here.",
+    text: "Yentl sees a pattern of misdirection here.",
     headlines: HEADLINES,
     at: Date.now(),
   };
@@ -169,7 +169,7 @@ describe("SynthesisCard – error state with prior text", () => {
   it("renders the prior paragraph text", () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
     expect(
-      screen.getByText("Yenta sees a pattern of misdirection here."),
+      screen.getByText("Yentl sees a pattern of misdirection here."),
     ).toBeTruthy();
   });
 
@@ -191,7 +191,7 @@ describe("SynthesisCard – error state without prior text", () => {
   it("renders the italic fallback message", () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
     expect(
-      screen.getByText(/Yenta's read isn't loading/),
+      screen.getByText(/Yentl's read isn't loading/),
     ).toBeTruthy();
   });
 
@@ -253,7 +253,7 @@ describe("SynthesisCard – mobile collapse classes", () => {
 // ─── 11. Mobile toggle expands paragraph ─────────────────────────────────────
 
 describe("SynthesisCard – mobile toggle", () => {
-  it("clicking 'Read Yenta's take' toggles paragraph to block", () => {
+  it("clicking 'Read Yentl's take' toggles paragraph to block", () => {
     const { container } = render(
       <SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />,
     );
@@ -263,7 +263,7 @@ describe("SynthesisCard – mobile toggle", () => {
     expect(para?.className).toContain("hidden");
 
     // Click the toggle button
-    const toggleBtn = screen.getByText(/Read Yenta's take/);
+    const toggleBtn = screen.getByText(/Read Yentl's take/);
     fireEvent.click(toggleBtn);
 
     // Now should be block, not hidden

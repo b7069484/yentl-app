@@ -86,7 +86,7 @@ beforeEach(() => {
 
   // Sensible defaults
   tmpdirFn.mockReturnValue("/tmp");
-  mkdtempFn.mockResolvedValue("/tmp/yenta-yt-abc123");
+  mkdtempFn.mockResolvedValue("/tmp/yentl-yt-abc123");
   rmFn.mockResolvedValue(undefined);
 });
 
@@ -156,7 +156,7 @@ describe("fetchCaptions — happy path", () => {
     await promise;
 
     expect(rmFn).toHaveBeenCalledWith(
-      "/tmp/yenta-yt-abc123",
+      "/tmp/yentl-yt-abc123",
       { recursive: true, force: true },
     );
   });

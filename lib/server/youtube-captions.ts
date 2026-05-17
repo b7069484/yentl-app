@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { spawn, mkdtemp, readFile, rm, tmpdir, getYtDlpBinaryPath } from "./yt-dlp-runner";
 import type { TranscriptSegment } from "@/lib/types";
+import { Innertube } from "youtubei.js";
 
 // ─── Custom error class ────────────────────────────────────────────────────────
 
@@ -308,23 +309,137 @@ function spawnYtDlp(
   });
 }
 
-// ─── Main export ──────────────────────────────────────────────────────────────
+// ─── Innertube (primary path) ─────────────────────────────────────────────────
 
 /**
- * Fetches captions for a YouTube video using yt-dlp.
+ * Fetches captions for a YouTube video via YouTube's internal Innertube API
+ * (the same endpoints the YouTube mobile/web apps use). This path bypasses
+ * the bot-detection that blocks yt-dlp on cloud-datacenter IPs (Vercel /
+ * AWS Lambda).
  *
- * yt-dlp is spawned with --write-auto-sub --write-sub --sub-lang en
- * --skip-download --convert-subs srt, writing output to a temp directory.
- * The resulting SRT is parsed and returned as TranscriptSegment[].
+ * Uses youtubei.js:
+ *   1. Innertube.create() — initialise an anonymous Innertube session
+ *   2. innertube.getInfo(videoId) — fetch full VideoInfo (requires engagement panels)
+ *   3. videoInfo.getTranscript() — fetches the transcript panel continuation
+ *   4. Walk initial_segments from TranscriptSegmentList
  *
- * Requires yt-dlp on the server PATH (locally: brew install yt-dlp).
- *
- * @throws CaptionError({ code: "NO_CAPTIONS" }) when no English captions available
- * @throws CaptionError({ code: "PRIVATE" }) when video is private, age-restricted, or unavailable
- * @throws CaptionError({ code: "NETWORK_ERROR" }) on spawn failure or timeout
- * @throws CaptionError({ code: "YT_DLP_MISSING" }) when yt-dlp binary is not on PATH
+ * @throws CaptionError("NO_CAPTIONS") — no transcript panel / no English track
+ * @throws CaptionError("PRIVATE")     — video unavailable / login required
+ * @throws CaptionError("NETWORK_ERROR") — any other Innertube / network failure
  */
-export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
+export async function fetchViaInnertube(videoId: string): Promise<TranscriptSegment[]> {
+  let innertube: Awaited<ReturnType<typeof Innertube.create>>;
+  try {
+    innertube = await Innertube.create();
+  } catch (err) {
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Innertube.create() failed: ${(err as Error).message}`,
+    );
+  }
+
+  let videoInfo: Awaited<ReturnType<typeof innertube.getInfo>>;
+  try {
+    videoInfo = await innertube.getInfo(videoId);
+  } catch (err) {
+    const msg = (err as Error).message ?? "";
+    // Innertube surfaces unavailability / login-required in the error message
+    if (/private|login|sign in|unavailable|not available/i.test(msg)) {
+      throw new CaptionError("PRIVATE", `Video unavailable: ${msg}`);
+    }
+    throw new CaptionError("NETWORK_ERROR", `Innertube.getInfo failed: ${msg}`);
+  }
+
+  // getTranscript() throws InnertubeError("Transcript panel not found...") when
+  // the video has no captions, or when only basic info was fetched.
+  let transcriptInfo: Awaited<ReturnType<typeof videoInfo.getTranscript>>;
+  try {
+    transcriptInfo = await videoInfo.getTranscript();
+  } catch (err) {
+    const msg = (err as Error).message ?? "";
+    // Any "no transcript" signal → NO_CAPTIONS
+    if (
+      /no transcript|transcript panel not found|transcript continuation not found|engagement panels not found/i.test(msg)
+    ) {
+      throw new CaptionError("NO_CAPTIONS", `No transcript available: ${msg}`);
+    }
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Innertube.getTranscript failed: ${msg}`,
+    );
+  }
+
+  // Prefer English. If the selected language is already English, use it.
+  // Otherwise, try to select "English" from the language menu.
+  if (!/^en/i.test(transcriptInfo.selectedLanguage)) {
+    const enLang = transcriptInfo.languages.find((l) => /^en/i.test(l));
+    if (enLang) {
+      try {
+        transcriptInfo = await transcriptInfo.selectLanguage(enLang);
+      } catch {
+        // If selecting a language fails, fall through and try the current track
+      }
+    } else if (transcriptInfo.languages.length === 0) {
+      throw new CaptionError(
+        "NO_CAPTIONS",
+        "Transcript has no language tracks",
+      );
+    }
+    // If there's no English track but other languages exist, continue with
+    // whatever is selected — the downstream caller can decide.
+  }
+
+  // Walk the segment list
+  const body = transcriptInfo.transcript.content?.body;
+  if (!body) {
+    throw new CaptionError("NO_CAPTIONS", "Transcript body is empty");
+  }
+
+  const rawSegments = body.initial_segments ?? [];
+  const segments: TranscriptSegment[] = [];
+
+  for (const raw of rawSegments) {
+    // TranscriptSectionHeader nodes don't have start_ms/end_ms — skip them
+    if (raw.type !== "TranscriptSegment") continue;
+
+    // TranscriptSegment has start_ms / end_ms as strings (milliseconds)
+    const startMs = parseInt((raw as { start_ms: string }).start_ms, 10);
+    const endMs = parseInt((raw as { end_ms: string }).end_ms, 10);
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) continue;
+
+    const text = ((raw as { snippet: { text: string } }).snippet?.text ?? "").trim();
+    if (!text) continue;
+
+    segments.push({
+      text,
+      start: startMs / 1000,
+      end: endMs / 1000,
+      is_final: true,
+      speaker_id: 0,
+    });
+  }
+
+  if (segments.length === 0) {
+    throw new CaptionError("NO_CAPTIONS", "Innertube transcript had no segments");
+  }
+
+  return segments;
+}
+
+// ─── yt-dlp (fallback path) ───────────────────────────────────────────────────
+
+/**
+ * Fetches captions via yt-dlp. This is now the fallback path; the Innertube
+ * path is tried first. yt-dlp is retained because it handles edge cases
+ * (age-restricted, region-locked) differently and has an active maintenance
+ * team that tracks YouTube API changes.
+ *
+ * @throws CaptionError("NO_CAPTIONS") — no English captions available
+ * @throws CaptionError("PRIVATE")     — video is private / age-restricted / unavailable
+ * @throws CaptionError("NETWORK_ERROR") — spawn failure or timeout
+ * @throws CaptionError("YT_DLP_MISSING") — yt-dlp binary not on PATH
+ */
+export async function fetchViaYtDlp(videoId: string): Promise<TranscriptSegment[]> {
   const tmpDir = await mkdtemp(join(tmpdir(), "yentl-yt-"));
   try {
     const outPattern = join(tmpDir, "captions.%(ext)s");
@@ -395,4 +510,43 @@ export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[
     // Clean up temp dir
     await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   }
+}
+
+// ─── Main export ──────────────────────────────────────────────────────────────
+
+/**
+ * Fetches captions for a YouTube video.
+ *
+ * Strategy:
+ *   1. Try Innertube (youtubei.js) — uses YouTube's internal mobile/web API
+ *      endpoints, which are not blocked on cloud datacenter IPs (unlike yt-dlp).
+ *   2. Fall back to yt-dlp if Innertube fails for any non-PRIVATE reason.
+ *      yt-dlp handles more edge cases (age-restricted, region-locked) with the
+ *      right cookies and has an active maintenance team.
+ *
+ * Both paths return the same TranscriptSegment[] shape.
+ *
+ * @throws CaptionError({ code: "NO_CAPTIONS" }) when no English captions available
+ * @throws CaptionError({ code: "PRIVATE" }) when video is private, age-restricted, or unavailable
+ * @throws CaptionError({ code: "NETWORK_ERROR" }) on network / spawn failure
+ * @throws CaptionError({ code: "YT_DLP_MISSING" }) when yt-dlp binary is not on PATH (fallback only)
+ */
+export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[]> {
+  // ── Primary: Innertube ───────────────────────────────────────────────────
+  try {
+    return await fetchViaInnertube(videoId);
+  } catch (err) {
+    if (err instanceof CaptionError) {
+      // PRIVATE means both paths will fail — don't bother trying yt-dlp
+      if (err.code === "PRIVATE") throw err;
+      // NO_CAPTIONS from Innertube is definitive — the video truly has no
+      // transcript in the panel. yt-dlp sometimes finds auto-generated captions
+      // even when Innertube reports none, so fall through.
+    } else {
+      // Unexpected non-CaptionError — fall through to yt-dlp
+    }
+  }
+
+  // ── Fallback: yt-dlp ─────────────────────────────────────────────────────
+  return fetchViaYtDlp(videoId);
 }

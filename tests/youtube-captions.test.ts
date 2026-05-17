@@ -6,13 +6,15 @@ import { EventEmitter } from "node:events";
 // are immutable ESM namespaces. vi.hoisted() lets us reference the stubs
 // inside the factory closure even though vi.mock() is hoisted to the top.
 
-const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn } = vi.hoisted(() => ({
-  spawnFn: vi.fn(),
-  mkdtempFn: vi.fn(),
-  readFileFn: vi.fn(),
-  rmFn: vi.fn(),
-  tmpdirFn: vi.fn(),
-}));
+const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn, innertubeCreateFn } =
+  vi.hoisted(() => ({
+    spawnFn: vi.fn(),
+    mkdtempFn: vi.fn(),
+    readFileFn: vi.fn(),
+    rmFn: vi.fn(),
+    tmpdirFn: vi.fn(),
+    innertubeCreateFn: vi.fn(),
+  }));
 
 vi.mock("@/lib/server/yt-dlp-runner", () => ({
   spawn: spawnFn,
@@ -23,9 +25,17 @@ vi.mock("@/lib/server/yt-dlp-runner", () => ({
   getYtDlpBinaryPath: () => "yt-dlp",
 }));
 
+// Mock youtubei.js so the Innertube primary path can be controlled per-test.
+// Default: create() throws NETWORK_ERROR so yt-dlp tests exercise the fallback.
+vi.mock("youtubei.js", () => ({
+  Innertube: {
+    create: innertubeCreateFn,
+  },
+}));
+
 // ─── Import under test (after mocks) ─────────────────────────────────────────
 
-import { fetchCaptions, parseSrt } from "@/lib/server/youtube-captions";
+import { fetchCaptions, parseSrt, CaptionError } from "@/lib/server/youtube-captions";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -75,6 +85,23 @@ This is a test.
 Final line.
 `;
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Flush all pending microtasks (several Promise.resolve() ticks).
+ *
+ * fetchCaptions now tries Innertube first before falling back to yt-dlp.
+ * The Innertube call adds extra microtask ticks before spawnYtDlp is invoked,
+ * so a single `await Promise.resolve()` is no longer sufficient. This helper
+ * drains enough ticks to let the Innertube rejection settle and the yt-dlp
+ * spawn to be called, without requiring real timers.
+ */
+async function flushPromises(ticks = 10): Promise<void> {
+  for (let i = 0; i < ticks; i++) {
+    await Promise.resolve();
+  }
+}
+
 // ─── Reset mocks between tests ────────────────────────────────────────────────
 
 beforeEach(() => {
@@ -83,6 +110,11 @@ beforeEach(() => {
   readFileFn.mockReset();
   rmFn.mockReset();
   tmpdirFn.mockReset();
+  innertubeCreateFn.mockReset();
+
+  // Default Innertube to fail with NETWORK_ERROR so existing yt-dlp tests
+  // exercise the fallback path without needing per-test Innertube setup.
+  innertubeCreateFn.mockRejectedValue(new Error("Innertube unavailable (test default)"));
 
   // Sensible defaults
   tmpdirFn.mockReturnValue("/tmp");
@@ -103,8 +135,8 @@ describe("fetchCaptions — happy path", () => {
     readFileFn.mockResolvedValue(VALID_SRT);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    // Wait for mkdtemp + spawn to run, then emit close
-    await Promise.resolve();
+    // flushPromises drains Innertube rejection + mkdtemp + spawnYtDlp ticks
+    await flushPromises();
     emitClose(0);
 
     const segments = await promise;
@@ -121,7 +153,7 @@ describe("fetchCaptions — happy path", () => {
     readFileFn.mockResolvedValue(VALID_SRT);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
 
     const segments = await promise;
@@ -136,7 +168,7 @@ describe("fetchCaptions — happy path", () => {
     readFileFn.mockResolvedValue(VALID_SRT);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
 
     const segments = await promise;
@@ -151,7 +183,7 @@ describe("fetchCaptions — happy path", () => {
     readFileFn.mockResolvedValue(VALID_SRT);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
     await promise;
 
@@ -167,7 +199,7 @@ describe("fetchCaptions — happy path", () => {
     readFileFn.mockResolvedValue(VALID_SRT);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
     await promise;
 
@@ -192,7 +224,7 @@ describe("fetchCaptions — throws NO_CAPTIONS when SRT file is absent", () => {
     readFileFn.mockRejectedValue(enoent);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
 
     await expect(promise).rejects.toMatchObject({ code: "NO_CAPTIONS" });
@@ -204,7 +236,7 @@ describe("fetchCaptions — throws NO_CAPTIONS when SRT file is absent", () => {
     readFileFn.mockResolvedValue("");
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitClose(0);
 
     await expect(promise).rejects.toMatchObject({ code: "NO_CAPTIONS" });
@@ -219,7 +251,7 @@ describe("fetchCaptions — throws PRIVATE on private/restricted videos", () => 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitStderr("ERROR: [youtube] dQw4w9WgXcQ: Private video. Sign in if you've been granted access");
     emitClose(1);
 
@@ -231,7 +263,7 @@ describe("fetchCaptions — throws PRIVATE on private/restricted videos", () => 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitStderr("ERROR: [youtube] This video is age-restricted");
     emitClose(1);
 
@@ -243,7 +275,7 @@ describe("fetchCaptions — throws PRIVATE on private/restricted videos", () => 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitStderr("ERROR: Login required to access this content");
     emitClose(1);
 
@@ -255,7 +287,7 @@ describe("fetchCaptions — throws PRIVATE on private/restricted videos", () => 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitStderr("ERROR: This video is not available in your country");
     emitClose(1);
 
@@ -271,7 +303,7 @@ describe("fetchCaptions — throws YT_DLP_MISSING when yt-dlp binary is absent",
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     const enoent = Object.assign(new Error("spawn yt-dlp ENOENT"), {
       code: "ENOENT",
     });
@@ -289,7 +321,7 @@ describe("fetchCaptions — throws NETWORK_ERROR for generic non-zero exit", () 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     emitStderr("ERROR: Something unexpected happened");
     emitClose(2);
 
@@ -301,7 +333,7 @@ describe("fetchCaptions — throws NETWORK_ERROR for generic non-zero exit", () 
     spawnFn.mockReturnValue(proc);
 
     const promise = fetchCaptions("dQw4w9WgXcQ");
-    await Promise.resolve();
+    await flushPromises();
     const err = Object.assign(new Error("EACCES: permission denied"), {
       code: "EACCES",
     });
@@ -324,8 +356,9 @@ describe("fetchCaptions — throws NETWORK_ERROR on timeout", () => {
     // Suppress unhandled-rejection noise — we will assert on it below
     promise.catch(() => {});
 
-    // Drain microtasks so mkdtemp resolves and the setTimeout is installed
-    await Promise.resolve();
+    // Drain microtasks: Innertube rejection ticks + mkdtemp + spawnYtDlp +
+    // setTimeout registration all happen in the microtask queue.
+    await flushPromises();
 
     // Advance past the 60s timeout — fires the SIGKILL + reject
     await vi.advanceTimersByTimeAsync(61_000);
@@ -495,5 +528,115 @@ describe("parseSrt — CRLF line endings", () => {
     const segments = parseSrt(srt);
     expect(segments).toHaveLength(1);
     expect(segments[0].text).toBe("Hello CRLF.");
+  });
+});
+
+// ─── fetchCaptions — Innertube-first orchestration ───────────────────────────
+// These tests verify the wrapper's two-path strategy:
+//   1. Innertube succeeds → return immediately, yt-dlp never called
+//   2. Innertube fails with PRIVATE → rethrow immediately, yt-dlp never called
+//   3. Innertube fails with NETWORK_ERROR → fall through to yt-dlp
+//   4. Innertube fails with NO_CAPTIONS → fall through to yt-dlp
+
+function makeInnertubeVideoInfo(segments: Array<{
+  type: "TranscriptSegment";
+  start_ms: string;
+  end_ms: string;
+  snippet: { text: string };
+}>) {
+  return {
+    getTranscript: vi.fn().mockResolvedValue({
+      selectedLanguage: "en",
+      languages: ["en"],
+      transcript: {
+        content: {
+          body: { initial_segments: segments },
+        },
+      },
+      selectLanguage: vi.fn(),
+    }),
+  };
+}
+
+describe("fetchCaptions — Innertube-first orchestration", () => {
+  it("returns Innertube segments directly when Innertube succeeds", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockResolvedValue(
+        makeInnertubeVideoInfo([
+          { type: "TranscriptSegment", start_ms: "0", end_ms: "2000", snippet: { text: "Hello from Innertube." } },
+        ]),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    // Should NOT call spawn (yt-dlp) since Innertube succeeded
+    expect(spawnFn).not.toHaveBeenCalled();
+    expect(segments).toHaveLength(1);
+    expect(segments[0].text).toBe("Hello from Innertube.");
+  });
+
+  it("re-throws PRIVATE immediately without trying yt-dlp", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(new Error("Private video. Sign in.")),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+
+    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
+      code: "PRIVATE",
+    });
+    // yt-dlp must not be called
+    expect(spawnFn).not.toHaveBeenCalled();
+  });
+
+  it("falls back to yt-dlp when Innertube throws NETWORK_ERROR", async () => {
+    // Innertube already mocked to fail in beforeEach (the default).
+    // Just set up yt-dlp to succeed.
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await flushPromises();
+    emitClose(0);
+
+    const segments = await promise;
+    expect(segments).toHaveLength(3);
+    expect(segments[0].text).toBe("Hello world.");
+  });
+
+  it("falls back to yt-dlp when Innertube throws NO_CAPTIONS", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await flushPromises();
+    emitClose(0);
+
+    const segments = await promise;
+    expect(segments).toHaveLength(3);
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws yt-dlp error when both Innertube and yt-dlp fail", async () => {
+    // Innertube: default mock (NETWORK_ERROR)
+    // yt-dlp: non-zero exit with unknown stderr
+    const { proc, emitStderr, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await flushPromises();
+    emitStderr("ERROR: Something unexpected happened");
+    emitClose(2);
+
+    await expect(promise).rejects.toMatchObject({ code: "NETWORK_ERROR" });
   });
 });

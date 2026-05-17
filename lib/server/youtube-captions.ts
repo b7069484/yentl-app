@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { spawn, mkdtemp, readFile, rm, tmpdir } from "./yt-dlp-runner";
+import { spawn, mkdtemp, readFile, rm, tmpdir, getYtDlpBinaryPath } from "./yt-dlp-runner";
 import type { TranscriptSegment } from "@/lib/types";
 
 // ─── Custom error class ────────────────────────────────────────────────────────
@@ -248,7 +248,7 @@ function spawnYtDlp(
   return new Promise((resolve, reject) => {
     let proc: ReturnType<typeof spawn>;
     try {
-      proc = spawn("yt-dlp", args);
+      proc = spawn(getYtDlpBinaryPath(), args);
     } catch (err) {
       // spawn() itself throws synchronously if the binary is missing on some platforms
       const code = (err as NodeJS.ErrnoException).code;

@@ -20,6 +20,7 @@ vi.mock("@/lib/server/yt-dlp-runner", () => ({
   readFile: readFileFn,
   rm: rmFn,
   tmpdir: tmpdirFn,
+  getYtDlpBinaryPath: () => "yt-dlp",
 }));
 
 // ─── Import under test (after mocks) ─────────────────────────────────────────

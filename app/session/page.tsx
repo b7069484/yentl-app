@@ -1,17 +1,21 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SessionHeader } from "@/components/session/SessionHeader";
 import { TranscriptView } from "@/components/session/TranscriptView";
+import { ConsentGate } from "@/components/consent/ConsentGate";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
 import { openDeepgramStream } from "@/lib/client/deepgram-stream";
+import { hasValidConsent, readConsent } from "@/lib/client/consent-ledger";
 
 export default function SessionPage() {
   const mic = useRef<MicHandle | null>(null);
   const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
   const session = useSession();
+  const [consentOpen, setConsentOpen] = useState(false);
 
-  const start = async () => {
+  // Actual mic + Deepgram bring-up. Only called after consent is in hand.
+  const doStart = async () => {
     session.startSession();
     dg.current = await openDeepgramStream({
       onInterim: (t) => session.setInterim(t),
@@ -20,6 +24,16 @@ export default function SessionPage() {
       onClose: () => console.log("dg closed"),
     });
     mic.current = await startMic((chunk) => dg.current?.send(chunk));
+  };
+
+  // Record-button click handler. Returning users with a valid consent record
+  // skip the modal; first-time / re-prompt users see ConsentGate first.
+  const requestStart = () => {
+    if (hasValidConsent(readConsent())) {
+      void doStart();
+    } else {
+      setConsentOpen(true);
+    }
   };
 
   const stop = () => {
@@ -38,10 +52,18 @@ export default function SessionPage() {
 
   return (
     <div className="flex h-screen flex-col">
-      <SessionHeader onStart={start} onStop={stop} onEnd={end} />
+      <SessionHeader onStart={requestStart} onStop={stop} onEnd={end} />
       <main className="flex-1 overflow-hidden">
         <TranscriptView />
       </main>
+      <ConsentGate
+        open={consentOpen}
+        onConfirm={() => {
+          setConsentOpen(false);
+          void doStart();
+        }}
+        onCancel={() => setConsentOpen(false)}
+      />
     </div>
   );
 }

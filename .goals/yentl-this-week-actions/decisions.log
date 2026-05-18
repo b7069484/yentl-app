@@ -1,0 +1,43 @@
+# Decisions log for yentl-this-week-actions
+#
+# Append-only audit trail. Worker appends per run; watchdog appends per audit.
+#
+# Worker entry format:
+#   --- <ISO timestamp> ---
+#   RUN #<N> (worker)
+#   Goal terminated: <reason>
+#   Attempted: <one-line summary>
+#   Clauses progressed: <list of clause numbers>
+#   Evaluator verdict: <verbatim if available, else "n/a">
+#   Files changed: <list>
+#   Git commits made: <SHAs + subjects>
+#   Cost (approx): $<X.XX>
+#
+# Watchdog entry (clean audit):
+#   [OK <ISO timestamp>] watchdog audit clean — runs: <N>, cost: $<X.XX>, status: <status>, clauses-met: <count>/6
+#
+# Watchdog entry (issue):
+#   [ISSUE <ISO timestamp>] watchdog flagged check #<N>; see alerts.md
+#
+# Goal completion (worker):
+#   [GOAL ACHIEVED <ISO timestamp>]
+#
+# Human-action-required marker (worker, after completion if clause 3 human checkboxes still unchecked):
+#   [GOAL READY FOR HUMAN ACTION <ISO timestamp>] DPA signing still required — see docs/dpa-status.md
+#
+# Watchdog stop (critical):
+#   [WATCHDOG STOP <ISO timestamp>]
+#
+# Watchdog confirmation:
+#   [WATCHDOG CONFIRMED COMPLETE <ISO timestamp>]
+#
+# Watchdog rejection:
+#   [WATCHDOG REJECTED COMPLETION <ISO timestamp>] worker claimed done but clause N not actually met
+#
+# ---
+
+--- 2026-05-17T00:00:00Z ---
+GOAL LOCKED — Israel B. Bitton.
+6-clause end condition, $10 budget, 3-day wall-clock, 8-run cap, hourly worker + 8-hourly watchdog.
+Scope: §10 Founder Summary "this week" actions + the minimum supporting UX.
+Awaiting cron registration to begin first worker run.

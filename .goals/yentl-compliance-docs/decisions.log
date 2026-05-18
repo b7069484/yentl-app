@@ -1,0 +1,8 @@
+# Decisions log for yentl-compliance-docs
+# Format: see umbrella decisions.log header.
+
+--- 2026-05-18T00:00:00Z ---
+GOAL LOCKED — split from yentl-compliance-foundation Group F for parallel execution.
+Scope: docs/dpia.md + docs/engagement-gate.md + accessibility statement (page or /about section).
+Budget: $20, 10 runs, 5 days. Cadence: hourly worker (UTC :47), daily watchdog (UTC 14:48).
+Reminder: engagement-gate clause is policy spec ONLY — runtime is fact-check pipeline goal scope.

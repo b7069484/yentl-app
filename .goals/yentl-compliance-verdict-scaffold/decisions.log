@@ -1,0 +1,7 @@
+# Decisions log for yentl-compliance-verdict-scaffold
+# Format: see umbrella decisions.log header.
+
+--- 2026-05-18T00:00:00Z ---
+GOAL LOCKED — split from yentl-compliance-foundation Group E for parallel execution.
+Scope: ReportFlow + VerdictCard triple-encoded (UI scaffold only — data wiring is fact-check pipeline goal scope).
+Budget: $15, 8 runs, 3 days. Cadence: hourly worker (UTC :33), daily watchdog (UTC 14:43).

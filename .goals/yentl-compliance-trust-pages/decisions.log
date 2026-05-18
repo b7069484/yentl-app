@@ -1,0 +1,8 @@
+# Decisions log for yentl-compliance-trust-pages
+# Format: see umbrella decisions.log header.
+
+--- 2026-05-18T00:00:00Z ---
+GOAL LOCKED — split from yentl-compliance-foundation Group D for parallel execution.
+Scope: 6 trust pages + /taxonomy.json route (7 clauses + hygiene = 8 total).
+Budget: $50, 20 runs, 7 days. Cadence: hourly worker (UTC :23), daily watchdog (UTC 14:38).
+Content quality is the bar — public legal surface. Plan media/internet lawyer review of /privacy + /terms post-completion (~$3-5k per research §7).

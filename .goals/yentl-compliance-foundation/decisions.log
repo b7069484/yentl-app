@@ -1,0 +1,43 @@
+# Decisions log for yentl-compliance-foundation
+#
+# Append-only audit trail. Worker per run; watchdog per audit.
+#
+# Worker entry format:
+#   --- <ISO timestamp> ---
+#   RUN #<N> (worker)
+#   Goal terminated: <reason>
+#   Attempted: <one-line summary>
+#   Group(s) progressed: <list, e.g. "B clauses 5-6", "C clause 12 partial">
+#   Clauses progressed: <list of clause numbers>
+#   Evaluator verdict: <verbatim if available, else "n/a">
+#   Files changed: <list>
+#   Git commits made: <SHAs + subjects>
+#   Cost (approx): $<X.XX>
+#
+# Watchdog entry (clean audit):
+#   [OK <ISO timestamp>] watchdog audit clean — runs: <N>, cost: $<X.XX>, status: <status>, clauses-met: <count>/28, groups-complete: <list>
+#
+# Watchdog entry (issue):
+#   [ISSUE <ISO timestamp>] watchdog flagged check #<N>; see alerts.md
+#
+# Goal completion (worker):
+#   [GOAL ACHIEVED <ISO timestamp>]
+#
+# Watchdog stop (critical):
+#   [WATCHDOG STOP <ISO timestamp>]
+#
+# Watchdog confirmation:
+#   [WATCHDOG CONFIRMED COMPLETE <ISO timestamp>]
+#
+# Watchdog rejection:
+#   [WATCHDOG REJECTED COMPLETION <ISO timestamp>] worker claimed done but clause N sample failed: <reason>
+#
+# ---
+
+--- 2026-05-17T00:00:00Z ---
+GOAL LOCKED — Israel B. Bitton.
+28-clause end condition in 7 groups (A-G), $150 budget, 14-day wall-clock, 50-run cap.
+Cadence: every-2-hour worker + daily 9am watchdog.
+Scope: §8 v1 compliance components (minus the 5 in this-week-actions) + 7 trust pages + DPIA + accessibility statement + engagement-gate policy spec.
+Split-friendly: each group can become its own micro-goal if it stalls.
+Awaiting cron registration to begin first worker run.

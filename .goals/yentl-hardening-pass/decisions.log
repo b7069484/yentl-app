@@ -1,0 +1,39 @@
+# Decisions log for yentl-hardening-pass
+#
+# Append-only audit trail. Worker appends one entry per run; watchdog appends one entry per audit.
+#
+# Worker entry format:
+#   --- <ISO timestamp> ---
+#   RUN #<N> (worker)
+#   Goal terminated: <reason>
+#   Attempted: <one-line summary>
+#   Clauses progressed: <list of clause numbers>
+#   Evaluator verdict: <verbatim if available, else "n/a">
+#   Files changed: <list, or "none">
+#   Git commits made: <short SHAs + subjects, or "none">
+#   Cost (approx): $<X.XX>
+#
+# Watchdog entry format (clean audit):
+#   [OK <ISO timestamp>] watchdog audit clean — runs: <N>, cost: $<X.XX>, status: <status>, clauses-met: <count>/14
+#
+# Watchdog entry format (issue found):
+#   [ISSUE <ISO timestamp>] watchdog flagged check #<N>; see alerts.md
+#
+# Goal completion marker (worker):
+#   [GOAL ACHIEVED <ISO timestamp>]
+#
+# Watchdog stop marker (critical issue):
+#   [WATCHDOG STOP <ISO timestamp>]
+#
+# Watchdog confirmation of completion:
+#   [WATCHDOG CONFIRMED COMPLETE <ISO timestamp>]
+#
+# Watchdog rejection of premature completion:
+#   [WATCHDOG REJECTED COMPLETION <ISO timestamp>] worker claimed done but clause N not actually met
+#
+# ---
+
+--- 2026-05-17T00:00:00Z ---
+GOAL LOCKED — Israel B. Bitton.
+14-clause end condition, $50 budget, 7-day wall-clock, 24-run cap, hourly worker + daily 9am watchdog cadence.
+Awaiting cron registration to begin first worker run.

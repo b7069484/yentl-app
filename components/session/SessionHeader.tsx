@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 
@@ -10,7 +11,15 @@ export function SessionHeader({
   onEnd: () => void;
 }) {
   const { isRecording, mode, toggleMode, title, startedAt } = useSession();
-  const elapsed = startedAt ? Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000) : 0;
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!startedAt) return;
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [startedAt]);
+
+  const elapsed = startedAt ? Math.floor((now - new Date(startedAt).getTime()) / 1000) : 0;
 
   return (
     <header className="flex items-center justify-between gap-4 border-b p-4">

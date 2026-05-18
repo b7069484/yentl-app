@@ -1,18 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 
 const FLAG_KEY = "yentl.two_party_seen";
 
 export function TwoPartyDisclosure() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!localStorage.getItem(FLAG_KEY)) {
-      setVisible(true);
-    }
-  }, []);
+  const [visible, setVisible] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !localStorage.getItem(FLAG_KEY);
+  });
 
   if (!visible) return null;
 

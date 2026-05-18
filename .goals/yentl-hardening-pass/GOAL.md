@@ -3,7 +3,7 @@
 **Slug**: `yentl-hardening-pass`
 **Owner**: Israel B. Bitton (b7069484@gmail.com)
 **Locked**: 2026-05-17
-**Status**: draft
+**Status**: active
 
 > Change Status to `active` once cron is registered. Values: `draft | active | paused | done | abandoned`.
 

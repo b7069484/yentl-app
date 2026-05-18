@@ -2,10 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { SessionHeader } from "@/components/session/SessionHeader";
 import { TranscriptView } from "@/components/session/TranscriptView";
+import { ClaimCardStack } from "@/components/session/ClaimCardStack";
 import { ConsentGate } from "@/components/consent/ConsentGate";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
 import { openDeepgramStream } from "@/lib/client/deepgram-stream";
+import { onFinalUtterance } from "@/lib/client/orchestrator";
 import { hasValidConsent, readConsent } from "@/lib/client/consent-ledger";
 
 export default function SessionPage() {
@@ -19,7 +21,10 @@ export default function SessionPage() {
     session.startSession();
     dg.current = await openDeepgramStream({
       onInterim: (t) => session.setInterim(t),
-      onFinal: (seg) => session.appendFinal(seg),
+      onFinal: (seg) => {
+        session.appendFinal(seg);
+        void onFinalUtterance(seg);
+      },
       onError: (e) => console.error(e),
       onClose: () => console.log("dg closed"),
     });
@@ -53,8 +58,13 @@ export default function SessionPage() {
   return (
     <div className="flex h-screen flex-col">
       <SessionHeader onStart={requestStart} onStop={stop} onEnd={end} />
-      <main className="flex-1 overflow-hidden">
-        <TranscriptView />
+      <main className="grid flex-1 grid-cols-2 overflow-hidden">
+        <div className="overflow-auto border-r">
+          <TranscriptView />
+        </div>
+        <div className="overflow-auto">
+          <ClaimCardStack />
+        </div>
       </main>
       <ConsentGate
         open={consentOpen}

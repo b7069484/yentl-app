@@ -8,12 +8,22 @@ import { FilteredList } from "@/components/session/filtered-list";
 import { WatchView } from "@/components/session/watch-view";
 import { SourceRouter } from "@/lib/client/source-router";
 import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
+import { AIDisclosureFooter } from "@/components/session/AIDisclosureFooter";
+import { SessionTimer } from "@/components/session/SessionTimer";
+import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
+import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
 
 export default function SessionPage() {
   return (
-    <Suspense>
-      <SessionPageInner />
-    </Suspense>
+    <div id="main-content" className="flex flex-1 flex-col">
+      <SessionTimer />
+      <TwoPartyDisclosure />
+      <Suspense>
+        <SessionPageInner />
+      </Suspense>
+      <ClaimsLiveRegion />
+      <AIDisclosureFooter />
+    </div>
   );
 }
 

@@ -1,0 +1,7 @@
+# Decisions log for yentl-compliance-a11y
+# Format: see umbrella decisions.log header.
+
+--- 2026-05-18T00:00:00Z ---
+GOAL LOCKED — split from yentl-compliance-foundation Group C for parallel execution.
+Scope: WCAG 2.2 AA baseline (7 clauses) including axe-core + Lighthouse gate.
+Budget: $40, 20 runs, 7 days. Cadence: hourly worker (UTC :13), daily watchdog (UTC 14:33).

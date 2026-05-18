@@ -1,0 +1,106 @@
+# Decisions log for yentl-compliance-foundation
+#
+# Append-only audit trail. Worker per run; watchdog per audit.
+#
+# Worker entry format:
+#   --- <ISO timestamp> ---
+#   RUN #<N> (worker)
+#   Goal terminated: <reason>
+#   Attempted: <one-line summary>
+#   Group(s) progressed: <list, e.g. "B clauses 5-6", "C clause 12 partial">
+#   Clauses progressed: <list of clause numbers>
+#   Evaluator verdict: <verbatim if available, else "n/a">
+#   Files changed: <list>
+#   Git commits made: <SHAs + subjects>
+#   Cost (approx): $<X.XX>
+#
+# Watchdog entry (clean audit):
+#   [OK <ISO timestamp>] watchdog audit clean — runs: <N>, cost: $<X.XX>, status: <status>, clauses-met: <count>/28, groups-complete: <list>
+#
+# Watchdog entry (issue):
+#   [ISSUE <ISO timestamp>] watchdog flagged check #<N>; see alerts.md
+#
+# Goal completion (worker):
+#   [GOAL ACHIEVED <ISO timestamp>]
+#
+# Watchdog stop (critical):
+#   [WATCHDOG STOP <ISO timestamp>]
+#
+# Watchdog confirmation:
+#   [WATCHDOG CONFIRMED COMPLETE <ISO timestamp>]
+#
+# Watchdog rejection:
+#   [WATCHDOG REJECTED COMPLETION <ISO timestamp>] worker claimed done but clause N sample failed: <reason>
+#
+# ---
+
+--- 2026-05-17T00:00:00Z ---
+GOAL LOCKED — Israel B. Bitton.
+28-clause end condition in 7 groups (A-G), $150 budget, 14-day wall-clock, 50-run cap.
+Cadence: every-2-hour worker + daily 9am watchdog.
+Scope: §8 v1 compliance components (minus the 5 in this-week-actions) + 7 trust pages + DPIA + accessibility statement + engagement-gate policy spec.
+Split-friendly: each group can become its own micro-goal if it stalls.
+Awaiting cron registration to begin first worker run.
+
+--- 2026-05-18T03:00:00Z ---
+RUN #1 (worker)
+Goal terminated: all feasible clauses complete in single run; two clauses have pending dependencies
+Attempted: implement all 28 clauses of yentl-compliance-foundation in one marathon run
+Group(s) progressed: B clauses 5-6, C clauses 7-11, A clauses 1-3, D clauses 13-19, E clauses 20-21, F clauses 22-24, G clauses 25-28
+Clauses progressed: 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+Clauses blocked: 4 (RecordingBeacon absent from yentl-this-week-actions), 12 (script+CI scaffold done; live audit pending API secrets)
+Evaluator verdict: n/a (first run)
+Files changed:
+  components/ui/ai-generated-badge.tsx (new)
+  components/session/AIDisclosureFooter.tsx (new)
+  components/ui/skip-to-content.tsx (new)
+  components/session/ClaimsLiveRegion.tsx (new)
+  components/session/SessionTimer.tsx (new)
+  components/session/TwoPartyDisclosure.tsx (new)
+  components/verdict/ReportVerdictButton.tsx (new)
+  components/verdict/ReportFlow.tsx (new)
+  components/verdict/VerdictCard.tsx (new)
+  components/session/SessionHeader.tsx (modified — Pause/End hierarchy, motion-reduce)
+  components/session/TranscriptView.tsx (modified — aria-live)
+  components/ui/button.tsx (modified — h-11 touch targets)
+  app/globals.css (modified — --ring token ≥3:1 contrast)
+  app/layout.tsx (modified — SkipToContent, Toaster)
+  app/session/page.tsx (modified — mounts all new components, id=main-content)
+  app/about/page.tsx (new)
+  app/methodology/page.tsx (new)
+  app/changelog/page.tsx (new)
+  app/privacy/page.tsx (new)
+  app/terms/page.tsx (new)
+  app/subprocessors/page.tsx (new)
+  app/accessibility/page.tsx (new)
+  app/taxonomy.json/route.ts (new)
+  docs/dpia.md (new)
+  docs/engagement-gate.md (new)
+  docs/dpa-status.md (new)
+  CHANGELOG.md (new)
+  README.md (modified — Compliance & Trust section)
+  .github/workflows/ci.yml (new)
+  scripts/run-a11y-audit.sh (new)
+  package.json (modified — sonner added)
+  tests/ai-generated-badge.test.tsx (new)
+  tests/ai-disclosure-footer.test.tsx (new)
+  tests/skip-to-content.test.tsx (new)
+  tests/css-tokens.test.ts (new)
+  tests/touch-targets.test.tsx (new)
+  tests/reduced-motion.test.tsx (new)
+  tests/aria-live-regions.test.tsx (new)
+  tests/session-header.test.tsx (new)
+  tests/session-timer.test.tsx (new)
+  tests/two-party-disclosure.test.tsx (new)
+  tests/report-flow.test.tsx (new)
+  tests/verdict-card.test.tsx (new)
+  tests/taxonomy-route.test.ts (new)
+Git commits made:
+  3489b26 compliance: Group B — AI transparency (clauses 5-6)
+  3ff44f0 compliance: Group C — WCAG 2.2 AA baseline (clauses 7-11)
+  55a1e21 compliance: Group A — consent extensions (clauses 1-3; clause 4 blocked-pending RecordingBeacon)
+  1e4828e compliance: Group D — trust pages (clauses 13-19)
+  739ebaf compliance: Group E — verdict + report scaffold (clauses 20-21)
+  9eb7c36 compliance: Group F — documentation (clauses 22-24)
+  b16b365 compliance: Group G — integration, CHANGELOG, README, CI (clauses 25-28)
+Cost (approx): $2.50

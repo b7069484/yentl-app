@@ -153,7 +153,11 @@
   --destructive: var(--red);
   --border: var(--line);
   --input: var(--line);
-  --ring: var(--amber);
+  /* Focus ring — WCAG 2.4.7 requires ≥3:1 against the adjacent background.
+     Amber #F59E0B is brand-canonical but contrasts only ~2:1 on white, so we
+     use a near-black oklch value that brand-aligns with --ink and meets
+     contrast on both white (~4.2:1) and cream muted (~3.5:1) backgrounds. */
+  --ring: oklch(0.4 0 0);
   --radius: 0.625rem;
 
   /* Chart tokens */

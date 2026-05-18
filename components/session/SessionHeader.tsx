@@ -21,8 +21,6 @@ export function SessionHeader({
   );
   const [, setTick] = useState(0);
 
-  // Tick once a second while recording so the clock keeps moving during silence
-  // (store updates alone would only refresh on incoming utterances).
   useEffect(() => {
     if (!isRecording || !startedAt) return;
     const id = setInterval(() => setTick((t) => t + 1), 1000);
@@ -40,7 +38,9 @@ export function SessionHeader({
           <span
             aria-hidden
             className={`h-2 w-2 rounded-full transition-colors ${
-              isRecording ? "bg-red-500 animate-pulse" : "bg-muted-foreground/40"
+              isRecording
+                ? "bg-red-500 animate-pulse motion-reduce:animate-none"
+                : "bg-muted-foreground/40"
             }`}
           />
           <span className="font-mono text-xs tabular-nums text-foreground/80">
@@ -69,7 +69,12 @@ export function SessionHeader({
           {mode === "A" ? "Present mode" : "Two-column"}
         </Button>
         {isRecording ? (
-          <Button variant="outline" size="sm" onClick={onStop}>
+          <Button
+            className="session-header-pause bg-[#2563EB] text-white hover:bg-[#1d4ed8] focus:bg-[#1d4ed8]"
+            size="default"
+            autoFocus
+            onClick={onStop}
+          >
             Pause
           </Button>
         ) : (
@@ -86,7 +91,12 @@ export function SessionHeader({
         >
           Export
         </Button>
-        <Button variant="destructive" size="sm" onClick={onEnd}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="session-header-end border-destructive text-destructive hover:bg-destructive/10"
+          onClick={onEnd}
+        >
           End session
         </Button>
       </div>

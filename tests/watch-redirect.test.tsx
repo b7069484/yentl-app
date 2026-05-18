@@ -48,6 +48,23 @@ vi.mock("@/lib/client/source-router", () => ({
   SourceRouter: () => <div data-testid="source-router">SourceRouter</div>,
 }));
 
+// Compliance siblings folded into SessionPage during sprint-as-trunk
+// reconciliation (2026-05-18) — stub them so this test stays focused on
+// the watch-redirect routing logic and the selector-only useSession mock
+// below isn't confused by their non-selector useSession() calls.
+vi.mock("@/components/session/SessionTimer", () => ({
+  SessionTimer: () => null,
+}));
+vi.mock("@/components/session/TwoPartyDisclosure", () => ({
+  TwoPartyDisclosure: () => null,
+}));
+vi.mock("@/components/session/ClaimsLiveRegion", () => ({
+  ClaimsLiveRegion: () => null,
+}));
+vi.mock("@/components/session/AIDisclosureFooter", () => ({
+  AIDisclosureFooter: () => null,
+}));
+
 // ─── Session store mock ───────────────────────────────────────────────────────
 
 type StoreState = {

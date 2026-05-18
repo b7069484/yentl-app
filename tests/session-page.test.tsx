@@ -59,6 +59,25 @@ vi.mock("@/lib/client/source-router", () => ({
   SourceRouter: () => <div data-testid="source-router">SourceRouter</div>,
 }));
 
+// ─── Mock compliance siblings ─────────────────────────────────────────────────
+// These were folded into SessionPage during the sprint-as-trunk reconciliation
+// (2026-05-18). They use the non-selector useSession() pattern, which clashes
+// with this test's selector-only mock; rendering stubs keeps the routing
+// tests focused on their actual concern.
+
+vi.mock("@/components/session/SessionTimer", () => ({
+  SessionTimer: () => null,
+}));
+vi.mock("@/components/session/TwoPartyDisclosure", () => ({
+  TwoPartyDisclosure: () => null,
+}));
+vi.mock("@/components/session/ClaimsLiveRegion", () => ({
+  ClaimsLiveRegion: () => null,
+}));
+vi.mock("@/components/session/AIDisclosureFooter", () => ({
+  AIDisclosureFooter: () => null,
+}));
+
 // ─── Mock session store ───────────────────────────────────────────────────────
 
 vi.mock("@/lib/client/session-store", () => ({

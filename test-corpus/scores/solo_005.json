@@ -1,0 +1,11 @@
+{
+  "id": "solo_005",
+  "phase": "A",
+  "wer": 0.10917615539182854,
+  "substitutions": 65,
+  "deletions": 45,
+  "insertions": 53,
+  "hits": 1383,
+  "refLen": 1493,
+  "hypLen": 1501
+}

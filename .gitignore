@@ -42,3 +42,7 @@ next-env.d.ts
 # brainstorm workspace (interim)
 .superpowers/
 .env*.local
+
+# test-corpus: audio files are large; transcripts/scores/ground-truth are committed
+/test-corpus/audio/
+/test-corpus/logs/

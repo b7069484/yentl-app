@@ -9,7 +9,13 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts"
+    "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts",
+    "corpus:resolve": "tsx scripts/test-corpus/resolve-urls.ts",
+    "corpus:ingest": "tsx --env-file=.env.local scripts/test-corpus/ingest-video.ts",
+    "corpus:ingest-all": "tsx --env-file=.env.local scripts/test-corpus/ingest-all.ts",
+    "corpus:ground-truth": "tsx scripts/test-corpus/fetch-ground-truth.ts",
+    "corpus:score-wer": "tsx scripts/test-corpus/score-wer.ts",
+    "corpus:replay": "tsx --env-file=.env.local scripts/test-corpus/replay.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.76",
@@ -40,6 +46,8 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/ui": "^4.1.6",
+    "csv-parse": "^6.2.1",
+    "csv-stringify": "^6.7.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "jsdom": "^29.1.1",

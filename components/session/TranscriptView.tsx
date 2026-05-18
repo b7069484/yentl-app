@@ -6,7 +6,11 @@ export function TranscriptView() {
   const { transcript, interim } = useSession();
   return (
     <ScrollArea className="h-full p-4">
-      <div className="space-y-2 text-base leading-relaxed">
+      <div
+        aria-live="polite"
+        aria-label="Session transcript"
+        className="space-y-2 text-base leading-relaxed"
+      >
         {transcript.map((seg, i) => (
           <span key={i}>{seg.text} </span>
         ))}

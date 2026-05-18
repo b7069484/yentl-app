@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "goals/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Type-check · Lint · Test · a11y
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Tests
+        run: npx vitest run
+
+      # Clause 12: a11y audit — runs axe-core CLI against / and /session
+      # Requires npm run dev to start successfully (needs env vars for deepgram/anthropic).
+      # In CI, DEEPGRAM_API_KEY and ANTHROPIC_API_KEY must be set as repo secrets,
+      # OR the a11y audit runs against a static export / mocked server.
+      # For now, this step is defined; it will be activated when secrets are provisioned.
+      - name: A11y audit (axe-core)
+        if: ${{ vars.RUN_A11Y_AUDIT == 'true' }}
+        run: bash scripts/run-a11y-audit.sh
+        env:
+          DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

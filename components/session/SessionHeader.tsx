@@ -15,7 +15,13 @@ export function SessionHeader({
   return (
     <header className="flex items-center justify-between gap-4 border-b p-4">
       <div className="flex items-center gap-3">
-        <span className={`h-3 w-3 rounded-full ${isRecording ? "bg-red-500 animate-pulse" : "bg-muted"}`} />
+        <span
+          className={`h-3 w-3 rounded-full ${
+            isRecording
+              ? "bg-red-500 animate-pulse motion-reduce:animate-none"
+              : "bg-muted"
+          }`}
+        />
         <span className="font-mono text-sm">{formatTime(elapsed)}</span>
         <span className="text-sm text-muted-foreground">{title || "Untitled session"}</span>
       </div>
@@ -24,11 +30,25 @@ export function SessionHeader({
           {mode === "A" ? "Present mode" : "Two-column"}
         </Button>
         {isRecording ? (
-          <Button variant="outline" size="sm" onClick={onStop}>Pause</Button>
+          <Button
+            className="session-header-pause bg-[#2563EB] text-white hover:bg-[#1d4ed8] focus:bg-[#1d4ed8]"
+            size="default"
+            autoFocus
+            onClick={onStop}
+          >
+            Pause
+          </Button>
         ) : (
           <Button size="sm" onClick={onStart}>Record</Button>
         )}
-        <Button variant="destructive" size="sm" onClick={onEnd}>End session</Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="session-header-end border-destructive text-destructive hover:bg-destructive/10"
+          onClick={onEnd}
+        >
+          End session
+        </Button>
       </div>
     </header>
   );

@@ -40,6 +40,8 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/ui": "^4.1.6",
+    "csv-parse": "^6.2.1",
+    "csv-stringify": "^6.7.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "jsdom": "^29.1.1",

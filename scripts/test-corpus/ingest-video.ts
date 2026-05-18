@@ -53,9 +53,12 @@ async function ingestOne(row: VideoRow, deepgramKey: string): Promise<{ status: 
 
   const audioExists = await fs.access(audioPath).then(() => true, () => false);
   if (!audioExists) {
-    process.stdout.write(`  downloading audio... `);
+    const clip = row.clip_end_s
+      ? { startS: Number(row.clip_start_s || "0"), endS: Number(row.clip_end_s) }
+      : undefined;
+    process.stdout.write(`  downloading audio${clip ? ` (clip ${clip.startS}s-${clip.endS}s)` : ""}... `);
     try {
-      await ytdlpDownloadAudio(row.url, audioPath);
+      await ytdlpDownloadAudio(row.url, audioPath, clip);
       process.stdout.write("done\n");
     } catch (err) {
       const msg = (err as Error).message.split("\n")[0];

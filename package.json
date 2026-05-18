@@ -11,6 +11,7 @@
     "test:run": "vitest run",
     "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts",
     "corpus:resolve": "tsx scripts/test-corpus/resolve-urls.ts",
+    "corpus:flag-weird": "tsx scripts/test-corpus/flag-weird-picks.ts",
     "corpus:ingest": "tsx --env-file=.env.local scripts/test-corpus/ingest-video.ts",
     "corpus:ingest-all": "tsx --env-file=.env.local scripts/test-corpus/ingest-all.ts",
     "corpus:ground-truth": "tsx scripts/test-corpus/fetch-ground-truth.ts",

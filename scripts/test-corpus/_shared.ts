@@ -31,6 +31,8 @@ export type VideoRow = {
   title_resolved: string;
   channel_resolved: string;
   duration_resolved_s: string;
+  clip_start_s: string;
+  clip_end_s: string;
   verified: string;
   notes: string;
 };
@@ -86,26 +88,38 @@ export async function ytdlpInfo(url: string): Promise<YtdlpVideoInfo> {
   return JSON.parse(stdout) as YtdlpVideoInfo;
 }
 
-export async function ytdlpDownloadAudio(url: string, outPath: string): Promise<void> {
+function fmtSecs(n: number): string {
+  const h = Math.floor(n / 3600);
+  const m = Math.floor((n % 3600) / 60);
+  const s = n % 60;
+  return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+export async function ytdlpDownloadAudio(
+  url: string,
+  outPath: string,
+  clip?: { startS: number; endS: number }
+): Promise<void> {
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await execFileAsync(
-    "yt-dlp",
-    [
-      url,
-      "-f",
-      "bestaudio/best",
-      "--extract-audio",
-      "--audio-format",
-      "opus",
-      "--audio-quality",
-      "0",
-      "-o",
-      outPath.replace(/\.opus$/, ".%(ext)s"),
-      "--no-warnings",
-      "--no-playlist",
-    ],
-    { maxBuffer: 50 * 1024 * 1024 }
-  );
+  const args = [
+    url,
+    "-f",
+    "bestaudio/best",
+    "--extract-audio",
+    "--audio-format",
+    "opus",
+    "--audio-quality",
+    "0",
+    "-o",
+    outPath.replace(/\.opus$/, ".%(ext)s"),
+    "--no-warnings",
+    "--no-playlist",
+  ];
+  if (clip) {
+    args.push("--download-sections", `*${fmtSecs(clip.startS)}-${fmtSecs(clip.endS)}`);
+    args.push("--force-keyframes-at-cuts");
+  }
+  await execFileAsync("yt-dlp", args, { maxBuffer: 50 * 1024 * 1024 });
 }
 
 export async function ytdlpDownloadSubs(url: string, outDir: string, videoId: string): Promise<string | null> {

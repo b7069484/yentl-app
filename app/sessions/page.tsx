@@ -228,6 +228,7 @@ export default function SessionsLibraryPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async refresh sets state on completion; standard data-fetch-on-mount pattern
     void refresh();
   }, [refresh]);
 

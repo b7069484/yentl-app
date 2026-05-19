@@ -19,16 +19,16 @@ export function SessionHeader({
   const hasContent = useSession(
     (s) => s.transcript.length > 0 || s.claims.length > 0 || s.markers.length > 0,
   );
-  const [, setTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (!isRecording || !startedAt) return;
-    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, [isRecording, startedAt]);
 
   const elapsed = startedAt
-    ? Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000)
+    ? Math.floor((now - new Date(startedAt).getTime()) / 1000)
     : 0;
 
   return (

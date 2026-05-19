@@ -91,6 +91,7 @@ export function HomeOverview() {
   ).length;
 
   const durationMs = startedAt
+    // eslint-disable-next-line react-hooks/purity -- one-shot duration display; not driving a live clock
     ? Date.now() - new Date(startedAt).getTime()
     : 0;
 

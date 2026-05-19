@@ -204,6 +204,7 @@ export function ItemDetail({
   // hasn't hydrated yet. Without this, claims/markers are empty on first
   // paint and the NotFound fallback fires prematurely (Bug 2).
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional hydration guard
   useEffect(() => { setMounted(true); }, []);
 
   const fromQuery = parseFromQuery(searchParams.get("from"));

@@ -28,6 +28,7 @@ export function EndSessionDialog({
     if (!session.startedAt) return 0;
     const endMs = session.endedAt
       ? new Date(session.endedAt).getTime()
+      // eslint-disable-next-line react-hooks/purity -- snapshot at dialog open; dialog does not need to tick
       : Date.now();
     return Math.max(
       0,

@@ -67,7 +67,7 @@ function installYTGlobal() {
   };
 
   // Ensure the "already loaded" path is taken (no script injection).
-  // @ts-expect-error
+  // @ts-expect-error -- assigning a global YT iframe API callback TS doesn't model
   globalThis.onYouTubeIframeAPIReady = undefined;
 }
 
@@ -102,7 +102,7 @@ describe("createYouTubeAdapter — script injection", () => {
   });
 
   it("injects a script tag when window.YT is NOT present", async () => {
-    // @ts-expect-error
+    // @ts-expect-error -- deleting the YT global to simulate the un-loaded state
     delete globalThis.YT;
 
     const { createYouTubeAdapter } = await import("@/lib/client/youtube-adapter");
@@ -123,7 +123,7 @@ describe("createYouTubeAdapter — script injection", () => {
   });
 
   it("only injects one script tag on multiple parallel calls", async () => {
-    // @ts-expect-error
+    // @ts-expect-error -- deleting the YT global to simulate the un-loaded state
     delete globalThis.YT;
 
     const { createYouTubeAdapter } = await import("@/lib/client/youtube-adapter");

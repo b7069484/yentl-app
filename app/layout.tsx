@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Fraunces } from "next/font/google";
 import { Toaster } from "sonner";
 import { SkipToContent } from "@/components/ui/skip-to-content";
@@ -34,15 +35,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <SkipToContent />
-        {children}
-        <Toaster position="bottom-right" />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${inter.variable} ${fraunces.variable} h-full antialiased`}
+      >
+        <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+          <SkipToContent />
+          {children}
+          <Toaster position="bottom-right" />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

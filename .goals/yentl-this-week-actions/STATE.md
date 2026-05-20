@@ -1,9 +1,9 @@
 # State: yentl-this-week-actions
 
-**Last updated**: 2026-05-20 (Run 1 partial — clauses 1, 2, 3 complete)
-**Status**: active (3 of 6 clauses done)
-**Runs completed**: 1 (partial)
-**Total cost (approx, USD)**: ~$1.50
+**Last updated**: 2026-05-20 (Run 1 complete on substance — clauses 1-5 done)
+**Status**: active (5 of 6 clauses done; clause 6 is housekeeping)
+**Runs completed**: 1
+**Total cost (approx, USD)**: ~$3.50
 
 ---
 
@@ -62,9 +62,30 @@ Goal scaffolded but no worker run has executed yet. On first run, the worker wil
       Vercel-specific dashboard-sign note, TIA-status table, Human-action
       checklist with 7 boxes. Supersedes 2026-05-18 summary version that
       lived at this path from compliance-foundation Run 1. **(Run 1)**
-- [ ] (4) `ConsentGate.tsx` — *does not exist; `app/session/page.tsx:14` calls `start()` directly without gate*
-- [ ] (5) `RecordingBeacon.tsx` — *does not exist*
+- [x] (4) `ConsentGate.tsx` — exists at `components/session/ConsentGate.tsx`,
+      wired into `app/session/page.tsx`. Renders a blocking Radix Dialog
+      when `localStorage.yentl.consent` is missing or version-mismatched.
+      Surfaces 3 required + 1 age + 1 optional checkbox (no pre-ticks),
+      verbatim GDPR Article 9(2)(a) disclosure in an amber-tinted card,
+      verbatim no-persistence commitment, Continue (disabled until all 4
+      required ticked) + Decline buttons. On grant: writes a ULID-keyed
+      `ConsentRecord` with `version: "1"` to localStorage. `tests/consent-gate.test.tsx`
+      covers all 6 spec scenarios (a-f) with a Zod schema validating the
+      persisted record shape. 6/6 passing. **(Run 1)**
+- [x] (5) `RecordingBeacon.tsx` — exists at `components/session/RecordingBeacon.tsx`,
+      wired into `app/session/page.tsx`. Renders fixed top-right when
+      `useSession((s) => s.isRecording)` is true. Pulsing red dot with
+      `animate-pulse motion-reduce:animate-none`, live REC HH:MM:SS timer
+      reading `startedAt` from store, 44×44 End-session button with
+      focus-visible ring + red-gradient bg, `aria-live="polite"` announcer
+      for "Recording started" / "Recording stopped" transitions.
+      `tests/recording-beacon.test.tsx` covers all 6 spec scenarios (a-f)
+      including fake-timer integration for timer increment. 6/6 passing. **(Run 1)**
 - [ ] (6) Working tree clean + rebased — *recheck on final run*
+
+This run unblocks `yentl-compliance-foundation` clause 4 (AudioRouteDisclosure),
+which has been pending since 2026-05-18 specifically waiting on
+RecordingBeacon to exist.
 
 ## Next planned actions
 
@@ -84,5 +105,6 @@ None yet. Clause 3 (DPA-status doc) cannot fully *complete* without humans signi
 | # | When (ISO) | Duration (min) | Cost (USD) | Outcome (one line) |
 |---|---|---|---|---|
 | 1 | 2026-05-20T19:00:00Z | ~25 | ~$1.50 | Clauses 1+2+3 complete; deepgram diarize off everywhere, EU endpoint switchable, DPA doc expanded to clause-3 spec; 8/8 tests pass; build green |
+| 1b | 2026-05-20T20:30:00Z | ~30 | ~$2.00 | Clauses 4+5 complete; ConsentGate + RecordingBeacon shipped, wired into /session; 12/12 new tests pass; full suite 1128 green; build green; unblocks compliance-foundation clause 4 |
 
 > Worker appends one row per run.

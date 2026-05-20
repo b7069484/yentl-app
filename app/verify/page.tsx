@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronLeft, Mail, RotateCw } from "lucide-react";
 
@@ -225,7 +225,7 @@ const EnvelopeHero = () => (
   </div>
 );
 
-export default function VerifyPage() {
+function VerifyContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "you@domain.com";
   const [countdown, setCountdown] = useState(42);
@@ -373,5 +373,17 @@ export default function VerifyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#E2DDC9]" />
+      }
+    >
+      <VerifyContent />
+    </Suspense>
   );
 }

@@ -49,7 +49,7 @@ const sources: SourceCard[] = [
   {
     href: "/session?source=mic",
     title: "Live mic",
-    desc: "Record a conversation, debate, lecture — diarized in real time",
+    desc: "Record a conversation, debate, lecture — transcribed in real time",
     pill: "Fastest",
     primary: true,
     iconColor: "text-white",

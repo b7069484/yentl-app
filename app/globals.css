@@ -429,6 +429,16 @@
   flex-shrink: 0 !important;
 }
 
+/* ─── V3.4 / V3.21-23 claim sheet entrance ─── */
+@keyframes v3-sheet-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* ─── V3.20 verify-page animations + paper-fly element ─── */
 
 .verify-paper-fly {

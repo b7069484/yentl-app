@@ -1,9 +1,38 @@
 # State: yentl-hardening-pass
 
-**Last updated**: 2026-05-17T00:00:00Z (initial — worker has not run yet)
-**Status**: not-started
+**Last updated**: 2026-05-20 (honest status check — no clause progress since lock)
+**Status**: not-started (locked 2026-05-17, no worker runs)
 **Runs completed**: 0
 **Total cost (approx, USD)**: $0.00
+
+---
+
+## 2026-05-20 honest status check
+
+No clause has moved since 2026-05-17 lock. V3 wireframe sprint
+(`feat/v3-auth-screens`, 8 screens, 10 commits) added ~2,950 lines on a
+feature branch but did NOT advance any hardening clause:
+
+- Clauses 1-7 (audit / tsc / tests / coverage / lint / TODO / console.log):
+  no baseline captured. Build IS green locally after Suspense fix
+  (commit `625379d`).
+- Clause 8 (env parity): V3 sprint added no new env vars; existing
+  `.env.example` parity status unchanged from lock.
+- Clause 9 (security middleware): `middleware.ts` exists from Phase 2
+  (Clerk-gating). Rate limiting + security headers per this goal: still
+  not added.
+- Clause 10 (CI workflow `.github/workflows/ci.yml`): still does not exist.
+- Clause 11 (CHANGELOG.md): exists from `yentl-compliance-foundation` Run 1
+  (2026-05-18) but **the 8 V3 wireframes added 2026-05-19 → 2026-05-20 are
+  NOT in CHANGELOG.md**. Stale by 10 commits.
+- Clause 12 (README "Security & Operations" section): unchanged.
+- Clause 13 (branch rebased): `feat/v3-auth-screens` ahead of main by 10
+  commits, rebases cleanly (verified 2026-05-20).
+- Clause 14 (working tree clean): yes; `git status --porcelain` empty.
+
+Israel chose to continue the V3 visual sprint (chat 2026-05-20) before
+pivoting to this goal. CHANGELOG.md staleness will accumulate further as
+V3 work continues; will catch up in the same hardening run.
 
 ---
 

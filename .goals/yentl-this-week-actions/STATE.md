@@ -1,9 +1,9 @@
 # State: yentl-this-week-actions
 
-**Last updated**: 2026-05-20 (Run 1 complete on substance — clauses 1-5 done)
-**Status**: active (5 of 6 clauses done; clause 6 is housekeeping)
+**Last updated**: 2026-05-20 (Run 1 COMPLETE — all 6 clauses done)
+**Status**: ready-for-human-action (worker scope complete; awaiting PR merge + DPA sign + Deepgram dashboard config)
 **Runs completed**: 1
-**Total cost (approx, USD)**: ~$3.50
+**Total cost (approx, USD)**: ~$3.80
 
 ---
 
@@ -81,7 +81,13 @@ Goal scaffolded but no worker run has executed yet. On first run, the worker wil
       for "Recording started" / "Recording stopped" transitions.
       `tests/recording-beacon.test.tsx` covers all 6 spec scenarios (a-f)
       including fake-timer integration for timer increment. 6/6 passing. **(Run 1)**
-- [ ] (6) Working tree clean + rebased — *recheck on final run*
+- [x] (6) Working tree clean + rebased + strict `this-week:` prefix — `git
+      log --oneline origin/main..HEAD` on this branch shows exactly 3 commits,
+      all prefixed `this-week:` (clauses 1+2+3, clause 1 follow-up test fix,
+      clauses 4+5). `git status --porcelain` empty. Branch IS off origin/main
+      (rebase trivially clean). The companion V3 sprint was force-pushed to
+      a V3-only state on `feat/v3-auth-screens` at the same time so the two
+      workstreams are now disjoint by branch. **(Run 1 final)**
 
 This run unblocks `yentl-compliance-foundation` clause 4 (AudioRouteDisclosure),
 which has been pending since 2026-05-18 specifically waiting on

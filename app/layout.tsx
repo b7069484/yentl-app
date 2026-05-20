@@ -35,7 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      localization={{
+        formButtonPrimary: "Continue with email →",
+      }}
+    >
       <html
         lang="en"
         className={`${inter.variable} ${fraunces.variable} h-full antialiased`}

@@ -521,6 +521,59 @@
   }
 }
 
+/* ─── V3.13/V3.37 YouTube analysis — recording pulse, cursor blink, dot fade ─── */
+@keyframes yt-rec-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+}
+@keyframes yt-cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes yt-dot-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes yt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Orientation-gated layouts for /youtube/watch */
+.v3-yt-landscape-only {
+  display: none;
+}
+.v3-yt-portrait-only {
+  display: flex;
+}
+@media (orientation: landscape) and (min-width: 700px) {
+  .v3-yt-landscape-only {
+    display: flex;
+  }
+  .v3-yt-portrait-only {
+    display: none;
+  }
+}
+
 /* ─── V3.16 YouTube ingest — rotate-icon wiggle ─── */
 @keyframes yt-rotate-wiggle {
   0%,

@@ -98,7 +98,7 @@ export default function SignUpPage() {
                 formFieldInput:
                   "h-[52px] w-full rounded-[11px] border-[1.5px] border-teal bg-white px-[14px] font-mono text-[14px] tracking-[.005em] text-ink shadow-[0_0_0_4px_rgba(37,99,235,.18)] outline-none placeholder:font-mono placeholder:text-ink-5",
                 formButtonPrimary:
-                  "mx-auto mt-3 flex h-[48px] !w-[220px] items-center justify-center gap-2 rounded-[12px] !border-none !bg-gradient-to-b !from-red !to-[#B91C1C] text-[15px] !font-semibold !tracking-[-.005em] !text-white !shadow-[0_4px_12px_rgba(185,28,28,.28),inset_0_1px_0_rgba(255,255,255,.18)] transition-all hover:!-translate-y-px hover:!shadow-[0_6px_16px_rgba(185,28,28,.34),inset_0_1px_0_rgba(255,255,255,.2)] !normal-case",
+                  "mx-auto mt-3 flex h-[48px] !w-[220px] items-center justify-center gap-2 !rounded-[12px] !border-none !bg-gradient-to-b !from-red !to-[#B91C1C] text-[15px] !font-semibold !tracking-[-.005em] !text-white !shadow-[0_4px_12px_rgba(185,28,28,.28),inset_0_1px_0_rgba(255,255,255,.18)] transition-all hover:!-translate-y-px hover:!shadow-[0_6px_16px_rgba(185,28,28,.34),inset_0_1px_0_rgba(255,255,255,.2)] !normal-case",
                 dividerBox: "my-4 mx-1",
                 dividerLine: "bg-line",
                 dividerText:

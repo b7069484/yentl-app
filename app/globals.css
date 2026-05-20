@@ -245,37 +245,14 @@
   font-size: 14px !important;
 }
 
-/* Primary CTA — constrain to 220px wide, red gradient, white text */
+/* Primary CTA — per-page styling via appearance.elements (Tailwind).
+   This block only handles cross-page concerns:
+   1) center the fixed-width button (Clerk's cl-internal-* class beats mx-auto)
+   2) suppress Clerk's auto-appended chevron icon */
 .cl-formButtonPrimary {
-  width: 220px !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  display: flex !important;
-  height: 48px !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  border: none !important;
-  border-radius: 12px !important;
-  background: linear-gradient(180deg, #EF4444 0%, #B91C1C 100%) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  letter-spacing: -0.005em !important;
-  text-transform: none !important;
-  box-shadow:
-    0 4px 12px rgba(185, 28, 28, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-  transition: transform 0.12s, box-shadow 0.12s !important;
 }
-.cl-formButtonPrimary:hover {
-  transform: translateY(-1px) !important;
-  box-shadow:
-    0 6px 16px rgba(185, 28, 28, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Hide Clerk's auto-appended chevron — wireframe arrow is in localization string */
 .cl-formButtonPrimary .cl-buttonArrowIcon {
   display: none !important;
 }
@@ -328,11 +305,8 @@
     0 4px 14px rgba(20, 23, 31, 0.04) !important;
 }
 
-/* Field label visually hidden — wireframe doesn't show labels */
-.cl-formFieldLabelRow,
-.cl-formFieldLabel {
-  display: none !important;
-}
+/* Label visibility is now controlled per-page via appearance.elements
+   (V3.18 signup uses sr-only; V3.19 signin shows the "Email" label). */
 
 /* Hide Clerk's footer/branding — our wrapper owns the "Already have an account?" + ToS */
 .cl-footer,

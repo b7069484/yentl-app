@@ -38,6 +38,7 @@ export default function RootLayout({
     <ClerkProvider
       localization={{
         formButtonPrimary: "Continue with email →",
+        formFieldLabel__emailAddress: "Email",
       }}
     >
       <html

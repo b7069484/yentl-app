@@ -12,10 +12,14 @@ import { AIDisclosureFooter } from "@/components/session/AIDisclosureFooter";
 import { SessionTimer } from "@/components/session/SessionTimer";
 import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
 import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
+import { ConsentGate } from "@/components/session/ConsentGate";
+import { RecordingBeacon } from "@/components/session/RecordingBeacon";
 
 export default function SessionPage() {
   return (
     <div id="main-content" className="flex flex-1 flex-col">
+      <ConsentGate />
+      <RecordingBeacon />
       <SessionTimer />
       <TwoPartyDisclosure />
       <Suspense>

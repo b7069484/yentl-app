@@ -216,3 +216,236 @@
       0 0 10px 3px rgba(216, 155, 44, 0.7);
   }
 }
+
+/* ─── Clerk component overrides (V3.18 / V3.19 / V3.20 wireframe match) ───
+   Clerk's <SignUp /> / <SignIn /> components inject .cl-* classes at runtime
+   that bypass our Tailwind appearance.elements when they use inline styles or
+   higher-specificity defaults. These rules target the rendered DOM to match
+   the wireframe spec exactly: blue-glow email input, 220px-wide red gradient
+   primary CTA, hidden Clerk footer/branding so our custom wrapper owns it. */
+
+/* Email input — blue border + glow per V3.18 wireframe */
+.cl-formFieldInput[type="email"],
+.cl-formFieldInput[name="emailAddress"],
+.cl-formFieldInput[type="text"] {
+  height: 52px !important;
+  border: 1.5px solid #2563EB !important;
+  border-radius: 11px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18) !important;
+  font-family: var(--font-mono, ui-monospace, monospace) !important;
+  font-size: 14px !important;
+  letter-spacing: 0.005em !important;
+  color: var(--ink) !important;
+  padding: 0 14px !important;
+}
+.cl-formFieldInput::placeholder {
+  color: var(--ink-5) !important;
+  font-family: var(--font-mono, ui-monospace, monospace) !important;
+  font-size: 14px !important;
+}
+
+/* Primary CTA — constrain to 220px wide, red gradient, white text */
+.cl-formButtonPrimary {
+  width: 220px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: flex !important;
+  height: 48px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #EF4444 0%, #B91C1C 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  box-shadow:
+    0 4px 12px rgba(185, 28, 28, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  transition: transform 0.12s, box-shadow 0.12s !important;
+}
+.cl-formButtonPrimary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow:
+    0 6px 16px rgba(185, 28, 28, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* OAuth buttons — Google white, Apple black */
+.cl-socialButtonsBlockButton {
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  border: 1px solid var(--line) !important;
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  box-shadow:
+    0 1px 0 rgba(20, 23, 31, 0.02),
+    0 2px 8px rgba(20, 23, 31, 0.04) !important;
+}
+.cl-socialButtonsBlockButton[data-provider="apple"] {
+  background: #000 !important;
+  color: #FFFFFF !important;
+  border-color: #000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Divider — match wireframe mono OR styling */
+.cl-dividerLine {
+  background: var(--line) !important;
+  height: 1px !important;
+}
+.cl-dividerText {
+  font-family: var(--font-mono, ui-monospace, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--ink-4) !important;
+}
+
+/* Field rows — wrap email input in cream-2 card per wireframe */
+.cl-form > .cl-formFieldRow,
+.cl-form > div:has(> .cl-formFieldInput) {
+  background: #F0EAD6 !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+  box-shadow:
+    0 1px 0 rgba(20, 23, 31, 0.02),
+    0 4px 14px rgba(20, 23, 31, 0.04) !important;
+}
+
+/* Field label visually hidden — wireframe doesn't show labels */
+.cl-formFieldLabelRow,
+.cl-formFieldLabel {
+  display: none !important;
+}
+
+/* Hide Clerk's footer/branding — our wrapper owns the "Already have an account?" + ToS */
+.cl-footer,
+.cl-footerAction,
+.cl-footerActionText,
+.cl-footerActionLink,
+.cl-badge,
+.cl-internal-badge,
+.cl-header,
+.cl-headerTitle,
+.cl-headerSubtitle,
+.cl-logoBox {
+  display: none !important;
+}
+
+/* Card itself — let our parent wrapper provide the chrome */
+.cl-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* ── Layout fixes for V3.18 wireframe match ── */
+
+/* Reorder children: email form first, then divider, then OAuth stack */
+.cl-cardBox,
+.cl-card,
+.cl-card > .cl-main,
+.cl-main {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.cl-form,
+.cl-formFieldRow__emailAddress {
+  order: 1 !important;
+}
+.cl-dividerRow {
+  order: 2 !important;
+  margin: 16px 4px 12px !important;
+}
+.cl-socialButtonsRoot {
+  order: 3 !important;
+}
+
+/* OAuth: force vertical stack of full-width labeled buttons regardless of provider count */
+.cl-socialButtons {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+.cl-socialButtons > .cl-button {
+  height: 48px !important;
+  width: 100% !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  padding: 0 16px !important;
+}
+
+/* Provider-specific button colors */
+.cl-button__google {
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+}
+.cl-button__apple {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+}
+.cl-button__facebook {
+  background: #1877F2 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #1877F2 !important;
+}
+.cl-button__x {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #000000 !important;
+}
+
+/* Add text labels next to the provider icons */
+.cl-button__google::after,
+.cl-button__apple::after,
+.cl-button__facebook::after,
+.cl-button__x::after {
+  font-weight: 600;
+  font-size: 14.5px;
+  white-space: nowrap;
+}
+.cl-button__google::after {
+  content: "Continue with Google";
+}
+.cl-button__apple::after {
+  content: "Continue with Apple";
+}
+.cl-button__facebook::after {
+  content: "Continue with Facebook";
+}
+.cl-button__x::after {
+  content: "Continue with X";
+}
+
+/* Force the provider icon inside the button to render at a consistent size */
+.cl-socialButtonsProviderIcon {
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-block !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  flex-shrink: 0 !important;
+}

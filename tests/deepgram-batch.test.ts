@@ -261,7 +261,10 @@ describe("transcribeFile — result mapping", () => {
       { data: buffer, contentType: "audio/wav" },
       expect.objectContaining({
         model: "nova-3",
-        diarize: true,
+        // diarize is intentionally OFF in v1 per yentl-this-week-actions
+        // clause 1 — voiceprint capture would expose us to BIPA damages.
+        // See lib/server/deepgram-batch.ts TRANSCRIBE_OPTIONS comment block.
+        diarize: false,
         utterances: true,
         punctuate: true,
         smart_format: true,

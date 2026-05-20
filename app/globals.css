@@ -275,6 +275,11 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
+/* Hide Clerk's auto-appended chevron — wireframe arrow is in localization string */
+.cl-formButtonPrimary .cl-buttonArrowIcon {
+  display: none !important;
+}
+
 /* OAuth buttons — Google white, Apple black */
 .cl-socialButtonsBlockButton {
   height: 48px !important;
@@ -367,7 +372,7 @@
 }
 .cl-dividerRow {
   order: 2 !important;
-  margin: 16px 4px 12px !important;
+  margin: 20px 4px 16px !important;
 }
 .cl-socialButtonsRoot {
   order: 3 !important;

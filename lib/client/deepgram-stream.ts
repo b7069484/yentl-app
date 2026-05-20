@@ -1,4 +1,5 @@
 import type { TranscriptSegment } from "@/lib/types";
+import { getDeepgramWsUrl } from "@/lib/client/deepgram-endpoint";
 
 export type DGEvents = {
   onInterim: (text: string) => void;
@@ -33,19 +34,27 @@ const NULL_SPEAKER_WARN_THRESHOLD = 5;
 /**
  * WebSocket query params for the live Deepgram stream.
  *
- * Diarization quality notes (nova-3 live path):
- *   diarize:true         — per-word speaker tags; dominantSpeaker() picks the
- *                          majority speaker for each final utterance.
+ * IMPORTANT: speaker segmentation is DISABLED (diarize=false) in v1.
+ * Deepgram's speaker-tagging feature records voiceprints. Under Illinois
+ * BIPA — and the 2025-2026 case wave (Brewer v. Otter.ai, Cruz v.
+ * Fireflies.AI) — voiceprint capture without explicit prior consent carries
+ * $1k–$5k statutory damages PER recording. Yentl v1 ships with this off
+ * by default per yentl-this-week-actions clause 1 (locked 2026-05-17).
+ *
+ * Re-enabling requires ALL of:
+ *   1. BIPA-compliant consent flow with explicit voiceprint disclosure
+ *   2. Voiceprint deletion-on-request mechanism
+ *   3. Legal review of biometric-data handling
+ *
+ * Params we DO set:
  *   utterance_end_ms:1000 — treat 1 s of silence as utterance boundary. Lower
  *                          values fragment utterances; higher values delay output.
  *   numerals:true        — spoken numbers → digits; improves factual accuracy
  *                          of claims involving statistics, dates, vote counts.
  *   interim_results:true — interim transcripts for live feedback (not stored).
- *   smart_format:true    — applies punctuation + entity formatting. Compatible
- *                          with diarize in nova-3.
+ *   smart_format:true    — applies punctuation + entity formatting.
  *
  * Params NOT set (and why):
- *   diarize_version — not a URL query param in the v5 API; omitted.
  *   vad_events      — VAD endpoint events are separate from Results messages;
  *                     adding them without handling would create unprocessed
  *                     traffic. Keep false until we need silence detection.
@@ -57,7 +66,7 @@ const PARAMS = new URLSearchParams({
   smart_format: "true",
   interim_results: "true",
   utterance_end_ms: "1000",
-  diarize: "true",
+  diarize: "false",
   numerals: "true",
 });
 
@@ -120,7 +129,7 @@ function openSocket(
   return new Promise((resolve, reject) => {
     if (signal.aborted) { reject(new Error("aborted")); return; }
     const ws = new WebSocket(
-      `wss://api.deepgram.com/v1/listen?${PARAMS}`,
+      `${getDeepgramWsUrl()}?${PARAMS}`,
       ["bearer", key],
     );
     const onAbort = () => {
@@ -163,7 +172,9 @@ function attachMessageHandlers(ws: WebSocket, events: DGEvents, counters: Speake
         if (speakerId === null) {
           counters.consecutive += 1;
           if (!counters.warned && counters.consecutive >= NULL_SPEAKER_WARN_THRESHOLD) {
-            console.warn(`[deepgram] ${NULL_SPEAKER_WARN_THRESHOLD} consecutive utterances missing speaker tag — diarization may have silently failed`);
+            // v1 ships with speaker segmentation off — null speaker_id is the
+            // expected default, not a failure. Threshold-warn left in place
+            // for the day we re-enable per BIPA-consent gate (see PARAMS comment).
             counters.warned = true;
           }
         } else {

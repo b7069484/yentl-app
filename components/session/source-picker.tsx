@@ -25,7 +25,7 @@ const CARDS: CardDef[] = [
   },
   {
     title: "Audio file",
-    desc: "Up to 4h · diarized speakers",
+    desc: "Up to 4h · speaker-aware",
     Icon: Upload,
     source: { kind: "audio_file", blob_url: "", duration_sec: 0, filename: "", mime: "" },
   },

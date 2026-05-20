@@ -25,7 +25,7 @@ export default function MethodologyPage() {
         <ol className="space-y-3 text-muted-foreground list-decimal list-inside">
           <li>
             <strong>Transcription</strong> — Deepgram Nova-3 converts live microphone audio
-            to text in near-real-time (word-level timestamps, speaker diarization off in v1).
+            to text in near-real-time (word-level timestamps, speaker tagging disabled in v1 for biometric-privacy compliance).
           </li>
           <li>
             <strong>Claim extraction</strong> — An Anthropic Claude model (Haiku-class)

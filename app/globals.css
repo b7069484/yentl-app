@@ -520,3 +520,24 @@
     transform: scale(1);
   }
 }
+
+/* ─── V3.16 YouTube ingest — rotate-icon wiggle ─── */
+@keyframes yt-rotate-wiggle {
+  0%,
+  82%,
+  100% {
+    transform: rotate(0);
+  }
+  86% {
+    transform: rotate(-8deg);
+  }
+  90% {
+    transform: rotate(72deg);
+  }
+  94% {
+    transform: rotate(86deg);
+  }
+  98% {
+    transform: rotate(0deg);
+  }
+}

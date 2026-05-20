@@ -1,32 +1,9 @@
 # State: yentl-this-week-actions
 
-**Last updated**: 2026-05-20 (honest status check — no clause progress since lock)
-**Status**: not-started (locked 2026-05-17, no worker runs)
+**Last updated**: 2026-05-17T00:00:00Z (initial — worker has not run yet)
+**Status**: not-started
 **Runs completed**: 0
 **Total cost (approx, USD)**: $0.00
-
----
-
-## 2026-05-20 honest status check
-
-No clause has moved since 2026-05-17 lock. The V3 wireframe sprint
-(`feat/v3-auth-screens`, 8 screens, 10 commits) consumed all build cycles
-2026-05-19 → 2026-05-20 and DID NOT touch any clause of this goal:
-
-- Clause 1 (`diarize=false`): still NOT set explicitly in
-  `lib/client/deepgram-stream.ts`. BIPA exposure clock continues to run
-  on every dev/test recording.
-- Clause 2 (EU endpoint env-switchable): still hardcoded US URL.
-- Clause 3 (`docs/dpa-status.md`): still does not exist.
-- Clause 4 (`ConsentGate.tsx`): still does not exist.
-- Clause 5 (`RecordingBeacon.tsx`): still does not exist; also blocks
-  `yentl-compliance-foundation` clause 4 (AudioRouteDisclosure).
-
-Israel acknowledged the gap (chat, 2026-05-20) and chose to continue the
-V3 visual sprint (Batch B claim sheets) before pivoting back. This entry
-exists to keep the portfolio honest. AI Act Art 50 binds 2026-08-02
-(~9 weeks from this entry). Clauses 1+2 are ~1 hour each; the delay is
-a deliberate priority call, not a technical blocker.
 
 ---
 

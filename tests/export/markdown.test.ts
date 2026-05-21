@@ -51,6 +51,22 @@ describe("toMarkdown", () => {
         explanation: "...",
       },
     ],
+    devil_advocate: {
+      stance: "A skeptic would ask whether the unemployment claim depends on the chosen timeframe.",
+      strongest_counterarguments: [
+        "The claim may be true for one measure but false for another.",
+        "The timeframe may exclude earlier comparable lows.",
+        "The source may use a different unemployment definition.",
+      ],
+      weakest_assumption: "The weakest assumption is that 30-year low is the relevant baseline.",
+      questions: [
+        "Which unemployment measure is being used?",
+        "What is the comparison period?",
+      ],
+      confidence: "medium",
+      model: "xai/grok-4.1-fast-reasoning",
+      at: 1_716_000_000_000,
+    },
   };
 
   it("contains header, transcript, claims, markers sections", () => {
@@ -62,6 +78,8 @@ describe("toMarkdown", () => {
     expect(md).toContain("Unemployment is at a 30-year low.");
     expect(md).toContain("PARTIAL · 65%");
     expect(md).toContain("Absolutism");
+    expect(md).toContain("## Devil's Advocate");
+    expect(md).toContain("chosen timeframe");
   });
 
   it("includes formatted duration when ended", () => {

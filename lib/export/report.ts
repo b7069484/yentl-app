@@ -112,6 +112,12 @@ export function toReport(session: Session): string {
   .source a:hover { text-decoration: underline; }
   .source .meta-row { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   .source .excerpt { font-size: 12px; font-style: italic; color: #475569; margin-top: 6px; }
+  .summary { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #f8fafc; margin-bottom: 18px; }
+  .summary ul { margin: 0 0 12px; padding-left: 18px; }
+  .summary p { margin: 0; color: #334155; }
+  .devil { border: 1px solid #fcd34d; border-radius: 12px; padding: 18px; background: #fffbeb; color: #78350f; margin-bottom: 18px; }
+  .devil h3 { margin: 0 0 8px; font-size: 15px; }
+  .devil ol, .devil ul { margin: 8px 0 12px; padding-left: 20px; }
   .stance { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border-radius: 9999px; font-size: 12px; font-weight: 700; margin-right: 6px; vertical-align: middle; }
   .marker { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px 12px 18px; margin-bottom: 10px; background: #ffffff; position: relative; overflow: hidden; }
   .marker .stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
@@ -149,6 +155,8 @@ export function toReport(session: Session): string {
   </div>
 
   ${speakersBlock}
+  ${renderSynthesis(session)}
+  ${renderDevilAdvocate(session)}
   <h2>Transcript</h2>
   ${renderTranscript(session, claimsByStart)}
 
@@ -172,6 +180,31 @@ export function toReport(session: Session): string {
 </main>
 </body>
 </html>`;
+}
+
+function renderSynthesis(session: Session) {
+  if (!session.synthesis) return "";
+  const headlines = session.synthesis.headlines.length
+    ? `<ul>${session.synthesis.headlines.map((headline) => `<li>${escapeHtml(headline)}</li>`).join("")}</ul>`
+    : "";
+  return `<h2>Summary</h2>
+  <section class="summary">
+    ${headlines}
+    <p>${escapeHtml(session.synthesis.text)}</p>
+  </section>`;
+}
+
+function renderDevilAdvocate(session: Session) {
+  const brief = session.devil_advocate;
+  if (!brief) return "";
+  return `<h2>Devil's Advocate</h2>
+  <section class="devil">
+    <h3>Challenge · ${escapeHtml(brief.confidence)} confidence</h3>
+    <p>${escapeHtml(brief.stance)}</p>
+    <ol>${brief.strongest_counterarguments.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ol>
+    <p><strong>Weakest assumption:</strong> ${escapeHtml(brief.weakest_assumption)}</p>
+    <ul>${brief.questions.map((question) => `<li>${escapeHtml(question)}</li>`).join("")}</ul>
+  </section>`;
 }
 
 function renderTranscript(session: Session, claimsByStart: Map<number, ClaimCard>) {

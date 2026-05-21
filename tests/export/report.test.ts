@@ -51,6 +51,22 @@ const SAMPLE: Session = {
       explanation: "Universal phrasing without support.",
     },
   ],
+  devil_advocate: {
+    stance: "A skeptic would ask whether the unemployment claim depends on the chosen timeframe.",
+    strongest_counterarguments: [
+      "The claim may be true for one measure but false for another.",
+      "The timeframe may exclude earlier comparable lows.",
+      "The source may use a different unemployment definition.",
+    ],
+    weakest_assumption: "The weakest assumption is that 30-year low is the relevant baseline.",
+    questions: [
+      "Which unemployment measure is being used?",
+      "What is the comparison period?",
+    ],
+    confidence: "medium",
+    model: "xai/grok-4.1-fast-reasoning",
+    at: 1_716_000_000_000,
+  },
 };
 
 describe("toReport", () => {
@@ -69,6 +85,8 @@ describe("toReport", () => {
     expect(html).toContain("Partially true");
     expect(html).toContain("BLS Report");
     expect(html).toContain("Absolutism");
+    expect(html).toContain("Devil's Advocate");
+    expect(html).toContain("chosen timeframe");
   });
 
   it("escapes HTML in user-supplied text", () => {

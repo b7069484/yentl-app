@@ -22,6 +22,36 @@ export function toMarkdown(s: Session): string {
   }
   lines.push("");
 
+  if (s.synthesis) {
+    lines.push("## Summary");
+    lines.push("");
+    for (const headline of s.synthesis.headlines) {
+      lines.push(`- ${headline}`);
+    }
+    lines.push("");
+    lines.push(s.synthesis.text);
+    lines.push("");
+  }
+
+  if (s.devil_advocate) {
+    lines.push("## Devil's Advocate");
+    lines.push("");
+    lines.push(`**Challenge (${s.devil_advocate.confidence} confidence):** ${s.devil_advocate.stance}`);
+    lines.push("");
+    lines.push("**Counterpoints:**");
+    for (const point of s.devil_advocate.strongest_counterarguments) {
+      lines.push(`- ${point}`);
+    }
+    lines.push("");
+    lines.push(`**Weakest assumption:** ${s.devil_advocate.weakest_assumption}`);
+    lines.push("");
+    lines.push("**Questions:**");
+    for (const question of s.devil_advocate.questions) {
+      lines.push(`- ${question}`);
+    }
+    lines.push("");
+  }
+
   lines.push("## Transcript");
   lines.push("");
   for (const seg of s.transcript) {

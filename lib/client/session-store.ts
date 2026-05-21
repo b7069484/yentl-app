@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type {
   ClaimCard,
+  PersistedDevilAdvocate,
   PersistedSynthesis,
   RhetoricMarker,
   Session,
@@ -267,7 +268,20 @@ export const useSession = create<State>((set, get) => ({
     synthesis: session.synthesis
       ? { state: "fresh" as const, ...session.synthesis }
       : null,
-    devilAdvocate: null,
+    devilAdvocate: session.devil_advocate
+      ? {
+          state: "fresh" as const,
+          brief: {
+            stance: session.devil_advocate.stance,
+            strongest_counterarguments: session.devil_advocate.strongest_counterarguments,
+            weakest_assumption: session.devil_advocate.weakest_assumption,
+            questions: session.devil_advocate.questions,
+            confidence: session.devil_advocate.confidence,
+            model: session.devil_advocate.model,
+          },
+          at: session.devil_advocate.at,
+        }
+      : null,
     micStream: null,
     browserTabStatus: { phase: "idle" },
   }),
@@ -284,6 +298,13 @@ export const useSession = create<State>((set, get) => ({
       const { text, headlines, per_speaker_verdicts, at } = s.synthesis;
       persistedSynthesis = { text, headlines, per_speaker_verdicts, at };
     }
+    let persistedDevilAdvocate: PersistedDevilAdvocate | undefined;
+    if (
+      s.devilAdvocate?.state === "fresh" ||
+      s.devilAdvocate?.state === "refreshing"
+    ) {
+      persistedDevilAdvocate = { ...s.devilAdvocate.brief, at: s.devilAdvocate.at };
+    }
     return {
       title: s.title,
       started_at: s.startedAt ?? "",
@@ -294,6 +315,7 @@ export const useSession = create<State>((set, get) => ({
       speakers: s.speakers,
       source: s.source,
       ...(persistedSynthesis !== undefined && { synthesis: persistedSynthesis }),
+      ...(persistedDevilAdvocate !== undefined && { devil_advocate: persistedDevilAdvocate }),
     };
   },
 

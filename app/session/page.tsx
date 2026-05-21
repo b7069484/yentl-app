@@ -14,6 +14,7 @@ import { AIDisclosureFooter } from "@/components/session/AIDisclosureFooter";
 import { SessionTimer } from "@/components/session/SessionTimer";
 import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
 import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
+import { loadSession } from "@/lib/client/session-storage";
 import type { ClaimCard, RhetoricMarker, SessionSource, Speaker, TranscriptSegment } from "@/lib/types";
 
 export default function SessionPage() {
@@ -34,6 +35,7 @@ function SessionPageInner() {
   const sourceParam = sp.get("source");
   const titleParam = sp.get("title");
   const sampleParam = sp.get("sample");
+  const restoreParam = sp.get("restore");
   const isExtensionPanel = sp.get("surface") === "extension-panel";
   const isValidationDemo = sp.get("demo") === "validation";
   const startedAt = useSession((s) => s.startedAt);
@@ -44,6 +46,7 @@ function SessionPageInner() {
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setBrowserTabStatus = useSession((s) => s.setBrowserTabStatus);
   const reset = useSession((s) => s.reset);
+  const restoreSession = useSession((s) => s.restoreSession);
   const startSession = useSession((s) => s.startSession);
   const appendFinal = useSession((s) => s.appendFinal);
   const addClaim = useSession((s) => s.addClaim);
@@ -51,6 +54,7 @@ function SessionPageInner() {
   const ensureSpeaker = useSession((s) => s.ensureSpeaker);
   const setRecording = useSession((s) => s.setRecording);
   const [sampleError, setSampleError] = useState<string | null>(null);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
   const router = useRouter();
 
   const shouldRedirect = !sampleParam && view === "watch" && !PLAYABLE_SOURCE_KINDS.has(sourceKind);
@@ -67,6 +71,34 @@ function SessionPageInner() {
       router.replace("/project/flows");
     }
   }, [shouldMoveProjectView, router]);
+
+  useEffect(() => {
+    if (!restoreParam) return;
+    if (startedAt) {
+      router.replace("/session?view=overview");
+      return;
+    }
+    let cancelled = false;
+
+    async function restoreSavedSession() {
+      setRestoreError(null);
+      try {
+        const saved = await loadSession(restoreParam ?? "");
+        if (cancelled) return;
+        restoreSession(saved.session);
+        router.replace("/session?view=overview");
+      } catch (error) {
+        if (cancelled) return;
+        setRestoreError(error instanceof Error ? error.message : "Could not restore this workspace.");
+      }
+    }
+
+    void restoreSavedSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [restoreParam, restoreSession, router, startedAt]);
 
   useEffect(() => {
     if (!sampleParam || startedAt) return;
@@ -145,6 +177,24 @@ function SessionPageInner() {
 
   if (isExtensionPanel) {
     return <ExtensionPanelView />;
+  }
+
+  if (restoreParam && !startedAt) {
+    return (
+      <main className="mx-auto flex min-h-[60vh] w-full max-w-[760px] flex-col items-center justify-center px-5 text-center">
+        <div className="font-serif text-[34px] leading-tight text-ink">
+          Opening workspace
+        </div>
+        <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink-3">
+          Yentl is restoring the captured transcript, claims, markers, and report state.
+        </p>
+        {restoreError && (
+          <div className="mt-5 rounded-lg border border-red-soft bg-red-soft px-4 py-3 text-[13px] text-red">
+            {restoreError}
+          </div>
+        )}
+      </main>
+    );
   }
 
   if (sampleParam && !startedAt) {

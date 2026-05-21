@@ -1,9 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ExtensionPanelView } from "@/components/session/extension-panel-view";
 import { useSession } from "@/lib/client/session-store";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
+
+const mocks = vi.hoisted(() => ({
+  exportSession: vi.fn(),
+  saveSession: vi.fn(),
+}));
+
+vi.mock("@/lib/client/export-actions", () => ({
+  exportSession: (...args: unknown[]) => mocks.exportSession(...args),
+}));
+
+vi.mock("@/lib/client/session-storage", () => ({
+  saveSession: (...args: unknown[]) => mocks.saveSession(...args),
+}));
 
 vi.mock("next/link", () => ({
   default: ({
@@ -72,6 +85,8 @@ function makeMarker(overrides: Partial<RhetoricMarker> = {}): RhetoricMarker {
 describe("ExtensionPanelView", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    mocks.exportSession.mockReset();
+    mocks.saveSession.mockReset();
     useSession.getState().reset();
   });
 
@@ -164,12 +179,56 @@ describe("ExtensionPanelView", () => {
     expect(screen.getByText("Grok")).toBeTruthy();
     expect(screen.getByText(/audit claim outruns the visible evidence/i)).toBeTruthy();
     expect(screen.getByText("Counterpoints and questions")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(mocks.exportSession).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Browser tab: Council hearing" }),
+      "report",
+    );
 
     fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
 
     expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
     expect(screen.getByText("Loaded language")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
+  });
+
+  it("saves the current panel state before opening the full workspace", async () => {
+    const openedWindow = {
+      location: { href: "about:blank" },
+      close: vi.fn(),
+    };
+    vi.spyOn(window, "open").mockReturnValue(openedWindow as unknown as Window);
+    let resolveSave!: (value: { id: string }) => void;
+    mocks.saveSession.mockReturnValue(new Promise((resolve) => {
+      resolveSave = resolve;
+    }));
+
+    useSession.getState().setSource({
+      kind: "browser_tab",
+      title: "Panel video",
+      url: "https://example.com/video",
+    });
+    useSession.getState().startSession("Browser tab: Panel video");
+    useSession.getState().appendFinal(makeSegment());
+
+    render(<ExtensionPanelView />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Full workspace/i }));
+
+    expect(await screen.findByText("Opening...")).toBeTruthy();
+    resolveSave({ id: "saved-session-1" });
+    await waitFor(() => {
+      expect(mocks.saveSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Browser tab: Panel video",
+          transcript: expect.arrayContaining([
+            expect.objectContaining({ text: expect.stringContaining("city doubled the budget") }),
+          ]),
+        }),
+        { name: "Browser tab: Panel video" },
+      );
+      expect(openedWindow.location.href).toContain("/session?restore=saved-session-1&view=overview");
+    });
   });
 
   it("populates transcript and evidence in validation demo mode", async () => {

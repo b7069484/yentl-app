@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import Link from "next/link";
 import {
   AlertTriangle,
   Captions,
   CheckCircle2,
+  Download,
   ExternalLink,
   FileText,
   Loader2,
@@ -20,6 +20,8 @@ import {
 } from "@/components/session/ExtensionBridge";
 import { useSession, type BrowserTabCaptureStatus } from "@/lib/client/session-store";
 import type { DevilAdvocateBrief, DevilAdvocateState } from "@/lib/client/session-store";
+import { exportSession } from "@/lib/client/export-actions";
+import { saveSession } from "@/lib/client/session-storage";
 import type { ClaimCard, RhetoricMarker, SessionSource, TranscriptSegment } from "@/lib/types";
 
 type Phase = BrowserTabCaptureStatus["phase"];
@@ -355,6 +357,7 @@ export function ExtensionPanelView() {
   useValidationDemo();
 
   const [activeTab, setActiveTab] = useState<PanelTab>("transcript");
+  const [workspaceState, setWorkspaceState] = useState<"idle" | "saving" | "error">("idle");
   const source = useSession((s) => s.source);
   const status = useSession((s) => s.browserTabStatus);
   const transcript = useSession((s) => s.transcript);
@@ -375,6 +378,33 @@ export function ExtensionPanelView() {
   const claimSnapshot = claimInsight(claims);
   const markerSnapshot = markerInsight(markers);
   const transcriptTime = formatTime(transcriptDuration(transcript));
+  const hasContent = transcript.length > 0 || claimRows.length > 0 || markerRows.length > 0;
+
+  async function openFullWorkspace() {
+    const popup = window.open("about:blank", "_blank");
+    setWorkspaceState("saving");
+    try {
+      const session = useSession.getState().toSession();
+      const meta = await saveSession(session, {
+        name: session.title || sourceTitle(source, status),
+      });
+      const href = `${window.location.origin}/session?restore=${encodeURIComponent(meta.id)}&view=overview`;
+      if (popup) {
+        popup.location.href = href;
+      } else {
+        window.open(href, "_blank", "noopener,noreferrer");
+      }
+      setWorkspaceState("idle");
+    } catch (error) {
+      popup?.close();
+      console.error("open full workspace failed", error);
+      setWorkspaceState("error");
+    }
+  }
+
+  function exportCurrent(kind: "report" | "markdown" | "json") {
+    exportSession(useSession.getState().toSession(), kind);
+  }
 
   return (
     <section className="flex h-dvh min-h-screen flex-col overflow-hidden bg-cream text-ink">
@@ -558,15 +588,58 @@ export function ExtensionPanelView() {
             </section>
           )}
 
-          <Link
-            href="/session"
-            target="_blank"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3 py-3 text-[13px] font-semibold text-ink-2 shadow-sm hover:bg-cream-2"
-          >
-            <FileText className="h-4 w-4" aria-hidden />
-            Open full workspace
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-          </Link>
+          <section className="rounded-lg border border-line bg-paper p-3 shadow-sm">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={openFullWorkspace}
+                disabled={!hasContent || workspaceState === "saving"}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ExternalLink className="h-4 w-4" aria-hidden />
+                {workspaceState === "saving" ? "Opening..." : "Full workspace"}
+              </button>
+              <button
+                type="button"
+                onClick={() => exportCurrent("report")}
+                disabled={!hasContent}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <FileText className="h-4 w-4" aria-hidden />
+                Report
+              </button>
+            </div>
+            <details className="mt-2 rounded-lg border border-line bg-cream">
+              <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
+                Export files
+              </summary>
+              <div className="grid grid-cols-2 gap-2 border-t border-line p-2">
+                <button
+                  type="button"
+                  onClick={() => exportCurrent("markdown")}
+                  disabled={!hasContent}
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Download className="h-3.5 w-3.5" aria-hidden />
+                  Markdown
+                </button>
+                <button
+                  type="button"
+                  onClick={() => exportCurrent("json")}
+                  disabled={!hasContent}
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Download className="h-3.5 w-3.5" aria-hidden />
+                  JSON
+                </button>
+              </div>
+            </details>
+            {workspaceState === "error" && (
+              <p className="mt-2 rounded-md border border-red-soft bg-red-soft/35 px-3 py-2 text-[12px] text-red">
+                Could not open the saved workspace. Try the report export instead.
+              </p>
+            )}
+          </section>
         </div>
       </div>
     </section>

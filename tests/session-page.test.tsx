@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
 let mockSearchParamsRaw = new URLSearchParams("");
 const mockReplace = vi.fn();
+const mockLoadSession = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: mockReplace }),
@@ -89,6 +90,10 @@ vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn(),
 }));
 
+vi.mock("@/lib/client/session-storage", () => ({
+  loadSession: (...args: unknown[]) => mockLoadSession(...args),
+}));
+
 import { useSession } from "@/lib/client/session-store";
 import SessionPage from "@/app/session/page";
 
@@ -97,6 +102,7 @@ import SessionPage from "@/app/session/page";
 type StoreState = {
   startedAt: string | null;
   startSession: () => void;
+  restoreSession: (session: unknown) => void;
   prerecordStage: "picker" | "selected";
   source: { kind: string };
   setSource: (source: unknown) => void;
@@ -108,6 +114,7 @@ function makeStore(overrides: Partial<StoreState> = {}): StoreState {
   return {
     startedAt: null,
     startSession: vi.fn(),
+    restoreSession: vi.fn(),
     prerecordStage: "picker",
     // Default to a playable kind so view=watch tests don't redirect unexpectedly.
     source: { kind: "youtube" },
@@ -130,6 +137,17 @@ function mockStore(state: StoreState) {
 beforeEach(() => {
   vi.clearAllMocks();
   mockSearchParamsRaw = new URLSearchParams("");
+  mockLoadSession.mockResolvedValue({
+    session: {
+      title: "Restored",
+      started_at: "2026-05-21T10:00:00.000Z",
+      transcript: [],
+      claims: [],
+      markers: [],
+      speakers: [],
+      source: { kind: "browser_tab" },
+    },
+  });
   mockStore(makeStore());
 });
 
@@ -164,6 +182,23 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     render(<SessionPage />);
     expect(screen.getByTestId("extension-panel-view")).toBeTruthy();
     expect(screen.queryByTestId("source-router")).toBeNull();
+  });
+
+  it("restores a saved extension workspace from ?restore=", async () => {
+    const restoreSession = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams("restore=saved-session-1");
+    mockStore(makeStore({ startedAt: null, restoreSession }));
+
+    render(<SessionPage />);
+
+    expect(screen.getByText("Opening workspace")).toBeTruthy();
+    await waitFor(() => {
+      expect(mockLoadSession).toHaveBeenCalledWith("saved-session-1");
+      expect(restoreSession).toHaveBeenCalledWith(
+        expect.objectContaining({ title: "Restored" }),
+      );
+      expect(mockReplace).toHaveBeenCalledWith("/session?view=overview");
+    });
   });
 });
 

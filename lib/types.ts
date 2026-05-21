@@ -76,6 +76,16 @@ export type PersistedSynthesis = {
   at: number;
 };
 
+export type PersistedDevilAdvocate = {
+  stance: string;
+  strongest_counterarguments: [string, string, string];
+  weakest_assumption: string;
+  questions: [string, string];
+  confidence: "low" | "medium" | "high";
+  model?: string;
+  at: number;
+};
+
 /**
  * SpeakerVerdict — per-speaker truthfulness + good-faith grading carried in
  * the synthesis output. Single source of truth; session-store.ts re-exports it.
@@ -99,6 +109,8 @@ export type Session = {
   source: SessionSource;
   /** Persisted synthesis snapshot. Present only when state was "fresh" or "refreshing". */
   synthesis?: PersistedSynthesis;
+  /** Persisted Devil's Advocate snapshot. Present only when Grok has returned a usable brief. */
+  devil_advocate?: PersistedDevilAdvocate;
 };
 
 /* ── Speakers (added in Sprint 1) ─────────────────────────────── */

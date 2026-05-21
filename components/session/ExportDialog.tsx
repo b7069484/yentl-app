@@ -9,37 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
-import { toReport } from "@/lib/export/report";
-import { toMarkdown } from "@/lib/export/markdown";
-import { toJSON } from "@/lib/export/json";
-
-function fileSafe(s: string) {
-  return (s || "yentl-session").replace(/[^\w-]+/g, "_").slice(0, 60);
-}
-
-function download(filename: string, content: string, type: string) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function openHtml(content: string) {
-  const blob = new Blob([content], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank", "noopener,noreferrer");
-  // Revoke after the new tab loads (give it a tick).
-  setTimeout(() => URL.revokeObjectURL(url), 60_000);
-  if (!win) {
-    // Popup blocker — fall back to download so the user still gets the file.
-    download(`${fileSafe("yentl-report")}.html`, content, "text/html");
-  }
-}
+import { exportSession } from "@/lib/client/export-actions";
 
 export function ExportDialog({
   open,
@@ -56,14 +26,7 @@ export function ExportDialog({
 
   const doExport = (kind: "report" | "markdown" | "json") => {
     const data = useSession.getState().toSession();
-    const stem = fileSafe(data.title || "yentl-session");
-    if (kind === "report") {
-      openHtml(toReport(data));
-    } else if (kind === "markdown") {
-      download(`${stem}.md`, toMarkdown(data), "text/markdown");
-    } else {
-      download(`${stem}.json`, toJSON(data), "application/json");
-    }
+    exportSession(data, kind);
     onClose();
   };
 

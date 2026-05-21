@@ -18,5 +18,7 @@ export function toJSON(session: Session): string {
   obj.transcript = session.transcript;
   obj.claims = session.claims;
   obj.markers = session.markers;
+  if (session.synthesis) obj.synthesis = session.synthesis;
+  if (session.devil_advocate) obj.devil_advocate = session.devil_advocate;
   return JSON.stringify(obj, null, 2);
 }

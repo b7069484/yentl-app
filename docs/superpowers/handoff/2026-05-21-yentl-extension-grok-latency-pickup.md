@@ -333,6 +333,64 @@ Related tests:
 - `tests/extension-content-script.test.ts`
 - `tests/extension-bridge.test.tsx`
 
+### 8. Extension panel now preserves state when opening the full workspace
+
+Files:
+
+- `components/session/extension-panel-view.tsx`
+- `app/session/page.tsx`
+- `lib/client/session-storage.ts`
+- `lib/client/session-store.ts`
+
+The previous `Open full workspace` action was a plain link to `/session`. That opened a
+new tab with a fresh in-memory Zustand store, so the user lost the transcript, claims,
+markers, and Grok brief that had just been reviewed in the injected panel.
+
+The panel now:
+
+1. Serializes the current session with `toSession()`.
+2. Saves it to the existing IndexedDB session store.
+3. Opens `/session?restore=<saved-id>&view=overview`.
+4. The full `/session` page loads the saved session from IndexedDB, restores it into
+   the live store, and replaces the URL with `/session?view=overview`.
+
+This is currently a snapshot handoff. The original extension panel can continue
+capturing, but the opened workspace is not yet a live mirror of the panel. If product
+wants true multi-window live sync, the next layer should use `BroadcastChannel` or a
+shared client-side session channel so both windows subscribe to the same updates.
+
+Related tests:
+
+- `tests/extension-panel-view.test.tsx`
+- `tests/session-page.test.tsx`
+
+### 9. Extension panel now has report/export actions
+
+Files:
+
+- `components/session/extension-panel-view.tsx`
+- `lib/client/export-actions.ts`
+- `components/session/ExportDialog.tsx`
+- `lib/export/report.ts`
+- `lib/export/markdown.ts`
+- `lib/export/json.ts`
+
+The panel now exposes:
+
+- `Report` - opens the styled HTML report.
+- `Export files` - expands to Markdown and JSON downloads.
+
+Report/Markdown/JSON exports now include a persisted `devil_advocate` block when Grok
+has produced a fresh or refreshing brief. Restored workspaces also rehydrate that Grok
+brief instead of dropping it.
+
+Related tests:
+
+- `tests/export/report.test.ts`
+- `tests/export/markdown.test.ts`
+- `tests/export/json.test.ts`
+- `tests/synthesis-persistence.test.ts`
+
 ## Current test and build evidence
 
 Focused tests run after the latest changes:
@@ -357,7 +415,7 @@ npm run build
 
 Results:
 
-- `npm run test:run`: 99 files, 1171 tests passed
+- `npm run test:run`: 99 files, 1175 tests passed
 - `npx tsc --noEmit`: passed
 - `npm run lint`: 0 errors, 18 existing warnings
 - `npm run build`: passed
@@ -384,6 +442,8 @@ Visible body included:
 - `DEVIL'S ADVOCATE` under the Claims tab
 - `Grok`
 - `Counterpoints and questions`
+- `Full workspace`, `Report`, and expandable `Export files`
+- `Full workspace` opened `/session?view=overview` with the captured library-budget claim restored
 - no `Overview` header from the full session shell
 
 Screenshot captured during verification:

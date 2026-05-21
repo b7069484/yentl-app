@@ -13,6 +13,14 @@ describe("toJSON", () => {
       transcript: [{ text: "hi", start: 0, end: 1, is_final: true, speaker_id: null }],
       claims: [],
       markers: [],
+      devil_advocate: {
+        stance: "A skeptic would ask for a source.",
+        strongest_counterarguments: ["A", "B", "C"],
+        weakest_assumption: "The transcript is complete.",
+        questions: ["Q1", "Q2"],
+        confidence: "low",
+        at: 1,
+      },
     };
     const json = toJSON(session);
     const parsed = JSON.parse(json);
@@ -21,6 +29,7 @@ describe("toJSON", () => {
     expect(parsed.transcript[0].text).toBe("hi");
     expect(parsed.source).toEqual({ kind: "mic" });
     expect(Array.isArray(parsed.speakers)).toBe(true);
+    expect(parsed.devil_advocate.stance).toContain("source");
   });
 
   it("omits ended_at + duration if missing", () => {

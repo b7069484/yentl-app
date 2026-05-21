@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { useSession } from "@/lib/client/session-store";
-import type { SpeakerVerdict, SynthesisState } from "@/lib/client/session-store";
+import type { DevilAdvocateState, SpeakerVerdict, SynthesisState } from "@/lib/client/session-store";
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -46,6 +46,26 @@ const ERROR_SYNTHESIS: SynthesisState = {
   state: "error",
   at: 1_716_000_003_000,
   lastError: "Rate limit exceeded",
+};
+
+const FRESH_DEVIL_ADVOCATE: DevilAdvocateState = {
+  state: "fresh",
+  brief: {
+    stance: "A skeptic would ask whether the key claim outruns the evidence.",
+    strongest_counterarguments: [
+      "The transcript may omit relevant context.",
+      "The source may support only part of the claim.",
+      "The verdict may depend on definitions not shown here.",
+    ],
+    weakest_assumption: "The weakest assumption is that this clip contains the full record.",
+    questions: [
+      "What source establishes the baseline?",
+      "Is there missing context outside this segment?",
+    ],
+    confidence: "medium",
+    model: "xai/grok-4.1-fast-reasoning",
+  },
+  at: 1_716_000_004_000,
 };
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -108,6 +128,38 @@ describe("toSession() — synthesis persistence", () => {
     expect(session.synthesis).toBeDefined();
     // PersistedSynthesis must not carry the discriminant 'state' field
     expect((session.synthesis as Record<string, unknown>)["state"]).toBeUndefined();
+  });
+});
+
+// ─── Devil's Advocate persistence ─────────────────────────────────────────────
+
+describe("toSession() / restoreSession() — Devil's Advocate persistence", () => {
+  beforeEach(() => {
+    useSession.getState().reset();
+  });
+
+  it("persists a fresh Grok Devil's Advocate brief", () => {
+    useSession.getState().setDevilAdvocate(FRESH_DEVIL_ADVOCATE);
+    const session = useSession.getState().toSession();
+
+    expect(session.devil_advocate).toBeDefined();
+    expect(session.devil_advocate!.stance).toBe(FRESH_DEVIL_ADVOCATE.brief.stance);
+    expect(session.devil_advocate!.model).toBe("xai/grok-4.1-fast-reasoning");
+  });
+
+  it("rehydrates a saved Devil's Advocate brief as fresh", () => {
+    useSession.getState().setDevilAdvocate(FRESH_DEVIL_ADVOCATE);
+    const saved = useSession.getState().toSession();
+
+    useSession.getState().reset();
+    useSession.getState().restoreSession(saved);
+
+    const restored = useSession.getState().devilAdvocate;
+    expect(restored?.state).toBe("fresh");
+    if (restored?.state === "fresh") {
+      expect(restored.brief.stance).toBe(FRESH_DEVIL_ADVOCATE.brief.stance);
+      expect(restored.brief.questions).toEqual(FRESH_DEVIL_ADVOCATE.brief.questions);
+    }
   });
 });
 

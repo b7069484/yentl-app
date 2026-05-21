@@ -41,6 +41,7 @@ Rules:
 - For utterance_start/utterance_end, use the timestamps provided for the latest utterance.
 
 ENTITY ANCHORING (critical for verification):
+- CONTEXT may include SOURCE_CONTEXT from the page title, channel, author, username, canonical URL, and detected names. Use it for disambiguation, not as proof of a factual claim.
 - For every named person, organization, or location in claim_text, include their MOST SPECIFIC identifier available in CONTEXT (title, role, affiliation, date). NEVER use a bare proper name when CONTEXT establishes a disambiguating role.
   Example BAD: "Joe Kent resigned from his position."
   Example GOOD: "Joe Kent, Director of the National Counterterrorism Center under Trump, resigned in protest of the Iran war policy."
@@ -63,7 +64,7 @@ export function userPrompt(args: {
   return `LATEST_UTTERANCE (start=${args.utterance_start}, end=${args.utterance_end}):
 ${args.utterance}
 
-CONTEXT (preceding ~30s):
+CONTEXT (source metadata + preceding ~30s):
 ${args.context}
 
 RECENT_HASHES:

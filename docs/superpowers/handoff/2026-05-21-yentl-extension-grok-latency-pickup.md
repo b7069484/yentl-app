@@ -252,6 +252,87 @@ Types:
 The state is intentionally not persisted yet. A future session should decide whether
 saved sessions should preserve the latest Devil's Advocate brief alongside synthesis.
 
+### 6. Extension panel is now tabbed around Transcript, Claims, and Markers
+
+File:
+
+- `components/session/extension-panel-view.tsx`
+
+The user rejected the stacked panel because it forced status cards, snapshots, Devil's
+Advocate, transcript, and evidence into one long scroll. The panel now treats the three
+core analysis objects as primary navigation:
+
+- `Transcript` tab shows elapsed transcript time.
+- `Claims` tab shows claim count.
+- `Markers` tab shows marker count.
+
+The active tab controls the whole body below the status card:
+
+- Transcript tab shows live transcript lines with inline highlighting.
+- Claims tab shows claim summary, expandable claim checks, and Devil's Advocate at the
+  bottom.
+- Markers tab shows marker summary and expandable marker details.
+
+Inline transcript colors:
+
+- yellow = claim
+- orange = bias/rhetoric marker
+- red = fallacy
+
+Highlighted transcript spans carry hover/focus titles with the attached claim or marker
+detail. This is only a first interaction pass; the next product pass should replace
+native title hover with a designed popover so touch/mobile users can inspect highlights.
+
+Related test:
+
+- `tests/extension-panel-view.test.tsx`
+
+### 7. Browser tab source context is now captured and sent into analysis prompts
+
+Files:
+
+- `extension/content-script.js`
+- `components/session/ExtensionBridge.tsx`
+- `lib/types.ts`
+- `lib/client/orchestrator.ts`
+- `lib/prompts/extract-claims.ts`
+- `lib/prompts/analyze-rhetoric.ts`
+- `lib/prompts/devil-advocate.ts`
+- `app/api/verify-provisional/route.ts`
+- `app/api/verify-confirmed/route.ts`
+
+The extension now emits a `page-context` bridge message and also attaches
+`source_context` to page-text snapshots. Captured context includes:
+
+- page title
+- site name
+- channel name when visible
+- author/byline when visible
+- username/creator hints when visible
+- canonical URL
+- description
+- detected proper-name candidates from the metadata fields
+
+The session source stores that context under `source.context` for browser-tab sessions.
+The client orchestrator forwards source context into:
+
+- claim extraction
+- rhetoric analysis
+- provisional verification
+- confirmed verification
+- Grok Devil's Advocate
+
+Important truth-in-labeling: this is not yet a full "famous speaker lookup" or entity
+resolver. It gives the models the available page/channel/title context for disambiguation
+and better search phrasing. A future layer should add explicit entity resolution, e.g.
+derive candidate people from title/channel/transcript, search/lookup stable identifiers,
+and show those assumptions in the UI before treating them as context.
+
+Related tests:
+
+- `tests/extension-content-script.test.ts`
+- `tests/extension-bridge.test.tsx`
+
 ## Current test and build evidence
 
 Focused tests run after the latest changes:
@@ -276,9 +357,9 @@ npm run build
 
 Results:
 
-- `npm run test:run`: 99 files, 1170 tests passed
+- `npm run test:run`: 99 files, 1171 tests passed
 - `npx tsc --noEmit`: passed
-- `npm run lint`: 0 errors, 21 existing warnings
+- `npm run lint`: 0 errors, 18 existing warnings
 - `npm run build`: passed
 
 Known harmless/noisy output:
@@ -298,11 +379,16 @@ http://localhost:3000/session?surface=extension-panel&source=browser-tab&bridge=
 Visible body included:
 
 - `Transcribing`
-- `Analysis snapshot`
-- `DEVIL'S ADVOCATE`
+- tab row with `Transcript`, `Claims`, and `Markers`
+- Claims tab selected with `1 claims · 1 need evidence`
+- `DEVIL'S ADVOCATE` under the Claims tab
 - `Grok`
 - `Counterpoints and questions`
 - no `Overview` header from the full session shell
+
+Screenshot captured during verification:
+
+- `/tmp/yentl-extension-panel-claims-tab.png`
 
 ## How to test the real extension next
 
@@ -559,4 +645,3 @@ npm run dev
 Then reload the unpacked extension in Chrome and run the manual local fixture test before
 changing more UI. The next big decision should be based on what actually happens in
 Chrome with the real extension after the latency fix.
-

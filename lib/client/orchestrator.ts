@@ -4,10 +4,12 @@ import { useSession } from "./session-store";
 import { hashClaim, RecentSet } from "@/lib/dedup";
 import { getEntry } from "@/lib/taxonomy";
 import type {
+  BrowserTabContext,
   ClaimCard,
   RhetoricMarker,
   Source,
   SourcePreview,
+  SessionSource,
   SpeakerId,
   TranscriptSegment,
 } from "@/lib/types";
@@ -33,6 +35,70 @@ type ExtractedClaim = {
   topic_secondary: string | null;
 };
 
+function compactContextPairs(pairs: Array<[string, string | string[] | number | undefined | null]>) {
+  return pairs
+    .flatMap(([label, value]) => {
+      if (Array.isArray(value)) {
+        return value.length > 0 ? [`${label}: ${value.join(", ")}`] : [];
+      }
+      if (value === undefined || value === null || value === "") return [];
+      return [`${label}: ${String(value)}`];
+    })
+    .join("\n");
+}
+
+function browserContextForPrompt(context?: BrowserTabContext) {
+  if (!context) return "";
+  return compactContextPairs([
+    ["page title", context.page_title],
+    ["site", context.site_name],
+    ["channel", context.channel_name],
+    ["author", context.author_name],
+    ["username", context.username],
+    ["canonical url", context.canonical_url],
+    ["description", context.description],
+    ["detected names", context.detected_names],
+  ]);
+}
+
+function sourceContextForPrompt(source: SessionSource) {
+  if (source.kind === "browser_tab") {
+    return browserContextForPrompt({
+      ...(source.context ?? {}),
+      page_title: source.context?.page_title ?? source.title,
+      canonical_url: source.context?.canonical_url ?? source.url,
+    });
+  }
+
+  if (source.kind === "youtube") {
+    return compactContextPairs([
+      ["source type", "YouTube"],
+      ["title", source.title],
+      ["channel", source.channel],
+      ["url", source.url],
+      ["video id", source.video_id],
+      ["duration seconds", source.duration_sec],
+    ]);
+  }
+
+  if (source.kind === "media_url") {
+    return compactContextPairs([
+      ["source type", "media URL"],
+      ["url", source.url],
+    ]);
+  }
+
+  if (source.kind === "audio_file" || source.kind === "text_doc") {
+    return compactContextPairs([
+      ["source type", source.kind],
+      ["filename", source.filename],
+      ["mime", source.mime],
+    ]);
+  }
+
+  return "";
+}
+
 export function attributeMarker(
   m: { start_time: number; end_time: number },
   transcript: TranscriptSegment[],
@@ -50,15 +116,20 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
   maybeRunSynthesis();
   maybeRunDevilAdvocate();
 
-  const { transcript } = useSession.getState();
+  const { transcript, source } = useSession.getState();
 
   const cutoff = segment.start - 30;
   // Committee amendment (Linguist): thread speaker labels into CONTEXT so the
   // model can distinguish first-person assertion from reported speech.
-  const ctx = transcript
+  const transcriptContext = transcript
     .filter((s) => s.end >= cutoff)
     .map((s) => s.speaker_id !== null ? `[Speaker ${s.speaker_id}] ${s.text}` : s.text)
     .join(" ");
+  const sourceContext = sourceContextForPrompt(source);
+  const ctx = [
+    sourceContext ? `SOURCE_CONTEXT:\n${sourceContext}` : "",
+    `TRANSCRIPT_CONTEXT:\n${transcriptContext}`,
+  ].filter(Boolean).join("\n\n");
 
   let res: Response;
   try {
@@ -103,8 +174,8 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
     };
     useSession.getState().addClaim(card);
 
-    void verifyProvisional(card.id, c.claim_text);
-    void verifyConfirmed(card.id, c.claim_text);
+    void verifyProvisional(card.id, c.claim_text, sourceContext);
+    void verifyConfirmed(card.id, c.claim_text, sourceContext);
   }
 }
 
@@ -328,6 +399,7 @@ async function runDevilAdvocate(opts?: { fullTranscript?: TranscriptSegment[] })
           speaker_id: marker.speaker_id,
           explanation: marker.explanation,
         })),
+        source_context: sourceContextForPrompt(state.source),
       }),
       signal,
     });
@@ -371,7 +443,7 @@ async function runDevilAdvocate(opts?: { fullTranscript?: TranscriptSegment[] })
 }
 
 async function runRhetoric() {
-  const { transcript } = useSession.getState();
+  const { transcript, source } = useSession.getState();
   if (transcript.length === 0) return;
 
   const last = transcript[transcript.length - 1];
@@ -389,6 +461,7 @@ async function runRhetoric() {
       body: JSON.stringify({
         transcript_window: win,
         recent_hashes: recentMarkerHashes.toArray(),
+        source_context: sourceContextForPrompt(source),
       }),
     });
   } catch (e) {
@@ -430,13 +503,13 @@ async function runRhetoric() {
   }
 }
 
-async function verifyProvisional(id: string, claim_text: string) {
+async function verifyProvisional(id: string, claim_text: string, source_context?: string) {
   let res: Response;
   try {
     res = await fetch("/api/verify-provisional", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ claim_text }),
+      body: JSON.stringify({ claim_text, source_context }),
     });
   } catch (e) {
     console.error("verify-provisional fetch failed", e);
@@ -449,13 +522,13 @@ async function verifyProvisional(id: string, claim_text: string) {
   useSession.getState().updateClaim(id, { ...data, status: "provisional" });
 }
 
-async function verifyConfirmed(id: string, claim_text: string) {
+async function verifyConfirmed(id: string, claim_text: string, source_context?: string) {
   let res: Response;
   try {
     res = await fetch("/api/verify-confirmed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ claim_text }),
+      body: JSON.stringify({ claim_text, source_context }),
     });
   } catch (e) {
     console.error("verify-confirmed fetch failed", e);

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { onFinalUtterance, runFinalSynthesis } from "@/lib/client/orchestrator";
 import { useSession } from "@/lib/client/session-store";
-import type { TranscriptSegment } from "@/lib/types";
+import type { BrowserTabContext, TranscriptSegment } from "@/lib/types";
 
 export const EXTENSION_MESSAGE_SOURCE = "yentl-tab-capture-extension";
 export const APP_BRIDGE_SOURCE = "yentl-web-app";
@@ -22,6 +22,18 @@ type ExtensionMessage =
         tab_id?: number;
         title?: string;
         url?: string;
+        source_context?: BrowserTabContext;
+      };
+    }
+  | {
+      source: typeof EXTENSION_MESSAGE_SOURCE;
+      type: "page-context";
+      bridgeToken?: string;
+      payload?: {
+        title?: string;
+        url?: string;
+        source_context?: BrowserTabContext;
+        captured_at?: number;
       };
     }
   | {
@@ -48,6 +60,7 @@ type ExtensionMessage =
       payload?: {
         title?: string;
         url?: string;
+        source_context?: BrowserTabContext;
         text?: string;
         chunks?: Array<{
           text?: string;
@@ -85,6 +98,7 @@ type BrowserTabSessionPayload = {
   tab_id?: number;
   title?: string;
   url?: string;
+  source_context?: BrowserTabContext;
 };
 
 function getBridgeToken() {
@@ -179,13 +193,21 @@ function ensureBrowserTabSession(payload?: BrowserTabSessionPayload): boolean {
     ...(typeof payload?.tab_id === "number" ? { tab_id: payload.tab_id } : {}),
     ...(payload?.title ? { title: payload.title } : {}),
     ...(payload?.url ? { url: payload.url } : {}),
+    ...(payload?.source_context ? { context: payload.source_context } : {}),
   };
 
   if (!state.startedAt) {
     state.setSource(source);
     state.startSession(payload?.title ? `Browser tab: ${payload.title}` : "Browser tab capture");
   } else if (state.source.kind === "browser_tab") {
-    state.setSource({ ...state.source, ...source });
+    state.setSource({
+      ...state.source,
+      ...source,
+      context: {
+        ...(state.source.context ?? {}),
+        ...(source.context ?? {}),
+      },
+    });
   }
 
   useSession.getState().setBrowserTabStatus({
@@ -198,6 +220,27 @@ function ensureBrowserTabSession(payload?: BrowserTabSessionPayload): boolean {
   });
   useSession.getState().setRecording(true);
   return true;
+}
+
+function appendPageContext(payload: Extract<ExtensionMessage, { type: "page-context" }>["payload"]) {
+  if (!ensureBrowserTabSession({
+    title: payload?.title,
+    url: payload?.url,
+    source_context: payload?.source_context,
+  })) return;
+
+  const state = useSession.getState();
+  if (state.source.kind !== "browser_tab") return;
+
+  useSession.getState().setSource({
+    ...state.source,
+    ...(payload?.title ? { title: payload.title } : {}),
+    ...(payload?.url ? { url: payload.url } : {}),
+    context: {
+      ...(state.source.context ?? {}),
+      ...(payload?.source_context ?? {}),
+    },
+  });
 }
 
 function toSegment(payload: Extract<ExtensionMessage, { type: "transcript-final" }>["payload"]): TranscriptSegment | null {
@@ -267,7 +310,11 @@ function chunkPageText(text: string) {
 function appendPageText(payload: Extract<ExtensionMessage, { type: "page-text" }>["payload"]) {
   const segments = toPageTextSegments(payload);
   if (segments.length === 0) return;
-  if (!ensureBrowserTabSession({ title: payload?.title, url: payload?.url })) return;
+  if (!ensureBrowserTabSession({
+    title: payload?.title,
+    url: payload?.url,
+    source_context: payload?.source_context,
+  })) return;
 
   const state = useSession.getState();
   const existingText = new Set(state.transcript.map((segment) => segment.text.trim()));
@@ -296,11 +343,14 @@ function appendPageText(payload: Extract<ExtensionMessage, { type: "page-text" }
 
 export function ExtensionBridge() {
   useEffect(() => {
+    const isValidationDemo = new URLSearchParams(window.location.search).get("demo") === "validation";
+
     function handleMessage(event: MessageEvent) {
       if (!isExtensionMessage(event.data)) return;
       if (!isAllowedExtensionMessageEvent(event, event.data)) return;
 
       const msg = event.data;
+      if (isValidationDemo && msg.type === "capture-status") return;
 
       if (msg.type === "capture-start") {
         ensureBrowserTabSession(msg.payload);
@@ -309,6 +359,11 @@ export function ExtensionBridge() {
 
       if (msg.type === "page-text") {
         appendPageText(msg.payload);
+        return;
+      }
+
+      if (msg.type === "page-context") {
+        appendPageContext(msg.payload);
         return;
       }
 
@@ -416,7 +471,9 @@ export function ExtensionBridge() {
 
     window.addEventListener("message", handleMessage);
     postAppBridgeMessage({ source: APP_BRIDGE_SOURCE, type: "bridge-ready" });
-    requestBrowserTabCaptureStatus();
+    if (!isValidationDemo) {
+      requestBrowserTabCaptureStatus();
+    }
 
     return () => window.removeEventListener("message", handleMessage);
   }, []);

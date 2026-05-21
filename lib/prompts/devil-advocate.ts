@@ -27,6 +27,7 @@ export const DevilAdvocateRequest = z.object({
       explanation: z.string().optional(),
     }),
   ).default([]),
+  source_context: z.string().optional(),
 });
 
 export const DevilAdvocateResponse = z.object({
@@ -50,6 +51,7 @@ Return JSON only:
 
 Rules:
 - Do not invent facts, sources, statistics, or events not present in the input.
+- Use source context only to disambiguate people, channels, pages, and topics. Do not treat page metadata as external evidence.
 - Do not reverse a claim verdict unless the input itself supports the challenge.
 - If the transcript is thin, say so and keep confidence low.
 - Avoid snark. Be sharp, fair, and useful.`;
@@ -83,7 +85,11 @@ export function userPrompt(args: z.infer<typeof DevilAdvocateRequest>): string {
         .join("\n")
     : "(none yet)";
 
-  return `TRANSCRIPT:
+  const sourceContext = args.source_context?.trim()
+    ? `SOURCE_CONTEXT:\n${args.source_context.trim()}\n\n`
+    : "";
+
+  return `${sourceContext}TRANSCRIPT:
 ${utterances}
 
 CURRENT CLAIM ANALYSIS:

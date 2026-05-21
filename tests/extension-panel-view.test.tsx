@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ExtensionPanelView } from "@/components/session/extension-panel-view";
 import { useSession } from "@/lib/client/session-store";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
@@ -96,7 +96,7 @@ describe("ExtensionPanelView", () => {
     expect(screen.queryByText(/How would you like to fact-check/i)).toBeNull();
   });
 
-  it("shows live transcript, verdict summary, marker summary, and expandable evidence without desktop chrome", () => {
+  it("shows transcript highlights, tabbed claim checks, marker details, and Grok challenge without desktop chrome", () => {
     useSession.getState().setSource({
       kind: "browser_tab",
       title: "Council hearing",
@@ -151,16 +151,24 @@ describe("ExtensionPanelView", () => {
     expect(screen.getByText("Council hearing")).toBeTruthy();
     expect(screen.getByText("Building the live transcript")).toBeTruthy();
     expect(screen.getByText(/doubled the budget without showing/i)).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /Transcript/i })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: /Claims/i })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /Markers/i })).toBeTruthy();
+    expect(screen.queryByText("Devil's advocate")).toBeNull();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
+
     expect(screen.getByText("3 claims · 2 false/misleading")).toBeTruthy();
-    expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
-    expect(screen.getByText("Claims (3)")).toBeTruthy();
-    expect(screen.getByText("Markers (1)")).toBeTruthy();
     expect(screen.getByText("FALSE")).toBeTruthy();
-    expect(screen.getByText("Loaded language")).toBeTruthy();
     expect(screen.getByText("Devil's advocate")).toBeTruthy();
     expect(screen.getByText("Grok")).toBeTruthy();
     expect(screen.getByText(/audit claim outruns the visible evidence/i)).toBeTruthy();
     expect(screen.getByText("Counterpoints and questions")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
+
+    expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
+    expect(screen.getByText("Loaded language")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
   });
 
@@ -175,9 +183,15 @@ describe("ExtensionPanelView", () => {
 
     expect(await screen.findByText("Transcribing")).toBeTruthy();
     expect(screen.getAllByText(/library budget increased by 12 percent/i).length).toBeGreaterThanOrEqual(1);
+
+    fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
+
     expect(screen.getByText("UNVERIFIABLE")).toBeTruthy();
-    expect(screen.getByText("Premature certainty")).toBeTruthy();
     expect(screen.getByText("Devil's advocate")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
+
+    expect(screen.getByText("Premature certainty")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
   });
 });

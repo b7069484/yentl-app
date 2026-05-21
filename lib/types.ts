@@ -122,9 +122,20 @@ export type SourcePreview = {
 
 /* ── Session provenance (added in Sprint 1) ────────────────────── */
 
+export type BrowserTabContext = {
+  page_title?: string;
+  site_name?: string;
+  channel_name?: string;
+  author_name?: string;
+  username?: string;
+  description?: string;
+  canonical_url?: string;
+  detected_names?: string[];
+};
+
 export type SessionSource =
   | { kind: "mic" }
-  | { kind: "browser_tab"; tab_id?: number; title?: string; url?: string }
+  | { kind: "browser_tab"; tab_id?: number; title?: string; url?: string; context?: BrowserTabContext }
   | { kind: "audio_file"; blob_url: string; duration_sec: number; filename: string; mime: string }
   | { kind: "text_doc"; filename: string; mime: string; byte_count: number }
   | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }

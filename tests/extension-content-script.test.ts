@@ -62,6 +62,13 @@ describe("extension content script panel", () => {
   });
 
   it("captures readable text from the real active page and sends it to the panel", () => {
+    document.title = "Transit hearing";
+    document.head.innerHTML = `
+      <meta property="og:site_name" content="News Example">
+      <meta name="author" content="Maya Cohen">
+      <meta name="description" content="A city transit hearing with budget and commute claims.">
+      <link rel="canonical" href="https://news.example.test/transit-hearing">
+    `;
     document.body.innerHTML = `
       <article>
         <h1>City budget hearing centers on public transit claims</h1>
@@ -111,6 +118,23 @@ describe("extension content script panel", () => {
       }),
     );
 
+    const pageContextMessage = postMessage.mock.calls.find(([message]) =>
+      message.type === "page-context",
+    )?.[0];
+    expect(pageContextMessage).toMatchObject({
+      source: "yentl-tab-capture-extension",
+      type: "page-context",
+      payload: {
+        source_context: {
+          page_title: "Transit hearing",
+          site_name: "News Example",
+          author_name: "Maya Cohen",
+          canonical_url: "https://news.example.test/transit-hearing",
+          detected_names: expect.arrayContaining(["News Example", "Maya Cohen"]),
+        },
+      },
+    });
+
     expect(postMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         source: "yentl-tab-capture-extension",
@@ -119,6 +143,10 @@ describe("extension content script panel", () => {
         payload: expect.objectContaining({
           title: "Transit hearing",
           url: "https://news.example.test/transit-hearing",
+          source_context: expect.objectContaining({
+            page_title: "Transit hearing",
+            author_name: "Maya Cohen",
+          }),
           chunks: expect.arrayContaining([
             expect.objectContaining({
               text: expect.stringContaining("transit plan would cut commute times"),

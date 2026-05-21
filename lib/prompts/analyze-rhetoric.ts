@@ -42,14 +42,23 @@ Do NOT return any marker whose hash is in RECENT_HASHES — those are already kn
 
 If the window has none of the above, return { "markers": [] }.
 
+SOURCE CONTEXT:
+- The prompt may include page title, channel, author, username, canonical URL, or detected names. Use this only to understand who/what the transcript is likely about.
+- Do not create markers from source metadata alone. Markers must still quote the transcript.
+
 TAXONOMY:
 ${taxonomyHints()}`;
 
 export function userPrompt(args: {
   transcript_window: string;
   recent_hashes: string[];
+  source_context?: string;
 }): string {
-  return `TRANSCRIPT_WINDOW:
+  const sourceContext = args.source_context?.trim()
+    ? `SOURCE_CONTEXT:\n${args.source_context.trim()}\n\n`
+    : "";
+
+  return `${sourceContext}TRANSCRIPT_WINDOW:
 ${args.transcript_window}
 
 RECENT_HASHES:

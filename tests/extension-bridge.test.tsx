@@ -144,6 +144,12 @@ describe("ExtensionBridge", () => {
         payload: {
           title: "Real article",
           url: "https://en.wikinews.org/wiki/Real_article",
+          source_context: {
+            page_title: "Real article",
+            site_name: "Wikinews",
+            author_name: "Reporter Name",
+            detected_names: ["Reporter Name"],
+          },
           chunks: [
             {
               text: "Officials ordered residents to shelter in place after a gas leak while crews tested the air.",
@@ -162,6 +168,12 @@ describe("ExtensionBridge", () => {
       kind: "browser_tab",
       title: "Real article",
       url: "https://en.wikinews.org/wiki/Real_article",
+      context: {
+        page_title: "Real article",
+        site_name: "Wikinews",
+        author_name: "Reporter Name",
+        detected_names: ["Reporter Name"],
+      },
     });
     expect(state.browserTabStatus.phase).toBe("transcribing");
     expect(state.browserTabStatus.message).toContain("Page text captured");
@@ -177,6 +189,41 @@ describe("ExtensionBridge", () => {
     expect(mocks.onFinalUtterance).toHaveBeenCalledWith(
       expect.objectContaining({ speaker_id: null }),
     );
+  });
+
+  it("merges page source context before speech arrives", () => {
+    render(<ExtensionBridge />);
+
+    act(() => {
+      dispatchExtensionMessage({
+        source: EXTENSION_MESSAGE_SOURCE,
+        type: "page-context",
+        payload: {
+          title: "Tucker Debates Kevin O'Leary",
+          url: "https://www.youtube.com/watch?v=test",
+          source_context: {
+            page_title: "Tucker Debates Kevin O'Leary",
+            site_name: "YouTube",
+            channel_name: "Tucker Carlson",
+            detected_names: ["Tucker Carlson", "Kevin Leary"],
+          },
+        },
+      });
+    });
+
+    const state = useSession.getState();
+    expect(state.startedAt).not.toBeNull();
+    expect(state.source).toEqual({
+      kind: "browser_tab",
+      title: "Tucker Debates Kevin O'Leary",
+      url: "https://www.youtube.com/watch?v=test",
+      context: {
+        page_title: "Tucker Debates Kevin O'Leary",
+        site_name: "YouTube",
+        channel_name: "Tucker Carlson",
+        detected_names: ["Tucker Carlson", "Kevin Leary"],
+      },
+    });
   });
 
   it("surfaces a connected-but-no-speech status from the offscreen capture path", () => {

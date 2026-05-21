@@ -332,6 +332,15 @@ function reservePageSpace() {
 }
 
 function enqueuePageTextSnapshot(tab) {
+  const context = collectPageContextSnapshot(tab);
+  if (context) {
+    enqueueOrPost({
+      source: EXTENSION_MESSAGE_SOURCE,
+      type: "page-context",
+      payload: context,
+    });
+  }
+
   const snapshot = collectPageTextSnapshot(tab);
   if (!snapshot) return;
 
@@ -340,6 +349,18 @@ function enqueuePageTextSnapshot(tab) {
     type: "page-text",
     payload: snapshot,
   });
+}
+
+function collectPageContextSnapshot(tab) {
+  const sourceContext = collectSourceContext(tab);
+  if (!sourceContext) return null;
+
+  return {
+    title: tab?.title || document.title || "",
+    url: tab?.url || window.location.href,
+    source_context: sourceContext,
+    captured_at: Date.now(),
+  };
 }
 
 function collectPageTextSnapshot(tab) {
@@ -352,10 +373,77 @@ function collectPageTextSnapshot(tab) {
   return {
     title: tab?.title || document.title || "",
     url: tab?.url || window.location.href,
+    source_context: collectSourceContext(tab),
     text: text.slice(0, MAX_PAGE_TEXT_CHARS),
     chunks,
     captured_at: Date.now(),
   };
+}
+
+function collectSourceContext(tab) {
+  const title = tab?.title || document.title || metaContent("og:title") || metaContent("twitter:title") || "";
+  const siteName = metaContent("og:site_name");
+  const description = metaContent("description") || metaContent("og:description") || metaContent("twitter:description");
+  const authorName =
+    metaContent("author") ||
+    metaContent("article:author") ||
+    textFromSelector("[itemprop='author'] [itemprop='name'], [rel='author'], .author, .byline");
+  const channelName =
+    textFromSelector("#owner #channel-name a, #channel-name #text, ytd-channel-name a, [itemprop='author'] [itemprop='name']") ||
+    siteName;
+  const username =
+    metaContent("twitter:creator") ||
+    document.querySelector("meta[itemprop='channelId']")?.getAttribute("content")?.trim() ||
+    textFromSelector(".username, [data-testid='User-Name']");
+  const canonicalUrl = document.querySelector("link[rel='canonical']")?.getAttribute("href") || tab?.url || window.location.href;
+  const detectedNames = Array.from(new Set([
+    title,
+    channelName,
+    authorName,
+    metaContent("twitter:creator"),
+    metaContent("article:author"),
+  ].filter(Boolean).flatMap((value) => detectNames(value)))).slice(0, 8);
+
+  const context = {
+    page_title: title || undefined,
+    site_name: siteName || undefined,
+    channel_name: channelName || undefined,
+    author_name: authorName || undefined,
+    username: username || undefined,
+    description: description || undefined,
+    canonical_url: canonicalUrl || undefined,
+    detected_names: detectedNames,
+  };
+
+  return Object.fromEntries(
+    Object.entries(context).filter(([, value]) =>
+      Array.isArray(value) ? value.length > 0 : Boolean(value),
+    ),
+  );
+}
+
+function metaContent(name) {
+  if (!name) return "";
+  return document
+    .querySelector(`meta[name="${cssEscape(name)}"], meta[property="${cssEscape(name)}"]`)
+    ?.getAttribute("content")
+    ?.trim() || "";
+}
+
+function textFromSelector(selector) {
+  const node = document.querySelector(selector);
+  return normalizeText(node?.textContent || "");
+}
+
+function detectNames(text) {
+  const matches = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}\b/g) || [];
+  return Array.from(new Set(matches))
+    .filter((name) => !/^(YouTube|Wikimedia Commons|Breaking News|Live Stream)$/i.test(name));
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) return window.CSS.escape(value);
+  return value.replace(/["\\]/g, "\\$&");
 }
 
 function extractReadablePageText() {

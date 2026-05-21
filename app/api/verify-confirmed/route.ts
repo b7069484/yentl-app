@@ -4,20 +4,23 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { opus } from "@/lib/server/anthropic";
 import { SYSTEM, VerifyConfirmedResponse } from "@/lib/prompts/verify-confirmed";
 import { classifyDomain, extractDomain } from "@/lib/reputation";
-import type { Source, Stance } from "@/lib/types";
 import { mergeStanceWithCitations } from "./citations";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  const { claim_text } = await req.json();
+  const { claim_text, source_context } = await req.json();
+  const context = typeof source_context === "string" && source_context.trim()
+    ? `SOURCE_CONTEXT (for disambiguation only; not evidence):\n${source_context.trim()}\n\n`
+    : "";
+
   try {
     const result = await generateText({
       model: opus,
       output: Output.object({ schema: VerifyConfirmedResponse }),
       system: SYSTEM,
-      prompt: `CLAIM:\n${claim_text}`,
+      prompt: `${context}CLAIM:\n${claim_text}`,
       tools: {
         web_search: anthropic.tools.webSearch_20260209({ maxUses: 5 }),
       },

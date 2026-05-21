@@ -129,4 +129,61 @@ describe("extension content script panel", () => {
       "http://localhost:3000",
     );
   });
+
+  it("filters Wikimedia annotation boilerplate before sending page text", () => {
+    document.body.innerHTML = `
+      <main>
+        <p>Text of the note (may include Wiki markup) Add a note Draw a rectangle onto the image above. This file has annotations.</p>
+        <p>[[MediaWiki talk:Gadget-ImageAnnotator.js|Adding image note]] Changing image note Removing image note</p>
+        <p class="description">English: David Korten in conversation with Silver Donald Cameron about environmental economics and democratic reform.</p>
+        <p>The interview discusses how public policy, corporate power, and local communities shape economic choices.</p>
+      </main>
+    `;
+    const { listeners } = loadContentScript();
+    const sendResponse = vi.fn();
+
+    listeners[0](
+      {
+        target: "yentl-content-script",
+        type: "open-panel",
+        appOrigin: "http://localhost:3000",
+        bridgeToken: "bridge-wiki",
+        tab: {
+          title: "Wikimedia video",
+          url: "https://commons.wikimedia.org/wiki/File:David_Korten.webm",
+        },
+      },
+      {},
+      sendResponse,
+    );
+
+    const iframe = document
+      .getElementById("yentl-extension-panel-host")
+      ?.shadowRoot?.querySelector("iframe") as HTMLIFrameElement | null;
+    const postMessage = vi.fn();
+    const panelWindow = { postMessage } as unknown as Window;
+    Object.defineProperty(iframe!, "contentWindow", {
+      configurable: true,
+      value: panelWindow,
+    });
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: {
+          source: "yentl-web-app",
+          type: "bridge-ready",
+          bridgeToken: "bridge-wiki",
+        },
+        origin: "http://localhost:3000",
+        source: panelWindow,
+      }),
+    );
+
+    const pageTextMessage = postMessage.mock.calls.find(([message]) =>
+      message.type === "page-text",
+    )?.[0];
+    expect(pageTextMessage.payload.text).toContain("David Korten in conversation");
+    expect(pageTextMessage.payload.text).not.toContain("Text of the note");
+    expect(pageTextMessage.payload.text).not.toContain("Gadget-ImageAnnotator");
+  });
 });

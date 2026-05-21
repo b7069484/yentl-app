@@ -140,6 +140,91 @@ function latestMarkers(markers: RhetoricMarker[]) {
   return markers.slice(-3).reverse();
 }
 
+function displayVerdict(label: ClaimCard["primary_label"]) {
+  return label.replaceAll("_", " ");
+}
+
+function verdictTone(label: ClaimCard["primary_label"]) {
+  if (label === "FALSE" || label === "MISLEADING" || label === "OMISSION") {
+    return "border-red-soft bg-red-soft/45 text-red";
+  }
+  if (label === "PARTIAL" || label === "UNVERIFIABLE") {
+    return "border-amber/35 bg-amber-50 text-amber-900";
+  }
+  if (label === "TRUE" || label === "MOSTLY_TRUE") {
+    return "border-green/20 bg-green-soft text-green";
+  }
+  return "border-line bg-cream text-ink-3";
+}
+
+function severityTone(severity: RhetoricMarker["severity"]) {
+  if (severity === "blatant") return "border-red-soft bg-red-soft/45 text-red";
+  if (severity === "clear") return "border-amber/35 bg-amber-50 text-amber-900";
+  return "border-line bg-cream text-ink-3";
+}
+
+function claimInsight(claims: ClaimCard[]) {
+  const visible = claims.filter((claim) => claim.status !== "checking");
+  const falseOrMisleading = visible.filter((claim) =>
+    claim.primary_label === "FALSE" ||
+    claim.primary_label === "MISLEADING" ||
+    claim.primary_label === "OMISSION",
+  );
+  const unresolved = visible.filter((claim) =>
+    claim.primary_label === "UNVERIFIABLE" || claim.primary_label === "PARTIAL",
+  );
+
+  if (visible.length === 0) {
+    return {
+      headline: "No claims yet",
+      detail: "Yentl has not extracted a checkable claim from this page or audio yet.",
+      tone: "border-line bg-cream text-ink-3",
+    };
+  }
+
+  if (falseOrMisleading.length > 0) {
+    return {
+      headline: `${visible.length} claims · ${falseOrMisleading.length} false/misleading`,
+      detail: "Review these first. They are the highest-risk factual moments in this panel.",
+      tone: "border-red-soft bg-red-soft/45 text-red",
+    };
+  }
+
+  if (unresolved.length > 0) {
+    return {
+      headline: `${visible.length} claims · ${unresolved.length} need evidence`,
+      detail: "These are checkable, but Yentl needs stronger source support before calling them.",
+      tone: "border-amber/35 bg-amber-50 text-amber-900",
+    };
+  }
+
+  return {
+    headline: `${visible.length} claims checked`,
+    detail: "No false or misleading claim has been surfaced yet.",
+    tone: "border-green/20 bg-green-soft text-green",
+  };
+}
+
+function markerInsight(markers: RhetoricMarker[]) {
+  const strong = markers.filter((marker) => marker.severity === "clear" || marker.severity === "blatant");
+
+  if (markers.length === 0) {
+    return {
+      headline: "No markers yet",
+      detail: "Rhetorical markers will appear when Yentl detects fallacies, bias, or loaded phrasing.",
+      tone: "border-line bg-cream text-ink-3",
+    };
+  }
+
+  return {
+    headline: `${markers.length} markers · ${strong.length} clear/blatant`,
+    detail: "Open the marker details below for the phrase, pattern, and why it matters.",
+    tone: strong.length > 0
+      ? "border-amber/35 bg-amber-50 text-amber-900"
+      : "border-line bg-cream text-ink-3",
+  };
+}
+
 function useValidationDemo() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -265,6 +350,8 @@ export function ExtensionPanelView() {
   const claimRows = latestClaims(claims);
   const markerRows = latestMarkers(markers);
   const host = sourceHost(source, status);
+  const claimSnapshot = claimInsight(claims);
+  const markerSnapshot = markerInsight(markers);
 
   return (
     <section className="flex h-dvh min-h-screen flex-col overflow-hidden bg-cream text-ink">
@@ -331,6 +418,27 @@ export function ExtensionPanelView() {
             </div>
           </section>
 
+          <section className="rounded-lg border border-line bg-paper p-4 shadow-sm">
+            <div className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
+              <SearchCheck className="h-4 w-4" aria-hidden />
+              Analysis snapshot
+            </div>
+            <div className="grid gap-2">
+              <InsightPill
+                label="Claims"
+                headline={claimSnapshot.headline}
+                detail={claimSnapshot.detail}
+                tone={claimSnapshot.tone}
+              />
+              <InsightPill
+                label="Markers"
+                headline={markerSnapshot.headline}
+                detail={markerSnapshot.detail}
+                tone={markerSnapshot.tone}
+              />
+            </div>
+          </section>
+
           <section className="rounded-lg border border-line bg-paper shadow-sm">
             <PanelHeader icon={<Captions className="h-4 w-4" aria-hidden />} label="Live transcript" />
             <div className="space-y-3 px-4 pb-4">
@@ -368,27 +476,67 @@ export function ExtensionPanelView() {
                   Claims and rhetorical markers will appear here as Yentl finds checkable moments.
                 </p>
               )}
-              {claimRows.map((claim) => (
-                <article key={claim.id} className="rounded-lg border border-line bg-cream px-3 py-3">
-                  <div className="mb-1 flex items-center justify-between gap-2 text-[10.5px] font-bold uppercase tracking-[0.1em] text-blue-600">
-                    <span>{claim.primary_label.replaceAll("_", " ")}</span>
-                    <span>{claim.score}/100</span>
+              {claimRows.length > 0 && (
+                <details open className="rounded-lg border border-line bg-cream">
+                  <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
+                    Claims ({claimRows.length})
+                  </summary>
+                  <div className="space-y-2 border-t border-line px-3 py-3">
+                    {claimRows.map((claim) => (
+                      <article key={claim.id} className="rounded-lg border border-line bg-paper px-3 py-3">
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] ${verdictTone(claim.primary_label)}`}>
+                            {displayVerdict(claim.primary_label)}
+                          </span>
+                          <span className="font-mono text-[10.5px] text-ink-4">
+                            {claim.score}/100 · {formatTime(claim.utterance_start)}
+                          </span>
+                        </div>
+                        <p className="text-[13px] leading-relaxed text-ink-2">
+                          {claim.claim_text}
+                        </p>
+                        {claim.explanation && (
+                          <p className="mt-2 text-[12px] leading-relaxed text-ink-4">
+                            {claim.explanation}
+                          </p>
+                        )}
+                      </article>
+                    ))}
                   </div>
-                  <p className="line-clamp-3 text-[13px] leading-relaxed text-ink-2">
-                    {claim.claim_text}
-                  </p>
-                </article>
-              ))}
-              {markerRows.map((marker) => (
-                <article key={marker.id} className="rounded-lg border border-line bg-cream px-3 py-3">
-                  <div className="mb-1 text-[10.5px] font-bold uppercase tracking-[0.1em] text-amber-800">
-                    {marker.display}
+                </details>
+              )}
+              {markerRows.length > 0 && (
+                <details open className="rounded-lg border border-line bg-cream">
+                  <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
+                    Markers ({markerRows.length})
+                  </summary>
+                  <div className="space-y-2 border-t border-line px-3 py-3">
+                    {markerRows.map((marker) => (
+                      <article key={marker.id} className="rounded-lg border border-line bg-paper px-3 py-3">
+                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] ${severityTone(marker.severity)}`}>
+                            {marker.severity}
+                          </span>
+                          <span className="font-mono text-[10.5px] text-ink-4">
+                            {formatTime(marker.start_time)}
+                          </span>
+                        </div>
+                        <div className="text-[12px] font-semibold text-ink">
+                          {marker.display}
+                        </div>
+                        <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
+                          {marker.excerpt}
+                        </p>
+                        {marker.explanation && (
+                          <p className="mt-2 text-[12px] leading-relaxed text-ink-4">
+                            {marker.explanation}
+                          </p>
+                        )}
+                      </article>
+                    ))}
                   </div>
-                  <p className="line-clamp-3 text-[13px] leading-relaxed text-ink-2">
-                    {marker.excerpt}
-                  </p>
-                </article>
-              ))}
+                </details>
+              )}
             </div>
           </section>
 
@@ -404,6 +552,32 @@ export function ExtensionPanelView() {
         </div>
       </div>
     </section>
+  );
+}
+
+function InsightPill({
+  label,
+  headline,
+  detail,
+  tone,
+}: {
+  label: string;
+  headline: string;
+  detail: string;
+  tone: string;
+}) {
+  return (
+    <div className={`rounded-lg border px-3 py-3 ${tone}`}>
+      <div className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-75">
+        {label}
+      </div>
+      <div className="mt-1 text-[13px] font-semibold leading-snug">
+        {headline}
+      </div>
+      <div className="mt-1 text-[11.5px] leading-snug opacity-85">
+        {detail}
+      </div>
+    </div>
   );
 }
 

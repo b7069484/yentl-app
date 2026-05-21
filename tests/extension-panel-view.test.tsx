@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { ExtensionPanelView } from "@/components/session/extension-panel-view";
 import { useSession } from "@/lib/client/session-store";
-import type { ClaimCard, TranscriptSegment } from "@/lib/types";
+import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 vi.mock("next/link", () => ({
   default: ({
@@ -53,6 +53,22 @@ function makeClaim(overrides: Partial<ClaimCard> = {}): ClaimCard {
   };
 }
 
+function makeMarker(overrides: Partial<RhetoricMarker> = {}): RhetoricMarker {
+  return {
+    id: "marker-1",
+    type: "rhetoric",
+    name: "loaded-language",
+    display: "Loaded language",
+    excerpt: "reckless officials hid the truth",
+    speaker_id: 0,
+    start_time: 12,
+    end_time: 17,
+    severity: "clear",
+    explanation: "The phrase assigns motive before evidence is shown.",
+    ...overrides,
+  };
+}
+
 describe("ExtensionPanelView", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -80,7 +96,7 @@ describe("ExtensionPanelView", () => {
     expect(screen.queryByText(/How would you like to fact-check/i)).toBeNull();
   });
 
-  it("shows live transcript and evidence counts without the desktop session chrome", () => {
+  it("shows live transcript, verdict summary, marker summary, and expandable evidence without desktop chrome", () => {
     useSession.getState().setSource({
       kind: "browser_tab",
       title: "Council hearing",
@@ -93,7 +109,22 @@ describe("ExtensionPanelView", () => {
       updatedAt: Date.now(),
     });
     useSession.getState().appendFinal(makeSegment());
-    useSession.getState().addClaim(makeClaim());
+    useSession.getState().addClaim(makeClaim({
+      id: "claim-1",
+      primary_label: "FALSE",
+      claim_text: "The city doubled the budget.",
+    }));
+    useSession.getState().addClaim(makeClaim({
+      id: "claim-2",
+      primary_label: "MISLEADING",
+      claim_text: "The audit was hidden from everyone.",
+    }));
+    useSession.getState().addClaim(makeClaim({
+      id: "claim-3",
+      primary_label: "TRUE",
+      claim_text: "The council discussed the library budget.",
+    }));
+    useSession.getState().addMarker(makeMarker());
 
     render(<ExtensionPanelView />);
 
@@ -101,8 +132,12 @@ describe("ExtensionPanelView", () => {
     expect(screen.getByText("Council hearing")).toBeTruthy();
     expect(screen.getByText("Building the live transcript")).toBeTruthy();
     expect(screen.getByText(/doubled the budget without showing/i)).toBeTruthy();
-    expect(screen.getByText("Claims")).toBeTruthy();
-    expect(screen.getAllByText("1").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("3 claims · 2 false/misleading")).toBeTruthy();
+    expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
+    expect(screen.getByText("Claims (3)")).toBeTruthy();
+    expect(screen.getByText("Markers (1)")).toBeTruthy();
+    expect(screen.getByText("FALSE")).toBeTruthy();
+    expect(screen.getByText("Loaded language")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
   });
 

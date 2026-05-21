@@ -372,7 +372,7 @@ function extractReadablePageText() {
     return text.slice(0, MAX_PAGE_TEXT_CHARS);
   }
 
-  return normalizeText(root.innerText || root.textContent || "").slice(0, MAX_PAGE_TEXT_CHARS);
+  return sanitizeReadableText(root.innerText || root.textContent || "").slice(0, MAX_PAGE_TEXT_CHARS);
 }
 
 function chooseReadableRoot() {
@@ -397,13 +397,13 @@ function chooseReadableRoot() {
 
 function collectReadableBlocks(root, includeLists) {
   const selector = includeLists
-    ? "h1, h2, h3, p, li, blockquote, figcaption"
-    : "h1, h2, h3, p, blockquote, figcaption";
+    ? "h1, h2, h3, p, li, blockquote, figcaption, .description, td.description, .fileinfotpl-type-information td"
+    : "h1, h2, h3, p, blockquote, figcaption, .description, td.description, .fileinfotpl-type-information td";
 
   return Array.from(root.querySelectorAll(selector))
     .filter(isReadableBlock)
     .map((node) => normalizeText(node.innerText || node.textContent || ""))
-    .filter((text) => text.length >= 35);
+    .filter((text) => text.length >= 35 && !isBoilerplateText(text));
 }
 
 function readableTextLength(node) {
@@ -469,6 +469,15 @@ function dedupeLines(lines) {
   return result;
 }
 
+function sanitizeReadableText(value) {
+  return dedupeLines(
+    value
+      .split(/\n+/)
+      .map(normalizeText)
+      .filter((text) => text.length >= 35 && !isBoilerplateText(text)),
+  ).join("\n\n");
+}
+
 function chunkReadableText(text) {
   const paragraphs = text
     .split(/\n{2,}/)
@@ -507,6 +516,18 @@ function normalizeText(value) {
     .replace(/\s+/g, " ")
     .replace(/\s+([,.;:!?])/g, "$1")
     .trim();
+}
+
+function isBoilerplateText(text) {
+  const lower = text.toLowerCase();
+  return (
+    lower.includes("text of the note") ||
+    lower.includes("this file has annotations") ||
+    lower.includes("why do you want to remove this note") ||
+    lower.includes("gadget-imageannotator") ||
+    lower.includes("mediawiki talk:") ||
+    lower === "view/save"
+  );
 }
 
 function updatePanelStatus(text) {

@@ -167,6 +167,31 @@ describe("WatchView — no-media fallback removed", () => {
 // ── 2. Transcript panel visibility ────────────────────────────────────────────
 
 describe("WatchView — transcript panel", () => {
+  it("renders the source header and review metrics for a loaded YouTube source", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      source: {
+        kind: "youtube",
+        video_id: "abc123",
+        url: "https://youtube.com/watch?v=abc123",
+        title: "Debate clip",
+        channel: "Civic Channel",
+      },
+      transcript: [makeSegment(0), makeSegment(5)],
+      claims: [makeClaim("claim-1", 0)],
+      markers: [makeMarker("marker-1", 5)],
+    };
+
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Debate clip")).toBeTruthy();
+      expect(screen.getByText(/Civic Channel/i)).toBeTruthy();
+      expect(screen.getByText("Claims")).toBeTruthy();
+      expect(screen.getByText("Markers")).toBeTruthy();
+    });
+  });
+
   it("shows 'Loading transcript…' when transcript is empty", async () => {
     mockStoreState = { ...mockStoreState, transcript: [] };
     render(<WatchView />);
@@ -188,6 +213,28 @@ describe("WatchView — transcript panel", () => {
     await waitFor(() => {
       expect(screen.getByTestId("transcript-panel")).toBeTruthy();
     });
+  });
+});
+
+describe("WatchView — evidence queue", () => {
+  it("renders claim and marker queue items that seek to their timestamps", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0), makeSegment(5)],
+      claims: [makeClaim("claim-queue", 5)],
+      markers: [makeMarker("marker-queue", 5)],
+    };
+
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("watch-evidence-queue")).toBeTruthy();
+      expect(screen.getByTestId("queue-claim-claim-queue")).toBeTruthy();
+      expect(screen.getByTestId("queue-marker-marker-queue")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("queue-claim-claim-queue"));
+    expect(mockSeekTo).toHaveBeenCalledWith(5);
   });
 });
 

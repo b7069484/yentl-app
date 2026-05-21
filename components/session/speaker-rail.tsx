@@ -34,10 +34,14 @@ export function SpeakerRail({
   speakers,
   activeSpeakerId,
   onRename,
+  emptyLabel = "Listening for voices…",
+  meterActive,
 }: {
   speakers: Speaker[];
   activeSpeakerId: number | null;
   onRename: (id: number, label: string) => void;
+  emptyLabel?: string;
+  meterActive?: boolean;
 }) {
   const [editingId, setEditingId] = useState<number | null>(null);
   // pendingEditIdRef lets handleSave know which chip to open next after blur
@@ -73,13 +77,13 @@ export function SpeakerRail({
     setEditingId(null);
   }
 
-  const isActive = activeSpeakerId !== null;
+  const isActive = meterActive ?? activeSpeakerId !== null;
 
   return (
     <div className="flex items-center gap-1.5 px-4 py-2 bg-cream border-b border-line-soft overflow-x-auto">
       {speakers.length === 0 ? (
         <span className="text-[11.5px] italic text-ink-4">
-          Listening for voices…
+          {emptyLabel}
         </span>
       ) : (
         speakers.map((speaker) => {

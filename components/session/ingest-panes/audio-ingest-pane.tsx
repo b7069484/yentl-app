@@ -58,9 +58,12 @@ export function AudioIngestPane() {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const handoffRef = useRef(false);
 
   // Abort any in-flight upload/transcribe when the component unmounts
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  useEffect(() => () => {
+    if (!handoffRef.current) abortRef.current?.abort();
+  }, []);
 
   const handleFile = useCallback(async (file: File) => {
     // Validate type
@@ -176,6 +179,7 @@ export function AudioIngestPane() {
 
       // 3 — Bulk ingest
       setPhase({ kind: "ingesting" });
+      handoffRef.current = true;
       await bulkIngest(data.utterances, { signal: ac.signal });
 
       if (!ac.signal.aborted) {
@@ -183,12 +187,13 @@ export function AudioIngestPane() {
         router.push("/session?view=watch");
       }
     } catch (e: unknown) {
+      handoffRef.current = false;
       URL.revokeObjectURL(localBlobUrl);
       if ((e as Error).name === "AbortError") return;
       const message = e instanceof Error ? e.message : String(e);
       setPhase({ kind: "error", message });
     }
-  }, [staged, setSource]);
+  }, [staged, setSource, router]);
 
   const handleClear = useCallback(() => {
     abortRef.current?.abort();

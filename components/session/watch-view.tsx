@@ -6,9 +6,19 @@ import {
   useState,
   useCallback,
   useMemo,
+  type ReactNode,
 } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  FileSearch,
+  ListChecks,
+  Radio,
+  Target,
+  Video,
+} from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import type { MediaAdapter } from "@/lib/client/media-adapter";
 import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
@@ -18,7 +28,7 @@ import { MarkerChip } from "@/components/session/chips";
 import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
 import { paletteFor } from "@/lib/client/speaker-palette";
 import { cn } from "@/lib/utils";
-import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
+import type { ClaimCard, RhetoricMarker, SessionSource, TranscriptSegment } from "@/lib/types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,6 +43,212 @@ function formatTime(seconds: number): string {
 type AnnotationItem =
   | { kind: "claim"; item: ClaimCard }
   | { kind: "marker"; item: RhetoricMarker };
+
+function sourceDisplay(source: SessionSource): { label: string; title: string; meta: string } {
+  switch (source.kind) {
+    case "youtube":
+      return {
+        label: "YouTube",
+        title: source.title || "YouTube video",
+        meta: [source.channel, source.video_id].filter(Boolean).join(" · ") || source.url,
+      };
+    case "audio_file":
+      return {
+        label: "Audio file",
+        title: source.filename || "Uploaded audio",
+        meta: source.mime || "Local media",
+      };
+    case "media_url":
+      return {
+        label: "Media URL",
+        title: "Direct media source",
+        meta: source.url,
+      };
+    case "browser_tab":
+      return {
+        label: "Browser tab",
+        title: source.title || "Live tab audio",
+        meta: source.url || "Extension capture",
+      };
+    case "mic":
+      return {
+        label: "Microphone",
+        title: "Live room audio",
+        meta: "Microphone session",
+      };
+    case "text_doc":
+      return {
+        label: "Text document",
+        title: source.filename || "Transcript",
+        meta: source.mime || "Pasted text",
+      };
+  }
+}
+
+function MetricPill({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-lg border border-line bg-cream px-3 py-2">
+      <div className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-4">
+        {icon}
+        {label}
+      </div>
+      <div className="font-mono text-[18px] font-semibold leading-none text-ink">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function WatchSourceHeader({
+  source,
+  ready,
+  transcriptCount,
+  claimsCount,
+  markersCount,
+}: {
+  source: SessionSource;
+  ready: boolean;
+  transcriptCount: number;
+  claimsCount: number;
+  markersCount: number;
+}) {
+  const display = sourceDisplay(source);
+
+  return (
+    <section className="mb-4 rounded-lg border border-line bg-paper p-4 shadow-sm sm:p-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+        <div className="min-w-0">
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-2.5 py-1 text-[11px] font-semibold text-teal">
+            <Video className="h-3.5 w-3.5" aria-hidden />
+            {display.label}
+          </div>
+          <h1 className="truncate font-serif text-[26px] font-medium leading-tight text-ink sm:text-[30px]">
+            {display.title}
+          </h1>
+          <p className="mt-1 truncate text-[13px] text-ink-3">{display.meta}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
+          <MetricPill
+            icon={<Radio className="h-3.5 w-3.5" aria-hidden />}
+            label="Player"
+            value={ready ? "Ready" : "Loading"}
+          />
+          <MetricPill
+            icon={<ListChecks className="h-3.5 w-3.5" aria-hidden />}
+            label="Transcript"
+            value={transcriptCount}
+          />
+          <MetricPill
+            icon={<Target className="h-3.5 w-3.5" aria-hidden />}
+            label="Claims"
+            value={claimsCount}
+          />
+          <MetricPill
+            icon={<FileSearch className="h-3.5 w-3.5" aria-hidden />}
+            label="Markers"
+            value={markersCount}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EvidenceQueue({
+  claims,
+  markers,
+  onSeek,
+}: {
+  claims: ClaimCard[];
+  markers: RhetoricMarker[];
+  onSeek: (seconds: number) => void;
+}) {
+  const visibleClaims = claims.slice(0, 3);
+  const visibleMarkers = markers.slice(0, 2);
+  const isEmpty = visibleClaims.length === 0 && visibleMarkers.length === 0;
+
+  return (
+    <section
+      className="rounded-lg border border-line bg-paper p-4 shadow-sm"
+      data-testid="watch-evidence-queue"
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-ink-3">
+            Evidence queue
+          </h2>
+          <p className="mt-1 text-[12px] text-ink-4">
+            Jump from a finding to the exact moment in the source.
+          </p>
+        </div>
+        <span className="rounded-full border border-line bg-cream px-2 py-0.5 text-[11px] text-ink-3">
+          {claims.length + markers.length} total
+        </span>
+      </div>
+
+      {isEmpty ? (
+        <div className="rounded-md border border-line bg-cream px-3 py-4 text-[12.5px] text-ink-3">
+          Claims and markers will appear here as Yentl extracts them from the transcript.
+        </div>
+      ) : (
+        <div className="grid gap-2">
+          {visibleClaims.map((claim) => (
+            <button
+              key={claim.id}
+              type="button"
+              onClick={() => onSeek(claim.utterance_start)}
+              className="group rounded-md border border-line bg-cream px-3 py-2.5 text-left transition-colors hover:border-teal/40 hover:bg-teal-soft/70"
+              data-testid={`queue-claim-${claim.id}`}
+            >
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <VerdictChip verdict={claim.primary_label} score={claim.score} />
+                <span className="font-mono text-[10px] text-ink-4">
+                  {formatTime(claim.utterance_start)}
+                </span>
+              </div>
+              <div className="line-clamp-2 text-[12.5px] leading-snug text-ink-2">
+                {claim.claim_text}
+              </div>
+            </button>
+          ))}
+
+          {visibleMarkers.map((marker) => (
+            <button
+              key={marker.id}
+              type="button"
+              onClick={() => onSeek(marker.start_time)}
+              className="group rounded-md border border-line bg-cream px-3 py-2.5 text-left transition-colors hover:border-teal/40 hover:bg-teal-soft/70"
+              data-testid={`queue-marker-${marker.id}`}
+            >
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <MarkerChip
+                  type={marker.type}
+                  display={marker.display}
+                  severity={marker.severity}
+                />
+                <span className="font-mono text-[10px] text-ink-4">
+                  {formatTime(marker.start_time)}
+                </span>
+              </div>
+              <div className="line-clamp-2 text-[12.5px] leading-snug text-ink-2">
+                {marker.excerpt}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 function AnnotationRow({
   annotation,
@@ -389,39 +605,64 @@ export function WatchView() {
   // ── Player + transcript layout ───────────────────────────────────────────────
 
   return (
-    <div className="px-6 md:px-8 pt-4 pb-12 max-w-[1280px] mx-auto w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div className="mx-auto w-full max-w-[1280px] px-4 pb-12 pt-4 sm:px-6 md:px-8">
+      <WatchSourceHeader
+        source={source}
+        ready={ready}
+        transcriptCount={transcript.length}
+        claimsCount={claims.length}
+        markersCount={markers.length}
+      />
+
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,0.62fr)_minmax(360px,0.38fr)]">
 
         {/* Player column */}
-        <div
-          className={cn(
-            "rounded-lg overflow-hidden border-[3px] transition-colors duration-300",
-            currentSpeakerId !== null
-              ? paletteFor(currentSpeakerId).border
-              : "border-transparent",
-          )}
-          data-testid="player-wrapper"
-        >
-          <div className="bg-ink rounded-sm overflow-hidden">
-            {source.kind === "youtube" ? (
-              <div className="aspect-video w-full" ref={containerRef} data-testid="player-container" />
-            ) : (
-              <div
-                className="p-4 flex items-center justify-center min-h-[120px]"
-                ref={containerRef}
-                data-testid="player-container"
-              />
+        <div className="space-y-4">
+          <div
+            className={cn(
+              "overflow-hidden rounded-lg border-[3px] bg-paper shadow-sm transition-colors duration-300",
+              currentSpeakerId !== null
+                ? paletteFor(currentSpeakerId).border
+                : "border-transparent",
             )}
+            data-testid="player-wrapper"
+          >
+            <div className="overflow-hidden rounded-sm bg-ink">
+              {source.kind === "youtube" ? (
+                <div className="aspect-video w-full" ref={containerRef} data-testid="player-container" />
+              ) : (
+                <div
+                  className="flex min-h-[120px] items-center justify-center p-4"
+                  ref={containerRef}
+                  data-testid="player-container"
+                />
+              )}
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line bg-paper px-3 py-2 text-[11px] text-ink-3">
+              <span className="inline-flex items-center gap-1.5">
+                <Clock3 className="h-3.5 w-3.5" aria-hidden />
+                <span className="font-mono tabular-nums text-ink">
+                  {formatTime(currentTime)}
+                </span>
+                {ready ? "synced" : "loading player"}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5 text-green" aria-hidden />
+                Transcript-linked review
+              </span>
+            </div>
           </div>
+
+          <EvidenceQueue claims={claims} markers={markers} onSeek={handleSeek} />
         </div>
 
         {/* Transcript + synthesis column */}
-        <div className="flex flex-col gap-4 min-h-0">
+        <div className="flex min-h-0 flex-col gap-4">
 
           {/* Synthesis card */}
           {synthesis && "text" in synthesis && (
             <div
-              className="bg-paper border border-line rounded-lg p-4"
+              className="rounded-lg border border-line bg-paper p-4 shadow-sm"
               data-testid="synthesis-card"
             >
               <div className="text-[10.5px] tracking-[.12em] uppercase text-ink-4 font-bold mb-2">
@@ -434,7 +675,7 @@ export function WatchView() {
           )}
 
           {/* Status bar */}
-          <div className="flex justify-between items-baseline text-[11px] text-ink-3">
+          <div className="flex items-baseline justify-between gap-3 text-[11px] text-ink-3">
             <span className="font-mono tabular-nums">
               <span className="text-ink font-semibold">{formatTime(currentTime)}</span>
               {" · "}
@@ -450,7 +691,7 @@ export function WatchView() {
           {/* Transcript panel */}
           <div
             ref={transcriptPanelRef}
-            className="flex flex-col gap-0.5 overflow-y-auto max-h-[60vh] rounded-lg bg-paper border border-line p-2"
+            className="flex max-h-[64vh] min-h-[360px] flex-col gap-0.5 overflow-y-auto rounded-lg border border-line bg-paper p-2 shadow-sm"
             data-testid="transcript-panel"
           >
             {/* Header */}

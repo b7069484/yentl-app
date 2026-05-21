@@ -22,6 +22,22 @@ export type SynthesisState =
   | { state: "refreshing"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
   | { state: "error"; text?: string; headlines?: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number; lastError?: string };
 
+export type BrowserTabCaptureStatus = {
+  phase:
+    | "idle"
+    | "waiting_for_extension"
+    | "extension_connected"
+    | "capturing"
+    | "transcribing"
+    | "no_audio_detected"
+    | "stopped"
+    | "error";
+  message?: string;
+  title?: string;
+  url?: string;
+  updatedAt?: number;
+};
+
 type State = {
   title: string;
   startedAt: string | null;
@@ -38,6 +54,7 @@ type State = {
   synthesis: SynthesisState;
   micStream: MediaStream | null;
   prerecordStage: "picker" | "selected";
+  browserTabStatus: BrowserTabCaptureStatus;
 
   // actions
   startSession: (title?: string) => void;
@@ -56,6 +73,7 @@ type State = {
   setSynthesis: (s: SynthesisState) => void;
   setMicStream: (stream: MediaStream | null) => void;
   setPrerecordStage: (stage: "picker" | "selected") => void;
+  setBrowserTabStatus: (status: BrowserTabCaptureStatus) => void;
   restoreSession: (session: Session) => void;
   toSession: () => Session;
   reset: () => void;
@@ -100,7 +118,7 @@ const initialState: Omit<State,
   | "addClaim" | "updateClaim" | "addMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
   | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream"
-  | "setPrerecordStage" | "restoreSession" | "toSession" | "reset"
+  | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
   | "reassignUtterance" | "addNewSpeaker" | "splitSegmentAt"
 > = {
   title: "",
@@ -118,6 +136,7 @@ const initialState: Omit<State,
   synthesis: null,
   micStream: null,
   prerecordStage: "picker",
+  browserTabStatus: { phase: "idle" },
 };
 
 export const useSession = create<State>((set, get) => ({
@@ -133,10 +152,14 @@ export const useSession = create<State>((set, get) => ({
     prerecordStage: "selected",
     title: title ?? new Date().toISOString(),
     startedAt: new Date().toISOString(),
-    // Only the mic path is actually "recording". Non-mic sources are bulk-
-    // loaded and the pill should show "Paused" (or a future "Loaded" state)
-    // rather than implying we're capturing.
+    // Mic starts local recording immediately. Browser-tab waits until the
+    // extension confirms it has attached to a real tab. Bulk-loaded sources
+    // should show as loaded rather than active.
     isRecording: s.source.kind === "mic",
+    browserTabStatus:
+      s.source.kind === "browser_tab"
+        ? { phase: "waiting_for_extension", updatedAt: Date.now() }
+        : initialState.browserTabStatus,
   })),
 
   endSession: () => set({
@@ -194,6 +217,8 @@ export const useSession = create<State>((set, get) => ({
 
   setPrerecordStage: (stage) => set({ prerecordStage: stage }),
 
+  setBrowserTabStatus: (status) => set({ browserTabStatus: status }),
+
   setSpeakersMode: (b) => set({ speakersMode: b }),
 
   toggleMode: () => set((s) => ({ mode: s.mode === "A" ? "D" : "A" })),
@@ -222,6 +247,7 @@ export const useSession = create<State>((set, get) => ({
       ? { state: "fresh" as const, ...session.synthesis }
       : null,
     micStream: null,
+    browserTabStatus: { phase: "idle" },
   }),
 
   toSession: () => {

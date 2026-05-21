@@ -105,13 +105,25 @@ type StoreState = {
   markers: RhetoricMarker[];
   speakers: Speaker[];
   source: SessionSource;
+  browserTabStatus: {
+    phase:
+      | "idle"
+      | "waiting_for_extension"
+      | "extension_connected"
+      | "capturing"
+      | "transcribing"
+      | "no_audio_detected"
+      | "stopped"
+      | "error";
+  };
   setRecording: (b: boolean) => void;
+  reset: () => void;
   renameSpeaker: (id: number, label: string) => void;
 };
 
 function makeDefaultStoreState(overrides: Partial<StoreState> = {}): StoreState {
   return {
-    startedAt: null,
+    startedAt: "2026-05-20T00:00:00.000Z",
     endedAt: null,
     isRecording: false,
     transcript: [],
@@ -119,7 +131,9 @@ function makeDefaultStoreState(overrides: Partial<StoreState> = {}): StoreState 
     markers: [],
     speakers: [],
     source: { kind: "mic" },
+    browserTabStatus: { phase: "idle" },
     setRecording: vi.fn(),
+    reset: vi.fn(),
     renameSpeaker: vi.fn(),
     ...overrides,
   };
@@ -188,6 +202,18 @@ beforeEach(() => {
 // ─── 1. Renders brand mark + live pill + tabs + controls ─────────────────────
 
 describe("SessionShell – basic render", () => {
+  it("hides session chrome before a session starts", () => {
+    mockStore(makeDefaultStoreState({ startedAt: null }));
+    render(<SessionShell>Body</SessionShell>);
+
+    expect(screen.queryByRole("link", { name: /yentl/i })).toBeNull();
+    expect(screen.queryByText("Idle")).toBeNull();
+    expect(screen.queryByText("Overview")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Export/ })).toBeNull();
+    expect(screen.queryByTestId("speaker-rail")).toBeNull();
+    expect(screen.getByText("Body")).toBeTruthy();
+  });
+
   it("renders brand mark (yentl link)", () => {
     mockStore(makeDefaultStoreState());
     render(<SessionShell>Body</SessionShell>);
@@ -200,26 +226,32 @@ describe("SessionShell – basic render", () => {
   it("renders the live pill", () => {
     mockStore(makeDefaultStoreState());
     render(<SessionShell>Body</SessionShell>);
-    // Idle state when no startedAt
-    expect(screen.getByText("Idle")).toBeTruthy();
+    expect(screen.getByText("Paused")).toBeTruthy();
   });
 
-  it("renders all four tabs", () => {
+  it("renders user-facing session tabs", () => {
     mockStore(makeDefaultStoreState());
     render(<SessionShell>Body</SessionShell>);
     expect(screen.getByText("Overview")).toBeTruthy();
     expect(screen.getByText("Transcript")).toBeTruthy();
     expect(screen.getByText(/Claims/)).toBeTruthy();
     expect(screen.getByText(/Markers/)).toBeTruthy();
+    expect(screen.queryByText("UX Flows")).toBeNull();
   });
 
-  it("renders Export button always, hides Pause/Resume and End when startedAt is null", () => {
-    mockStore(makeDefaultStoreState());
+  it("hides controls before a session starts", () => {
+    mockStore(makeDefaultStoreState({ startedAt: null }));
     render(<SessionShell>Body</SessionShell>);
-    // Pause/Resume and End are hidden when startedAt is null
     expect(screen.queryByRole("button", { name: /Pause|Resume/ })).toBeNull();
     expect(screen.queryByRole("button", { name: /End/ })).toBeNull();
-    // Export always renders
+    expect(screen.queryByRole("button", { name: /Export/ })).toBeNull();
+  });
+
+  it("renders session controls when a session has started", () => {
+    mockStore(makeDefaultStoreState());
+    render(<SessionShell>Body</SessionShell>);
+    expect(screen.getByRole("button", { name: /Pause|Resume/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /End/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Export/ })).toBeTruthy();
   });
 
@@ -235,10 +267,10 @@ describe("SessionShell – basic render", () => {
 // ─── 2. Live pill states ─────────────────────────────────────────────────────
 
 describe("SessionShell – live pill states", () => {
-  it("shows Idle when startedAt is null", () => {
+  it("does not show a live pill before a session starts", () => {
     mockStore(makeDefaultStoreState({ startedAt: null, isRecording: false }));
     render(<SessionShell>Body</SessionShell>);
-    expect(screen.getByText("Idle")).toBeTruthy();
+    expect(screen.queryByText("Idle")).toBeNull();
   });
 
   it("shows Listening when isRecording is true and startedAt is set", () => {
@@ -344,6 +376,23 @@ describe("SessionShell – tab active state", () => {
       (a) => a.textContent === "Transcript",
     );
     expect(transcriptLink?.className).toContain("bg-cream-2");
+  });
+
+  it("does not expose the project UX flow atlas in the user session nav", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=flows");
+    mockStore(makeDefaultStoreState());
+    render(<SessionShell>Body</SessionShell>);
+    expect(screen.queryByText("UX Flows")).toBeNull();
+  });
+
+  it("uses a compact shell inside the Chrome extension panel surface", () => {
+    mockSearchParamsRaw = new URLSearchParams("surface=extension-panel");
+    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+    render(<SessionShell>Body</SessionShell>);
+    expect(screen.queryByText("Overview")).toBeNull();
+    expect(screen.queryByText("Transcript")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Export/ })).toBeNull();
+    expect(screen.getByText("Body")).toBeTruthy();
   });
 });
 

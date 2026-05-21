@@ -1,0 +1,13 @@
+# Yentl Validation Transcript
+
+**Moderator:** Welcome to the Yentl validation panel. The city library budget increased by 12 percent this year, according to the mayor's office.
+
+**Analyst:** That number needs context. The operating budget increased, but the technology grant expired, so the total program budget may not have increased.
+
+**Moderator:** If we do not ban every social platform by Friday, schools will collapse and nobody will learn anything.
+
+**Analyst:** That is a slippery slope. A better question is which platforms create measurable distraction, what evidence supports the claim, and which interventions protect students without overreaching.
+
+**Moderator:** The pilot school reported a 22 percent drop in missed assignments after phone lockers were introduced.
+
+**Analyst:** Useful, but we need the sample size, baseline, and whether other changes happened at the same time.

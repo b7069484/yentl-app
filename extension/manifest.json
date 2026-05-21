@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Yentl Tab Listener",
+  "description": "Capture the current tab's audio and show Yentl analysis beside the media on the same page.",
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "offscreen", "scripting", "storage", "tabCapture", "tabs"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://yentl.it/*",
+    "https://factify-rose.vercel.app/*",
+    "https://api.deepgram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Listen with Yentl"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:3000/*",
+        "https://yentl.it/*",
+        "https://factify-rose.vercel.app/*"
+      ],
+      "js": ["content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:3000 https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
+  }
+}

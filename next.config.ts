@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: process.cwd(),
+  },
   /**
    * Bundle the yt-dlp binary into the YouTube ingest function.
    *

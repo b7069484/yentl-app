@@ -68,6 +68,13 @@ describe("checkMediaMime — audio MIME types", () => {
     expect(result.mime).toBe("audio/ogg");
   });
 
+  it("accepts Wikimedia-style application/ogg as audio/ogg", async () => {
+    mockFetch.mockReturnValueOnce(headResponse(200, "application/ogg"));
+    const result = await checkMediaMime("https://example.com/ep.ogg");
+    expect(result.ok).toBe(true);
+    expect(result.mime).toBe("audio/ogg");
+  });
+
   it("returns ok for audio/webm", async () => {
     mockFetch.mockReturnValueOnce(headResponse(200, "audio/webm"));
     const result = await checkMediaMime("https://example.com/ep.webm");

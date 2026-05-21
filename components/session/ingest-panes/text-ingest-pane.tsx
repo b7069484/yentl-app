@@ -36,11 +36,12 @@ export function TextIngestPane() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   // Holds the AbortController for the currently running bulkIngest call.
   const abortControllerRef = useRef<AbortController | null>(null);
+  const handoffRef = useRef(false);
 
   // Abort any in-progress ingest on unmount
   useEffect(() => {
     return () => {
-      abortControllerRef.current?.abort();
+      if (!handoffRef.current) abortControllerRef.current?.abort();
     };
   }, []);
 
@@ -138,16 +139,18 @@ export function TextIngestPane() {
     setError(null);
     try {
       const segments = parsePlainText(text, { withSpeakers });
+      handoffRef.current = true;
       await bulkIngest(segments, { signal: controller.signal });
       if (!controller.signal.aborted) {
         router.push("/session?view=overview");
       }
     } catch (e) {
+      handoffRef.current = false;
       setError(`Processing failed: ${String(e)}`);
     } finally {
       setIsProcessing(false);
     }
-  }, [text, withSpeakers, isProcessing]);
+  }, [text, withSpeakers, isProcessing, router]);
 
   // ── back navigation ────────────────────────────────────────────────────────
   const handleBack = useCallback(() => {

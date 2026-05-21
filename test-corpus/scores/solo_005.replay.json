@@ -1,0 +1,35 @@
+{
+  "id": "solo_005",
+  "title": "Hans Rosling: Global population growth, box by box",
+  "category": "solo_monologue",
+  "startedAt": "2026-05-21T16:28:30.559Z",
+  "finishedAt": "2026-05-21T16:28:49.767Z",
+  "baseUrl": "http://localhost:3000",
+  "verify": "none",
+  "utterancesAvailable": 125,
+  "utterancesReplayed": 8,
+  "claims": [
+    {
+      "claim_text": "The world population reached 3,000,000,000 people.",
+      "utterance_start": 16.505,
+      "utterance_end": 24.664999,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "id": "solo_005-claim-1",
+      "speaker_id": 0,
+      "status": "extracted"
+    },
+    {
+      "claim_text": "The speaker has given five previous TED talks using digital technology.",
+      "utterance_start": 38.6,
+      "utterance_end": 43.559998,
+      "topic": "Culture",
+      "topic_secondary": "Science",
+      "id": "solo_005-claim-2",
+      "speaker_id": 0,
+      "status": "extracted"
+    }
+  ],
+  "markers": [],
+  "errors": []
+}

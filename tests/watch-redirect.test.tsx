@@ -112,6 +112,13 @@ describe("SessionPage – watch redirect for non-media sources", () => {
     expect(mockReplace).toHaveBeenCalledWith("/session?view=overview");
   });
 
+  it("calls router.replace to overview when view=watch and source.kind=browser_tab", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=watch");
+    mockStore({ startedAt, source: { kind: "browser_tab" } });
+    render(<SessionPage />);
+    expect(mockReplace).toHaveBeenCalledWith("/session?view=overview");
+  });
+
   it("does NOT call router.replace when view=watch and source.kind=youtube", () => {
     mockSearchParamsRaw = new URLSearchParams("view=watch");
     mockStore({ startedAt, source: { kind: "youtube" } });

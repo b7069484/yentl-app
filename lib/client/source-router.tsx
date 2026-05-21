@@ -5,6 +5,7 @@ import { TextIngestPane } from "@/components/session/ingest-panes/text-ingest-pa
 import { AudioIngestPane } from "@/components/session/ingest-panes/audio-ingest-pane";
 import { YoutubeIngestPane } from "@/components/session/ingest-panes/youtube-ingest-pane";
 import { MediaUrlIngestPane } from "@/components/session/ingest-panes/media-url-ingest-pane";
+import { BrowserTabIngestPane } from "@/components/session/ingest-panes/browser-tab-ingest-pane";
 import { useSession } from "@/lib/client/session-store";
 
 /**
@@ -24,6 +25,8 @@ export function SourceRouter() {
   switch (sourceKind) {
     case "mic":
       return <MicPreRecordPane />;
+    case "browser_tab":
+      return <BrowserTabIngestPane />;
     case "text_doc":
       return <TextIngestPane />;
     case "audio_file":

@@ -3,14 +3,15 @@
 import type { ReactNode } from "react";
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Pause, Play, Download, Square, Save, Library } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Pause, Play, Download, Square, Save, Library, Plus } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { Button } from "@/components/ui/button";
 import { SpeakerRail } from "@/components/session/speaker-rail";
 import { ExportDialog } from "@/components/session/ExportDialog";
 import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
+import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
 export { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 
@@ -45,7 +46,7 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
 
 // ─── LivePill ─────────────────────────────────────────────────────────────────
 
-type PillState = "listening" | "paused" | "idle" | "ended";
+type PillState = "listening" | "waiting" | "paused" | "idle" | "ended" | "error";
 
 function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
   const cfg = {
@@ -54,6 +55,12 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
       border: "border-[rgba(15,138,95,0.2)]",
       dot: "bg-green animate-pulse",
       label: "Listening",
+    },
+    waiting: {
+      bg: "bg-blue-50",
+      border: "border-blue-200",
+      dot: "bg-blue-500",
+      label: "Waiting",
     },
     paused: {
       bg: "bg-amber-soft",
@@ -72,6 +79,12 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
       border: "border-[rgba(91,96,117,0.3)]",
       dot: "bg-ink-4",
       label: "Ended",
+    },
+    error: {
+      bg: "bg-red-soft",
+      border: "border-red-soft",
+      dot: "bg-red",
+      label: "Needs attention",
     },
   };
   const c = cfg[state];
@@ -127,7 +140,10 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   }
 
   return (
-    <div className="inline-flex items-center gap-1 overflow-x-auto">
+    <nav
+      aria-label="Session views"
+      className="flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-0.5 sm:w-auto sm:pb-0"
+    >
       {tabs.map((t) => (
         <Link
           key={t.key}
@@ -141,25 +157,50 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
           {t.label}
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }
 
 // ─── TopControls ──────────────────────────────────────────────────────────────
 
 function TopControls() {
+  const router = useRouter();
   const isRecording = useSession((s) => s.isRecording);
   const endedAt = useSession((s) => s.endedAt);
   const startedAt = useSession((s) => s.startedAt);
+  const sourceKind = useSession((s) => s.source.kind);
+  const transcriptCount = useSession((s) => s.transcript.length);
+  const claimsCount = useSession((s) => s.claims.length);
+  const markersCount = useSession((s) => s.markers.length);
   const setRecording = useSession((s) => s.setRecording);
+  const reset = useSession((s) => s.reset);
   const [exportOpen, setExportOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
 
+  function handleChooseSource() {
+    const hasWork = transcriptCount > 0 || claimsCount > 0 || markersCount > 0;
+    const active = !!startedAt && !endedAt;
+    if (active || hasWork) {
+      const confirmed = window.confirm(
+        active
+          ? "Stop this session and choose another source? Export or save first if you need to keep this run."
+          : "Choose another source? Export or save first if you need to keep this run.",
+      );
+      if (!confirmed) return;
+    }
+
+    if (sourceKind === "browser_tab" && startedAt && !endedAt) {
+      stopBrowserTabCapture();
+    }
+    reset();
+    router.push("/session");
+  }
+
   return (
     <>
-      <div className="ml-auto inline-flex items-center gap-1.5">
-        {startedAt && (
+      <div className="flex w-full min-w-0 items-center gap-1.5 overflow-x-auto sm:ml-auto sm:w-auto sm:justify-end">
+        {startedAt && sourceKind === "mic" && (
           <Button
             variant="ghost"
             size="sm"
@@ -172,6 +213,11 @@ function TopControls() {
               <Play className="h-3.5 w-3.5" />
             )}
             {isRecording ? "Pause" : "Resume"}
+          </Button>
+        )}
+        {startedAt && (
+          <Button variant="ghost" size="sm" onClick={handleChooseSource}>
+            <Plus className="h-3.5 w-3.5" /> Sources
           </Button>
         )}
         {startedAt && (
@@ -226,9 +272,22 @@ function usePillState(): PillState {
   const isRecording = useSession((s) => s.isRecording);
   const endedAt = useSession((s) => s.endedAt);
   const startedAt = useSession((s) => s.startedAt);
+  const sourceKind = useSession((s) => s.source.kind);
+  const browserTabStatus = useSession((s) => s.browserTabStatus);
 
   if (endedAt) return "ended";
   if (!startedAt) return "idle";
+  if (sourceKind === "browser_tab") {
+    if (browserTabStatus?.phase === "error") return "error";
+    if (
+      !isRecording ||
+      browserTabStatus?.phase === "waiting_for_extension" ||
+      browserTabStatus?.phase === "extension_connected" ||
+      browserTabStatus?.phase === "no_audio_detected"
+    ) {
+      return "waiting";
+    }
+  }
   if (isRecording) return "listening";
   return "paused";
 }
@@ -241,9 +300,40 @@ function useActiveSpeakerId(): number | null {
   return transcript[transcript.length - 1].speaker_id;
 }
 
+function useSpeakerRailEmptyLabel(): string {
+  const startedAt = useSession((s) => s.startedAt);
+  const endedAt = useSession((s) => s.endedAt);
+  const isRecording = useSession((s) => s.isRecording);
+  const sourceKind = useSession((s) => s.source.kind);
+  const browserTabStatus = useSession((s) => s.browserTabStatus);
+
+  if (!startedAt) return "Choose a source to begin";
+  if (endedAt) return "Session ended";
+  if (sourceKind === "browser_tab") {
+    if (browserTabStatus?.phase === "error") return "Browser tab needs attention";
+    if (browserTabStatus?.phase === "waiting_for_extension") return "Waiting for the Yentl extension…";
+    if (browserTabStatus?.phase === "extension_connected") return "Connected; waiting for media audio…";
+    if (browserTabStatus?.phase === "no_audio_detected") return "No media audio detected yet…";
+    if (!isRecording) return "Waiting for in-page media audio…";
+    return "Analyzing media on this page…";
+  }
+  if (!isRecording) return "Paused";
+  return "Listening for voices…";
+}
+
 // ─── SessionShell ─────────────────────────────────────────────────────────────
 
-export function SessionShell({ children }: { children: ReactNode }) {
+function PanelSurfaceShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex min-h-screen flex-col bg-cream">
+      <main className="min-h-0 flex-1">{children}</main>
+    </div>
+  );
+}
+
+function SessionShellInner({ children }: { children: ReactNode }) {
+  const sp = useSearchParams();
+  const isExtensionPanel = sp.get("surface") === "extension-panel";
   const startedAt = useSession((s) => s.startedAt);
   const endedAt = useSession((s) => s.endedAt);
   const speakers = useSession((s) => s.speakers);
@@ -256,30 +346,55 @@ export function SessionShell({ children }: { children: ReactNode }) {
   const pillState = usePillState();
   const elapsed = useElapsed(startedAt, endedAt);
   const activeSpeakerId = useActiveSpeakerId();
+  const speakerRailEmptyLabel = useSpeakerRailEmptyLabel();
+  const isRecording = useSession((s) => s.isRecording);
+  const hasSession = startedAt !== null;
+
+  if (isExtensionPanel) {
+    return <PanelSurfaceShell>{children}</PanelSurfaceShell>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-cream">
-      {/* Sticky header */}
-      <header className="sticky top-0 z-20 bg-cream border-b border-line-soft">
-        <div className="px-6 md:px-8 py-3 flex items-center gap-4 flex-wrap max-w-[1280px] mx-auto w-full">
-          <BrandMark size="md" />
-          <LivePill state={pillState} elapsed={elapsed} />
-          <Suspense fallback={null}>
-            <Tabs counts={{ claims: claimsCount, markers: markersCount }} />
-          </Suspense>
-          <TopControls />
-        </div>
-      </header>
+      {hasSession && (
+        <>
+          {/* Sticky header */}
+          <header className="sticky top-0 z-20 bg-cream border-b border-line-soft">
+            <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-2 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:px-6 md:px-8">
+              <div className="flex min-w-0 items-center gap-3">
+                <BrandMark size="md" />
+                <LivePill state={pillState} elapsed={elapsed} />
+              </div>
+              <div className="min-w-0 sm:flex-1">
+                <Suspense fallback={null}>
+                  <Tabs counts={{ claims: claimsCount, markers: markersCount }} />
+                </Suspense>
+              </div>
+              <TopControls />
+            </div>
+          </header>
 
-      {/* Speaker rail */}
-      <SpeakerRail
-        speakers={speakers}
-        activeSpeakerId={activeSpeakerId}
-        onRename={renameSpeaker}
-      />
+          {/* Speaker rail */}
+          <SpeakerRail
+            speakers={speakers}
+            activeSpeakerId={activeSpeakerId}
+            onRename={renameSpeaker}
+            emptyLabel={speakerRailEmptyLabel}
+            meterActive={isRecording && activeSpeakerId !== null}
+          />
+        </>
+      )}
 
       {/* Body slot */}
       <main className="flex-1">{children}</main>
     </div>
+  );
+}
+
+export function SessionShell({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<PanelSurfaceShell>{children}</PanelSurfaceShell>}>
+      <SessionShellInner>{children}</SessionShellInner>
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseYouTubeUrl, fetchCaptions } from "@/lib/server/youtube-captions";
 import { fetchOEmbed } from "@/lib/server/youtube-oembed";
+import { loadYouTubeValidationFixture } from "@/lib/server/youtube-validation-fixtures";
 import type { CaptionErrorCode } from "@/lib/server/youtube-captions";
 
 /** Duck-typed check for CaptionError shape — works across module boundaries and mocks. */
@@ -72,6 +73,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(response);
   } catch (e) {
+    const validationFixture = await loadYouTubeValidationFixture(videoId).catch(
+      () => null,
+    );
+    if (validationFixture) {
+      return NextResponse.json({
+        ...validationFixture,
+        ...(oembed
+          ? {
+              title: oembed.title,
+              channel: oembed.author_name,
+              thumbnail_url: oembed.thumbnail_url,
+            }
+          : {}),
+      });
+    }
+
     // Map CaptionError (or any duck-typed { code, message } error) to structured envelope.
     // We use duck-typing rather than instanceof so tests that mock the module can throw
     // plain Error objects with a .code property and still trigger the right branch.

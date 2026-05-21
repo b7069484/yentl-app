@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source ".";
+@source "../components";
+@source "../lib";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -88,6 +91,9 @@
 }
 
 :root {
+  --font-inter: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-fraunces: Georgia, "Times New Roman", serif;
+
   /* ─── Yentl brand palette v5.0 (LOCKED 2026-05-17 · R4 V3 "Brighter Trust") ─── */
   /* Mark blue #2563EB · amber friendliness · green verified · red false      */
   /* warm cream paper · near-black ink. Legacy var names preserved; values updated. */

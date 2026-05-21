@@ -124,6 +124,7 @@ export type SourcePreview = {
 
 export type SessionSource =
   | { kind: "mic" }
+  | { kind: "browser_tab"; tab_id?: number; title?: string; url?: string }
   | { kind: "audio_file"; blob_url: string; duration_sec: number; filename: string; mime: string }
   | { kind: "text_doc"; filename: string; mime: string; byte_count: number }
   | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }

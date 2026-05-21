@@ -23,6 +23,10 @@ const AUDIO_EXT_MIMES: Record<string, string> = {
   flac: "audio/flac",
 };
 
+const ALLOWED_APPLICATION_MIMES: Record<string, string> = {
+  "application/ogg": "audio/ogg",
+};
+
 export interface MimeCheckResult {
   ok: boolean;
   mime?: string;
@@ -69,6 +73,10 @@ export async function checkMediaMime(url: string): Promise<MimeCheckResult> {
   // Direct audio or video MIME
   if (contentType.startsWith("audio/") || contentType.startsWith("video/")) {
     return { ok: true, mime: contentType };
+  }
+
+  if (contentType in ALLOWED_APPLICATION_MIMES) {
+    return { ok: true, mime: ALLOWED_APPLICATION_MIMES[contentType] };
   }
 
   // Fallback for opaque content types — check URL extension

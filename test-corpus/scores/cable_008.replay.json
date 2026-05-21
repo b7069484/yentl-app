@@ -1,0 +1,92 @@
+{
+  "id": "cable_008",
+  "title": "Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown",
+  "category": "cable_news_debate",
+  "startedAt": "2026-05-21T16:30:54.445Z",
+  "finishedAt": "2026-05-21T16:31:37.821Z",
+  "baseUrl": "http://localhost:3000",
+  "verify": "none",
+  "utterancesAvailable": 115,
+  "utterancesReplayed": 12,
+  "claims": [
+    {
+      "claim_text": "Over 77,000,000 people voted for Donald Trump in the presidential election.",
+      "utterance_start": 30.01,
+      "utterance_end": 38.09,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "cable_008-claim-1",
+      "speaker_id": 2,
+      "status": "extracted"
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "vagueness",
+      "display": "Vagueness / Hand-waving",
+      "excerpt": "Trump is being Trump",
+      "start_time": 3,
+      "end_time": 7,
+      "severity": "clear",
+      "explanation": "The phrase 'Trump is being Trump' is a tautological hand-wave that explains nothing while appearing to answer the question. It substitutes a vague catchphrase for substantive analysis.",
+      "id": "cable_008-marker-1"
+    },
+    {
+      "type": "fallacy",
+      "name": "begging_the_question",
+      "display": "Begging the Question",
+      "excerpt": "focusing only on that completely ignores the larger reality forming underneath",
+      "start_time": 22,
+      "end_time": 28,
+      "severity": "subtle",
+      "explanation": "The speaker assumes the existence of a 'larger reality forming underneath' as a premise without establishing it, using the assumption itself to dismiss alternative framings.",
+      "id": "cable_008-marker-2"
+    },
+    {
+      "type": "rhetoric",
+      "name": "innuendo",
+      "display": "Innuendo",
+      "excerpt": "There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't",
+      "start_time": 5,
+      "end_time": 12,
+      "severity": "clear",
+      "explanation": "The speaker raises the suggestion of cognitive impairment then disclaims taking a position, planting the implication without committing to or defending the claim.",
+      "id": "cable_008-marker-3"
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_popularity",
+      "display": "Appeal to Popularity",
+      "excerpt": "Over 77,000,000 people showed up and voted for him. That's not random",
+      "start_time": 28,
+      "end_time": 36,
+      "severity": "clear",
+      "explanation": "The speaker uses the large number of voters as evidence that something 'deeper' and legitimate is occurring, implying validity through popularity rather than through argument about the underlying claims.",
+      "id": "cable_008-marker-4"
+    },
+    {
+      "type": "fallacy",
+      "name": "false_dilemma",
+      "display": "False Dilemma Fallacy",
+      "excerpt": "something structural, not emotional",
+      "start_time": 42,
+      "end_time": 46,
+      "severity": "subtle",
+      "explanation": "Frames the explanation as a binary between 'structural' and 'emotional' causes, excluding the possibility that both or other factors could be at play.",
+      "id": "cable_008-marker-5"
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "dismiss as confusion or misinformation",
+      "start_time": 33,
+      "end_time": 37,
+      "severity": "subtle",
+      "explanation": "Pejoratively characterizes opposing explanations as dismissive, preemptively delegitimizing alternative interpretations of voter behavior.",
+      "id": "cable_008-marker-6"
+    }
+  ],
+  "errors": []
+}

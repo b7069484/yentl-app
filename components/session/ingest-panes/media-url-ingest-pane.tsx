@@ -62,9 +62,12 @@ export function MediaUrlIngestPane() {
   const [url, setUrl] = useState("");
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const abortRef = useRef<AbortController | null>(null);
+  const handoffRef = useRef(false);
 
   // Abort any in-flight request on unmount
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  useEffect(() => () => {
+    if (!handoffRef.current) abortRef.current?.abort();
+  }, []);
 
   const isValidUrl = isValidUrlFormat(url);
   const isBusy = phase.kind === "processing" || phase.kind === "ingesting";
@@ -111,6 +114,7 @@ export function MediaUrlIngestPane() {
 
       // Bulk ingest
       setPhase({ kind: "ingesting" });
+      handoffRef.current = true;
       await bulkIngest(data.utterances, { signal: ac.signal });
 
       if (!ac.signal.aborted) {
@@ -118,11 +122,12 @@ export function MediaUrlIngestPane() {
         router.push("/session?view=watch");
       }
     } catch (e: unknown) {
+      handoffRef.current = false;
       if ((e as Error).name === "AbortError") return;
       const message = e instanceof Error ? e.message : String(e);
       setPhase({ kind: "error", code: "NETWORK_ERROR", message });
     }
-  }, [url, isValidUrl, isBusy, setSource]);
+  }, [url, isValidUrl, isBusy, setSource, router]);
 
   const handleBack = useCallback(() => {
     abortRef.current?.abort();

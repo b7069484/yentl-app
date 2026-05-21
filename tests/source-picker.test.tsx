@@ -24,37 +24,41 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-// ─── 1. Renders all 5 cards ───────────────────────────────────────────────────
+function normalizeText(value: string | null | undefined) {
+  return value?.replace(/\s+/g, " ").trim();
+}
+
+// ─── 1. Renders all 6 cards ───────────────────────────────────────────────────
 
 describe("SourcePicker – card rendering", () => {
-  it("renders 5 cards with expected titles", () => {
+  it("renders 6 cards with expected titles", () => {
     render(<SourcePicker />);
-    expect(screen.getByText("Microphone")).toBeTruthy();
-    expect(screen.getByText("Text doc")).toBeTruthy();
-    expect(screen.getByText("Audio file")).toBeTruthy();
-    expect(screen.getByText("YouTube")).toBeTruthy();
-    expect(screen.getByText("Media URL")).toBeTruthy();
+    expect(screen.getByText("Analyze a video I can play")).toBeTruthy();
+    expect(screen.getByText("Use microphone")).toBeTruthy();
+    expect(screen.getByText("Upload audio/video")).toBeTruthy();
+    expect(screen.getByText("Paste transcript")).toBeTruthy();
+    expect(screen.getByText("Paste YouTube link")).toBeTruthy();
+    expect(screen.getByText("Use media URL")).toBeTruthy();
   });
 
-  it("renders the brand Y-mark image", () => {
+  it("renders the full wordmark", () => {
     render(<SourcePicker />);
-    const img = screen.getByAltText("Yentl");
-    expect(img).toBeTruthy();
-    expect(img.getAttribute("src")).toBe("/yentl-mark.svg");
+    expect(screen.getByText("yentl")).toBeTruthy();
   });
 
   it("renders the headline", () => {
     render(<SourcePicker />);
-    expect(
-      screen.getByText("How would you like to fact-check?"),
-    ).toBeTruthy();
+    expect(normalizeText(screen.getByRole("heading", { level: 1 }).textContent))
+      .toBe("What do you want to analyze?");
   });
 
   it("renders the subtitle", () => {
     render(<SourcePicker />);
     expect(
-      screen.getByText(
-        /Yentl works with live conversations, recordings, transcripts, and online media/i,
+      screen.getByText((_content, element) =>
+        element?.tagName.toLowerCase() === "p" &&
+        normalizeText(element.textContent) ===
+          "Start with the media or text you already have. Yentl keeps the source, transcript, and analysis together.",
       ),
     ).toBeTruthy();
   });
@@ -65,13 +69,13 @@ describe("SourcePicker – card rendering", () => {
 describe("SourcePicker – click handlers: setSource", () => {
   it("Microphone card calls setSource({ kind: 'mic' })", () => {
     render(<SourcePicker />);
-    fireEvent.click(screen.getByText("Microphone").closest("button")!);
+    fireEvent.click(screen.getByText("Use microphone").closest("button")!);
     expect(mockSetSource).toHaveBeenCalledWith({ kind: "mic" });
   });
 
   it("Text doc card calls setSource({ kind: 'text_doc', ... })", () => {
     render(<SourcePicker />);
-    fireEvent.click(screen.getByText("Text doc").closest("button")!);
+    fireEvent.click(screen.getByText("Paste transcript").closest("button")!);
     expect(mockSetSource).toHaveBeenCalledWith({
       kind: "text_doc",
       filename: "",
@@ -80,9 +84,15 @@ describe("SourcePicker – click handlers: setSource", () => {
     });
   });
 
+  it("Browser tab card calls setSource({ kind: 'browser_tab' })", () => {
+    render(<SourcePicker />);
+    fireEvent.click(screen.getByText("Analyze a video I can play").closest("button")!);
+    expect(mockSetSource).toHaveBeenCalledWith({ kind: "browser_tab" });
+  });
+
   it("Audio file card calls setSource({ kind: 'audio_file', ... })", () => {
     render(<SourcePicker />);
-    fireEvent.click(screen.getByText("Audio file").closest("button")!);
+    fireEvent.click(screen.getByText("Upload audio/video").closest("button")!);
     expect(mockSetSource).toHaveBeenCalledWith({
       kind: "audio_file",
       blob_url: "",
@@ -94,7 +104,7 @@ describe("SourcePicker – click handlers: setSource", () => {
 
   it("YouTube card calls setSource({ kind: 'youtube', ... })", () => {
     render(<SourcePicker />);
-    fireEvent.click(screen.getByText("YouTube").closest("button")!);
+    fireEvent.click(screen.getByText("Paste YouTube link").closest("button")!);
     expect(mockSetSource).toHaveBeenCalledWith({
       kind: "youtube",
       video_id: "",
@@ -104,7 +114,7 @@ describe("SourcePicker – click handlers: setSource", () => {
 
   it("Media URL card calls setSource({ kind: 'media_url', ... })", () => {
     render(<SourcePicker />);
-    fireEvent.click(screen.getByText("Media URL").closest("button")!);
+    fireEvent.click(screen.getByText("Use media URL").closest("button")!);
     expect(mockSetSource).toHaveBeenCalledWith({
       kind: "media_url",
       url: "",
@@ -115,7 +125,14 @@ describe("SourcePicker – click handlers: setSource", () => {
 // ─── 3. Click handlers call setPrerecordStage("selected") ────────────────────
 
 describe("SourcePicker – click handlers: setPrerecordStage", () => {
-  const cardTitles = ["Microphone", "Text doc", "Audio file", "YouTube", "Media URL"];
+  const cardTitles = [
+    "Analyze a video I can play",
+    "Use microphone",
+    "Upload audio/video",
+    "Paste transcript",
+    "Paste YouTube link",
+    "Use media URL",
+  ];
 
   for (const title of cardTitles) {
     it(`clicking "${title}" sets prerecordStage to "selected"`, () => {

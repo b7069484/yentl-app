@@ -11,6 +11,7 @@ import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
 import { openDeepgramStream } from "@/lib/client/deepgram-stream";
 import { onFinalUtterance } from "@/lib/client/orchestrator";
+import { ExtensionBridge } from "@/components/session/ExtensionBridge";
 
 export default function SessionLayout({ children }: { children: React.ReactNode }) {
   const session = useSession();
@@ -126,6 +127,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
 
   return (
     <SessionShell>
+      <ExtensionBridge />
       {error && (
         <div
           role="alert"

@@ -89,14 +89,21 @@ describe("session store — speakers", () => {
     expect(useSession.getState().prerecordStage).toBe("selected");
   });
 
-  it("startSession sets isRecording=true for mic source, false otherwise", () => {
+  it("startSession sets truthful recording state by source", () => {
     useSession.getState().reset();
     // mic: should record
     useSession.getState().setSource({ kind: "mic" });
     useSession.getState().startSession();
     expect(useSession.getState().isRecording).toBe(true);
 
-    // non-mic: bulk-loaded, not "recording"
+    // browser tab: waiting until the extension confirms capture-start
+    useSession.getState().reset();
+    useSession.getState().setSource({ kind: "browser_tab" });
+    useSession.getState().startSession();
+    expect(useSession.getState().isRecording).toBe(false);
+    expect(useSession.getState().browserTabStatus.phase).toBe("waiting_for_extension");
+
+    // bulk-loaded source: not "recording"
     useSession.getState().reset();
     useSession.getState().setSource({ kind: "youtube", video_id: "abc", url: "https://youtu.be/abc" });
     useSession.getState().startSession();

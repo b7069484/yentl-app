@@ -68,6 +68,14 @@ All audio recording requires explicit consent before any microphone access begin
 - `aria-live="polite"` on transcript container and claims region
 - Automated axe-core + Lighthouse audits run in CI
 
+### Browser tab capture
+
+Yentl includes a local Chrome MV3 extension scaffold in [`extension/`](extension/)
+for capturing the active tab's audio and streaming it into a live Yentl session.
+This is the preferred path for "any video on any page" because it works from the
+user's browser session instead of depending on server-side YouTube or site
+fetches. See [`docs/browser-tab-capture.md`](docs/browser-tab-capture.md).
+
 ### Data protection
 
 - **DPIA**: [`docs/dpia.md`](docs/dpia.md) — EDPB-template DPIA covering the audio→Deepgram→Anthropic pipeline

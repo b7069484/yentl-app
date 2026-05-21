@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-05-21T17:09:27.114Z",
+  "results": [
+    {
+      "id": "browser-tab-real-video-page",
+      "url": "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm",
+      "title": "File:David Korten, The Green Interview.webm - Wikimedia Commons",
+      "requiresMedia": true,
+      "panelInjected": true,
+      "panelStatus": "Page text captured",
+      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&bridge=validation-browser-tab-real-video-page&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+      "videoCount": 2,
+      "audioCount": 0,
+      "pageTextChunks": 1,
+      "pageTextLength": 1268,
+      "pageTextSample": "Summary DescriptionDavid Korten, The Green Interview.webm English: David Korten in conversation with Silver Donald Cameron Date 26 June 2014, 19:44:53 Source YouTube: https://www.youtube.com/watch?v=ysCtpyhmsY4 – View/save archived versions"
+    },
+    {
+      "id": "browser-page-real-text",
+      "url": "https://en.wikinews.org/wiki/Residents_shelter_in_place_for_hours_after_gas_leak_outside_of_Los_Angeles",
+      "title": "Residents shelter in place for hours after gas leak outside of Los Angeles - Wikinews, the free news source",
+      "requiresMedia": false,
+      "panelInjected": true,
+      "panelStatus": "Page text captured",
+      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&bridge=validation-browser-page-real-text&title=Residents+shelter+in+place+for+hours+after+gas+leak+outside+of+Los+Angeles+-+Wikinews%2C+the+free+news+source",
+      "videoCount": 0,
+      "audioCount": 0,
+      "pageTextChunks": 1,
+      "pageTextLength": 731,
+      "pageTextSample": "A gas leak occurred in Castaic, California, in northern Los Angeles County, on Saturday, December 27. More than 14,000 people were required to shelter in place. Interstate 5 was shut down for several hours due to the gas leak, bottlenecking"
+    }
+  ]
+}

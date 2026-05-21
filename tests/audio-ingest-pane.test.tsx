@@ -284,6 +284,13 @@ describe("AudioIngestPane — Process flow", () => {
     });
   });
 
+  it("opens Watch after successful upload ingest", async () => {
+    await stageAndProcess();
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
+    });
+  });
+
   it("shows error message when transcribeAudioFile rejects", async () => {
     mockTranscribeAudioFile.mockRejectedValue(new Error("Deepgram quota exceeded"));
 

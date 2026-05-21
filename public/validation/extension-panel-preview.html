@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Civic Ledger video page with Yentl panel</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #eef1f5;
+        color: #181a21;
+        --panel-width: 430px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #eef1f5;
+      }
+
+      .site {
+        width: calc(100vw - var(--panel-width));
+        min-height: 100vh;
+        min-width: 0;
+        background: #f6f7f9;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border-bottom: 1px solid #d9dde6;
+        background: rgb(255 255 255 / 94%);
+        padding: 14px clamp(18px, 4vw, 44px);
+        backdrop-filter: blur(10px);
+      }
+
+      .publisher {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        white-space: nowrap;
+      }
+
+      .publisher strong {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      .publisher span {
+        color: #5a6172;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      nav {
+        display: flex;
+        min-width: 0;
+        gap: 18px;
+        overflow: hidden;
+        color: #4f5667;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      nav a {
+        color: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .site-main {
+        padding: 26px clamp(18px, 4vw, 44px) 54px;
+      }
+
+      .story-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .story {
+        min-width: 0;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: #1f5fbf;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 920px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(34px, 5vw, 62px);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .dek {
+        margin: 14px 0 18px;
+        max-width: 72ch;
+        color: #4f5667;
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.45;
+      }
+
+      .byline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        margin-bottom: 18px;
+        color: #667085;
+        font-size: 13px;
+      }
+
+      .video-card,
+      .article-card,
+      .rail-card {
+        border: 1px solid #d9dde6;
+        border-radius: 10px;
+        background: #ffffff;
+        box-shadow: 0 12px 38px rgb(34 42 58 / 10%);
+      }
+
+      .video-card {
+        overflow: hidden;
+      }
+
+      video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #12141c;
+      }
+
+      .video-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        color: #535b6e;
+        font-size: 13px;
+      }
+
+      .live-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #b42318;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .live-dot::before {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #d92d20;
+        content: "";
+      }
+
+      .mode-note {
+        margin-top: 16px;
+        border-left: 3px solid #2563eb;
+        background: #edf4ff;
+        padding: 12px 14px;
+        color: #33415f;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .article-card {
+        margin-top: 22px;
+        padding: 22px;
+      }
+
+      .article-card h2,
+      .rail-card h2 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+
+      .article-card p,
+      .rail-card p {
+        margin: 0 0 14px;
+        color: #4f5667;
+        line-height: 1.62;
+      }
+
+      blockquote {
+        margin: 18px 0;
+        border-left: 4px solid #8fb7e8;
+        padding: 6px 0 6px 16px;
+        color: #252b38;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        line-height: 1.28;
+      }
+
+      .rail {
+        display: grid;
+        gap: 16px;
+      }
+
+      .rail-card {
+        padding: 16px;
+      }
+
+      .rail-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .rail-list li {
+        border-top: 1px solid #e5e8ef;
+        padding-top: 10px;
+        color: #3d4555;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .ad-box {
+        display: grid;
+        min-height: 180px;
+        place-items: center;
+        border: 1px dashed #c7cedb;
+        border-radius: 8px;
+        color: #8a92a3;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .yentl-panel {
+        position: fixed;
+        inset: 0 0 0 auto;
+        z-index: 20;
+        width: var(--panel-width);
+        min-width: 0;
+        border-left: 1px solid #ded5c3;
+        background: #fbfaf7;
+        box-shadow: -14px 0 38px rgb(20 20 24 / 18%);
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 48px;
+        border-bottom: 1px solid #e8e0d0;
+        padding: 0 12px;
+        background: #fffdfa;
+      }
+
+      .brand {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 24px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #f59e0b;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: calc(100dvh - 49px);
+        border: 0;
+      }
+
+      @media (max-width: 1180px) {
+        .story-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .rail {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 820px) {
+        :root {
+          --panel-width: min(430px, 48vw);
+        }
+
+        nav {
+          display: none;
+        }
+
+        .rail {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="site">
+      <header class="site-header">
+        <div class="publisher">
+          <strong>Civic Ledger</strong>
+          <span>Local video</span>
+        </div>
+        <nav aria-label="Example page navigation">
+          <a href="#video">Watch</a>
+          <a href="#context">Context</a>
+          <a href="#documents">Documents</a>
+          <a href="#comments">Comments</a>
+        </nav>
+      </header>
+
+      <main class="site-main">
+        <div class="story-layout">
+          <article class="story">
+            <div class="eyebrow">Live explainer</div>
+            <h1>City budget hearing centers on library hours and repair funds</h1>
+            <p class="dek">
+              Council members debated whether the proposed increase will cover
+              weekend hours, staff training, and overdue repairs to the
+              children's reading room.
+            </p>
+            <div class="byline">
+              <span>By Mara Klein</span>
+              <span>Updated 10:40 AM</span>
+              <span>Video length 0:33</span>
+            </div>
+
+            <section class="video-card" id="video" aria-label="News video player">
+              <video controls playsinline src="/validation/yentl-synthetic-panel.mp4"></video>
+              <div class="video-meta">
+                <span class="live-dot">Playing fixture</span>
+                <span>Captioned local validation clip</span>
+              </div>
+            </section>
+
+            <div class="mode-note">
+              This is a representative third-party webpage with Yentl injected
+              on the right. Preview mode uses the local fixture transcript to
+              populate the panel. The real live test is the browser-capture
+              page plus the installed Chrome extension.
+            </div>
+
+            <section class="article-card" id="context">
+              <h2>What viewers are watching</h2>
+              <p>
+                The hearing clip includes a checkable budget claim, a stated
+                rationale for the increase, and a rhetorical warning about
+                certainty before the audit is public.
+              </p>
+              <blockquote>
+                "The city library budget increased by 12 percent this year."
+              </blockquote>
+              <p>
+                In the finished extension flow, Yentl does not replace this
+                page. It attaches to it, listens to this tab's audio, and keeps
+                the transcript and evidence visible alongside the source.
+              </p>
+            </section>
+          </article>
+
+          <aside class="rail" aria-label="Example page sidebar">
+            <section class="rail-card" id="documents">
+              <h2>Documents in this story</h2>
+              <ul class="rail-list">
+                <li>Draft library budget summary</li>
+                <li>Weekend-hours staffing memo</li>
+                <li>Facilities repair estimate</li>
+              </ul>
+            </section>
+            <section class="rail-card">
+              <h2>Related coverage</h2>
+              <ul class="rail-list">
+                <li>How the capital plan changed after public comment</li>
+                <li>Why branches are asking for more weekend staff</li>
+                <li>What the finance chair says comes next</li>
+              </ul>
+            </section>
+            <section class="rail-card">
+              <div class="ad-box">Page module</div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <aside class="yentl-panel" aria-label="Yentl analysis panel preview">
+      <div class="bar">
+        <span class="brand">yentl</span>
+        <span class="dot" aria-hidden="true"></span>
+      </div>
+      <iframe
+        title="Yentl extension panel preview"
+        src="/session?surface=extension-panel&amp;source=browser-tab&amp;bridge=preview&amp;title=Civic%20Ledger%20hearing%20clip&amp;demo=validation"
+      ></iframe>
+    </aside>
+  </body>
+</html>

@@ -202,6 +202,13 @@ describe("MediaUrlIngestPane — happy path", () => {
       expect(screen.getByText(/session is live/i)).toBeTruthy();
     });
   });
+
+  it("opens Watch after successful media ingest", async () => {
+    await typeAndProcess();
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
+    });
+  });
 });
 
 // ─── 4. Error states ──────────────────────────────────────────────────────────

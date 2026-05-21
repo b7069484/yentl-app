@@ -9,10 +9,10 @@ describe("TwoPartyDisclosure", () => {
     localStorage.clear();
   });
 
-  it("appears when localStorage flag is absent", () => {
+  it("appears when localStorage flag is absent", async () => {
     render(<TwoPartyDisclosure />);
     expect(
-      screen.getByText(/Heads up — recording the people around you/i)
+      await screen.findByText(/Heads up — recording the people around you/i)
     ).toBeInTheDocument();
   });
 
@@ -24,18 +24,18 @@ describe("TwoPartyDisclosure", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("dismissing sets the localStorage flag", () => {
+  it("dismissing sets the localStorage flag", async () => {
     render(<TwoPartyDisclosure />);
-    const dismissBtn = screen.getByRole("button", {
+    const dismissBtn = await screen.findByRole("button", {
       name: /Dismiss consent reminder/i,
     });
     fireEvent.click(dismissBtn);
     expect(localStorage.getItem(FLAG_KEY)).toBe("1");
   });
 
-  it("banner disappears after dismissal", () => {
+  it("banner disappears after dismissal", async () => {
     render(<TwoPartyDisclosure />);
-    const dismissBtn = screen.getByRole("button", {
+    const dismissBtn = await screen.findByRole("button", {
       name: /Dismiss consent reminder/i,
     });
     fireEvent.click(dismissBtn);

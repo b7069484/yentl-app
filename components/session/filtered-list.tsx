@@ -7,7 +7,7 @@ import { ClaimRow } from "./claim-row";
 import { MarkerRow } from "./marker-row";
 import { FilterDropdown } from "./filter-dropdown";
 import type { DropdownOption } from "./filter-dropdown";
-import type { PrimaryLabel, MarkerType, MarkerSeverity } from "@/lib/types";
+import type { PrimaryLabel } from "@/lib/types";
 import {
   parseClaimFilters,
   parseMarkerFilters,
@@ -20,7 +20,6 @@ import {
   describeClaimFilters,
   describeMarkerFilters,
 } from "@/lib/client/filter-selectors";
-import type { ClaimSort, MarkerSort } from "@/lib/client/filter-selectors";
 
 // ─── URL state helpers ────────────────────────────────────────────────────────
 
@@ -61,6 +60,31 @@ const MARKER_SORT_OPTIONS: DropdownOption[] = [
   { value: "severity", label: "By severity" },
   { value: "speaker", label: "By speaker" },
 ];
+
+const DETAIL_CONTEXT_KEYS = [
+  "verdict",
+  "type",
+  "severity",
+  "speaker",
+  "topic",
+  "sort",
+] as const;
+
+function buildDetailHref(
+  type: "claim" | "marker",
+  id: string,
+  searchParams: URLSearchParams,
+) {
+  const from = DETAIL_CONTEXT_KEYS
+    .map((key) => {
+      const value = searchParams.get(key);
+      return value ? `${key}:${value}` : null;
+    })
+    .filter(Boolean)
+    .join("|");
+  const query = from ? `?from=${encodeURIComponent(from)}` : "";
+  return `/session/detail/${type}/${id}${query}`;
+}
 
 // ─── Verdict filter options ───────────────────────────────────────────────────
 
@@ -456,7 +480,7 @@ export function FilteredList() {
                 key={marker.id}
                 marker={marker}
                 speakerLabel={getSpeakerLabel(marker.speaker_id)}
-                href={`/session/marker/${marker.id}`}
+                href={buildDetailHref("marker", marker.id, searchParams)}
               />
             ))
           )
@@ -468,7 +492,7 @@ export function FilteredList() {
               key={claim.id}
               claim={claim}
               speakerLabel={getSpeakerLabel(claim.speaker_id)}
-              href={`/session/claim/${claim.id}`}
+              href={buildDetailHref("claim", claim.id, searchParams)}
             />
           ))
         )}

@@ -1,0 +1,325 @@
+{
+  "id": "israel_010",
+  "title": "What the firestorm over Rep. Omar's remarks says about anti-Semitism in America",
+  "category": "israel_palestine",
+  "startedAt": "2026-05-21T16:28:57.456Z",
+  "finishedAt": "2026-05-21T16:30:48.200Z",
+  "baseUrl": "http://localhost:3000",
+  "verify": "provisional",
+  "utterancesAvailable": 95,
+  "utterancesReplayed": 12,
+  "claims": [
+    {
+      "claim_text": "The U.S. House voted today on a resolution denouncing bigotry in many forms.",
+      "utterance_start": 0.16,
+      "utterance_end": 10.24,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "israel_010-claim-1",
+      "speaker_id": 0,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "time-dependent claim",
+          "lacks date context"
+        ],
+        "explanation": "The claim references 'today' without a specific date, making it impossible to verify against a particular event. The House did pass a notable resolution condemning anti-Semitism and other forms of bigotry in March 2019, but without knowing the date of this transcript, I cannot confirm whether the claim accurately describes that vote or another."
+      }
+    },
+    {
+      "claim_text": "Ilhan Omar is a Democratic member of Congress from Minnesota",
+      "utterance_start": 12.16,
+      "utterance_end": 16.935,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-2",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 98,
+        "annotations": [
+          "well-established fact"
+        ],
+        "explanation": "Ilhan Omar has represented Minnesota's 5th Congressional District as a Democrat since January 2019."
+      }
+    },
+    {
+      "claim_text": "Ilhan Omar has criticized Israeli policies for years",
+      "utterance_start": 12.16,
+      "utterance_end": 16.935,
+      "topic": "Politics",
+      "topic_secondary": "Defense",
+      "id": "israel_010-claim-3",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "well-documented",
+          "public record"
+        ],
+        "explanation": "Representative Ilhan Omar has been a vocal critic of Israeli government policies since entering Congress in 2019, including controversial tweets that drew bipartisan rebuke, support for BDS, and ongoing criticism of Israeli military actions and settlements."
+      }
+    },
+    {
+      "claim_text": "As a candidate, Ilhan Omar (Minnesota Democrat) argued that criticism of Israel was not the same as criticism of Jews.",
+      "utterance_start": 17.015,
+      "utterance_end": 28.775,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "israel_010-claim-4",
+      "speaker_id": 2,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 85,
+        "annotations": [
+          "public record",
+          "well-documented position"
+        ],
+        "explanation": "Ilhan Omar has consistently distinguished between criticism of the Israeli government/policies and criticism of Jewish people, both as a candidate and after election. This is a well-known and frequently repeated position of hers."
+      }
+    },
+    {
+      "claim_text": "In February, Rep. Ilhan Omar (D-MN) tweeted 'it's all about the Benjamins baby' regarding support for Israel",
+      "utterance_start": 30.289999,
+      "utterance_end": 51.925,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-5",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "accurate quote",
+          "correct attribution",
+          "correct timeframe"
+        ],
+        "explanation": "Rep. Ilhan Omar did tweet 'It's all about the Benjamins baby' in February 2019 in reference to congressional support for Israel and AIPAC's influence. The tweet sparked significant controversy and accusations of antisemitism, leading Omar to apologize."
+      }
+    },
+    {
+      "claim_text": "Rep. Ilhan Omar (D-MN) identified AIPAC as the lobbying group she believed was paying US politicians to be pro-Israel",
+      "utterance_start": 30.289999,
+      "utterance_end": 51.925,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-6",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 90,
+        "annotations": [
+          "public record",
+          "2019 controversy"
+        ],
+        "explanation": "In February 2019, Rep. Ilhan Omar tweeted 'It's all about the Benjamins baby' and, when asked who she thought was paying politicians to be pro-Israel, replied 'AIPAC!' The remarks drew widespread criticism as invoking antisemitic tropes, and Omar subsequently apologized."
+      }
+    },
+    {
+      "claim_text": "AIPAC stands for the American Israel Public Affairs Committee.",
+      "utterance_start": 52.004997,
+      "utterance_end": 54.324997,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-7",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 99,
+        "annotations": [
+          "definition",
+          "well-established fact"
+        ],
+        "explanation": "AIPAC is indeed the acronym for the American Israel Public Affairs Committee, a well-known pro-Israel lobbying organization based in the United States."
+      }
+    },
+    {
+      "claim_text": "Rep. Ilhan Omar (D-MN) deleted the tweets about AIPAC the day after posting them.",
+      "utterance_start": 54.964996,
+      "utterance_end": 66.29,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-8",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 70,
+        "annotations": [
+          "timing approximate",
+          "details unclear"
+        ],
+        "explanation": "Rep. Ilhan Omar's February 2019 tweets about AIPAC ('It's all about the Benjamins baby') generated immediate backlash, and she issued an apology and deleted the tweets shortly after. The exact timing—whether it was the next day or within roughly 24-48 hours—is approximately correct based on my recollection, though I cannot verify the precise day with certainty."
+      }
+    },
+    {
+      "claim_text": "House Republican Minority Leader Kevin McCarthy called Rep. Ilhan Omar's criticism inappropriate.",
+      "utterance_start": 54.964996,
+      "utterance_end": 66.29,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-9",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "PARTIAL",
+        "score": 55,
+        "annotations": [
+          "title inaccuracy",
+          "plausible event"
+        ],
+        "explanation": "Kevin McCarthy has criticized Rep. Ilhan Omar on multiple occasions, so the general gist is plausible. However, the title is imprecise—McCarthy was House Minority Leader (not 'Minority Leader' as a distinct title) during 2019-2022, and without more specifics about which criticism is referenced, the exact wording 'inappropriate' cannot be confirmed."
+      }
+    },
+    {
+      "claim_text": "Kevin McCarthy is the House Republican Minority Leader.",
+      "utterance_start": 54.964996,
+      "utterance_end": 66.29,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-10",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 50,
+        "annotations": [
+          "time-sensitive",
+          "role changed over time"
+        ],
+        "explanation": "Kevin McCarthy held the role of House Republican Minority Leader from 2019 to January 2023, then became Speaker of the House until his ouster in October 2023, after which Mike Johnson became Speaker. Without knowing the date of the claim, its accuracy cannot be definitively determined."
+      }
+    },
+    {
+      "claim_text": "On the same day as Rep. Ilhan Omar's (D-MN) February 2019 Israel comments, the Democratic Party issued a statement calling her use of 'anti-Semitic tropes and prejudicial accusations about Israel's supporters' deeply offensive.",
+      "utterance_start": 78.705,
+      "utterance_end": 90.38,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "israel_010-claim-11",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "PARTIAL",
+        "score": 40,
+        "annotations": [
+          "attribution unclear",
+          "timing imprecise"
+        ],
+        "explanation": "In February 2019, after Omar's 'It's all about the Benjamins' tweet, House Democratic leadership (Pelosi, Hoyer, Clyburn, et al.) issued a joint statement condemning her use of 'anti-Semitic tropes and prejudicial accusations about Israel's supporters.' However, this came from House Democratic leadership, not 'the Democratic Party' as an institution, and I cannot confirm it was issued the same day as her comments."
+      }
+    },
+    {
+      "claim_text": "Rep. Ilhan Omar (D-MN) is Muslim and Black.",
+      "utterance_start": 91.34,
+      "utterance_end": 101.704994,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "israel_010-claim-12",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 98,
+        "annotations": [
+          "public biographical fact"
+        ],
+        "explanation": "Ilhan Omar is a Somali-American Muslim woman who was elected to Congress from Minnesota's 5th district in 2018. She is one of the first two Muslim women elected to the U.S. Congress and is Black."
+      }
+    },
+    {
+      "claim_text": "Rep. Ilhan Omar (D-MN) issued a statement thanking her colleagues for educating her on the painful history of anti-Semitic tropes and unequivocally apologizing.",
+      "utterance_start": 91.34,
+      "utterance_end": 101.704994,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-13",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 90,
+        "annotations": [
+          "public statement",
+          "2019 incident"
+        ],
+        "explanation": "In February 2019, Rep. Ilhan Omar issued a statement after controversy over her tweets about AIPAC and Israel, in which she thanked colleagues for educating her on the painful history of anti-Semitic tropes and offered an unequivocal apology, while also reaffirming criticism of lobbying influence."
+      }
+    },
+    {
+      "claim_text": "Rep. Ilhan Omar (D-MN), in her apology statement, criticized the 'problematic role of lobbyists in our politics.'",
+      "utterance_start": 101.865,
+      "utterance_end": 106.424995,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "israel_010-claim-14",
+      "speaker_id": 1,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 90,
+        "annotations": [
+          "verifiable public statement",
+          "2019 incident"
+        ],
+        "explanation": "In February 2019, after being criticized for tweets about AIPAC that were deemed antisemitic, Rep. Ilhan Omar issued an apology statement in which she also reiterated concerns about 'the problematic role of lobbyists in our politics, whether it be AIPAC, the NRA or the fossil fuel industry.' The quoted phrase accurately reflects her statement."
+      }
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "dog_whistles",
+      "display": "Dog Whistles",
+      "excerpt": "it's all about the Benjamin's baby, suggesting $100 bills created support for Israel",
+      "start_time": 38,
+      "end_time": 48,
+      "severity": "clear",
+      "explanation": "The phrase 'all about the Benjamins' invokes a longstanding antisemitic trope about Jewish people and money without stating it explicitly—a textbook dog whistle, as characterized by the reporting itself.",
+      "id": "israel_010-marker-1"
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the path to this divisive debate",
+      "start_time": 6,
+      "end_time": 11,
+      "severity": "subtle",
+      "explanation": "Framing the debate as 'divisive' is an editorial loaded descriptor that primes the audience to perceive conflict rather than neutrally describing the legislative process.",
+      "id": "israel_010-marker-2"
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "anti Semitic tropes linking Jewish influence to money",
+      "start_time": 54,
+      "end_time": 62,
+      "severity": "clear",
+      "explanation": "The phrase 'anti-Semitic tropes' is emotionally and politically charged language that frames Omar's comments in the most damning light, shaping audience perception before analysis.",
+      "id": "israel_010-marker-3"
+    },
+    {
+      "type": "rhetoric",
+      "name": "appeal_to_emotion",
+      "display": "Appeal to Emotion",
+      "excerpt": "when you sat back and you thought about and you listened to what this country went through in World War two",
+      "start_time": 72,
+      "end_time": 82,
+      "severity": "clear",
+      "explanation": "McCarthy invokes the Holocaust/WWII to emotionally amplify condemnation rather than engaging with the substance of Omar's lobbying critique.",
+      "id": "israel_010-marker-4"
+    }
+  ],
+  "errors": []
+}

@@ -4,9 +4,10 @@ import { render, screen } from "@testing-library/react";
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
 let mockSearchParamsRaw = new URLSearchParams("");
+const mockReplace = vi.fn();
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: mockReplace }),
   usePathname: () => "/session",
   useSearchParams: () => mockSearchParamsRaw,
 }));
@@ -53,6 +54,10 @@ vi.mock("@/components/session/watch-view", () => ({
   WatchView: () => <div data-testid="watch-view">WatchView</div>,
 }));
 
+vi.mock("@/components/session/extension-panel-view", () => ({
+  ExtensionPanelView: () => <div data-testid="extension-panel-view">ExtensionPanelView</div>,
+}));
+
 // ─── Mock SourceRouter ────────────────────────────────────────────────────────
 
 vi.mock("@/lib/client/source-router", () => ({
@@ -92,15 +97,23 @@ import SessionPage from "@/app/session/page";
 type StoreState = {
   startedAt: string | null;
   startSession: () => void;
+  prerecordStage: "picker" | "selected";
   source: { kind: string };
+  setSource: (source: unknown) => void;
+  setPrerecordStage: (stage: "picker" | "selected") => void;
+  setBrowserTabStatus: (status: unknown) => void;
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
   return {
     startedAt: null,
     startSession: vi.fn(),
+    prerecordStage: "picker",
     // Default to a playable kind so view=watch tests don't redirect unexpectedly.
     source: { kind: "youtube" },
+    setSource: vi.fn(),
+    setPrerecordStage: vi.fn(),
+    setBrowserTabStatus: vi.fn(),
     ...overrides,
   };
 }
@@ -115,6 +128,7 @@ function mockStore(state: StoreState) {
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
+  vi.clearAllMocks();
   mockSearchParamsRaw = new URLSearchParams("");
   mockStore(makeStore());
 });
@@ -134,6 +148,22 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     expect(screen.queryByTestId("home-overview")).toBeNull();
     expect(screen.queryByTestId("transcript-view")).toBeNull();
     expect(screen.queryByTestId("filtered-list")).toBeNull();
+  });
+
+  it("moves the project UX flow atlas out of the user session before start", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=flows");
+    mockStore(makeStore({ startedAt: null }));
+    render(<SessionPage />);
+    expect(mockReplace).toHaveBeenCalledWith("/project/flows");
+    expect(screen.queryByTestId("source-router")).toBeNull();
+  });
+
+  it("renders the compact extension panel surface before capture starts", () => {
+    mockSearchParamsRaw = new URLSearchParams("surface=extension-panel&source=browser-tab&bridge=test");
+    mockStore(makeStore({ startedAt: null }));
+    render(<SessionPage />);
+    expect(screen.getByTestId("extension-panel-view")).toBeTruthy();
+    expect(screen.queryByTestId("source-router")).toBeNull();
   });
 });
 
@@ -178,6 +208,13 @@ describe("SessionPage – view dispatch (startedAt set)", () => {
     mockStore(makeStore({ startedAt }));
     render(<SessionPage />);
     expect(screen.getByTestId("filtered-list")).toBeTruthy();
+  });
+
+  it("view=flows redirects to the separate project workspace", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=flows");
+    mockStore(makeStore({ startedAt }));
+    render(<SessionPage />);
+    expect(mockReplace).toHaveBeenCalledWith("/project/flows");
   });
 
   it("unknown view falls back to HomeOverview", () => {

@@ -81,9 +81,9 @@ beforeEach(() => {
 // ─── 1. Renders ───────────────────────────────────────────────────────────────
 
 describe("YoutubeIngestPane — renders", () => {
-  it("renders the headline 'Paste a YouTube URL'", () => {
+  it("renders the YouTube ingest headline", () => {
     render(<YoutubeIngestPane />);
-    expect(screen.getByText(/Paste a YouTube URL/i)).toBeTruthy();
+    expect(screen.getByText(/Bring in a YouTube video/i)).toBeTruthy();
   });
 
   it("renders a URL input with placeholder", () => {
@@ -189,6 +189,13 @@ describe("YoutubeIngestPane — happy path fetch flow", () => {
       );
     });
   });
+
+  it("opens Watch after successful caption ingest", async () => {
+    await enterUrlAndFetch();
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
+    });
+  });
 });
 
 // ─── 4. Error states ──────────────────────────────────────────────────────────
@@ -209,8 +216,42 @@ describe("YoutubeIngestPane — error states", () => {
 
     // Should reference the Audio file source option
     await waitFor(() => {
-      expect(screen.getByText(/Audio file/i)).toBeTruthy();
+      expect(screen.getAllByText(/Audio file/i).length).toBeGreaterThan(0);
     });
+  });
+
+  it("lets the user recover from NO_CAPTIONS with browser tab capture", async () => {
+    render(<YoutubeIngestPane />);
+    const input = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+    fireEvent.change(input, { target: { value: VALID_URL } });
+
+    mockFetch.mockResolvedValueOnce(
+      errorFetchResponse("NO_CAPTIONS", "No captions available"),
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Fetch captions/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Caption import stopped/i)).toBeTruthy();
+    });
+
+    const browserButtons = screen.getAllByRole("button", { name: /Browser tab/i });
+    fireEvent.click(browserButtons[browserButtons.length - 1]);
+
+    expect(mockSetSource).toHaveBeenCalledWith({ kind: "browser_tab" });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+  });
+
+  it("shows a video preview when the URL is recognized", () => {
+    render(<YoutubeIngestPane />);
+    const input = screen.getByPlaceholderText(/youtube\.com\/watch/i);
+    fireEvent.change(input, { target: { value: VALID_URL } });
+
+    const preview = screen.getByAltText("YouTube video thumbnail") as HTMLImageElement;
+    expect(preview.src).toContain(VIDEO_ID);
+    expect(screen.getByText(/Video recognized/i)).toBeTruthy();
   });
 
   it("shows 'Not a YouTube URL' message on INVALID_URL from server", async () => {

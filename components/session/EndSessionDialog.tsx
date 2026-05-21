@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 import { runFinalSynthesis } from "@/lib/client/orchestrator";
+import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
 
 export function EndSessionDialog({
   open,
@@ -38,6 +39,9 @@ export function EndSessionDialog({
 
   const handleConfirm = () => {
     if (!session.endedAt) {
+      if (session.source.kind === "browser_tab") {
+        stopBrowserTabCapture();
+      }
       session.endSession();
       // For non-mic sources (bulk-ingested content), trigger a final synthesis
       // pass over the FULL transcript. The trailing-window pacer only covers

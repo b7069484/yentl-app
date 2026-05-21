@@ -1,0 +1,3826 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yentl 100-Video Corpus Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18191f;
+      --muted: #646977;
+      --line: #dad7cf;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --soft: #f1efe8;
+      --green: #187044;
+      --amber: #8a5d00;
+      --red: #a23a32;
+      --blue: #255f85;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #fffdf8;
+      padding: 28px clamp(18px, 4vw, 44px) 24px;
+    }
+    main { padding: 24px clamp(18px, 4vw, 44px) 56px; }
+    h1, h2, h3 { margin: 0; letter-spacing: 0; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 5vw, 56px); line-height: 1; }
+    h2 { margin-top: 34px; font-size: 22px; }
+    h3 { font-size: 16px; }
+    .subhead {
+      max-width: 980px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .metric {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 14px;
+    }
+    .metric .label { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    .metric .value { margin-top: 8px; font-size: 28px; font-weight: 800; line-height: 1; }
+    .metric .note { margin-top: 7px; color: var(--muted); font-size: 12px; }
+    .band {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      margin-top: 14px;
+      overflow: hidden;
+    }
+    .band-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+    }
+    .band-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #ebe8df; text-align: left; vertical-align: top; }
+    th { background: #fffdf8; color: #3e424b; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    tbody tr:hover { background: #fffdfa; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badge.pass { color: var(--green); }
+    .badge.watch { color: var(--amber); }
+    .badge.review { color: var(--blue); }
+    .badge.blocked { color: var(--red); }
+    .muted { color: var(--muted); }
+    .nowrap { white-space: nowrap; }
+    .video-title { max-width: 360px; font-weight: 700; }
+    .video-title a { color: inherit; text-decoration: none; }
+    .video-title a:hover { text-decoration: underline; }
+    .flags { display: flex; flex-wrap: wrap; gap: 5px; max-width: 420px; }
+    .flag {
+      border: 1px solid #d7c797;
+      background: #fff7da;
+      color: #6d4a00;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .speaker-bars { display: grid; gap: 4px; min-width: 150px; }
+    .speaker-bar { display: grid; grid-template-columns: 26px 1fr 38px; align-items: center; gap: 6px; font-size: 11px; }
+    .bar-track { height: 7px; background: #e8e3d6; overflow: hidden; }
+    .bar-track span { display: block; height: 100%; background: #2f6f88; }
+    .speaker-label, .speaker-share { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .grid-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eef6fa;
+      padding: 12px 14px;
+      color: #223f52;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+    .table-wrap { overflow-x: auto; }
+    @media (max-width: 1100px) {
+      .metrics { grid-template-columns: repeat(3, minmax(130px, 1fr)); }
+      .grid-two { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .metrics { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
+      th, td { padding: 9px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Yentl 100-Video Corpus Report</h1>
+    <p class="subhead">Acceptance evidence for the current local Yentl worktree across solo explainers, interviews, cable-news crosstalk, podcasts, academic talks, political debates, Israel/Palestine, Holocaust education and denial, contentious culture, and misinformation-prone topics.</p>
+    <div class="meta">
+      <span>Generated 2026-05-21T16:34:12.030Z</span>
+      <span>Git 015ff83</span>
+      <span>Artifacts: test-corpus/transcripts, ground-truth, scores</span>
+    </div>
+    <section class="metrics" aria-label="Corpus summary">
+      <div class="metric"><div class="label">Videos</div><div class="value">100</div><div class="note">100/100 transcripts</div></div>
+      <div class="metric"><div class="label">Phase A</div><div class="value">8.9%</div><div class="note">median WER, threshold <= 15%</div></div>
+      <div class="metric"><div class="label">Mean WER</div><div class="value">9.8%</div><div class="note">p90 20.6%</div></div>
+      <div class="metric"><div class="label">Human Captions</div><div class="value">17</div><div class="note">17 caption files found</div></div>
+      <div class="metric"><div class="label">Audio</div><div class="value">98</div><div class="note">20.8 transcript hours</div></div>
+      <div class="metric"><div class="label">Replay Slices</div><div class="value">3</div><div class="note">20 editorial-review rows</div></div>
+    </section>
+  </header>
+  <main>
+    <div class="callout">
+      Phase A is complete: all 100 videos have Deepgram transcript artifacts and the human-caption WER subset passes. Phase B replay is now wired against the current app endpoints; the slices below prove extraction, provisional verification, and rhetoric analysis on solo, editorial-review, and crosstalk examples.
+    </div>
+
+    <section class="grid-two">
+      <div class="band">
+        <div class="band-head"><div><h2>Category Coverage</h2><p>Ten categories, ten videos each.</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Category</th><th>Videos</th><th>Scored</th><th>Heavy</th><th>Speakers</th><th>Median WER</th><th>Flags</th></tr></thead>
+            <tbody>
+
+                <tr>
+                  <td>solo_monologue</td>
+                  <td>10/10</td>
+                  <td>3</td>
+                  <td>0</td>
+                  <td>2</td>
+                  <td>9.0%</td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td>1on1_interview</td>
+                  <td>10/10</td>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>3</td>
+                  <td>20.6%</td>
+                  <td> 2 watch</td>
+                </tr>
+
+                <tr>
+                  <td>cable_news_debate</td>
+                  <td>10/10</td>
+                  <td>0</td>
+                  <td>8</td>
+                  <td>5</td>
+                  <td>n/a</td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td>long_form_podcast</td>
+                  <td>10/10</td>
+                  <td>1</td>
+                  <td>0</td>
+                  <td>2</td>
+                  <td>4.6%</td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td>academic_lecture</td>
+                  <td>10/10</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>3</td>
+                  <td>n/a</td>
+                  <td> 2 watch</td>
+                </tr>
+
+                <tr>
+                  <td>political_debate</td>
+                  <td>10/10</td>
+                  <td>2</td>
+                  <td>4</td>
+                  <td>3</td>
+                  <td>19.6%</td>
+                  <td> 3 watch</td>
+                </tr>
+
+                <tr>
+                  <td>israel_palestine</td>
+                  <td>10/10</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>11.3%</td>
+                  <td>10 review</td>
+                </tr>
+
+                <tr>
+                  <td>holocaust_education_denial</td>
+                  <td>10/10</td>
+                  <td>3</td>
+                  <td>0</td>
+                  <td>2</td>
+                  <td>8.9%</td>
+                  <td>10 review</td>
+                </tr>
+
+                <tr>
+                  <td>contentious_culture</td>
+                  <td>10/10</td>
+                  <td>2</td>
+                  <td>0</td>
+                  <td>3</td>
+                  <td>8.5%</td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td>misinformation_prone</td>
+                  <td>10/10</td>
+                  <td>2</td>
+                  <td>0</td>
+                  <td>3</td>
+                  <td>9.4%</td>
+                  <td></td>
+                </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="band">
+        <div class="band-head"><div><h2>WER Subset</h2><p>Only videos with human-authored captions are scored.</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Video</th><th>Category</th><th>WER</th><th>Ref/Hyp</th></tr></thead>
+            <tbody>
+
+                <tr>
+                  <td>interview_002</td>
+                  <td>1on1_interview</td>
+                  <td class="nowrap">20.9%</td>
+                  <td>1566 / 1761</td>
+                </tr>
+
+                <tr>
+                  <td>interview_009</td>
+                  <td>1on1_interview</td>
+                  <td class="nowrap">20.6%</td>
+                  <td>1896 / 1602</td>
+                </tr>
+
+                <tr>
+                  <td>political_005</td>
+                  <td>political_debate</td>
+                  <td class="nowrap">19.6%</td>
+                  <td>2004 / 1682</td>
+                </tr>
+
+                <tr>
+                  <td>holocaust_001</td>
+                  <td>holocaust_education_denial</td>
+                  <td class="nowrap">16.5%</td>
+                  <td>705 / 604</td>
+                </tr>
+
+                <tr>
+                  <td>israel_010</td>
+                  <td>israel_palestine</td>
+                  <td class="nowrap">11.3%</td>
+                  <td>2140 / 2067</td>
+                </tr>
+
+                <tr>
+                  <td>solo_005</td>
+                  <td>solo_monologue</td>
+                  <td class="nowrap">10.7%</td>
+                  <td>1489 / 1501</td>
+                </tr>
+
+                <tr>
+                  <td>misinfo_004</td>
+                  <td>misinformation_prone</td>
+                  <td class="nowrap">9.4%</td>
+                  <td>2476 / 2405</td>
+                </tr>
+
+                <tr>
+                  <td>solo_003</td>
+                  <td>solo_monologue</td>
+                  <td class="nowrap">9.0%</td>
+                  <td>2974 / 3006</td>
+                </tr>
+
+                <tr>
+                  <td>holocaust_004</td>
+                  <td>holocaust_education_denial</td>
+                  <td class="nowrap">8.9%</td>
+                  <td>2160 / 2096</td>
+                </tr>
+
+                <tr>
+                  <td>culture_007</td>
+                  <td>contentious_culture</td>
+                  <td class="nowrap">8.5%</td>
+                  <td>2071 / 2115</td>
+                </tr>
+
+                <tr>
+                  <td>solo_008</td>
+                  <td>solo_monologue</td>
+                  <td class="nowrap">7.1%</td>
+                  <td>1302 / 1335</td>
+                </tr>
+
+                <tr>
+                  <td>political_002</td>
+                  <td>political_debate</td>
+                  <td class="nowrap">6.2%</td>
+                  <td>2101 / 2104</td>
+                </tr>
+
+                <tr>
+                  <td>interview_003</td>
+                  <td>1on1_interview</td>
+                  <td class="nowrap">6.0%</td>
+                  <td>2222 / 2248</td>
+                </tr>
+
+                <tr>
+                  <td>podcast_009</td>
+                  <td>long_form_podcast</td>
+                  <td class="nowrap">4.6%</td>
+                  <td>3135 / 3139</td>
+                </tr>
+
+                <tr>
+                  <td>culture_001</td>
+                  <td>contentious_culture</td>
+                  <td class="nowrap">4.6%</td>
+                  <td>1961 / 1994</td>
+                </tr>
+
+                <tr>
+                  <td>holocaust_002</td>
+                  <td>holocaust_education_denial</td>
+                  <td class="nowrap">1.6%</td>
+                  <td>1946 / 1936</td>
+                </tr>
+
+                <tr>
+                  <td>misinfo_008</td>
+                  <td>misinformation_prone</td>
+                  <td class="nowrap">1.4%</td>
+                  <td>1954 / 1948</td>
+                </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="band-head"><div><h2>Phase B Replay Slices</h2><p>Endpoint-driven replays saved as <code>*.replay.json</code> beside the WER scores.</p></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Video</th><th>Category</th><th>Verify</th><th>Utterances</th><th>Claims</th><th>Markers</th><th>Errors</th></tr></thead>
+          <tbody>
+
+              <tr>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=fTznEIZRkLg">solo_005 · Hans Rosling: Global population growth, box by box</a></div></td>
+                <td>solo_monologue</td>
+                <td>none</td>
+                <td>8</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+
+              <tr>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=0UYx55YNRv0">cable_008 · Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown</a></div></td>
+                <td>cable_news_debate</td>
+                <td>none</td>
+                <td>12</td>
+                <td>1</td>
+                <td>6</td>
+                <td>0</td>
+              </tr>
+
+              <tr>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Ou-Bl8HSGsM">israel_010 · What the firestorm over Rep. Omar's remarks says about anti-Semitism in America</a></div></td>
+                <td>israel_palestine</td>
+                <td>provisional</td>
+                <td>12</td>
+                <td>14</td>
+                <td>4</td>
+                <td>0</td>
+              </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="band-head"><div><h2>Watch And Review Queue</h2><p>Items that need editorial review or closer diarization/accuracy inspection.</p></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Video</th><th>Expected</th><th>Observed</th><th>WER</th><th>Flags</th></tr></thead>
+          <tbody>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=okEU-7rSWLc">israel_001 · Yossi Klein Halevi on Zionism Today,  July 15 - Episode 14</a></div><div class="muted">CreativeZionism</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>4 speakers, multi-speaker<br><span class="muted">dominant 44.5%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span><span class="flag">low word confidence (89.7%)</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=_u92XblhL5M">israel_002 · A Conversation with Rashid Khalidi on &quot;The Hundred Years' War on Palestine&quot; and Current Events</a></div><div class="muted">MSU Muslim Studies Program</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 81.8%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=9d27LLmm720">israel_003 · Bari Weiss: How to Fight Anti-Semitism | Real Time with Bill Maher (HBO)</a></div><div class="muted">Real Time with Bill Maher</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 53.8%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=4Au_qkjpRfw">israel_004 · Interview with Dr. Norman Finkelstein on Israel &amp; Palestine</a></div><div class="muted">The History Major</div></td>
+                <td>2 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 96.6%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sYBbZPgLH_8">israel_005 · Mehdi Hasan explains why the war in Gaza won't end soon | LBC</a></div><div class="muted">LBC</div></td>
+                <td>2 speakers, heavy overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 78.9%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=yj9YcCOioZE">israel_006 · Douglas Murray and Dave Smith Debate Over Israel-Hamas Conflict and Blockade</a></div><div class="muted">JRE Clips</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>3 speakers, multi-speaker<br><span class="muted">dominant 48.5%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sZVt7fy6AnU">israel_007 · B'Tselem spokesperson on Israel, human rights and whether Hamas is a terrorist organisation</a></div><div class="muted">J-TV: The Global Jewish Channel</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 76.7%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Mwmr2QMLuWY">israel_008 · The Alt-Right Is In Shambles One Year After Charlottesville (HBO)</a></div><div class="muted">VICE News</div></td>
+                <td>3 speakers, mild overlap</td>
+                <td>9 speakers, panel<br><span class="muted">dominant 42.1%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3_1gcdREnFI">israel_009 · Munk Debate on the Two-State Solution and China's chokehold on the U.S.</a></div><div class="muted">TheMunkDebates</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 53.6%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span><span class="flag">expected panel but substantive speakers=2</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Ou-Bl8HSGsM">israel_010 · What the firestorm over Rep. Omar's remarks says about anti-Semitism in America</a></div><div class="muted">PBS NewsHour</div></td>
+                <td>3 speakers, mild overlap</td>
+                <td>9 speakers, multi-speaker<br><span class="muted">dominant 35.1%</span></td>
+                <td>11.3%</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=8gZN6JrAXQY">holocaust_001 · Three Survivors Remember Auschwitz, 80 Years Later</a></div><div class="muted">United States Holocaust Memorial Museum</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>3 speakers, multi-speaker<br><span class="muted">dominant 55.1%</span></td>
+                <td>16.5%</td>
+                <td><div class="flags"><span class="flag">editorial review set</span><span class="flag">WER above 15% (16.5%)</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=0ztdofPc8Rw">holocaust_002 · Behind the lies of Holocaust denial | Deborah Lipstadt</a></div><div class="muted">TED</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>1 speakers, solo<br><span class="muted">dominant 100.0%</span></td>
+                <td>1.6%</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=H9sl4K6zKqo">holocaust_003 · Prof. Christopher Browning, Hitler and Decisions for the Final Solution, 20.1.2022</a></div><div class="muted">Western Galilee College: Holocaust Studies Program</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>3 speakers, monologue with clips<br><span class="muted">dominant 72.5%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=AM1a--pRiLw">holocaust_004 · Saved by Schindler’s List | Celina Biniaz | Jewish-American Heritage Month | USC Shoah Foundation</a></div><div class="muted">USC Shoah Foundation</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 83.7%</span></td>
+                <td>8.9%</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sYfvhPojqD0">holocaust_005 · Perspectives from the Auschwitz-Birkenau State Museum with Pawel Sawicki</a></div><div class="muted">Museum of Jewish Heritage</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 82.7%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=SxTC0iDWAf4">holocaust_006 · Trial by Judge or Jury, Denial</a></div><div class="muted">Alonso Alvarado</div></td>
+                <td>3 speakers, mild overlap</td>
+                <td>3 speakers, multi-speaker<br><span class="muted">dominant 55.9%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=UpabpmjsULk">holocaust_007 · Bloodlands: Europe Between Hitler and Stalin</a></div><div class="muted">Yale University</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 88.9%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=U93i_hvGjR4">holocaust_008 · SAUL FRIEDLÄNDER MAINLY ON NAZI GERMANY AND THE JEWS</a></div><div class="muted">Filmfriedlander</div></td>
+                <td>1 speakers, none overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 94.1%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=-p-WsWM5QzM">holocaust_009 · Ghetto Fighters' House Lecture by Prof  Jan Grabowski  Holocaust Distortion and the Battle for Memor</a></div><div class="muted">Ghetto Fighters' House מוזיאון בית לוחמי הגטאות</div></td>
+                <td>2 speakers, none overlap</td>
+                <td>4 speakers, panel<br><span class="muted">dominant 56.4%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Emt0IhbiNPs">holocaust_010 · Origins of the Holocaust | Intentionalism and Functionalism | Professor Dan Stone</a></div><div class="muted">History Hub</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 95.7%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">editorial review set</span><span class="flag">expected panel but substantive speakers=2</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=GrsJDy8VjZk">interview_002 · Quentin Tarantino interview: 'I'm shutting your butt down!'</a></div><div class="muted">Channel 4 News</div></td>
+                <td>2 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 69.6%</span></td>
+                <td>20.9%</td>
+                <td><div class="flags"><span class="flag">WER above 15% (20.9%)</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=YP-4M0OZTRQ">interview_009 · Tucker Carlson's interview with antisemite Nick Fuentes exposes rift among Republicans</a></div><div class="muted">PBS NewsHour</div></td>
+                <td>2 speakers, mild overlap</td>
+                <td>5 speakers, multi-speaker<br><span class="muted">dominant 58.0%</span></td>
+                <td>20.6%</td>
+                <td><div class="flags"><span class="flag">WER above 15% (20.6%)</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=c2_EE2FChpI">academic_004 · Prof. Jeremy Black MBE | This House Believes Today's America Betrays The Founding Fathers</a></div><div class="muted">Cambridge Union</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 76.7%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">expected panel but substantive speakers=2</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=bXHWkMi-STc">academic_010 · Aspen Security Forum Opening Remarks</a></div><div class="muted">The Aspen Institute</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 66.3%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">expected panel but substantive speakers=2</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=RhdgXhIF_CM">political_005 · Epstein files: Bondi, Democrats trade insults during combative hearing</a></div><div class="muted">CNN</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>7 speakers, panel<br><span class="muted">dominant 35.4%</span></td>
+                <td>19.6%</td>
+                <td><div class="flags"><span class="flag">WER above 15% (19.6%)</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=RBMvZRf9Scs">political_008 · Nigel Farage’s final speech to European Parliament cut short after he waves flag</a></div><div class="muted">The Telegraph</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>2 speakers, interview<br><span class="muted">dominant 83.9%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">expected panel but substantive speakers=2</span></div></td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3km9S8FED8k">political_010 · The Munk Debates: Snowflake Exposed!</a></div><div class="muted">Escaping the Echo Chamber</div></td>
+                <td>4 speakers, mild overlap</td>
+                <td>1 speakers, solo<br><span class="muted">dominant 100.0%</span></td>
+                <td>n/a</td>
+                <td><div class="flags"><span class="flag">expected panel but substantive speakers=1</span></div></td>
+              </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="band-head"><div><h2>All 100 Videos</h2><p>Transcript and diarization inventory.</p></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Video</th><th>Category</th><th>Duration</th><th>Words</th><th>Confidence</th><th>Speakers</th><th>WER</th><th>Notes</th></tr></thead>
+          <tbody>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=IYfgvS0FA7U">solo_001 · Venezuela: Last Week Tonight with John Oliver (HBO)</a></div><div class="muted">LastWeekTonight</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">19.5m</td>
+                <td>2,898</td>
+                <td>96.6%<br><span class="muted">speaker 60.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2134 words, 73.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:73.6%"></span></span>
+      <span class="speaker-share">74%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 216 words, 7.5%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:7.5%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 210 words, 7.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:7.2%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 119 words, 4.1%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:4.1%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 58 words, 2.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 51 words, 1.8%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Dense factual claims wrapped in satire — claim-extraction stress test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=oq9uo7F42Zk">solo_002 · Sam Harris basically breaks down the secret to life (again)</a></div><div class="muted">Slim Dilly</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">10.3m</td>
+                <td>1,681</td>
+                <td>93.5%<br><span class="muted">speaker 76.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1450 words, 86.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:86.3%"></span></span>
+      <span class="speaker-share">86%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 231 words, 13.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:13.7%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Single-voice baseline; ethical claims to grade</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=KmZZfWdlEFY">solo_003 · Malaysia, 1MDB, and Goldman Sachs | Patriot Act with Hasan Minhaj | Netflix</a></div><div class="muted">Netflix Is A Joke</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">18.8m</td>
+                <td>2,937</td>
+                <td>97.1%<br><span class="muted">speaker 77.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2353 words, 80.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:80.1%"></span></span>
+      <span class="speaker-share">80%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 90 words, 3.1%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:3.1%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 89 words, 3.0%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:3.0%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 56 words, 1.9%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 9: 50 words, 1.7%">
+      <span class="speaker-label">S9</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 39 words, 1.3%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">1%</span>
+    </div>
+  </div></td>
+                <td>9.0%</td>
+                <td>Indian-American accent — diarization speaker-profile test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=PirFrDVRBo4">solo_004 · Daniel Kahneman: Thinking Fast vs. Thinking Slow | Inc. Magazine</a></div><div class="muted">Inc.</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">6.6m</td>
+                <td>1,046</td>
+                <td>95.6%<br><span class="muted">speaker 66.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 758 words, 72.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:72.5%"></span></span>
+      <span class="speaker-share">72%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 288 words, 27.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:27.5%"></span></span>
+      <span class="speaker-share">28%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Direct overlap with Yentl's bias taxonomy</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=fTznEIZRkLg">solo_005 · Hans Rosling: Global population growth, box by box</a></div><div class="muted">TED</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">10.3m</td>
+                <td>1,462</td>
+                <td>96.8%<br><span class="muted">speaker 93.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1462 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>10.7%</td>
+                <td>Quantitative claims with cited sources</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=k8V25FHKXuU">solo_006 · Christopher Hitchens Greatest Speech</a></div><div class="muted">Mighty Mole</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">6.9m</td>
+                <td>1,084</td>
+                <td>96.5%<br><span class="muted">speaker 64.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1084 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Rich rhetorical-device density; British RP accent</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=ol0qHArCaPs">solo_007 · Carl Sagan’s “Baloney Detection Kit”: How to Spot Misinformation in Seconds</a></div><div class="muted">Beyond Orbit</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">8.2m</td>
+                <td>980</td>
+                <td>98.1%<br><span class="muted">speaker 100.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 980 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Direct lineage with Yentl's epistemic mission</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=ajavsMbCapY">solo_008 · The Electoral College, explained</a></div><div class="muted">Vox</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">8.1m</td>
+                <td>1,330</td>
+                <td>98.2%<br><span class="muted">speaker 56.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1252 words, 94.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:94.1%"></span></span>
+      <span class="speaker-share">94%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 54 words, 4.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:4.1%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 24 words, 1.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>7.1%</td>
+                <td>Modern editorial voice with citation graphics</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=bcvnfQlz1x4">solo_009 · The Only Video Needed to Understand Orbital Mechanics</a></div><div class="muted">Animations Xplaned</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">7.6m</td>
+                <td>1,302</td>
+                <td>98.1%<br><span class="muted">speaker 58.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1302 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Physics/math claims — high verifiability</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sa9mEvsFxyU">solo_010 · There was a diabolical brilliance to Biden’s speech (from Livestream #140)</a></div><div class="muted">DarkHorse Podcast Clips</div></td>
+                <td>solo_monologue</td>
+                <td class="nowrap">16.8m</td>
+                <td>2,502</td>
+                <td>95.6%<br><span class="muted">speaker 77.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2246 words, 89.8%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:89.8%"></span></span>
+      <span class="speaker-share">90%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 256 words, 10.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:10.2%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Contrarian solo — should NOT trigger bias markers for opinion</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=7SPpN38rksA">interview_001 · Dr Samer Nashef, Cardiac surgeon - BBC HARDtalk 2019</a></div><div class="muted">BBC HARDtalk</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">24.5m</td>
+                <td>3,889</td>
+                <td>95.5%<br><span class="muted">speaker 80.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2474 words, 63.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:63.6%"></span></span>
+      <span class="speaker-share">64%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1415 words, 36.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:36.4%"></span></span>
+      <span class="speaker-share">36%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Adversarial 2-speaker — interruption patterns</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=GrsJDy8VjZk">interview_002 · Quentin Tarantino interview: 'I'm shutting your butt down!'</a></div><div class="muted">Channel 4 News</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">8.6m</td>
+                <td>1,761</td>
+                <td>94.0%<br><span class="muted">speaker 65.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1226 words, 69.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:69.6%"></span></span>
+      <span class="speaker-share">70%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 535 words, 30.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:30.4%"></span></span>
+      <span class="speaker-share">30%</span>
+    </div>
+  </div></td>
+                <td>20.9%</td>
+                <td>UK English; politician evasion patterns</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=2wq9x2QcZN0">interview_003 · Eric Weinstein: Revolutionary Ideas in Science, Math, and Society | Lex Fridman Podcast #16</a></div><div class="muted">Lex Fridman</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,248</td>
+                <td>95.2%<br><span class="muted">speaker 70.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 1715 words, 76.3%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:76.3%"></span></span>
+      <span class="speaker-share">76%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 421 words, 18.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:18.7%"></span></span>
+      <span class="speaker-share">19%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 112 words, 5.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:5.0%"></span></span>
+      <span class="speaker-share">5%</span>
+    </div>
+  </div></td>
+                <td>6.0%</td>
+                <td>Calm professional 2-speaker baseline</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=_vPceCY1JcY">interview_004 · What Trump Wants in Venezuela | The Ezra Klein Show</a></div><div class="muted">The Ezra Klein Show</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,570</td>
+                <td>96.6%<br><span class="muted">speaker 62.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 2023 words, 78.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:78.7%"></span></span>
+      <span class="speaker-share">79%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 527 words, 20.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:20.5%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 20 words, 0.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">1%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Civil disagreement; nuanced claims</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=017VvbOOQLo">interview_005 · Rush Limbaugh: The 1991 60 Minutes Interview</a></div><div class="muted">60 Minutes</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">12.1m</td>
+                <td>1,958</td>
+                <td>95.1%<br><span class="muted">speaker 56.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 838 words, 42.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:42.8%"></span></span>
+      <span class="speaker-share">43%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 789 words, 40.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:40.3%"></span></span>
+      <span class="speaker-share">40%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 132 words, 6.7%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:6.7%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 84 words, 4.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:4.3%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 47 words, 2.4%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:2.4%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 46 words, 2.3%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:2.3%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Edited broadcast pacing — clean audio</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=6vW4K3ht-0w">interview_006 · Frank Miller, Comic Book Legend — Creative Process, The Dark Knight Returns, Sin City, 300, &amp; More</a></div><div class="muted">Tim Ferriss</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,362</td>
+                <td>95.3%<br><span class="muted">speaker 65.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1246 words, 52.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:52.8%"></span></span>
+      <span class="speaker-share">53%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1116 words, 47.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:47.2%"></span></span>
+      <span class="speaker-share">47%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Tangential anecdotes — claim relevance test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=bcpkHaiG2io">interview_007 · Rep. Anna Paulina Luna Says She's Seen Evidence of Interdimensional Beings</a></div><div class="muted">JRE Clips</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">14.1m</td>
+                <td>2,747</td>
+                <td>96.3%<br><span class="muted">speaker 82.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2461 words, 89.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:89.6%"></span></span>
+      <span class="speaker-share">90%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 286 words, 10.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:10.4%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Massive audience; conspiratorial drift risk</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3nXt2YXrOL4">interview_008 · Munk Debates Podcast Episode #39 - Populism</a></div><div class="muted">TheMunkDebates</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,078</td>
+                <td>96.2%<br><span class="muted">speaker 65.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 923 words, 44.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:44.4%"></span></span>
+      <span class="speaker-share">44%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 407 words, 19.6%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:19.6%"></span></span>
+      <span class="speaker-share">20%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 389 words, 18.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:18.7%"></span></span>
+      <span class="speaker-share">19%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 219 words, 10.5%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:10.5%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 97 words, 4.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:4.7%"></span></span>
+      <span class="speaker-share">5%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 43 words, 2.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:2.1%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Pre-debate framing of positions</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=YP-4M0OZTRQ">interview_009 · Tucker Carlson's interview with antisemite Nick Fuentes exposes rift among Republicans</a></div><div class="muted">PBS NewsHour</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">8.7m</td>
+                <td>1,600</td>
+                <td>97.2%<br><span class="muted">speaker 62.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 4: 928 words, 58.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:58.0%"></span></span>
+      <span class="speaker-share">58%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 359 words, 22.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:22.4%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 205 words, 12.8%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:12.8%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 62 words, 3.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:3.9%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 46 words, 2.9%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>20.6%</td>
+                <td>Right-wing framing — bias detection symmetry test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=HD-yRuTasHU">interview_010 · ‘That was a mistake’: Mehdi challenges Israeli adviser Mark Regev on false Israeli claims</a></div><div class="muted">MS NOW</div></td>
+                <td>1on1_interview</td>
+                <td class="nowrap">14.4m</td>
+                <td>2,923</td>
+                <td>94.6%<br><span class="muted">speaker 62.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1825 words, 62.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:62.4%"></span></span>
+      <span class="speaker-share">62%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1098 words, 37.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:37.6%"></span></span>
+      <span class="speaker-share">38%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Aggressive interruption — overlap-handling test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=UD4wg9B3F1A">cable_001 · Panel: The standouts &amp; stumbles from CA governor debate</a></div><div class="muted">CNN</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">10.0m</td>
+                <td>1,929</td>
+                <td>94.2%<br><span class="muted">speaker 68.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 4: 370 words, 19.2%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:19.2%"></span></span>
+      <span class="speaker-share">19%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 337 words, 17.5%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:17.5%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 305 words, 15.8%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:15.8%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 303 words, 15.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:15.7%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 295 words, 15.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:15.3%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 174 words, 9.0%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:9.0%"></span></span>
+      <span class="speaker-share">9%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>3-4 way crosstalk</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=YHxC2untxvA">cable_002 · Fox News Roundtable on Secretary Sebelius's Double Counting Admission</a></div><div class="muted">RepShimkus</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">6.9m</td>
+                <td>1,264</td>
+                <td>93.3%<br><span class="muted">speaker 65.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 4: 319 words, 25.2%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:25.2%"></span></span>
+      <span class="speaker-share">25%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 301 words, 23.8%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:23.8%"></span></span>
+      <span class="speaker-share">24%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 271 words, 21.4%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:21.4%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 221 words, 17.5%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:17.5%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 82 words, 6.5%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:6.5%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 41 words, 3.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:3.2%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Conservative panel — symmetric bias test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=p0sq3TZaOnQ">cable_003 · &quot;Wound-up and weird&quot;: Maddow's INSTANT REACTION to Trump's State of the Union</a></div><div class="muted">MS NOW</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">9.4m</td>
+                <td>1,574</td>
+                <td>96.1%<br><span class="muted">speaker 55.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 952 words, 60.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:60.5%"></span></span>
+      <span class="speaker-share">60%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 309 words, 19.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:19.6%"></span></span>
+      <span class="speaker-share">20%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 235 words, 14.9%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:14.9%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 78 words, 5.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:5.0%"></span></span>
+      <span class="speaker-share">5%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Liberal panel — symmetric bias test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=noOPNkxQE9M">cable_004 · Maajid Nawaz, Mehdi Hassan and Mo Ansar lock horns on BBC Newsnight</a></div><div class="muted">BBC Politics</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">9.7m</td>
+                <td>2,175</td>
+                <td>90.3%<br><span class="muted">speaker 54.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 736 words, 33.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:33.8%"></span></span>
+      <span class="speaker-share">34%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 735 words, 33.8%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:33.8%"></span></span>
+      <span class="speaker-share">34%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 551 words, 25.3%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:25.3%"></span></span>
+      <span class="speaker-share">25%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 153 words, 7.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:7.0%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>UK political English; faster turn-taking</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=PkQV57duWOU">cable_005 · Politicians react as Trump claims Nato troops avoided front lines | BBC Question Time</a></div><div class="muted">BBC News</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">14.0m</td>
+                <td>2,628</td>
+                <td>95.9%<br><span class="muted">speaker 82.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 749 words, 28.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:28.5%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 8: 416 words, 15.8%">
+      <span class="speaker-label">S8</span>
+      <span class="bar-track"><span style="width:15.8%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 365 words, 13.9%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:13.9%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 362 words, 13.8%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:13.8%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 329 words, 12.5%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:12.5%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 144 words, 5.5%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:5.5%"></span></span>
+      <span class="speaker-share">5%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>5+ speakers including audience — diarization extreme</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=vln9D81eO60">cable_006 · Ben Affleck, Sam Harris and Bill Maher Debate Radical Islam | Real Time with Bill Maher (HBO)</a></div><div class="muted">Real Time with Bill Maher</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">10.1m</td>
+                <td>1,806</td>
+                <td>88.6%<br><span class="muted">speaker 48.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 598 words, 33.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:33.1%"></span></span>
+      <span class="speaker-share">33%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 460 words, 25.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:25.5%"></span></span>
+      <span class="speaker-share">25%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 410 words, 22.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:22.7%"></span></span>
+      <span class="speaker-share">23%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 198 words, 11.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:11.0%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 140 words, 7.8%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:7.8%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Mixed political panel — comedic interruptions</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=St3JxdjjUBA">cable_007 · “I’m Gonna Roast YOU!” Dave Smith vs Adam Sosnick Reunite In Comedy Battle</a></div><div class="muted">Piers Morgan Uncensored</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,897</td>
+                <td>95.2%<br><span class="muted">speaker 73.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1247 words, 43.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:43.0%"></span></span>
+      <span class="speaker-share">43%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 847 words, 29.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:29.2%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 697 words, 24.1%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:24.1%"></span></span>
+      <span class="speaker-share">24%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 106 words, 3.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:3.7%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Confrontational host — extreme overlap</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=0UYx55YNRv0">cable_008 · Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown</a></div><div class="muted">OmniNews</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">9.7m</td>
+                <td>1,661</td>
+                <td>96.4%<br><span class="muted">speaker 72.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 949 words, 57.1%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:57.1%"></span></span>
+      <span class="speaker-share">57%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 573 words, 34.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:34.5%"></span></span>
+      <span class="speaker-share">34%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 139 words, 8.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:8.4%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>5 hosts talking over each other</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=wkWVsy-jWnI">cable_009 · Might is right? Trump's 'Donroe Doctrine' tests world order • FRANCE 24 English</a></div><div class="muted">FRANCE 24 English</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,173</td>
+                <td>96.0%<br><span class="muted">speaker 71.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 819 words, 37.7%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:37.7%"></span></span>
+      <span class="speaker-share">38%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 380 words, 17.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:17.5%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 363 words, 16.7%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:16.7%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 308 words, 14.2%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:14.2%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 303 words, 13.9%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:13.9%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Non-native English speakers — accent diversity</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=RPXTFp0MUsE">cable_010 · What might end Israel's war on Iran? | Inside Story</a></div><div class="muted">Al Jazeera English</div></td>
+                <td>cable_news_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,129</td>
+                <td>95.9%<br><span class="muted">speaker 80.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 604 words, 28.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:28.4%"></span></span>
+      <span class="speaker-share">28%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 592 words, 27.8%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:27.8%"></span></span>
+      <span class="speaker-share">28%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 386 words, 18.1%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:18.1%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 287 words, 13.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:13.5%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 164 words, 7.7%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:7.7%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 49 words, 2.3%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:2.3%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Middle East perspective; English broadcast</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=I957o08voU0">podcast_001 · Joe and Matt Walsh Disagree Over Gay Marriage</a></div><div class="muted">PowerfulJRE</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">14.8m</td>
+                <td>2,905</td>
+                <td>96.6%<br><span class="muted">speaker 72.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1609 words, 55.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:55.4%"></span></span>
+      <span class="speaker-share">55%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1296 words, 44.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:44.6%"></span></span>
+      <span class="speaker-share">45%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Long meander; should test claim-relevance dedup</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=I2ZK3ngNvvI">podcast_002 · Advice for machine learning beginners | Andrej Karpathy and Lex Fridman</a></div><div class="muted">Lex Clips</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">5.8m</td>
+                <td>1,160</td>
+                <td>94.7%<br><span class="muted">speaker 42.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 810 words, 69.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:69.8%"></span></span>
+      <span class="speaker-share">70%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 350 words, 30.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:30.2%"></span></span>
+      <span class="speaker-share">30%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Technical jargon — transcription stress</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3qjNXaKjcc8">podcast_003 · Reflecting on the Pastor Doug Wilson Conversation</a></div><div class="muted">Sam Harris</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">6.8m</td>
+                <td>1,025</td>
+                <td>95.8%<br><span class="muted">speaker 77.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 926 words, 90.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:90.3%"></span></span>
+      <span class="speaker-share">90%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 99 words, 9.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:9.7%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Careful philosophical claims</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=1Qq2g-wsXQQ">podcast_004 · China’s Growing Leverage Over the U.S., and How Oil Companies Hit the Jackpot</a></div><div class="muted">New York Times Podcasts</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">10.2m</td>
+                <td>1,596</td>
+                <td>97.8%<br><span class="muted">speaker 63.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1073 words, 67.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:67.2%"></span></span>
+      <span class="speaker-share">67%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 226 words, 14.2%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:14.2%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 111 words, 7.0%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:7.0%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 90 words, 5.6%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:5.6%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 47 words, 2.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 29 words, 1.8%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Edited journalism — claim density</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=SR7vtUBBGZg">podcast_005 · Trump’s Not Thinking About Your Finances… At All | Pivot</a></div><div class="muted">Pivot with Kara Swisher and Scott Galloway</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,806</td>
+                <td>95.9%<br><span class="muted">speaker 66.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1260 words, 44.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:44.9%"></span></span>
+      <span class="speaker-share">45%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1091 words, 38.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:38.9%"></span></span>
+      <span class="speaker-share">39%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 243 words, 8.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:8.7%"></span></span>
+      <span class="speaker-share">9%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 212 words, 7.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:7.6%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Friendly co-host banter pattern</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=lcCGjbfodDo">podcast_006 · The Most Shocking Moments of 2025</a></div><div class="muted">The Rest Is Politics</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">23.9m</td>
+                <td>4,421</td>
+                <td>93.8%<br><span class="muted">speaker 75.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2308 words, 52.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:52.2%"></span></span>
+      <span class="speaker-share">52%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 2113 words, 47.8%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:47.8%"></span></span>
+      <span class="speaker-share">48%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Cross-party UK politics — civility test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=TXAvkqXD-Fc">podcast_007 · Jerry Seinfeld on the Rules of Comedy—and Life | Honestly with Bari Weiss</a></div><div class="muted">The Free Press</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,589</td>
+                <td>94.9%<br><span class="muted">speaker 67.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1556 words, 60.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:60.1%"></span></span>
+      <span class="speaker-share">60%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 1033 words, 39.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:39.9%"></span></span>
+      <span class="speaker-share">40%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Heterodox perspective — fairness test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=_dJQXvziSPQ">podcast_008 · Tyler Cowen on Spotting &amp; Accelerating World-Changing Talent | Join Long Curators Series</a></div><div class="muted">Join Long</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,709</td>
+                <td>96.7%<br><span class="muted">speaker 60.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1731 words, 63.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:63.9%"></span></span>
+      <span class="speaker-share">64%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 887 words, 32.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:32.7%"></span></span>
+      <span class="speaker-share">33%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 91 words, 3.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:3.4%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Rapid-fire intellectual exchange</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=vDrYywM1nUM">podcast_009 · Nilay answers the Decoder Questions (2025 edition) | Decoder</a></div><div class="muted">Decoder with Nilay Patel</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">15.0m</td>
+                <td>3,139</td>
+                <td>95.6%<br><span class="muted">speaker 61.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2235 words, 71.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:71.2%"></span></span>
+      <span class="speaker-share">71%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 573 words, 18.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:18.3%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 331 words, 10.5%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:10.5%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+  </div></td>
+                <td>4.6%</td>
+                <td>CEO interview pattern</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=VJBTBcvoRSs">podcast_010 · OpenAI Trial: The 5 Most Surprising Moments</a></div><div class="muted">Hard Fork</div></td>
+                <td>long_form_podcast</td>
+                <td class="nowrap">9.6m</td>
+                <td>1,732</td>
+                <td>96.6%<br><span class="muted">speaker 67.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1063 words, 61.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:61.4%"></span></span>
+      <span class="speaker-share">61%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 669 words, 38.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:38.6%"></span></span>
+      <span class="speaker-share">39%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Two-host tech podcast</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=t8ZUiinrksw">academic_001 · Jeff Kinney | Diary of a Wimpy Kid: Partypooper | Talks at Google</a></div><div class="muted">Talks at Google</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">15.0m</td>
+                <td>3,022</td>
+                <td>96.2%<br><span class="muted">speaker 68.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2199 words, 72.8%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:72.8%"></span></span>
+      <span class="speaker-share">73%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 823 words, 27.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:27.2%"></span></span>
+      <span class="speaker-share">27%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Q&amp;A patterns — multi-speaker emergence</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=ra3YK47RetE">academic_002 · Brain Research at Stanford: Q &amp; A</a></div><div class="muted">Stanford</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">18.9m</td>
+                <td>2,761</td>
+                <td>95.2%<br><span class="muted">speaker 72.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 645 words, 23.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:23.4%"></span></span>
+      <span class="speaker-share">23%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 571 words, 20.7%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:20.7%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 462 words, 16.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:16.7%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 8: 283 words, 10.2%">
+      <span class="speaker-label">S8</span>
+      <span class="bar-track"><span style="width:10.2%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 197 words, 7.1%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:7.1%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 148 words, 5.4%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:5.4%"></span></span>
+      <span class="speaker-share">5%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Academic vocabulary</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=-nTQi_LgIQ4">academic_003 · The Passage of Time and the Meaning of Life | Sean Carroll (Talk + Q&amp;A)</a></div><div class="muted">The Long Now Foundation</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,661</td>
+                <td>98.3%<br><span class="muted">speaker 90.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2570 words, 96.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:96.6%"></span></span>
+      <span class="speaker-share">97%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 91 words, 3.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:3.4%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Single speaker deep talk</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=c2_EE2FChpI">academic_004 · Prof. Jeremy Black MBE | This House Believes Today's America Betrays The Founding Fathers</a></div><div class="muted">Cambridge Union</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">14.6m</td>
+                <td>1,964</td>
+                <td>96.2%<br><span class="muted">speaker 77.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1507 words, 76.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:76.7%"></span></span>
+      <span class="speaker-share">77%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 457 words, 23.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:23.3%"></span></span>
+      <span class="speaker-share">23%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Formal debate structure</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=cn1_jhqqNQ0">academic_005 · Daniel Markovits | Meritocracy Debate | Propositon (3/8) | Oxford Union</a></div><div class="muted">OxfordUnion</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">11.0m</td>
+                <td>1,574</td>
+                <td>98.1%<br><span class="muted">speaker 69.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1574 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>British academic English</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=jw6pFnHBgKA">academic_006 · The Democracy Dilemma</a></div><div class="muted">The Aspen Institute</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,337</td>
+                <td>96.4%<br><span class="muted">speaker 79.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 819 words, 35.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:35.0%"></span></span>
+      <span class="speaker-share">35%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 682 words, 29.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:29.2%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 422 words, 18.1%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:18.1%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 414 words, 17.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:17.7%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Multi-speaker intellectual exchange</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=A_R66fJtyns">academic_007 · History of the CHRISTMAS LECTURES on TV - with  Rupert Cole</a></div><div class="muted">The Royal Institution</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">19.9m</td>
+                <td>2,805</td>
+                <td>92.3%<br><span class="muted">speaker 80.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2689 words, 95.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:95.9%"></span></span>
+      <span class="speaker-share">96%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 62 words, 2.2%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:2.2%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 48 words, 1.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 6 words, 0.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">0%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Science explainer; technical vocabulary</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=LpMQSVp7NTg">academic_008 · “The Treason of the Intellectuals,” with Niall Ferguson | Uncommon Knowledge</a></div><div class="muted">Hoover Institution</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,140</td>
+                <td>95.1%<br><span class="muted">speaker 74.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 1409 words, 65.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:65.8%"></span></span>
+      <span class="speaker-share">66%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 662 words, 30.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:30.9%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 69 words, 3.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:3.2%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Conservative think tank — symmetry</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=SWHchEd0OZQ">academic_009 · Now what? The future of Trump tariffs and trade policy after Supreme Court ruling</a></div><div class="muted">Brookings Institution</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,437</td>
+                <td>97.7%<br><span class="muted">speaker 76.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 3: 786 words, 32.3%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:32.3%"></span></span>
+      <span class="speaker-share">32%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 659 words, 27.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:27.0%"></span></span>
+      <span class="speaker-share">27%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 648 words, 26.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:26.6%"></span></span>
+      <span class="speaker-share">27%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 344 words, 14.1%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:14.1%"></span></span>
+      <span class="speaker-share">14%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>DC policy vocabulary</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=bXHWkMi-STc">academic_010 · Aspen Security Forum Opening Remarks</a></div><div class="muted">The Aspen Institute</div></td>
+                <td>academic_lecture</td>
+                <td class="nowrap">8.1m</td>
+                <td>1,277</td>
+                <td>95.6%<br><span class="muted">speaker 81.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 847 words, 66.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:66.3%"></span></span>
+      <span class="speaker-share">66%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 430 words, 33.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:33.7%"></span></span>
+      <span class="speaker-share">34%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Intelligence-community speakers</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=fpu1QEB03xA">political_001 · Watch closing statements from Harris and Trump at 2024 presidential debate</a></div><div class="muted">NBC News</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">4.4m</td>
+                <td>753</td>
+                <td>97.9%<br><span class="muted">speaker 83.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 370 words, 49.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:49.1%"></span></span>
+      <span class="speaker-share">49%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 361 words, 47.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:47.9%"></span></span>
+      <span class="speaker-share">48%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 22 words, 2.9%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Heated political debate — interruption patterns</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=XocmI6WyoE8">political_002 · Highlights from the Vance-Walz vice presidential debate</a></div><div class="muted">The Boston Globe</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">10.2m</td>
+                <td>2,103</td>
+                <td>96.3%<br><span class="muted">speaker 59.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1198 words, 57.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:57.0%"></span></span>
+      <span class="speaker-share">57%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 746 words, 35.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:35.5%"></span></span>
+      <span class="speaker-share">35%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 159 words, 7.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:7.6%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>6.2%</td>
+                <td>Different debate format</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=8OWu_PNmyrE">political_003 · Leaders' debate highlights: general election seven way battle</a></div><div class="muted">Channel 4 News</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">6.0m</td>
+                <td>1,176</td>
+                <td>94.8%<br><span class="muted">speaker 58.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 4: 363 words, 30.9%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:30.9%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 202 words, 17.2%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:17.2%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 173 words, 14.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:14.7%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 144 words, 12.2%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:12.2%"></span></span>
+      <span class="speaker-share">12%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 111 words, 9.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:9.4%"></span></span>
+      <span class="speaker-share">9%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 89 words, 7.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:7.6%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>UK political English</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=oyPPxRksN9k">political_004 · Keir Starmer clashes with reporters during Q&amp;A as PM DESPERATELY clings to power</a></div><div class="muted">Daily Express</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">19.4m</td>
+                <td>3,352</td>
+                <td>96.4%<br><span class="muted">speaker 74.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2425 words, 72.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:72.3%"></span></span>
+      <span class="speaker-share">72%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 129 words, 3.8%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:3.8%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 115 words, 3.4%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:3.4%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 9: 98 words, 2.9%">
+      <span class="speaker-label">S9</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 90 words, 2.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:2.7%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 87 words, 2.6%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:2.6%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Parliamentary heckling</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=RhdgXhIF_CM">political_005 · Epstein files: Bondi, Democrats trade insults during combative hearing</a></div><div class="muted">CNN</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">9.5m</td>
+                <td>1,682</td>
+                <td>95.2%<br><span class="muted">speaker 73.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 596 words, 35.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:35.4%"></span></span>
+      <span class="speaker-share">35%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 245 words, 14.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:14.6%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 244 words, 14.5%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:14.5%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 207 words, 12.3%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:12.3%"></span></span>
+      <span class="speaker-share">12%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 181 words, 10.8%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:10.8%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 160 words, 9.5%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:9.5%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+  </div></td>
+                <td>19.6%</td>
+                <td>Formal testimony cadence</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=l086_KIkaDI">political_006 · Rand Paul and Markwayne Mullin's fiery exchange at confirmation hearing</a></div><div class="muted">FOX 9 Minneapolis-St. Paul</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">16.5m</td>
+                <td>2,992</td>
+                <td>96.4%<br><span class="muted">speaker 71.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1870 words, 62.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:62.5%"></span></span>
+      <span class="speaker-share">63%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1122 words, 37.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:37.5%"></span></span>
+      <span class="speaker-share">38%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Adversarial Q&amp;A</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=svxA2Ly-eHQ">political_007 · “Stood for Israel…” PM Netanyahu all praise for India as PM Modi visits Israeli Knesset in Jerusalem</a></div><div class="muted">ANI News</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>749</td>
+                <td>95.3%<br><span class="muted">speaker 46.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 727 words, 97.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:97.1%"></span></span>
+      <span class="speaker-share">97%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 22 words, 2.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Translated speech — claim extraction across translation</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=RBMvZRf9Scs">political_008 · Nigel Farage’s final speech to European Parliament cut short after he waves flag</a></div><div class="muted">The Telegraph</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">5.5m</td>
+                <td>720</td>
+                <td>97.0%<br><span class="muted">speaker 75.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 604 words, 83.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:83.9%"></span></span>
+      <span class="speaker-share">84%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 116 words, 16.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:16.1%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Multi-accent English</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=LkquBuuxjQk">political_009 · LIVE: UN Security Council holds a briefing on Iran</a></div><div class="muted">Associated Press</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>1,884</td>
+                <td>97.0%<br><span class="muted">speaker 70.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 794 words, 42.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:42.1%"></span></span>
+      <span class="speaker-share">42%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 547 words, 29.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:29.0%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 201 words, 10.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:10.7%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 188 words, 10.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:10.0%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 154 words, 8.2%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:8.2%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Formal diplomatic register</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge watch">Watch</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3km9S8FED8k">political_010 · The Munk Debates: Snowflake Exposed!</a></div><div class="muted">Escaping the Echo Chamber</div></td>
+                <td>political_debate</td>
+                <td class="nowrap">15.0m</td>
+                <td>1,783</td>
+                <td>95.1%<br><span class="muted">speaker 64.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1783 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Structured formal debate — high-quality claims</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=okEU-7rSWLc">israel_001 · Yossi Klein Halevi on Zionism Today,  July 15 - Episode 14</a></div><div class="muted">CreativeZionism</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">8.8m</td>
+                <td>1,439</td>
+                <td>89.7%<br><span class="muted">speaker 45.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 640 words, 44.5%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:44.5%"></span></span>
+      <span class="speaker-share">44%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 547 words, 38.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:38.0%"></span></span>
+      <span class="speaker-share">38%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 220 words, 15.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:15.3%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 32 words, 2.2%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:2.2%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Centrist Israeli voice — establish good-faith baseline</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=_u92XblhL5M">israel_002 · A Conversation with Rashid Khalidi on &quot;The Hundred Years' War on Palestine&quot; and Current Events</a></div><div class="muted">MSU Muslim Studies Program</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,365</td>
+                <td>97.3%<br><span class="muted">speaker 50.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1934 words, 81.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:81.8%"></span></span>
+      <span class="speaker-share">82%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 431 words, 18.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:18.2%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Mainstream Palestinian-American academic — should NOT trigger antisemitism</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=9d27LLmm720">israel_003 · Bari Weiss: How to Fight Anti-Semitism | Real Time with Bill Maher (HBO)</a></div><div class="muted">Real Time with Bill Maher</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">7.9m</td>
+                <td>1,499</td>
+                <td>92.5%<br><span class="muted">speaker 58.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 807 words, 53.8%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:53.8%"></span></span>
+      <span class="speaker-share">54%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 692 words, 46.2%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:46.2%"></span></span>
+      <span class="speaker-share">46%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Jewish journalist defining antisemitism — meta-test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=4Au_qkjpRfw">israel_004 · Interview with Dr. Norman Finkelstein on Israel &amp; Palestine</a></div><div class="muted">The History Major</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">15.0m</td>
+                <td>1,635</td>
+                <td>97.4%<br><span class="muted">speaker 66.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1579 words, 96.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:96.6%"></span></span>
+      <span class="speaker-share">97%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 56 words, 3.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:3.4%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Critical case — Jewish anti-Zionist; not antisemitism but harsh critique</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sYBbZPgLH_8">israel_005 · Mehdi Hasan explains why the war in Gaza won't end soon | LBC</a></div><div class="muted">LBC</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">8.8m</td>
+                <td>1,919</td>
+                <td>96.7%<br><span class="muted">speaker 60.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1515 words, 78.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:78.9%"></span></span>
+      <span class="speaker-share">79%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 404 words, 21.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:21.1%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Hostile-to-Israel journalism — fairness probe</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=yj9YcCOioZE">israel_006 · Douglas Murray and Dave Smith Debate Over Israel-Hamas Conflict and Blockade</a></div><div class="muted">JRE Clips</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">15.2m</td>
+                <td>2,881</td>
+                <td>95.6%<br><span class="muted">speaker 71.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1397 words, 48.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:48.5%"></span></span>
+      <span class="speaker-share">48%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1379 words, 47.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:47.9%"></span></span>
+      <span class="speaker-share">48%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 105 words, 3.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:3.6%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Pro-Israel polemicist — symmetry to anti-Israel set</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sZVt7fy6AnU">israel_007 · B'Tselem spokesperson on Israel, human rights and whether Hamas is a terrorist organisation</a></div><div class="muted">J-TV: The Global Jewish Channel</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">7.5m</td>
+                <td>1,164</td>
+                <td>93.6%<br><span class="muted">speaker 62.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 893 words, 76.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:76.7%"></span></span>
+      <span class="speaker-share">77%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 271 words, 23.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:23.3%"></span></span>
+      <span class="speaker-share">23%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Israeli leftist criticizing IDF — should NOT trigger antisemitism markers</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Mwmr2QMLuWY">israel_008 · The Alt-Right Is In Shambles One Year After Charlottesville (HBO)</a></div><div class="muted">VICE News</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">11.0m</td>
+                <td>1,541</td>
+                <td>96.8%<br><span class="muted">speaker 56.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 648 words, 42.1%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:42.1%"></span></span>
+      <span class="speaker-share">42%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 558 words, 36.2%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:36.2%"></span></span>
+      <span class="speaker-share">36%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 110 words, 7.1%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:7.1%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 102 words, 6.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:6.6%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 36 words, 2.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.3%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 33 words, 2.1%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:2.1%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Analysis of an unambiguously antisemitic event — should trigger markers</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=3_1gcdREnFI">israel_009 · Munk Debate on the Two-State Solution and China's chokehold on the U.S.</a></div><div class="muted">TheMunkDebates</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">19.2m</td>
+                <td>2,825</td>
+                <td>95.6%<br><span class="muted">speaker 81.9%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1514 words, 53.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:53.6%"></span></span>
+      <span class="speaker-share">54%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 1311 words, 46.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:46.4%"></span></span>
+      <span class="speaker-share">46%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Both sides at high intellectual quality — judgment test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Ou-Bl8HSGsM">israel_010 · What the firestorm over Rep. Omar's remarks says about anti-Semitism in America</a></div><div class="muted">PBS NewsHour</div></td>
+                <td>israel_palestine</td>
+                <td class="nowrap">11.6m</td>
+                <td>2,067</td>
+                <td>96.3%<br><span class="muted">speaker 71.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 726 words, 35.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:35.1%"></span></span>
+      <span class="speaker-share">35%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 647 words, 31.3%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:31.3%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 8: 451 words, 21.8%">
+      <span class="speaker-label">S8</span>
+      <span class="bar-track"><span style="width:21.8%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 62 words, 3.0%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:3.0%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 48 words, 2.3%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:2.3%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 40 words, 1.9%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>11.3%</td>
+                <td>Real-world ambiguous case — coded trope detection</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=8gZN6JrAXQY">holocaust_001 · Three Survivors Remember Auschwitz, 80 Years Later</a></div><div class="muted">United States Holocaust Memorial Museum</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">5.6m</td>
+                <td>604</td>
+                <td>96.0%<br><span class="muted">speaker 75.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 333 words, 55.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:55.1%"></span></span>
+      <span class="speaker-share">55%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 145 words, 24.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:24.0%"></span></span>
+      <span class="speaker-share">24%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 126 words, 20.9%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:20.9%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+  </div></td>
+                <td>16.5%</td>
+                <td>Primary-source testimony — should be treated reverently</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=0ztdofPc8Rw">holocaust_002 · Behind the lies of Holocaust denial | Deborah Lipstadt</a></div><div class="muted">TED</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.5m</td>
+                <td>1,936</td>
+                <td>97.6%<br><span class="muted">speaker 70.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1936 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>1.6%</td>
+                <td>Leading scholar on denial — meta-discussion not denial</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=H9sl4K6zKqo">holocaust_003 · Prof. Christopher Browning, Hitler and Decisions for the Final Solution, 20.1.2022</a></div><div class="muted">Western Galilee College: Holocaust Studies Program</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,035</td>
+                <td>97.3%<br><span class="muted">speaker 87.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 1476 words, 72.5%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:72.5%"></span></span>
+      <span class="speaker-share">73%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 437 words, 21.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:21.5%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 122 words, 6.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:6.0%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Academic historical analysis — dense factual claims</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=AM1a--pRiLw">holocaust_004 · Saved by Schindler’s List | Celina Biniaz | Jewish-American Heritage Month | USC Shoah Foundation</a></div><div class="muted">USC Shoah Foundation</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,088</td>
+                <td>96.8%<br><span class="muted">speaker 61.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1748 words, 83.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:83.7%"></span></span>
+      <span class="speaker-share">84%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 340 words, 16.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:16.3%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+  </div></td>
+                <td>8.9%</td>
+                <td>Survivor narrative — emotional but historical</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=sYfvhPojqD0">holocaust_005 · Perspectives from the Auschwitz-Birkenau State Museum with Pawel Sawicki</a></div><div class="muted">Museum of Jewish Heritage</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,227</td>
+                <td>96.8%<br><span class="muted">speaker 57.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1841 words, 82.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:82.7%"></span></span>
+      <span class="speaker-share">83%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 386 words, 17.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:17.3%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Site-based historical narration</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=SxTC0iDWAf4">holocaust_006 · Trial by Judge or Jury, Denial</a></div><div class="muted">Alonso Alvarado</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">5.4m</td>
+                <td>689</td>
+                <td>95.2%<br><span class="muted">speaker 45.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 385 words, 55.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:55.9%"></span></span>
+      <span class="speaker-share">56%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 202 words, 29.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:29.3%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 102 words, 14.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:14.8%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>About denial as a phenomenon; refutes it</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=UpabpmjsULk">holocaust_007 · Bloodlands: Europe Between Hitler and Stalin</a></div><div class="muted">Yale University</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,918</td>
+                <td>96.6%<br><span class="muted">speaker 82.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2593 words, 88.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:88.9%"></span></span>
+      <span class="speaker-share">89%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 325 words, 11.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:11.1%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Academic on Eastern European mass killings</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=U93i_hvGjR4">holocaust_008 · SAUL FRIEDLÄNDER MAINLY ON NAZI GERMANY AND THE JEWS</a></div><div class="muted">Filmfriedlander</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>1,531</td>
+                <td>93.5%<br><span class="muted">speaker 78.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 1441 words, 94.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:94.1%"></span></span>
+      <span class="speaker-share">94%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 90 words, 5.9%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:5.9%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Pulitzer historian — high-quality factual baseline</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=-p-WsWM5QzM">holocaust_009 · Ghetto Fighters' House Lecture by Prof  Jan Grabowski  Holocaust Distortion and the Battle for Memor</a></div><div class="muted">Ghetto Fighters' House מוזיאון בית לוחמי הגטאות</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,092</td>
+                <td>95.4%<br><span class="muted">speaker 69.3%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 3: 1179 words, 56.4%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:56.4%"></span></span>
+      <span class="speaker-share">56%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 530 words, 25.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:25.3%"></span></span>
+      <span class="speaker-share">25%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 244 words, 11.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:11.7%"></span></span>
+      <span class="speaker-share">12%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 139 words, 6.6%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:6.6%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Analytic discussion of softer forms — detection edge case</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge review">Review</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Emt0IhbiNPs">holocaust_010 · Origins of the Holocaust | Intentionalism and Functionalism | Professor Dan Stone</a></div><div class="muted">History Hub</div></td>
+                <td>holocaust_education_denial</td>
+                <td class="nowrap">3.7m</td>
+                <td>441</td>
+                <td>96.9%<br><span class="muted">speaker 77.8%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 422 words, 95.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:95.7%"></span></span>
+      <span class="speaker-share">96%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 19 words, 4.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:4.3%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Multi-historian discussion — dense claim density</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=QxB3b7fxMEA">culture_001 · A Case for Color Blindness | Coleman Hughes | TED</a></div><div class="muted">TED</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">13.3m</td>
+                <td>1,985</td>
+                <td>97.8%<br><span class="muted">speaker 68.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1738 words, 87.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:87.6%"></span></span>
+      <span class="speaker-share">88%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 247 words, 12.4%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:12.4%"></span></span>
+      <span class="speaker-share">12%</span>
+    </div>
+  </div></td>
+                <td>4.6%</td>
+                <td>Heterodox black intellectual — fairness test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=EvxovKRW3og">culture_002 · Seriously Entertaining: John McWhorter on &quot;The Road Ahead&quot;</a></div><div class="muted">House of SpeakEasy</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">13.2m</td>
+                <td>2,098</td>
+                <td>95.4%<br><span class="muted">speaker 77.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2098 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Academic perspective on race</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=CRtkZemTpM8">culture_003 · Ibram X. Kendi on “How to Be an Antiracist” | Amanpour and Company</a></div><div class="muted">Amanpour and Company</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">17.8m</td>
+                <td>2,763</td>
+                <td>95.9%<br><span class="muted">speaker 77.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 2289 words, 82.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:82.8%"></span></span>
+      <span class="speaker-share">83%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 406 words, 14.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:14.7%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 68 words, 2.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:2.5%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Activist scholar — opposing position to 001</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=hOjEEiuoT50">culture_004 · The Gender Treatment Debate with Journalist Helen Joyce | EP 60</a></div><div class="muted">Eddie Hobbs</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">15.0m</td>
+                <td>2,881</td>
+                <td>95.0%<br><span class="muted">speaker 67.2%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2255 words, 78.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:78.3%"></span></span>
+      <span class="speaker-share">78%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 626 words, 21.7%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:21.7%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Gender-critical position — should not be misclassified as bigotry</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Vpr9za63z2w">culture_005 · Trans Lawyer Builds Career Fighting For The Poor | Originals | msnbc</a></div><div class="muted">MS NOW</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">7.0m</td>
+                <td>1,101</td>
+                <td>96.6%<br><span class="muted">speaker 45.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1076 words, 97.7%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:97.7%"></span></span>
+      <span class="speaker-share">98%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 25 words, 2.3%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:2.3%"></span></span>
+      <span class="speaker-share">2%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Opposing position to 004 — symmetry</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=6MYb0rBDYvs">culture_006 · Why Abigail Shrier Took on the Transgender Craze Amongst Teenage Girls</a></div><div class="muted">JRE Clips</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">15.2m</td>
+                <td>2,823</td>
+                <td>96.5%<br><span class="muted">speaker 60.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1990 words, 70.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:70.5%"></span></span>
+      <span class="speaker-share">70%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 833 words, 29.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:29.5%"></span></span>
+      <span class="speaker-share">30%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Journalistic position; contested research claims</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=XFFNMYoGWv0">culture_007 · Should Biden or Congress be blamed for immigration crisis? CNN panel debates</a></div><div class="muted">CNN</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">10.6m</td>
+                <td>2,107</td>
+                <td>96.7%<br><span class="muted">speaker 76.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 649 words, 30.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:30.8%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 496 words, 23.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:23.5%"></span></span>
+      <span class="speaker-share">24%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 403 words, 19.1%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:19.1%"></span></span>
+      <span class="speaker-share">19%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 328 words, 15.6%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:15.6%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 231 words, 11.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:11.0%"></span></span>
+      <span class="speaker-share">11%</span>
+    </div>
+  </div></td>
+                <td>8.5%</td>
+                <td>Mixed-position panel</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=tsUoj8WRNHw">culture_008 · SCOTUS Hears Affirmative Action Case, May END Race-Based Admissions: Robby, Batya, Ameshia DEBATE</a></div><div class="muted">The Hill</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">10.0m</td>
+                <td>1,976</td>
+                <td>96.6%<br><span class="muted">speaker 70.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 725 words, 36.7%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:36.7%"></span></span>
+      <span class="speaker-share">37%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 638 words, 32.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:32.3%"></span></span>
+      <span class="speaker-share">32%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 613 words, 31.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:31.0%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Post-SCOTUS debate</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=yl8Cvv2oP4I">culture_009 · 'Not up for debate.': A FIRE investigative report on free speech at Tufts</a></div><div class="muted">FIRE</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">10.3m</td>
+                <td>1,787</td>
+                <td>95.5%<br><span class="muted">speaker 62.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 757 words, 42.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:42.4%"></span></span>
+      <span class="speaker-share">42%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 393 words, 22.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:22.0%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 175 words, 9.8%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:9.8%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 7: 140 words, 7.8%">
+      <span class="speaker-label">S7</span>
+      <span class="bar-track"><span style="width:7.8%"></span></span>
+      <span class="speaker-share">8%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 110 words, 6.2%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:6.2%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 99 words, 5.5%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:5.5%"></span></span>
+      <span class="speaker-share">6%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Mixed-position panel on speech limits</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=2S3jdlFIlQY">culture_010 · The Debate on Cancel Culture</a></div><div class="muted">Dr. Phil</div></td>
+                <td>contentious_culture</td>
+                <td class="nowrap">4.9m</td>
+                <td>921</td>
+                <td>96.0%<br><span class="muted">speaker 68.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 3: 264 words, 28.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:28.7%"></span></span>
+      <span class="speaker-share">29%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 190 words, 20.6%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:20.6%"></span></span>
+      <span class="speaker-share">21%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 160 words, 17.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:17.4%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 153 words, 16.6%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:16.6%"></span></span>
+      <span class="speaker-share">17%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 92 words, 10.0%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:10.0%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 62 words, 6.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:6.7%"></span></span>
+      <span class="speaker-share">7%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Multi-position cultural debate</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=w9oRMsJCpbQ">misinfo_001 · HD Live! interview with Dr. Paul Offit: What's next for the COVID-19 vaccine</a></div><div class="muted">HealthDay</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">12.3m</td>
+                <td>2,504</td>
+                <td>96.7%<br><span class="muted">speaker 87.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2054 words, 82.0%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:82.0%"></span></span>
+      <span class="speaker-share">82%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 450 words, 18.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:18.0%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Vaccine science vs misinformation</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=7X0wlvqeoDo">misinfo_002 · How 'Safe' is the COVID Vaccine? - Dr. Robert Malone on O'Connor Tonight</a></div><div class="muted">Larry O'Connor Media</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">9.0m</td>
+                <td>1,321</td>
+                <td>97.1%<br><span class="muted">speaker 69.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 786 words, 59.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:59.5%"></span></span>
+      <span class="speaker-share">60%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 535 words, 40.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:40.5%"></span></span>
+      <span class="speaker-share">40%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Heterodox vaccine claims — verification stress</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=Ryoh3of6_-I">misinfo_003 · Voter ID, the SAVE Act, and Claims of Election Fraud | Bakari Sellers On CNN</a></div><div class="muted">Bakari Sellers</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">15.5m</td>
+                <td>2,844</td>
+                <td>91.2%<br><span class="muted">speaker 59.1%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 641 words, 22.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:22.5%"></span></span>
+      <span class="speaker-share">23%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 638 words, 22.4%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:22.4%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 502 words, 17.7%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:17.7%"></span></span>
+      <span class="speaker-share">18%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 370 words, 13.0%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:13.0%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 6: 339 words, 11.9%">
+      <span class="speaker-label">S6</span>
+      <span class="bar-track"><span style="width:11.9%"></span></span>
+      <span class="speaker-share">12%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 298 words, 10.5%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:10.5%"></span></span>
+      <span class="speaker-share">10%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Election integrity claims — high stakes verification</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=6OxjXN4HjCc">misinfo_004 · Leading Climate Scientist on the Impact of Extreme Weather</a></div><div class="muted">Bloomberg Live</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">18.0m</td>
+                <td>2,401</td>
+                <td>96.3%<br><span class="muted">speaker 72.6%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 1619 words, 67.4%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:67.4%"></span></span>
+      <span class="speaker-share">67%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 756 words, 31.5%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:31.5%"></span></span>
+      <span class="speaker-share">31%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 26 words, 1.1%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:2.0%"></span></span>
+      <span class="speaker-share">1%</span>
+    </div>
+  </div></td>
+                <td>9.4%</td>
+                <td>Mainstream climate science baseline</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=igh6i6y9z9g">misinfo_005 · The Climate Policies to Focus On with Bjorn Lomborg (Lessons from Hoover Boot Camp) | Ch 3</a></div><div class="muted">PolicyEd</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">14.1m</td>
+                <td>2,517</td>
+                <td>95.9%<br><span class="muted">speaker 75.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 2517 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Climate policy heterodoxy — not denial; nuance test</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=w1VCCc5O9aw">misinfo_006 · Lab leak? The raging debate over how Covid started</a></div><div class="muted">MS NOW</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">7.7m</td>
+                <td>1,372</td>
+                <td>96.6%<br><span class="muted">speaker 66.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 830 words, 60.5%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:60.5%"></span></span>
+      <span class="speaker-share">60%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 391 words, 28.5%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:28.5%"></span></span>
+      <span class="speaker-share">28%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 53 words, 3.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:3.9%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 52 words, 3.8%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:3.8%"></span></span>
+      <span class="speaker-share">4%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 2: 46 words, 3.4%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:3.4%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Disputed scientific question</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=meElc3E1GwU">misinfo_007 · Conspiracy theories of 9/11 explored.</a></div><div class="muted">FOX21 News</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">9.5m</td>
+                <td>1,568</td>
+                <td>95.6%<br><span class="muted">speaker 57.4%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 545 words, 34.8%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:34.8%"></span></span>
+      <span class="speaker-share">35%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 351 words, 22.4%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:22.4%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 344 words, 21.9%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:21.9%"></span></span>
+      <span class="speaker-share">22%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 3: 231 words, 14.7%">
+      <span class="speaker-label">S3</span>
+      <span class="bar-track"><span style="width:14.7%"></span></span>
+      <span class="speaker-share">15%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 5: 52 words, 3.3%">
+      <span class="speaker-label">S5</span>
+      <span class="bar-track"><span style="width:3.3%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 4: 45 words, 2.9%">
+      <span class="speaker-label">S4</span>
+      <span class="bar-track"><span style="width:2.9%"></span></span>
+      <span class="speaker-share">3%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Refuting conspiracy — detect endorsement vs refutation</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=7ae_XdFEQDw">misinfo_008 · Destroying Flat Earth Without Using Science - Part 4: The Conspiracy</a></div><div class="muted">Professor Dave Explains</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">11.9m</td>
+                <td>1,948</td>
+                <td>98.8%<br><span class="muted">speaker 86.7%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 0: 1948 words, 100.0%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:100.0%"></span></span>
+      <span class="speaker-share">100%</span>
+    </div>
+  </div></td>
+                <td>1.4%</td>
+                <td>Obvious case — should classify confidently</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=FebtS5wGbJU">misinfo_009 · 5G expert sounds the alarm on China</a></div><div class="muted">The Hill</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">11.9m</td>
+                <td>2,288</td>
+                <td>93.3%<br><span class="muted">speaker 77.5%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 2: 1698 words, 74.2%">
+      <span class="speaker-label">S2</span>
+      <span class="bar-track"><span style="width:74.2%"></span></span>
+      <span class="speaker-share">74%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 1: 301 words, 13.2%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:13.2%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 289 words, 12.6%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:12.6%"></span></span>
+      <span class="speaker-share">13%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Specific misinformation topic</td>
+              </tr>
+
+              <tr>
+                <td><span class="badge pass">Pass</span></td>
+                <td><div class="video-title"><a href="https://www.youtube.com/watch?v=CxsdPxgDZ0g">misinfo_010 · Liron Debunks The Most Common “AI Won't Kill Us&quot; Arguments (Collective Wisdom Podcast)</a></div><div class="muted">Doom Debates</div></td>
+                <td>misinformation_prone</td>
+                <td class="nowrap">15.0m</td>
+                <td>3,258</td>
+                <td>97.2%<br><span class="muted">speaker 59.0%</span></td>
+                <td><div class="speaker-bars">
+    <div class="speaker-bar" title="Speaker 1: 2728 words, 83.7%">
+      <span class="speaker-label">S1</span>
+      <span class="bar-track"><span style="width:83.7%"></span></span>
+      <span class="speaker-share">84%</span>
+    </div>
+
+    <div class="speaker-bar" title="Speaker 0: 530 words, 16.3%">
+      <span class="speaker-label">S0</span>
+      <span class="bar-track"><span style="width:16.3%"></span></span>
+      <span class="speaker-share">16%</span>
+    </div>
+  </div></td>
+                <td>n/a</td>
+                <td>Speculative topic — opinion vs fact distinction</td>
+              </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

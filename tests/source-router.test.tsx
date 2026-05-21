@@ -43,6 +43,10 @@ vi.mock("@/components/session/ingest-panes/text-ingest-pane", () => ({
   TextIngestPane: () => <div data-testid="text-ingest-pane">TextIngestPane</div>,
 }));
 
+vi.mock("@/components/session/ingest-panes/browser-tab-ingest-pane", () => ({
+  BrowserTabIngestPane: () => <div data-testid="browser-tab-ingest-pane">BrowserTabIngestPane</div>,
+}));
+
 vi.mock("@/components/session/ingest-panes/audio-ingest-pane", () => ({
   AudioIngestPane: () => <div data-testid="audio-ingest-pane">AudioIngestPane</div>,
 }));
@@ -78,6 +82,7 @@ describe("SourceRouter – picker stage", () => {
     mockPrerecordStage = "picker";
     render(<SourceRouter />);
     expect(screen.queryByTestId("text-ingest-pane")).toBeNull();
+    expect(screen.queryByTestId("browser-tab-ingest-pane")).toBeNull();
     expect(screen.queryByTestId("audio-ingest-pane")).toBeNull();
     expect(screen.queryByTestId("youtube-ingest-pane")).toBeNull();
     expect(screen.queryByTestId("media-url-ingest-pane")).toBeNull();
@@ -102,7 +107,18 @@ describe("SourceRouter – selected stage + mic", () => {
   });
 });
 
-// ─── 3. Stage: selected + text_doc ───────────────────────────────────────────
+// ─── 3. Stage: selected + browser_tab ────────────────────────────────────────
+
+describe("SourceRouter – selected + browser_tab", () => {
+  it("renders BrowserTabIngestPane", () => {
+    mockPrerecordStage = "selected";
+    mockSourceKind = "browser_tab";
+    render(<SourceRouter />);
+    expect(screen.getByTestId("browser-tab-ingest-pane")).toBeTruthy();
+  });
+});
+
+// ─── 4. Stage: selected + text_doc ───────────────────────────────────────────
 
 describe("SourceRouter – selected + text_doc", () => {
   it("renders TextIngestPane", () => {
@@ -113,7 +129,7 @@ describe("SourceRouter – selected + text_doc", () => {
   });
 });
 
-// ─── 4. Stage: selected + audio_file ─────────────────────────────────────────
+// ─── 5. Stage: selected + audio_file ─────────────────────────────────────────
 
 describe("SourceRouter – selected + audio_file", () => {
   it("renders AudioIngestPane", () => {
@@ -124,7 +140,7 @@ describe("SourceRouter – selected + audio_file", () => {
   });
 });
 
-// ─── 5. Stage: selected + youtube ────────────────────────────────────────────
+// ─── 6. Stage: selected + youtube ────────────────────────────────────────────
 
 describe("SourceRouter – selected + youtube", () => {
   it("renders YoutubeIngestPane", () => {
@@ -135,7 +151,7 @@ describe("SourceRouter – selected + youtube", () => {
   });
 });
 
-// ─── 6. Stage: selected + media_url ──────────────────────────────────────────
+// ─── 7. Stage: selected + media_url ──────────────────────────────────────────
 
 describe("SourceRouter – selected + media_url", () => {
   it("renders MediaUrlIngestPane", () => {

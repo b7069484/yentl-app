@@ -98,6 +98,28 @@ describe("FilteredList – claims view", () => {
     expect(screen.getByText(/The sky is falling/)).toBeTruthy();
   });
 
+  it("links claim rows to the real detail route and preserves filter context", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=claims&verdict=false&speaker=0&sort=score");
+    const claims = [
+      makeClaim({
+        id: "claim-123",
+        claim_text: "The sky is falling.",
+        primary_label: "FALSE",
+        status: "confirmed",
+      }),
+    ];
+    mockStore({
+      claims,
+      speakers: [{ id: 0, label: "Speaker 1" }],
+    });
+
+    render(<FilteredList />);
+    const link = screen.getByText(/The sky is falling/).closest("a");
+    expect(link?.getAttribute("href")).toBe(
+      "/session/detail/claim/claim-123?from=verdict%3Afalse%7Cspeaker%3A0%7Csort%3Ascore",
+    );
+  });
+
   it("shows breadcrumb 'Claims' for claims view", () => {
     mockSearchParamsRaw = new URLSearchParams("view=claims");
     mockStore({});
@@ -127,6 +149,25 @@ describe("FilteredList – markers view", () => {
 
     render(<FilteredList />);
     expect(screen.getByText("Slippery Slope")).toBeTruthy();
+  });
+
+  it("links marker rows to the real detail route and preserves filter context", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=markers&type=fallacy&severity=clear&sort=severity");
+    const markers = [
+      makeMarker({
+        id: "marker-123",
+        display: "Slippery Slope",
+        type: "fallacy",
+        severity: "clear",
+      }),
+    ];
+    mockStore({ markers });
+
+    render(<FilteredList />);
+    const link = screen.getByText("Slippery Slope").closest("a");
+    expect(link?.getAttribute("href")).toBe(
+      "/session/detail/marker/marker-123?from=type%3Afallacy%7Cseverity%3Aclear%7Csort%3Aseverity",
+    );
   });
 
   it("shows breadcrumb 'Markers' for markers view", () => {

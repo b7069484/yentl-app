@@ -15,7 +15,9 @@ const REFRESH_LEAD_MS = 30_000;
 const TOKEN_RETRY_ATTEMPTS = 3;
 const TOKEN_BACKOFF_BASE_MS = 500;
 const CHUNK_MS = 250;
-const NO_TRANSCRIPT_NOTICE_MS = 9000;
+const NO_TRANSCRIPT_NOTICE_MS = 5000;
+const MAX_BUFFERED_CHUNKS = 120;
+const MAX_BUFFERED_BYTES = 4_000_000;
 
 let currentCapture = null;
 
@@ -49,6 +51,8 @@ async function startCapture(message) {
     sawTranscript: false,
     sessionId: message.sessionId,
     socket: null,
+    pendingChunks: [],
+    pendingBytes: 0,
     sourceNode: null,
   };
   currentCapture = capture;
@@ -65,28 +69,23 @@ async function startCapture(message) {
     });
 
     preserveTabAudio(capture);
+    startMediaRecorder(capture);
+    sendBackground("capture-status", {
+      running: true,
+      phase: "capturing",
+      message:
+        "Capturing tab audio now. Yentl is connecting live transcription and will process buffered audio as soon as it is ready.",
+    });
 
     const token = await fetchTokenWithRetry(capture.appOrigin, controller.signal);
     capture.socket = await openDeepgramSocket(token.key, controller.signal, capture);
+    flushPendingChunks(capture);
     scheduleTokenRefresh(capture, token.expiresAtMs);
 
-    capture.mediaRecorder = new MediaRecorder(capture.mediaStream, {
-      mimeType: pickMimeType(),
-    });
-    capture.mediaRecorder.ondataavailable = (event) => {
-      if (!event.data || event.data.size === 0) return;
-      sendChunk(capture, event.data);
-    };
-    capture.mediaRecorder.onerror = (event) => {
-      sendBackground("capture-error", {
-        message: event.error?.message ?? "MediaRecorder failed.",
-      });
-    };
-    capture.mediaRecorder.start(CHUNK_MS);
     sendBackground("capture-status", {
       running: true,
-      phase: "extension_connected",
-      message: "Tab audio stream is open. Waiting for speech.",
+      phase: "capturing",
+      message: "Live transcription is connected. Audio is flowing from this tab.",
     });
     scheduleNoTranscriptNotice(capture);
   } catch (error) {
@@ -136,6 +135,22 @@ async function stopCapture({ notify }) {
   if (notify) {
     sendBackground("capture-stop");
   }
+}
+
+function startMediaRecorder(capture) {
+  capture.mediaRecorder = new MediaRecorder(capture.mediaStream, {
+    mimeType: pickMimeType(),
+  });
+  capture.mediaRecorder.ondataavailable = (event) => {
+    if (!event.data || event.data.size === 0) return;
+    sendChunk(capture, event.data);
+  };
+  capture.mediaRecorder.onerror = (event) => {
+    sendBackground("capture-error", {
+      message: event.error?.message ?? "MediaRecorder failed.",
+    });
+  };
+  capture.mediaRecorder.start(CHUNK_MS);
 }
 
 function preserveTabAudio(capture) {
@@ -260,6 +275,7 @@ async function refreshDeepgramSocket(capture) {
     const nextSocket = await openDeepgramSocket(token.key, capture.controller.signal, capture);
     const oldSocket = capture.socket;
     capture.socket = nextSocket;
+    flushPendingChunks(capture);
     scheduleTokenRefresh(capture, token.expiresAtMs);
 
     try {
@@ -293,15 +309,39 @@ function scheduleNoTranscriptNotice(capture) {
 }
 
 function sendChunk(capture, blob) {
+  blob.arrayBuffer().then((buffer) => {
+    if (currentCapture !== capture) return;
+    const socket = capture.socket;
+    if (socket?.readyState === WebSocket.OPEN) {
+      socket.send(buffer);
+      return;
+    }
+    bufferChunk(capture, buffer);
+  });
+}
+
+function bufferChunk(capture, buffer) {
+  capture.pendingChunks.push(buffer);
+  capture.pendingBytes += buffer.byteLength;
+
+  while (
+    capture.pendingChunks.length > MAX_BUFFERED_CHUNKS ||
+    capture.pendingBytes > MAX_BUFFERED_BYTES
+  ) {
+    const dropped = capture.pendingChunks.shift();
+    capture.pendingBytes -= dropped?.byteLength ?? 0;
+  }
+}
+
+function flushPendingChunks(capture) {
   const socket = capture.socket;
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
-  blob.arrayBuffer().then((buffer) => {
-    if (currentCapture !== capture) return;
-    if (socket.readyState === WebSocket.OPEN) {
-      socket.send(buffer);
-    }
-  });
+  for (const buffer of capture.pendingChunks) {
+    socket.send(buffer);
+  }
+  capture.pendingChunks = [];
+  capture.pendingBytes = 0;
 }
 
 function dominantSpeaker(words) {

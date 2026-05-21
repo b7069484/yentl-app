@@ -20,6 +20,7 @@ import {
   stopBrowserTabCapture,
 } from "@/components/session/ExtensionBridge";
 import { useSession, type BrowserTabCaptureStatus } from "@/lib/client/session-store";
+import type { DevilAdvocateBrief, DevilAdvocateState } from "@/lib/client/session-store";
 import type { ClaimCard, RhetoricMarker, SessionSource, TranscriptSegment } from "@/lib/types";
 
 type Phase = BrowserTabCaptureStatus["phase"];
@@ -268,6 +269,11 @@ function useValidationDemo() {
     if (!latest.markers.some((marker) => marker.id === VALIDATION_MARKER.id)) {
       latest.addMarker(VALIDATION_MARKER);
     }
+    useSession.getState().setDevilAdvocate({
+      state: "fresh",
+      brief: VALIDATION_DEVIL_ADVOCATE,
+      at: Date.now(),
+    });
   }, []);
 }
 
@@ -331,6 +337,22 @@ const VALIDATION_MARKER: RhetoricMarker = {
   explanation: "The phrasing flags confidence before the evidence is available.",
 };
 
+const VALIDATION_DEVIL_ADVOCATE = {
+  stance: "A skeptic would ask whether the budget increase claim is being framed before the source documents are visible.",
+  strongest_counterarguments: [
+    "A 12 percent increase may be accurate but incomplete without the base budget.",
+    "Weekend hours and repairs are plausible uses, but the preview lacks a city source.",
+    "Criticism about certainty may be fair rhetoric rather than a factual contradiction.",
+  ],
+  weakest_assumption: "The weakest assumption is that the preview transcript contains enough evidence to judge the budget claim.",
+  questions: [
+    "Where is the official budget document?",
+    "Does the audit address the same fiscal year as the claim?",
+  ],
+  confidence: "medium" as const,
+  model: "xai/grok-4.1-fast-reasoning",
+} satisfies DevilAdvocateBrief;
+
 export function ExtensionPanelView() {
   useValidationDemo();
 
@@ -340,6 +362,7 @@ export function ExtensionPanelView() {
   const interim = useSession((s) => s.interim);
   const claims = useSession((s) => s.claims);
   const markers = useSession((s) => s.markers);
+  const devilAdvocate = useSession((s) => s.devilAdvocate);
   const startedAt = useSession((s) => s.startedAt);
   const endedAt = useSession((s) => s.endedAt);
 
@@ -438,6 +461,8 @@ export function ExtensionPanelView() {
               />
             </div>
           </section>
+
+          <DevilAdvocatePanel state={devilAdvocate} />
 
           <section className="rounded-lg border border-line bg-paper shadow-sm">
             <PanelHeader icon={<Captions className="h-4 w-4" aria-hidden />} label="Live transcript" />
@@ -551,6 +576,93 @@ export function ExtensionPanelView() {
           </Link>
         </div>
       </div>
+    </section>
+  );
+}
+
+function DevilAdvocatePanel({ state }: { state: DevilAdvocateState }) {
+  const brief = state && "brief" in state ? state.brief : null;
+  const isLoading = state?.state === "warming" || state?.state === "refreshing";
+  const isError = state?.state === "error";
+
+  return (
+    <section className="rounded-lg border border-line bg-paper p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
+          <AlertTriangle className="h-4 w-4" aria-hidden />
+          Devil&apos;s advocate
+        </div>
+        {brief?.model && (
+          <span className="rounded-full border border-line bg-cream px-2 py-0.5 font-mono text-[10px] text-ink-4">
+            Grok
+          </span>
+        )}
+      </div>
+
+      {!brief && !isLoading && !isError && (
+        <p className="rounded-lg border border-dashed border-line bg-cream px-3 py-3 text-[12.5px] leading-relaxed text-ink-4">
+          Grok will stress-test the analysis once Yentl has a few transcript lines.
+        </p>
+      )}
+
+      {isLoading && !brief && (
+        <p className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-3 text-[12.5px] leading-relaxed text-blue-900">
+          Asking Grok for the strongest opposing read.
+        </p>
+      )}
+
+      {isError && !brief && (
+        <p className="rounded-lg border border-red-soft bg-red-soft/35 px-3 py-3 text-[12.5px] leading-relaxed text-red">
+          Grok Devil&apos;s Advocate is not available right now.
+        </p>
+      )}
+
+      {brief && (
+        <div className="space-y-3">
+          <div className="rounded-lg border border-amber/35 bg-amber-50 px-3 py-3 text-amber-900">
+            <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] opacity-75">
+              Challenge · {brief.confidence} confidence
+            </div>
+            <p className="text-[13px] font-semibold leading-relaxed">
+              {brief.stance}
+            </p>
+            {isLoading && (
+              <p className="mt-2 text-[11.5px] opacity-75">
+                Refreshing this challenge as the transcript develops.
+              </p>
+            )}
+          </div>
+
+          <details className="rounded-lg border border-line bg-cream">
+            <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
+              Counterpoints and questions
+            </summary>
+            <div className="space-y-3 border-t border-line px-3 py-3 text-[12.5px] leading-relaxed text-ink-3">
+              <ol className="list-decimal space-y-2 pl-4">
+                {brief.strongest_counterarguments.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ol>
+              <div className="rounded-lg border border-line bg-paper px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-4">
+                  Weakest assumption
+                </div>
+                <p className="mt-1">{brief.weakest_assumption}</p>
+              </div>
+              <div>
+                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.1em] text-ink-4">
+                  Ask next
+                </div>
+                <ul className="list-disc space-y-1 pl-4">
+                  {brief.questions.map((question) => (
+                    <li key={question}>{question}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </details>
+        </div>
+      )}
     </section>
   );
 }

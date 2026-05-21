@@ -22,6 +22,22 @@ export type SynthesisState =
   | { state: "refreshing"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
   | { state: "error"; text?: string; headlines?: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number; lastError?: string };
 
+export type DevilAdvocateBrief = {
+  stance: string;
+  strongest_counterarguments: [string, string, string];
+  weakest_assumption: string;
+  questions: [string, string];
+  confidence: "low" | "medium" | "high";
+  model?: string;
+};
+
+export type DevilAdvocateState =
+  | null
+  | { state: "warming"; at: number }
+  | { state: "fresh"; brief: DevilAdvocateBrief; at: number }
+  | { state: "refreshing"; brief: DevilAdvocateBrief; at: number }
+  | { state: "error"; brief?: DevilAdvocateBrief; at: number; lastError?: string };
+
 export type BrowserTabCaptureStatus = {
   phase:
     | "idle"
@@ -52,6 +68,7 @@ type State = {
   isRecording: boolean;
   mode: "A" | "D";
   synthesis: SynthesisState;
+  devilAdvocate: DevilAdvocateState;
   micStream: MediaStream | null;
   prerecordStage: "picker" | "selected";
   browserTabStatus: BrowserTabCaptureStatus;
@@ -71,6 +88,7 @@ type State = {
   toggleMode: () => void;
   setRecording: (b: boolean) => void;
   setSynthesis: (s: SynthesisState) => void;
+  setDevilAdvocate: (s: DevilAdvocateState) => void;
   setMicStream: (stream: MediaStream | null) => void;
   setPrerecordStage: (stage: "picker" | "selected") => void;
   setBrowserTabStatus: (status: BrowserTabCaptureStatus) => void;
@@ -118,7 +136,7 @@ const initialState: Omit<State,
   | "addClaim" | "updateClaim" | "addMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
   | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream"
-  | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
+  | "setDevilAdvocate" | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
   | "reassignUtterance" | "addNewSpeaker" | "splitSegmentAt"
 > = {
   title: "",
@@ -134,6 +152,7 @@ const initialState: Omit<State,
   isRecording: false,
   mode: "A",
   synthesis: null,
+  devilAdvocate: null,
   micStream: null,
   prerecordStage: "picker",
   browserTabStatus: { phase: "idle" },
@@ -227,6 +246,8 @@ export const useSession = create<State>((set, get) => ({
 
   setSynthesis: (s) => set({ synthesis: s }),
 
+  setDevilAdvocate: (s) => set({ devilAdvocate: s }),
+
   setMicStream: (stream) => set({ micStream: stream }),
 
   restoreSession: (session: Session) => set({
@@ -246,6 +267,7 @@ export const useSession = create<State>((set, get) => ({
     synthesis: session.synthesis
       ? { state: "fresh" as const, ...session.synthesis }
       : null,
+    devilAdvocate: null,
     micStream: null,
     browserTabStatus: { phase: "idle" },
   }),

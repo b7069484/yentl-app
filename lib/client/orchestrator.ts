@@ -21,6 +21,10 @@ let synthesisUtteranceCounter = 0;
 let lastSynthesisRunAt = 0;
 let synthesisAbortController: AbortController | null = null;
 
+let devilUtteranceCounter = 0;
+let lastDevilRunAt = 0;
+let devilAbortController: AbortController | null = null;
+
 type ExtractedClaim = {
   claim_text: string;
   utterance_start: number;
@@ -44,6 +48,7 @@ export function attributeMarker(
 export async function onFinalUtterance(segment: TranscriptSegment) {
   maybeRunRhetoric();
   maybeRunSynthesis();
+  maybeRunDevilAdvocate();
 
   const { transcript } = useSession.getState();
 
@@ -127,6 +132,10 @@ export function abortSynthesis() {
   synthesisAbortController?.abort();
 }
 
+export function abortDevilAdvocate() {
+  devilAbortController?.abort();
+}
+
 /**
  * Bypasses the synthesis pacer and runs synthesis immediately once.
  * Used by bulkIngest after processing all segments so the full imported
@@ -156,6 +165,7 @@ export async function runFinalSynthesis(): Promise<void> {
   if (state.source.kind === "mic") return;
   if (state.transcript.length === 0) return;
   await runSynthesis({ fullTranscript: state.transcript });
+  await runDevilAdvocate({ fullTranscript: state.transcript });
 }
 
 async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
@@ -256,6 +266,106 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
     text: data.text,
     headlines: data.headlines,
     ...(data.per_speaker_verdicts !== undefined ? { per_speaker_verdicts: data.per_speaker_verdicts } : {}),
+    at: Date.now(),
+  });
+}
+
+export function maybeRunDevilAdvocate() {
+  devilUtteranceCounter += 1;
+  const state = useSession.getState();
+  if (state.transcript.length < 3) return;
+
+  const now = Date.now();
+  const timeSince = now - lastDevilRunAt;
+  if (devilUtteranceCounter % 7 === 0 || timeSince > 45_000) {
+    lastDevilRunAt = now;
+    void runDevilAdvocate();
+  }
+}
+
+async function runDevilAdvocate(opts?: { fullTranscript?: TranscriptSegment[] }) {
+  const state = useSession.getState();
+  const transcript = opts?.fullTranscript ?? state.transcript.slice(-16);
+  if (transcript.length < 3) return;
+
+  const current = state.devilAdvocate;
+  if (current?.state === "fresh" || current?.state === "refreshing") {
+    state.setDevilAdvocate({ state: "refreshing", brief: current.brief, at: Date.now() });
+  } else {
+    state.setDevilAdvocate({ state: "warming", at: Date.now() });
+  }
+
+  devilAbortController?.abort();
+  devilAbortController = new AbortController();
+  const signal = devilAbortController.signal;
+
+  let res: Response;
+  try {
+    res = await fetch("/api/devil-advocate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        utterances: transcript.map((s) => ({
+          speaker_id: s.speaker_id,
+          text: s.text,
+          start: s.start,
+          end: s.end,
+        })),
+        claims: state.claims
+          .filter((claim) => claim.status !== "checking")
+          .slice(-8)
+          .map((claim) => ({
+            text: claim.claim_text,
+            verdict: claim.primary_label,
+            score: claim.score,
+            speaker_id: claim.speaker_id,
+            explanation: claim.explanation,
+          })),
+        markers: state.markers.slice(-8).map((marker) => ({
+          display: marker.display,
+          severity: marker.severity,
+          excerpt: marker.excerpt,
+          speaker_id: marker.speaker_id,
+          explanation: marker.explanation,
+        })),
+      }),
+      signal,
+    });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") return;
+    console.error("devil-advocate fetch failed", e);
+    const prev = useSession.getState().devilAdvocate;
+    useSession.getState().setDevilAdvocate({
+      state: "error",
+      at: Date.now(),
+      ...(prev && "brief" in prev ? { brief: prev.brief } : {}),
+      lastError: String(e),
+    });
+    return;
+  }
+
+  if (!res.ok) {
+    const prev = useSession.getState().devilAdvocate;
+    useSession.getState().setDevilAdvocate({
+      state: "error",
+      at: Date.now(),
+      ...(prev && "brief" in prev ? { brief: prev.brief } : {}),
+    });
+    return;
+  }
+
+  const data = (await res.json()) as {
+    stance: string;
+    strongest_counterarguments: [string, string, string];
+    weakest_assumption: string;
+    questions: [string, string];
+    confidence: "low" | "medium" | "high";
+    model?: string;
+  };
+
+  useSession.getState().setDevilAdvocate({
+    state: "fresh",
+    brief: data,
     at: Date.now(),
   });
 }

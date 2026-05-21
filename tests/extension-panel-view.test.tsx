@@ -125,6 +125,25 @@ describe("ExtensionPanelView", () => {
       claim_text: "The council discussed the library budget.",
     }));
     useSession.getState().addMarker(makeMarker());
+    useSession.getState().setDevilAdvocate({
+      state: "fresh",
+      brief: {
+        stance: "A skeptic would ask whether the audit claim outruns the visible evidence.",
+        strongest_counterarguments: [
+          "The claim may be directionally true but missing the base-year comparison.",
+          "The transcript does not show whether the audit was public elsewhere.",
+          "Loaded phrasing is a marker, not proof that the underlying claim is false.",
+        ],
+        weakest_assumption: "The weakest assumption is that absence in this clip means absence in the record.",
+        questions: [
+          "Where is the audit publication log?",
+          "Which budget year is being compared?",
+        ],
+        confidence: "medium",
+        model: "xai/grok-4.1-fast-reasoning",
+      },
+      at: Date.now(),
+    });
 
     render(<ExtensionPanelView />);
 
@@ -138,6 +157,10 @@ describe("ExtensionPanelView", () => {
     expect(screen.getByText("Markers (1)")).toBeTruthy();
     expect(screen.getByText("FALSE")).toBeTruthy();
     expect(screen.getByText("Loaded language")).toBeTruthy();
+    expect(screen.getByText("Devil's advocate")).toBeTruthy();
+    expect(screen.getByText("Grok")).toBeTruthy();
+    expect(screen.getByText(/audit claim outruns the visible evidence/i)).toBeTruthy();
+    expect(screen.getByText("Counterpoints and questions")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
   });
 
@@ -154,6 +177,7 @@ describe("ExtensionPanelView", () => {
     expect(screen.getAllByText(/library budget increased by 12 percent/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("UNVERIFIABLE")).toBeTruthy();
     expect(screen.getByText("Premature certainty")).toBeTruthy();
+    expect(screen.getByText("Devil's advocate")).toBeTruthy();
     expect(screen.queryByText("Overview")).toBeNull();
   });
 });

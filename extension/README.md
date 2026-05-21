@@ -8,7 +8,9 @@ Manifest V3 Chrome extension for live browser-tab audio capture.
 - Injects a Yentl analysis side panel into that same tab, so the media player
   and analysis remain visible together.
 - Keeps the captured tab audible by routing the captured stream back to the default audio output.
-- Streams tab audio to Deepgram with the same `nova-3` live options as the web mic path.
+- Starts recording tab audio immediately, buffers early audio while Deepgram
+  connects, then streams the buffered and live chunks with the same `nova-3`
+  options as the web mic path.
 - Loads the Yentl `/session` app inside the injected panel and forwards
   interim/final transcript events into that frame with a per-capture bridge
   token.
@@ -16,7 +18,8 @@ Manifest V3 Chrome extension for live browser-tab audio capture.
   the injected panel is not a squeezed copy of the full desktop workspace.
 - Surfaces connected/no-speech status from the offscreen capture worker when
   the tab stream is open but no transcript has arrived yet.
-- Lets the existing Yentl app pipeline handle claim extraction, verification, rhetoric markers, and synthesis.
+- Lets the existing Yentl app pipeline handle claim extraction, verification,
+  rhetoric markers, synthesis, and the Grok-backed Devil's Advocate brief.
 
 ## Local Install
 
@@ -37,12 +40,15 @@ The default Yentl origin is `http://localhost:3000`. Change it in the extension 
 - `background.js` owns the user gesture, injects the panel content script,
   obtains a `chrome.tabCapture.getMediaStreamId()`, creates the offscreen
   document, and forwards transcript events back to the captured media tab.
-- `offscreen.js` consumes the stream ID with `getUserMedia`, preserves local playback with `AudioContext`, and maintains the Deepgram WebSocket.
+- `offscreen.js` consumes the stream ID with `getUserMedia`, preserves local
+  playback with `AudioContext`, starts `MediaRecorder` before Deepgram is ready,
+  buffers early chunks, and maintains the Deepgram WebSocket.
 - `content-script.js` renders the in-page side panel, loads the app iframe, and
   bridges extension messages into that iframe after the app announces that its
   bridge is ready.
 - `components/session/ExtensionBridge.tsx` is the app-side receiver.
 - `components/session/extension-panel-view.tsx` is the extension-specific
-  compact analysis surface.
+  compact analysis surface with transcript, claim/marker snapshot, expandable
+  evidence, and Grok Devil's Advocate.
 
 Chrome 116+ is required because service-worker-created tab capture stream IDs can be consumed by an offscreen document starting there.

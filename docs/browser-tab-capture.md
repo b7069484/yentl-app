@@ -68,16 +68,27 @@ Current same-page flow:
    bridge token so transcript events reach only that injected panel.
 7. `background.js` creates or reuses the offscreen document and obtains a tab
    capture stream ID.
-8. `offscreen.js` consumes the stream ID, keeps audio audible, opens a Deepgram
-   live WebSocket, and emits interim/final transcript events.
-9. If the stream opens but no transcript arrives, `offscreen.js` sends a
+8. `offscreen.js` consumes the stream ID, keeps audio audible, starts
+   `MediaRecorder` immediately, and buffers early 250 ms audio chunks while the
+   Deepgram token and live WebSocket are still connecting.
+9. Once the Deepgram socket opens, `offscreen.js` flushes the buffered chunks
+   and continues streaming new chunks live. This avoids losing the opening
+   seconds of playback during token/socket setup.
+10. If the stream opens but no transcript arrives, `offscreen.js` sends a
    no-speech status so the panel can tell the user what is happening.
-10. `background.js` forwards capture, status, and transcript events back to the
+11. `background.js` forwards capture, status, and transcript events back to the
    media tab.
-11. `content-script.js` buffers events until the iframe app bridge says it is ready.
-12. `ExtensionBridge.tsx` starts a `browser_tab` session, appends page-text and
+12. `content-script.js` buffers events until the iframe app bridge says it is ready.
+13. `ExtensionBridge.tsx` starts a `browser_tab` session, appends page-text and
    audio transcript segments, and lets the existing claim/rhetoric/synthesis
    pipeline run.
+14. The client orchestrator also sends enough transcript context to
+   `/api/devil-advocate`, which uses Grok through Vercel AI Gateway to produce
+   a compact "Devil's Advocate" challenge in the extension panel.
+
+Latency note: this implementation removes the capture-start gap by recording
+as soon as Chrome hands us tab audio. It does not make transcription literally
+instant; Deepgram network/model latency and utterance finalization still apply.
 
 Local test path:
 
@@ -142,6 +153,9 @@ Product flow:
 - Add a proper extension popup with start/stop status, target tab title, current
   Yentl origin, and capture diagnostics instead of relying only on the action
   badge and injected panel chrome.
+- Measure real first-interim and first-final transcript latency in Chrome after
+  reloading the unpacked extension with the immediate-buffering `offscreen.js`
+  change.
 - Decide whether the injected panel remains the production default or graduates
   to Chrome's native Side Panel API where available.
 - Add user-visible permission and consent copy for recording third-party audio.

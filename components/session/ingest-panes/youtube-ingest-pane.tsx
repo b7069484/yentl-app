@@ -4,30 +4,45 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   type ChangeEvent,
-  type ReactNode,
 } from "react";
 import {
   ArrowLeft,
-  Loader2,
   AlertCircle,
   CheckCircle2,
+  ExternalLink,
   Link as LinkIcon,
+  Loader2,
   MonitorPlay,
   Play,
+  Radio,
+  Save,
+  StopCircle,
   Upload,
+  Video,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Aurora from "@/components/Aurora";
+import BorderGlow from "@/components/BorderGlow";
+import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
 import { useSession } from "@/lib/client/session-store";
-import { bulkIngest } from "@/lib/client/ingest-orchestrator";
+import type { MediaAdapter } from "@/lib/client/media-adapter";
+import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
+import { openDeepgramStream } from "@/lib/client/deepgram-stream";
+import {
+  displayAudioCaptureMessage,
+  startDisplayAudioCapture,
+  type DisplayAudioCaptureHandle,
+} from "@/lib/client/display-audio-capture";
+import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { friendlyApiErrorMessage } from "@/lib/client/api-errors";
+import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 import type { TranscriptSegment } from "@/lib/types";
 
 /**
  * Lightweight client-side YouTube URL check.
- * Returns the video ID string if parseable, null otherwise.
- * Mirrors the logic in lib/server/youtube-captions.ts so the server
- * remains the canonical validator; this is just for instant UI feedback.
+ * The server remains canonical; this only gives instant player feedback.
  */
 function parseYouTubeUrlClient(url: string): string | null {
   if (!url) return null;
@@ -40,8 +55,8 @@ function parseYouTubeUrlClient(url: string): string | null {
     }
     if (host === "youtube.com") {
       if (pathname === "/watch") return searchParams.get("v");
-      const m = pathname.match(/^\/(embed|shorts)\/([^/?#]+)/);
-      if (m) return m[2] ?? null;
+      const match = pathname.match(/^\/(embed|shorts)\/([^/?#]+)/);
+      if (match) return match[2] ?? null;
     }
     return null;
   } catch {
@@ -49,86 +64,806 @@ function parseYouTubeUrlClient(url: string): string | null {
   }
 }
 
-function youtubeThumbnail(videoId: string): string {
-  return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+function formatTime(seconds: number): string {
+  const safe = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
+  const m = Math.floor(safe / 60);
+  const s = Math.floor(safe % 60);
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+type SpeakerLabel = {
+  id: number;
+  name: string;
+};
+
+type TranscriptTurn = {
+  key: string;
+  speakerId: number;
+  speakerName: string;
+  start: number;
+  end: number;
+  text: string;
+};
+
+function cleanSpeakerName(value: string | null | undefined): string | null {
+  const cleaned = (value ?? "")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/\b(Network|Channel|Show|Podcast|Official)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s:|,\-]+|[\s:|,\-]+$/g, "")
+    .trim();
+  return cleaned.length > 1 ? cleaned : null;
+}
+
+function expandHostName(name: string, channel: string | null | undefined): string {
+  const cleanedName = cleanSpeakerName(name) ?? "Speaker 1";
+  const cleanedChannel = cleanSpeakerName(channel);
+  if (!cleanedChannel) return cleanedName;
+  const nameParts = cleanedName.split(/\s+/);
+  const channelParts = cleanedChannel.split(/\s+/);
+  if (
+    nameParts.length === 1 &&
+    channelParts.length >= 2 &&
+    channelParts[0]?.toLowerCase() === nameParts[0]?.toLowerCase()
+  ) {
+    return `${channelParts[0]} ${channelParts[1]}`;
+  }
+  return cleanedName;
+}
+
+function deriveSpeakerLabels(title: string, channel: string): SpeakerLabel[] {
+  const debateMatch = title.match(
+    /^(.+?)\s+(?:debates?|interviews?|talks\s+to|speaks\s+with|with|vs\.?|versus)\s+(.+?)(?:\s+(?:in|on|over|about|after|before)\b|[:|-]|$)/i,
+  );
+
+  if (debateMatch?.[1] && debateMatch[2]) {
+    const first = expandHostName(debateMatch[1], channel);
+    const second = cleanSpeakerName(debateMatch[2]) ?? "Speaker 2";
+    if (first.toLowerCase() !== second.toLowerCase()) {
+      return [
+        { id: 0, name: first },
+        { id: 1, name: second },
+      ];
+    }
+  }
+
+  const channelSpeaker = cleanSpeakerName(channel);
+  return [
+    { id: 0, name: channelSpeaker ?? "Speaker 1" },
+    { id: 1, name: "Speaker 2" },
+  ];
+}
+
+function speakerNameFor(labels: SpeakerLabel[], speakerId: number): string {
+  return labels.find((label) => label.id === speakerId)?.name ?? `Speaker ${speakerId + 1}`;
+}
+
+function stripCaptionCue(text: string): { text: string; hadCue: boolean } {
+  const trimmed = text.replace(/\s+/g, " ").trim();
+  const cleaned = trimmed.replace(/^(?:>{1,2}|[-–—])\s*/, "").trim();
+  return { text: cleaned, hadCue: cleaned !== trimmed };
+}
+
+function inferCaptionSpeakerId(text: string, previousSpeakerId: number, hadCue: boolean): number {
+  const lower = text.toLowerCase();
+  const looksLikeQuestioner =
+    /^(let me ask|why would|but why|why should|getting tax breaks|anyone who starts|course they do|of course they do|would taxpayers|what you're saying)/.test(lower);
+  const looksLikeResponder =
+    /^(well|they don't|no problem|i can|i have to|that's just|the investors|my job|but here's why|everybody)/.test(lower);
+
+  if (looksLikeQuestioner) return 0;
+  if (looksLikeResponder) return 1;
+  if (hadCue) return previousSpeakerId === 0 ? 1 : 0;
+  return previousSpeakerId;
+}
+
+function findMidCaptionSpeakerPivot(text: string, speakerId: number): { index: number; nextSpeakerId: number } | null {
+  const questionerPhrases = [
+    /\bbut why\b/i,
+    /\bwhy should\b/i,
+    /\bof course they do\b/i,
+    /\bcourse they do\b/i,
+    /\banyone who starts\b/i,
+    /\bgetting tax breaks\b/i,
+  ];
+  const responderPhrases = [
+    /\bwell,?\s+everybody\b/i,
+    /\bno problem\b/i,
+    /\bthey don't\b/i,
+    /\bi have to\b/i,
+  ];
+  const patterns = speakerId === 1 ? questionerPhrases : responderPhrases;
+
+  for (const pattern of patterns) {
+    const match = pattern.exec(text);
+    if (match?.index && match.index > 10) {
+      return { index: match.index, nextSpeakerId: speakerId === 1 ? 0 : 1 };
+    }
+  }
+
+  return null;
+}
+
+function splitMixedCaptionSegment(
+  segment: TranscriptSegment,
+  speakerId: number,
+  text: string,
+): TranscriptSegment[] {
+  const pivot = findMidCaptionSpeakerPivot(text, speakerId);
+  if (!pivot) return [{ ...segment, text, speaker_id: speakerId, is_final: true }];
+
+  const firstText = text.slice(0, pivot.index).trim();
+  const secondText = text.slice(pivot.index).trim();
+  if (!firstText || !secondText) {
+    return [{ ...segment, text, speaker_id: speakerId, is_final: true }];
+  }
+
+  const duration = Math.max(0.2, segment.end - segment.start);
+  const pivotRatio = Math.min(0.85, Math.max(0.15, pivot.index / text.length));
+  const pivotTime = segment.start + duration * pivotRatio;
+
+  return [
+    {
+      ...segment,
+      text: firstText,
+      end: pivotTime,
+      speaker_id: speakerId,
+      is_final: true,
+    },
+    {
+      ...segment,
+      text: secondText,
+      start: pivotTime,
+      speaker_id: pivot.nextSpeakerId,
+      is_final: true,
+    },
+  ];
+}
+
+function buildTranscriptTurns(segments: TranscriptSegment[], speakerLabels: SpeakerLabel[]): TranscriptTurn[] {
+  const turns: TranscriptTurn[] = [];
+
+  for (const segment of segments) {
+    const { text } = stripCaptionCue(segment.text);
+    if (!text) continue;
+
+    const speakerId = typeof segment.speaker_id === "number" ? segment.speaker_id : 0;
+    const last = turns.at(-1);
+    if (last && last.speakerId === speakerId && segment.start - last.end < 8) {
+      last.end = Math.max(last.end, segment.end);
+      last.text = `${last.text} ${text}`.replace(/\s+/g, " ").trim();
+      continue;
+    }
+
+    turns.push({
+      key: `${segment.start}:${segment.end}:${speakerId}`,
+      speakerId,
+      speakerName: speakerNameFor(speakerLabels, speakerId),
+      start: segment.start,
+      end: segment.end,
+      text,
+    });
+  }
+
+  return turns;
+}
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 type Phase =
   | { kind: "idle" }
-  | { kind: "fetching" }
-  | { kind: "ingesting" }
-  | { kind: "done" }
+  | { kind: "checking" }
+  | { kind: "launching" }
+  | { kind: "armed"; total: number }
+  | { kind: "live"; released: number; total: number }
   | { kind: "error"; code: string; message: string };
+
+type TabAudioCaptureState =
+  | { kind: "idle" }
+  | { kind: "starting"; message: string }
+  | { kind: "capturing"; startedAt: number }
+  | { kind: "error"; message: string };
+
+type DeepgramLiveStream = Awaited<ReturnType<typeof openDeepgramStream>>;
+
+type PreviewState =
+  | { kind: "idle" }
+  | { kind: "loading"; videoId: string }
+  | { kind: "ready"; data: YoutubePreviewResponse }
+  | { kind: "error"; videoId: string; message: string };
+
+interface YoutubePreviewResponse {
+  video_id: string;
+  url: string;
+  title: string | null;
+  channel: string | null;
+  thumbnail_url: string;
+  thumbnail_source: "youtube-oembed" | "youtube-static";
+  caption_precheck: "checked-on-fetch";
+  error?: { code: string; message: string };
+}
 
 interface YoutubeIngestResponse {
   video_id?: string;
   url?: string;
   title?: string;
   channel?: string;
+  thumbnail_url?: string;
   transcript_segments?: TranscriptSegment[];
   error?: { code: string; message: string };
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+function youtubePreviewForVideo(preview: PreviewState, videoId: string | null): PreviewState {
+  if (!videoId) return { kind: "idle" };
+  if (preview.kind === "loading" && preview.videoId === videoId) return preview;
+  if (preview.kind === "error" && preview.videoId === videoId) return preview;
+  if (preview.kind === "ready" && preview.data.video_id === videoId) return preview;
+  return { kind: "idle" };
+}
 
-export function YoutubeIngestPane() {
-  const router = useRouter();
+function stopDisplayAudioHandles(
+  displayCaptureRef: { current: DisplayAudioCaptureHandle | null },
+  deepgramRef: { current: DeepgramLiveStream | null },
+) {
+  try { displayCaptureRef.current?.stop(); } catch { /* noop */ }
+  try { deepgramRef.current?.close(); } catch { /* noop */ }
+  displayCaptureRef.current = null;
+  deepgramRef.current = null;
+}
+
+type YentlReadTone = "calm" | "productive" | "contentious" | "heated" | "mixed";
+type MetricKey = "pulse" | "claims" | "heat" | "evidence";
+type RailFocus = "transcript" | "findings";
+type SignalTone = "blue" | "green" | "amber" | "red" | "neutral";
+
+type SignalMetric = {
+  key: MetricKey;
+  label: string;
+  value: string;
+  caption: string;
+  tone: SignalTone;
+  detailTitle: string;
+  detailBody: string;
+  examples: string[];
+  tooltip: string;
+};
+
+type YentlReadSignal = {
+  tone: YentlReadTone;
+  label: string;
+  headline: string;
+  body: string;
+  colorStops: [string, string, string];
+  amplitude: number;
+  blend: number;
+  speed: number;
+  background: string;
+  overlay: string;
+  levels: number[];
+};
+
+const READ_TONE_VISUALS: Record<
+  YentlReadTone,
+  Pick<YentlReadSignal, "colorStops" | "amplitude" | "blend" | "speed" | "background" | "overlay" | "levels">
+> = {
+  calm: {
+    colorStops: ["#0f4c81", "#38bdf8", "#13315c"],
+    amplitude: 0.45,
+    blend: 0.78,
+    speed: 0.55,
+    background: "radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.72), transparent 34%), radial-gradient(circle at 88% 18%, rgba(37, 99, 235, 0.52), transparent 36%), linear-gradient(135deg, #07172d, #0f4c81 54%, #13294b)",
+    overlay: "linear-gradient(135deg, rgba(10, 20, 45, 0.54), rgba(15, 76, 129, 0.18))",
+    levels: [0.3, 0.4, 0.22, 0.18],
+  },
+  productive: {
+    colorStops: ["#14532d", "#22c55e", "#0f766e"],
+    amplitude: 0.66,
+    blend: 0.66,
+    speed: 0.72,
+    background: "radial-gradient(circle at 16% 16%, rgba(34, 197, 94, 0.78), transparent 34%), radial-gradient(circle at 86% 22%, rgba(20, 184, 166, 0.58), transparent 36%), linear-gradient(135deg, #052e1a, #14532d 52%, #0f766e)",
+    overlay: "linear-gradient(135deg, rgba(6, 41, 29, 0.52), rgba(21, 128, 61, 0.18))",
+    levels: [0.42, 0.78, 0.32, 0.24],
+  },
+  contentious: {
+    colorStops: ["#7c2d12", "#f59e0b", "#ea580c"],
+    amplitude: 0.94,
+    blend: 0.52,
+    speed: 0.95,
+    background: "radial-gradient(circle at 18% 12%, rgba(245, 158, 11, 0.86), transparent 34%), radial-gradient(circle at 86% 20%, rgba(234, 88, 12, 0.72), transparent 38%), linear-gradient(135deg, #431407, #7c2d12 48%, #b45309)",
+    overlay: "linear-gradient(135deg, rgba(67, 30, 12, 0.52), rgba(180, 83, 9, 0.2))",
+    levels: [0.46, 0.44, 0.82, 0.34],
+  },
+  heated: {
+    colorStops: ["#7f1d1d", "#ef4444", "#be123c"],
+    amplitude: 1.18,
+    blend: 0.42,
+    speed: 1.18,
+    background: "radial-gradient(circle at 18% 12%, rgba(239, 68, 68, 0.9), transparent 34%), radial-gradient(circle at 86% 18%, rgba(190, 18, 60, 0.78), transparent 38%), linear-gradient(135deg, #450a0a, #7f1d1d 50%, #9f1239)",
+    overlay: "linear-gradient(135deg, rgba(55, 7, 21, 0.54), rgba(185, 28, 28, 0.22))",
+    levels: [0.6, 0.36, 0.54, 0.92],
+  },
+  mixed: {
+    colorStops: ["#7f1d1d", "#f59e0b", "#2563eb"],
+    amplitude: 1.04,
+    blend: 0.48,
+    speed: 1.05,
+    background: "radial-gradient(circle at 16% 14%, rgba(239, 68, 68, 0.72), transparent 33%), radial-gradient(circle at 72% 12%, rgba(245, 158, 11, 0.66), transparent 33%), radial-gradient(circle at 88% 72%, rgba(37, 99, 235, 0.58), transparent 36%), linear-gradient(135deg, #2e1065, #7f1d1d 46%, #1e3a8a)",
+    overlay: "linear-gradient(135deg, rgba(34, 20, 49, 0.56), rgba(127, 29, 29, 0.2))",
+    levels: [0.64, 0.52, 0.78, 0.74],
+  },
+};
+
+function createReadSignal(
+  tone: YentlReadTone,
+  copy: Pick<YentlReadSignal, "label" | "headline" | "body">,
+): YentlReadSignal {
+  return { tone, ...READ_TONE_VISUALS[tone], ...copy };
+}
+
+function getYentlReadSignal({
+  phase,
+  noCaptions,
+  isTabAudioStarting,
+  isTabAudioCapturing,
+  hasTabAudioText,
+  captionTranscriptCount,
+  captionTotal,
+  playerReady,
+  videoId,
+}: {
+  phase: Phase;
+  noCaptions: boolean;
+  isTabAudioStarting: boolean;
+  isTabAudioCapturing: boolean;
+  hasTabAudioText: boolean;
+  captionTranscriptCount: number;
+  captionTotal: number;
+  playerReady: boolean;
+  videoId: string | null;
+}): YentlReadSignal {
+  if (phase.kind === "error" && !noCaptions) {
+    return createReadSignal("heated", {
+      label: "Needs attention",
+      headline: "The analysis path hit friction.",
+      body: "Yentl can keep the video visible, but this source needs a recovery path before reliable live analysis can continue.",
+    });
+  }
+
+  if (isTabAudioCapturing && hasTabAudioText) {
+    return createReadSignal("mixed", {
+      label: "Live listening",
+      headline: "Yentl is hearing the video now.",
+      body: "Transcript lines are landing against the current playhead. Claims and rhetoric cues can escalate as stronger moments arrive.",
+    });
+  }
+
+  if (phase.kind === "live" && captionTranscriptCount > 0) {
+    return createReadSignal("mixed", {
+      label: "Live synced",
+      headline: "Yentl is reading with the video.",
+      body: `${captionTranscriptCount} timed caption line${captionTranscriptCount === 1 ? "" : "s"} have landed against the current playhead. Claims and rhetoric markers update as the video keeps moving.`,
+    });
+  }
+
+  if (isTabAudioCapturing) {
+    return createReadSignal("productive", {
+      label: "Listening",
+      headline: "The audio stream is open.",
+      body: "Yentl is waiting for speech from the shared tab while the video keeps playing in the workspace.",
+    });
+  }
+
+  if (phase.kind === "armed") {
+    return createReadSignal("productive", {
+      label: "Captions armed",
+      headline: "Press play and Yentl will follow the clock.",
+      body: `${captionTotal} timed caption line${captionTotal === 1 ? "" : "s"} are ready. The transcript and analysis will release here in sync with playback instead of becoming a static import.`,
+    });
+  }
+
+  if (noCaptions || isTabAudioStarting) {
+    return createReadSignal("contentious", {
+      label: isTabAudioStarting ? "Audio handoff" : "Caption gap",
+      headline: "The player stays here; Yentl needs the tab audio.",
+      body: "Public captions are not enough for this video. Share this tab's audio and Yentl will transcribe the playing video directly on the same screen.",
+    });
+  }
+
+  if (phase.kind === "launching") {
+    return createReadSignal("productive", {
+      label: "Captions armed",
+      headline: "Transcript timing is syncing to the player.",
+      body: "Yentl has timed captions and is preparing this workspace so transcript, claims, and markers release with playback.",
+    });
+  }
+
+  if (phase.kind === "checking") {
+    return createReadSignal("contentious", {
+      label: "Checking source",
+      headline: "Yentl is testing the fastest transcript path.",
+      body: "If public captions are available, they become the live clock. If they are not, the same screen can switch into tab-audio capture.",
+    });
+  }
+
+  if (videoId && playerReady) {
+    return createReadSignal("productive", {
+      label: "Ready",
+      headline: "The video is playable. Start analysis when you are ready.",
+      body: "Yentl will try timed captions first and keep the tab-audio fallback close if this source needs live capture.",
+    });
+  }
+
+  if (videoId) {
+    return createReadSignal("calm", {
+      label: "Player loading",
+      headline: "The video space is coming alive.",
+      body: "Once the player is ready, one Start analysis action checks captions and opens the best live-analysis path.",
+    });
+  }
+
+  return createReadSignal("calm", {
+    label: "Paste URL",
+    headline: "Bring the video in first.",
+    body: "Paste a YouTube link. The player will occupy the left side and Yentl's live read will take over this rail.",
+  });
+}
+
+function buildSignalMetrics({
+  phase,
+  playerReady,
+  transcriptLines,
+  claimsCount,
+  markersCount,
+  tabAudioCapture,
+}: {
+  phase: Phase;
+  playerReady: boolean;
+  transcriptLines: TranscriptSegment[];
+  claimsCount: number;
+  markersCount: number;
+  tabAudioCapture: TabAudioCaptureState;
+}): SignalMetric[] {
+  const isLive = phase.kind === "live" || tabAudioCapture.kind === "capturing";
+  const transcriptCount = transcriptLines.length;
+  const heatRising = markersCount > 0 || claimsCount > 0 || isLive;
+  const evidenceQueued = claimsCount > 0 || transcriptCount > 0;
+
+  return [
+    {
+      key: "pulse",
+      label: "Pulse",
+      value: isLive ? "Hearing" : playerReady ? "Ready" : "Quiet",
+      caption: isLive ? "pace + overlap" : playerReady ? "player loaded" : "waiting",
+      tone: isLive ? "blue" : "neutral",
+      detailTitle: isLive ? "Pulse: active but controlled" : "Pulse: waiting for the first live turn",
+      detailBody: isLive
+        ? "Yentl is tracking pace, interruptions, and speaker turn shape against the video clock."
+        : "The player is ready to become the timing anchor once playback and analysis begin.",
+      examples: isLive ? ["pace rising", "overlap watched", "turns grouped"] : ["clock idle", "no speech yet"],
+      tooltip:
+        "Pulse is Yentl's live read of rhythm: pace, turn-taking, interruptions, and whether the exchange is accelerating or settling.",
+    },
+    {
+      key: "claims",
+      label: "Claims",
+      value: claimsCount > 0 ? `${claimsCount} open` : "0 open",
+      caption: claimsCount > 0 ? "assertions" : "none yet",
+      tone: claimsCount > 0 ? "amber" : "neutral",
+      detailTitle: claimsCount > 0 ? `Claims: ${claimsCount} unresolved assertion${claimsCount === 1 ? "" : "s"}` : "Claims: no checkable assertion yet",
+      detailBody: claimsCount > 0
+        ? "Yentl has surfaced checkable statements that need a baseline, source, or contextual qualifier before they become findings."
+        : "The live transcript has not produced a concrete factual assertion that needs evidence yet.",
+      examples: claimsCount > 0 ? ["baseline missing", "source needed", "context pending"] : ["listening", "no claim surfaced"],
+      tooltip:
+        "Claims counts checkable assertions that may need evidence, context, or source comparison.",
+    },
+    {
+      key: "heat",
+      label: "Heat",
+      value: heatRising ? "Rising" : "Calm",
+      caption: heatRising ? "contention" : "low pressure",
+      tone: heatRising ? "red" : "blue",
+      detailTitle: heatRising ? "Heat: pressure is building" : "Heat: calm, low-friction exchange",
+      detailBody: heatRising
+        ? "Yentl is watching for accusation, loaded phrasing, escalation, and sneaky or misleading framing before it hardens into a verdict."
+        : "The exchange is not showing much rhetorical pressure yet; Yentl is keeping the read steady.",
+      examples: heatRising ? ["loaded phrasing", "misleading yellow", "red-orange mix"] : ["calm phrasing", "low escalation"],
+      tooltip:
+        "Heat tracks rhetorical temperature: accusation, pressure, evasiveness, escalation, and misleading speech.",
+    },
+    {
+      key: "evidence",
+      label: "Evidence",
+      value: evidenceQueued ? "Queued" : "Waiting",
+      caption: evidenceQueued ? "source trail" : "no anchor",
+      tone: evidenceQueued ? "green" : "neutral",
+      detailTitle: evidenceQueued ? "Evidence: waiting for the right anchor" : "Evidence: no source trail needed yet",
+      detailBody: evidenceQueued
+        ? "Yentl is looking for the missing comparison point, document, date range, or citation that can resolve the current claim."
+        : "No evidence lane is active until the transcript gives Yentl a claim with enough shape to check.",
+      examples: evidenceQueued ? ["baseline year", "source trail", "verdict pending"] : ["no claim", "no source needed"],
+      tooltip:
+        "Evidence shows whether Yentl has enough source support to resolve the live claim or needs a missing baseline, citation, or document.",
+    },
+  ];
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
+export function YoutubeIngestPane({
+  initialUrlOverride,
+}: {
+  initialUrlOverride?: string;
+} = {}) {
+  const reset = useSession((s) => s.reset);
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
+  const setRecording = useSession((s) => s.setRecording);
   const setSource = useSession((s) => s.setSource);
+  const setInterim = useSession((s) => s.setInterim);
+  const appendFinal = useSession((s) => s.appendFinal);
+  const setBrowserTabStatus = useSession((s) => s.setBrowserTabStatus);
+  const claimsCount = useSession((s) => s.claims.length);
+  const markersCount = useSession((s) => s.markers.length);
+  const sourceUrl = useSession((s) => (s.source.kind === "youtube" ? s.source.url : ""));
+  const initialUrl = initialUrlOverride ?? sourceUrl;
 
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(initialUrl);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  const [preview, setPreview] = useState<PreviewState>({ kind: "idle" });
+  const [playerReady, setPlayerReady] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [tabAudioCapture, setTabAudioCapture] = useState<TabAudioCaptureState>({ kind: "idle" });
+  const [tabAudioTranscript, setTabAudioTranscript] = useState<TranscriptSegment[]>([]);
+  const [tabAudioInterim, setTabAudioInterim] = useState("");
+  const [captionSegments, setCaptionSegments] = useState<TranscriptSegment[]>([]);
+  const [captionTranscript, setCaptionTranscript] = useState<TranscriptSegment[]>([]);
+  const [saveOpen, setSaveOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const handoffRef = useRef(false);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const adapterRef = useRef<MediaAdapter | null>(null);
+  const currentTimeRef = useRef(0);
+  const captionSegmentsRef = useRef<TranscriptSegment[]>([]);
+  const captionsArmedRef = useRef(false);
+  const captionSpeakerRef = useRef(0);
+  const nextCaptionIndexRef = useRef(0);
+  const releasedCaptionKeysRef = useRef<Set<string>>(new Set());
+  const captionSynthesisTimerRef = useRef<number | null>(null);
+  const displayCaptureRef = useRef<DisplayAudioCaptureHandle | null>(null);
+  const deepgramRef = useRef<DeepgramLiveStream | null>(null);
 
-  // Abort in-flight requests on unmount
   useEffect(() => () => {
     if (!handoffRef.current) abortRef.current?.abort();
+    if (captionSynthesisTimerRef.current !== null) {
+      window.clearTimeout(captionSynthesisTimerRef.current);
+      captionSynthesisTimerRef.current = null;
+    }
+    stopDisplayAudioHandles(displayCaptureRef, deepgramRef);
+    adapterRef.current?.destroy();
+    adapterRef.current = null;
   }, []);
 
-  /** True when the URL parses as a valid YouTube URL */
   const trimmedUrl = url.trim();
   const videoId = parseYouTubeUrlClient(trimmedUrl);
   const isValidUrl = videoId !== null;
-  const isBusy = phase.kind === "fetching" || phase.kind === "ingesting";
+  const isTabAudioActive =
+    tabAudioCapture.kind === "starting" || tabAudioCapture.kind === "capturing";
+  const captionsArmed = phase.kind === "armed" || phase.kind === "live";
+  const isBusy = phase.kind === "checking" || phase.kind === "launching" || isTabAudioActive;
+  const isStartDisabled = !isValidUrl || isBusy || captionsArmed;
+  const activePreview = youtubePreviewForVideo(preview, videoId);
+  const readyPreview = activePreview.kind === "ready" ? activePreview.data : null;
+  const videoTitle = readyPreview?.title ?? (videoId ? "YouTube video" : "Paste a YouTube URL");
+  const channel = readyPreview?.channel ?? "YouTube";
+  const speakerLabels = useMemo(
+    () => deriveSpeakerLabels(videoTitle, channel),
+    [videoTitle, channel],
+  );
 
-  const handleFetch = useCallback(async () => {
-    if (!isValidUrl || isBusy) return;
+  useEffect(() => {
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
+
+  const clearCaptionRelease = useCallback(() => {
+    captionsArmedRef.current = false;
+    captionSegmentsRef.current = [];
+    setCaptionSegments([]);
+    setCaptionTranscript([]);
+    captionSpeakerRef.current = 0;
+    nextCaptionIndexRef.current = 0;
+    releasedCaptionKeysRef.current.clear();
+    if (captionSynthesisTimerRef.current !== null) {
+      window.clearTimeout(captionSynthesisTimerRef.current);
+      captionSynthesisTimerRef.current = null;
+    }
+  }, []);
+
+  const releaseCaptionsAt = useCallback((time: number) => {
+    const segments = captionSegmentsRef.current;
+    if (!captionsArmedRef.current || segments.length === 0) return;
+    if (time < 0.15 && nextCaptionIndexRef.current === 0) return;
+
+    const releasable: TranscriptSegment[] = [];
+    const releaseWindow = time + 0.35;
+
+    while (nextCaptionIndexRef.current < segments.length) {
+      const segment = segments[nextCaptionIndexRef.current];
+      if (!segment || segment.start > releaseWindow) break;
+
+      const key = `${segment.start}:${segment.end}:${segment.text}`;
+      nextCaptionIndexRef.current += 1;
+      if (releasedCaptionKeysRef.current.has(key)) continue;
+      releasedCaptionKeysRef.current.add(key);
+      const { text, hadCue } = stripCaptionCue(segment.text);
+      const speakerId = inferCaptionSpeakerId(text, captionSpeakerRef.current, hadCue);
+      const splitSegments = splitMixedCaptionSegment(segment, speakerId, text);
+      captionSpeakerRef.current =
+        splitSegments.at(-1)?.speaker_id ?? speakerId;
+      releasable.push(...splitSegments);
+    }
+
+    if (releasable.length === 0) return;
+
+    setCaptionTranscript((items) => [...items, ...releasable]);
+    for (const segment of releasable) {
+      appendFinal(segment);
+      void onFinalUtterance(segment).catch((error) => {
+        console.warn("YouTube caption analysis failed", error);
+      });
+    }
+
+    const released = nextCaptionIndexRef.current;
+    setPhase({ kind: "live", released, total: segments.length });
+
+    if (captionSynthesisTimerRef.current === null) {
+      captionSynthesisTimerRef.current = window.setTimeout(() => {
+        captionSynthesisTimerRef.current = null;
+        void runSynthesisNow().catch((error) => {
+          console.warn("YouTube caption synthesis failed", error);
+        });
+      }, 4000);
+    }
+  }, [appendFinal]);
+
+  useEffect(() => {
+    if (!videoId) return;
+
+    const ac = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setPreview({ kind: "loading", videoId });
+      try {
+        const res = await fetch(`/api/youtube-preview?url=${encodeURIComponent(trimmedUrl)}`, {
+          signal: ac.signal,
+        });
+        const data = (await res.json()) as YoutubePreviewResponse;
+        if (ac.signal.aborted) return;
+        if (!res.ok || data.error) {
+          setPreview({
+            kind: "error",
+            videoId,
+            message: data.error?.message ?? "Video identity could not be resolved.",
+          });
+          return;
+        }
+        setPreview({ kind: "ready", data });
+      } catch (error) {
+        if (ac.signal.aborted) return;
+        setPreview({
+          kind: "error",
+          videoId,
+          message: error instanceof Error ? error.message : "Video identity could not be resolved.",
+        });
+      }
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timer);
+      ac.abort();
+    };
+  }, [trimmedUrl, videoId]);
+
+  useEffect(() => {
+    const container = playerContainerRef.current;
+    if (!container || !videoId) {
+      setPlayerReady(false);
+      setCurrentTime(0);
+      return;
+    }
+
+    let cancelled = false;
+    let localAdapter: MediaAdapter | null = null;
+    const playerContainer = container;
+    const resolvedVideoId = videoId;
+    setPlayerReady(false);
+    setCurrentTime(0);
+    playerContainer.innerHTML = "";
+
+    async function setupPlayer() {
+      try {
+        localAdapter = await createYouTubeAdapter({
+          container: playerContainer,
+          videoId: resolvedVideoId,
+          onTimeUpdate: (time) => {
+            if (!cancelled) {
+              setCurrentTime(time);
+              releaseCaptionsAt(time);
+            }
+          },
+          onReady: () => {
+            if (!cancelled) setPlayerReady(true);
+          },
+        });
+
+        if (cancelled) {
+          localAdapter.destroy();
+          return;
+        }
+        adapterRef.current = localAdapter;
+      } catch (error) {
+        if (!cancelled) {
+          setPlayerReady(false);
+          console.error("YouTube setup player failed", error);
+        }
+      }
+    }
+
+    void setupPlayer();
+
+    return () => {
+      cancelled = true;
+      if (adapterRef.current === localAdapter) adapterRef.current = null;
+      localAdapter?.destroy();
+      playerContainer.innerHTML = "";
+    };
+  }, [releaseCaptionsAt, videoId]);
+
+  const handleStartLiveAnalysis = useCallback(async () => {
+    if (isStartDisabled) return;
 
     const ac = new AbortController();
     abortRef.current = ac;
-    setPhase({ kind: "fetching" });
+    setPhase({ kind: "checking" });
+    clearCaptionRelease();
 
     try {
       const res = await fetch("/api/youtube-ingest", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...sourceAnalysisConsentHeaders(),
+        },
         body: JSON.stringify({ url: trimmedUrl }),
         signal: ac.signal,
       });
 
       const data: YoutubeIngestResponse = await res.json();
-
       if (ac.signal.aborted) return;
 
-      // Structured error envelope
       if (data.error) {
-        setPhase({ kind: "error", code: data.error.code, message: data.error.message });
-        return;
-      }
-
-      if (!data.transcript_segments || !data.video_id) {
         setPhase({
           kind: "error",
-          code: "NETWORK_ERROR",
-          message: "Unexpected response from server.",
+          code: data.error.code,
+          message: friendlyApiErrorMessage({
+            status: res.status,
+            code: data.error.code,
+            message: data.error.message,
+            retryAfterSec: res.headers?.get?.("Retry-After") ?? null,
+          }),
         });
         return;
       }
 
-      // Set session source
+      if (!data.video_id || !data.transcript_segments?.length) {
+        setPhase({
+          kind: "error",
+          code: "NO_CAPTIONS",
+          message: "No timed captions were returned for this YouTube video.",
+        });
+        return;
+      }
+
+      setPhase({ kind: "launching" });
+      reset();
       setSource({
         kind: "youtube",
         video_id: data.video_id,
@@ -136,40 +871,169 @@ export function YoutubeIngestPane() {
         ...(data.title ? { title: data.title } : {}),
         ...(data.channel ? { channel: data.channel } : {}),
       });
-
-      // Bulk ingest captions
-      setPhase({ kind: "ingesting" });
-      handoffRef.current = true;
-      await bulkIngest(data.transcript_segments, { signal: ac.signal });
-
-      if (!ac.signal.aborted) {
-        setPhase({ kind: "done" });
-        router.push("/session?view=watch");
-      }
-    } catch (e: unknown) {
+      setPrerecordStage("selected");
+      setRecording(false);
+      setTabAudioTranscript([]);
+      setTabAudioInterim("");
+      setInterim("");
+      captionSegmentsRef.current = data.transcript_segments;
+      captionsArmedRef.current = true;
+      nextCaptionIndexRef.current = 0;
+      releasedCaptionKeysRef.current.clear();
+      setCaptionSegments(data.transcript_segments);
+      setCaptionTranscript([]);
+      setPhase({ kind: "armed", total: data.transcript_segments.length });
+    } catch (error: unknown) {
       handoffRef.current = false;
-      if ((e as Error).name === "AbortError") return;
-      const message = e instanceof Error ? e.message : String(e);
+      if ((error as Error).name === "AbortError") return;
+      const message = error instanceof Error ? error.message : String(error);
       setPhase({ kind: "error", code: "NETWORK_ERROR", message });
     }
-  }, [trimmedUrl, isValidUrl, isBusy, setSource, router]);
+  }, [
+    clearCaptionRelease,
+    isStartDisabled,
+    reset,
+    setInterim,
+    setRecording,
+    setPrerecordStage,
+    setSource,
+    trimmedUrl,
+  ]);
 
   const handleBack = useCallback(() => {
     abortRef.current?.abort();
+    adapterRef.current?.destroy();
     setPrerecordStage("picker");
   }, [setPrerecordStage]);
 
   const handleUrlChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setUrl(e.target.value);
-    // Clear errors when user edits the URL
-    if (phase.kind === "error") setPhase({ kind: "idle" });
-  }, [phase.kind]);
+    clearCaptionRelease();
+    if (phase.kind === "error" || phase.kind === "armed" || phase.kind === "live" || phase.kind === "launching") {
+      setPhase({ kind: "idle" });
+    }
+  }, [clearCaptionRelease, phase.kind]);
+
+  const stopTabAudioCapture = useCallback(() => {
+    stopDisplayAudioHandles(displayCaptureRef, deepgramRef);
+    setTabAudioCapture({ kind: "idle" });
+    setTabAudioInterim("");
+    setInterim("");
+    setBrowserTabStatus({
+      phase: "stopped",
+      message: "In-page YouTube tab-audio capture stopped.",
+      updatedAt: Date.now(),
+    });
+  }, [setBrowserTabStatus, setInterim]);
+
+  const startTabAudioCapture = useCallback(async () => {
+    if (!videoId || tabAudioCapture.kind === "starting" || tabAudioCapture.kind === "capturing") return;
+
+    stopDisplayAudioHandles(displayCaptureRef, deepgramRef);
+    setTabAudioTranscript([]);
+    setTabAudioInterim("");
+    setTabAudioCapture({
+      kind: "starting",
+      message: "Choose this YouTube tab in Chrome and enable Share audio.",
+    });
+    setSource({
+      kind: "youtube",
+      video_id: videoId,
+      url: trimmedUrl,
+      ...(videoTitle ? { title: videoTitle } : {}),
+      ...(channel ? { channel } : {}),
+    });
+    setBrowserTabStatus({
+      phase: "capturing",
+      title: videoTitle,
+      url: trimmedUrl,
+      message: "Using in-page tab-audio capture for this YouTube player.",
+      updatedAt: Date.now(),
+    });
+
+    try {
+      const capture = await startDisplayAudioCapture((chunk) => {
+        deepgramRef.current?.send(chunk);
+      });
+      displayCaptureRef.current = capture;
+
+      const deepgram = await openDeepgramStream({
+        onInterim: (text) => {
+          setTabAudioInterim(text);
+          setInterim(text);
+        },
+        onFinal: (segment) => {
+          const duration = Math.max(0.4, segment.end - segment.start);
+          const playhead = Math.max(0, currentTimeRef.current);
+          const aligned: TranscriptSegment = {
+            ...segment,
+            start: Math.max(0, playhead - duration),
+            end: Math.max(playhead, Math.max(0, playhead - duration) + duration),
+            is_final: true,
+          };
+          setTabAudioInterim("");
+          setTabAudioTranscript((items) => [...items, aligned]);
+          appendFinal(aligned);
+          void onFinalUtterance(aligned).catch((error) => {
+            console.warn("YouTube tab-audio analysis failed", error);
+          });
+        },
+        onError: (error) => {
+          const message = displayAudioCaptureMessage(error);
+          setTabAudioCapture({ kind: "error", message });
+          setBrowserTabStatus({
+            phase: "error",
+            title: videoTitle,
+            url: trimmedUrl,
+            message,
+            updatedAt: Date.now(),
+          });
+        },
+        onClose: () => {},
+      });
+      deepgramRef.current = deepgram;
+
+      setTabAudioCapture({ kind: "capturing", startedAt: Date.now() });
+      setBrowserTabStatus({
+        phase: "transcribing",
+        title: videoTitle,
+        url: trimmedUrl,
+        message: "Yentl is transcribing this YouTube tab audio in real time.",
+        updatedAt: Date.now(),
+      });
+    } catch (error) {
+      stopDisplayAudioHandles(displayCaptureRef, deepgramRef);
+      const message = displayAudioCaptureMessage(error);
+      setTabAudioCapture({ kind: "error", message });
+      setBrowserTabStatus({
+        phase: "error",
+        title: videoTitle,
+        url: trimmedUrl,
+        message,
+        updatedAt: Date.now(),
+      });
+    }
+  }, [
+    appendFinal,
+    channel,
+    setBrowserTabStatus,
+    setInterim,
+    setSource,
+    tabAudioCapture.kind,
+    trimmedUrl,
+    videoId,
+    videoTitle,
+  ]);
 
   const switchToBrowserTab = useCallback(() => {
     abortRef.current?.abort();
-    setSource({ kind: "browser_tab" });
+    setSource({
+      kind: "browser_tab",
+      title: videoTitle,
+      ...(trimmedUrl ? { url: trimmedUrl } : {}),
+    });
     setPrerecordStage("selected");
-  }, [setPrerecordStage, setSource]);
+  }, [setPrerecordStage, setSource, trimmedUrl, videoTitle]);
 
   const switchToAudioFile = useCallback(() => {
     abortRef.current?.abort();
@@ -189,150 +1053,862 @@ export function YoutubeIngestPane() {
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource]);
 
+  const openOnYouTube = useCallback(() => {
+    if (!trimmedUrl) return;
+    window.open(trimmedUrl, "_blank", "noopener,noreferrer");
+  }, [trimmedUrl]);
+
   return (
-    <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 md:px-8">
-      <button
-        type="button"
-        onClick={handleBack}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to sources
-      </button>
+    <div className="min-h-[calc(100vh-72px)] bg-paper px-3 pb-5 pt-3 sm:px-5">
+      <div className="mx-auto flex w-full max-w-[1540px] flex-col gap-3">
+        <div className="grid items-center gap-3 sm:grid-cols-[auto_minmax(280px,560px)_auto]">
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="Back to sources"
+            className="yentl-action-button inline-flex min-h-9 w-auto items-center gap-1.5 justify-self-start rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-3 transition-all hover:-translate-y-0.5 hover:text-ink-2 active:translate-y-0 active:scale-[0.98]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Sources
+          </button>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-        <section className="rounded-lg border border-line bg-paper p-5 shadow-sm sm:p-6">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-3 py-1 text-[11px] font-semibold text-teal">
-            <Play className="h-3.5 w-3.5" aria-hidden />
-            YouTube captions
-          </div>
-
-          <h1 className="font-serif text-[28px] font-medium leading-tight tracking-tight text-ink sm:text-[34px]">
-            Bring in a YouTube video
-          </h1>
-          <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-3">
-            If captions are public, Yentl builds the Watch view from the video,
-            transcript, claims, markers, and evidence anchors.
-          </p>
-
-          <div className="mt-6 grid gap-3">
-            <label htmlFor="youtube-url" className="text-[12px] font-semibold text-ink-2">
+          <div className="min-w-0 sm:mx-auto sm:w-full">
+            <label htmlFor="youtube-url" className="sr-only">
               YouTube URL
             </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="relative">
               <input
                 id="youtube-url"
                 type="url"
                 value={url}
                 onChange={handleUrlChange}
-                placeholder="https://www.youtube.com/watch?v=..."
-                disabled={isBusy || phase.kind === "done"}
-                className="min-h-11 flex-1 rounded-lg border border-ink-5 bg-paper px-3 py-2 text-[14px] text-ink placeholder:text-ink-4 focus:border-ink-3 focus:outline-none focus:ring-2 focus:ring-ink/20 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="youtube.com/watch?v=..."
+                disabled={isBusy}
+                className="min-h-11 w-full rounded-full border border-ink-5 bg-paper py-2 pl-4 pr-32 text-[13px] text-ink shadow-sm placeholder:text-ink-4 focus:border-ink-3 focus:outline-none focus:ring-2 focus:ring-ink/20 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="YouTube URL"
               />
               <button
                 type="button"
-                onClick={handleFetch}
-                disabled={!isValidUrl || isBusy || phase.kind === "done"}
-                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={handleStartLiveAnalysis}
+                disabled={isStartDisabled}
+                aria-label={
+                  phase.kind === "checking"
+                    ? "Checking YouTube captions"
+                    : phase.kind === "launching"
+                      ? "Opening live analysis"
+                      : phase.kind === "armed" || phase.kind === "live"
+                        ? "Live analysis running"
+                        : "Start live analysis"
+                }
+                className="yentl-action-button absolute right-1.5 top-1/2 inline-flex min-h-8 -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[12px] font-semibold text-white shadow-sm transition-all hover:bg-ink/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
               >
-                {isBusy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-                Fetch captions
+                {isBusy && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />}
+                {phase.kind === "checking"
+                  ? "Checking"
+                  : phase.kind === "launching"
+                    ? "Opening"
+                    : phase.kind === "armed" || phase.kind === "live"
+                      ? "Running"
+                      : videoId
+                        ? "Start"
+                        : "Start"}
               </button>
             </div>
-
-            <UrlReadiness videoId={videoId} url={trimmedUrl} />
           </div>
 
-          <FetchProgress phase={phase} />
+          <button
+            type="button"
+            onClick={() => setSaveOpen(true)}
+            className="yentl-action-button hidden min-h-9 items-center gap-1.5 justify-self-end rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.98] sm:inline-flex"
+          >
+            <Save className="h-3.5 w-3.5" aria-hidden />
+            Save snapshot
+          </button>
+        </div>
 
-          {phase.kind === "done" && (
-            <div className="mt-5 flex items-start gap-3 rounded-lg border border-green/25 bg-green-soft px-4 py-3 text-[13px] text-ink-2">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green" aria-hidden />
-              <div>
-                <div className="font-semibold text-ink">Captions loaded.</div>
-                <div className="mt-0.5 text-ink-3">Opening the synchronized Watch view now.</div>
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(390px,420px)]">
+          <section className={`flex min-h-0 flex-col overflow-hidden rounded-lg border border-line bg-paper shadow-sm transition-opacity ${videoId ? "opacity-100" : "opacity-45"}`}>
+            <div className="border-b border-line bg-paper px-4 py-3">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-2.5 py-1 text-[10.5px] font-semibold text-teal">
+                    <Play className="h-3.5 w-3.5" aria-hidden />
+                    Watch + live analysis
+                  </div>
+                  <UrlReadiness videoId={videoId} url={trimmedUrl} preview={activePreview} />
+                </div>
+                <h1 className="mt-2 max-w-4xl font-serif text-[32px] font-medium leading-[0.98] tracking-normal text-ink sm:text-[44px] xl:text-[50px]">
+                  {videoId ? videoTitle : "Paste a YouTube link and watch here"}
+                </h1>
+                <p className="mt-2 max-w-3xl text-[13px] text-ink-4">
+                  The video stays left. Yentl reads, transcribes, and flags moments on the right.
+                </p>
               </div>
             </div>
-          )}
 
-          <YoutubeErrorRecovery
+            <div className="bg-ink">
+              <div
+                className="aspect-video w-full"
+                data-testid="youtube-player-shell"
+              >
+                {videoId ? (
+                  <div
+                    ref={playerContainerRef}
+                    className="h-full w-full"
+                    data-testid="youtube-live-player"
+                  />
+                ) : (
+                  <div className="grid h-full place-items-center bg-ink px-6 text-center text-white">
+                    <div className="max-w-md">
+                      <Video className="mx-auto mb-3 h-10 w-10 opacity-70" aria-hidden />
+                      <div className="text-[16px] font-semibold">The video will play in this space</div>
+                      <div className="mt-1 text-[12px] text-white/70">
+                        Paste a link above. This area becomes the YouTube player, not a thumbnail.
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-paper px-4 py-3 text-[12px] text-ink-3">
+              <div className="min-w-0">
+                <div className="truncate font-semibold text-ink-2">{videoTitle}</div>
+                <div className="truncate text-[11.5px] text-ink-4">
+                  {videoId ? `${channel} · live transcript and analysis stay synced to playback` : "Waiting for a playable YouTube URL"}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream px-2.5 py-1 font-mono text-[11px] text-ink-2">
+                  {formatTime(currentTime)}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream px-2.5 py-1">
+                  <Radio className="h-3.5 w-3.5" aria-hidden />
+                  {playerReady ? "Player ready" : videoId ? "Player loading" : "No video"}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <YentlWatchPreviewPanel
             phase={phase}
+            tabAudioCapture={tabAudioCapture}
+            tabAudioTranscript={tabAudioTranscript}
+            tabAudioInterim={tabAudioInterim}
+            captionTranscript={captionTranscript}
+            captionTotal={captionSegments.length}
+            speakerLabels={speakerLabels}
+            playerReady={playerReady}
+            videoId={videoId}
+            currentTime={currentTime}
+            claimsCount={claimsCount}
+            markersCount={markersCount}
+            onStartTabAudioCapture={startTabAudioCapture}
+            onStopTabAudioCapture={stopTabAudioCapture}
+            onOpenYouTube={openOnYouTube}
             onBrowserTab={switchToBrowserTab}
             onAudioFile={switchToAudioFile}
             onMediaUrl={switchToMediaUrl}
           />
-        </section>
-
-        <aside className="grid gap-3">
-          <VideoPreviewCard videoId={videoId} />
-          <RecoveryLadder
-            onBrowserTab={switchToBrowserTab}
-            onAudioFile={switchToAudioFile}
-            onMediaUrl={switchToMediaUrl}
-          />
-        </aside>
+        </div>
+        {saveOpen && <SaveSessionDialog open={saveOpen} onClose={() => setSaveOpen(false)} />}
       </div>
     </div>
   );
 }
 
-function UrlReadiness({ videoId, url }: { videoId: string | null; url: string }) {
-  if (!url) {
-    return (
-      <div className="rounded-md border border-line bg-cream px-3 py-2 text-[12px] text-ink-3">
-        Paste a watch, shorts, embed, or youtu.be link.
+function YentlWatchPreviewPanel({
+  phase,
+  tabAudioCapture,
+  tabAudioTranscript,
+  tabAudioInterim,
+  captionTranscript,
+  captionTotal,
+  speakerLabels,
+  playerReady,
+  videoId,
+  currentTime,
+  claimsCount,
+  markersCount,
+  onStartTabAudioCapture,
+  onStopTabAudioCapture,
+  onOpenYouTube,
+  onBrowserTab,
+  onAudioFile,
+  onMediaUrl,
+}: {
+  phase: Phase;
+  tabAudioCapture: TabAudioCaptureState;
+  tabAudioTranscript: TranscriptSegment[];
+  tabAudioInterim: string;
+  captionTranscript: TranscriptSegment[];
+  captionTotal: number;
+  speakerLabels: SpeakerLabel[];
+  playerReady: boolean;
+  videoId: string | null;
+  currentTime: number;
+  claimsCount: number;
+  markersCount: number;
+  onStartTabAudioCapture: () => void;
+  onStopTabAudioCapture: () => void;
+  onOpenYouTube: () => void;
+  onBrowserTab: () => void;
+  onAudioFile: () => void;
+  onMediaUrl: () => void;
+}) {
+  const noCaptions = phase.kind === "error" && phase.code === "NO_CAPTIONS";
+  const isTabAudioStarting = tabAudioCapture.kind === "starting";
+  const isTabAudioCapturing = tabAudioCapture.kind === "capturing";
+  const hasTabAudioText = tabAudioTranscript.length > 0 || tabAudioInterim.trim().length > 0;
+  const transcriptLines = hasTabAudioText ? tabAudioTranscript : captionTranscript;
+  const transcriptTurns = buildTranscriptTurns(transcriptLines, speakerLabels);
+  const readSignal = getYentlReadSignal({
+    phase,
+    noCaptions,
+    isTabAudioStarting,
+    isTabAudioCapturing,
+    hasTabAudioText,
+    captionTranscriptCount: captionTranscript.length,
+    captionTotal,
+    playerReady,
+    videoId,
+  });
+  const liveState =
+    isTabAudioCapturing
+      ? "Listening to tab"
+      : isTabAudioStarting
+        ? "Opening audio share"
+        : phase.kind === "live"
+          ? "Live analysis running"
+          : phase.kind === "armed"
+            ? "Press play to analyze"
+        : phase.kind === "launching"
+          ? "Syncing captions"
+          : phase.kind === "checking"
+            ? "Checking captions"
+            : noCaptions
+              ? "Needs tab audio"
+              : videoId
+                ? "Ready"
+                : "Waiting";
+
+  const [expandedMetric, setExpandedMetric] = useState<MetricKey | null>(null);
+  const [focus, setFocus] = useState<RailFocus>("transcript");
+  const metrics = buildSignalMetrics({
+    phase,
+    playerReady,
+    transcriptLines,
+    claimsCount,
+    markersCount,
+    tabAudioCapture,
+  });
+
+  return (
+    <aside
+      className={`flex max-h-[calc(100vh-132px)] min-h-0 flex-col overflow-hidden rounded-lg border border-line bg-paper shadow-sm transition-opacity ${videoId ? "opacity-100" : "opacity-55"}`}
+      aria-label={`Yentl analysis panel: ${liveState}`}
+    >
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <YentlReadCard signal={readSignal} />
+
+        <SignalExpander
+          metrics={metrics}
+          expandedMetric={expandedMetric}
+          onToggleMetric={(metric) => {
+            setExpandedMetric((current) => (current === metric ? null : metric));
+          }}
+        />
+
+        <RailDetailTabs
+          focus={focus}
+          onFocusChange={setFocus}
+          transcriptTurns={transcriptTurns}
+          transcriptLines={transcriptLines}
+          hasTabAudioText={hasTabAudioText}
+          tabAudioInterim={tabAudioInterim}
+          phase={phase}
+          noCaptions={noCaptions}
+          captionTotal={captionTotal}
+          currentTime={currentTime}
+          claimsCount={claimsCount}
+          markersCount={markersCount}
+        />
+
+        <FetchProgress phase={phase} />
+
+        {tabAudioCapture.kind === "starting" && (
+          <div className="mt-3 rounded-lg border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] leading-relaxed text-teal">
+            {tabAudioCapture.message}
+          </div>
+        )}
+
+        {tabAudioCapture.kind === "error" && (
+          <div className="mt-3 rounded-lg border border-red-soft bg-red-soft/50 px-3 py-2 text-[12px] leading-relaxed text-red">
+            {tabAudioCapture.message}
+          </div>
+        )}
+
+        {phase.kind === "error" && (
+          <div className="mt-3">
+            <YoutubeErrorRecovery
+              phase={phase}
+              onBrowserTab={onBrowserTab}
+              onAudioFile={onAudioFile}
+              onMediaUrl={onMediaUrl}
+              onOpenYouTube={onOpenYouTube}
+            />
+          </div>
+        )}
       </div>
-    );
+
+      <div className="grid gap-2 border-t border-line bg-paper p-4">
+        <button
+          type="button"
+          onClick={isTabAudioCapturing ? onStopTabAudioCapture : onStartTabAudioCapture}
+          disabled={!videoId || isTabAudioStarting}
+          className="yentl-action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-ink px-3 text-[12px] font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {isTabAudioStarting ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+          ) : isTabAudioCapturing ? (
+            <StopCircle className="h-3.5 w-3.5" aria-hidden />
+          ) : (
+            <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
+          )}
+          {isTabAudioCapturing ? "Stop tab audio" : "Share tab audio with Yentl"}
+        </button>
+        {videoId && (
+          <button
+            type="button"
+            onClick={onOpenYouTube}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.99]"
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            Open on YouTube
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onBrowserTab}
+          className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.99]"
+        >
+          <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
+          Use Chrome extension instead
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function YentlReadCard({ signal }: { signal: YentlReadSignal }) {
+  return (
+    <BorderGlow
+      className="yentl-read-glow"
+      edgeSensitivity={26}
+      glowColor="220 96 64"
+      backgroundColor="#120F17"
+      borderRadius={8}
+      glowRadius={28}
+      glowIntensity={0.85}
+      coneSpread={24}
+      animated={signal.tone !== "calm"}
+      colors={signal.colorStops}
+      fillOpacity={0.28}
+    >
+      <section
+        className="relative isolate min-h-[178px] overflow-hidden rounded-lg border border-white/20 bg-ink p-4 text-white shadow-sm"
+        data-testid="yentl-read-card"
+        data-read-tone={signal.tone}
+        aria-label={`Yentl's Read: ${signal.label}`}
+        style={{ background: signal.background }}
+      >
+        <div className="absolute inset-0 opacity-80 mix-blend-screen" aria-hidden>
+          <Aurora
+            colorStops={signal.colorStops}
+            amplitude={signal.amplitude}
+            blend={signal.blend}
+            speed={signal.speed}
+          />
+        </div>
+        <div
+          className="absolute inset-0"
+          style={{ background: signal.overlay }}
+          aria-hidden
+        />
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent" aria-hidden />
+
+        <div className="relative z-10 flex min-h-[146px] flex-col">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-white/75">
+              Yentl&apos;s Read
+            </div>
+            <span className="inline-flex min-w-[5.75rem] justify-center rounded-full border border-white/20 bg-white/12 px-2.5 py-1 text-[10.5px] font-semibold text-white/85 backdrop-blur-sm">
+              {signal.label}
+            </span>
+          </div>
+
+          <p className="mt-4 max-w-[28rem] font-serif text-[25px] leading-[1.08] tracking-normal text-white sm:text-[28px]">
+            {signal.headline}
+          </p>
+          <p className="mt-3 max-w-[30rem] text-[13px] leading-relaxed text-white/82">
+            {signal.body}
+          </p>
+
+          <div className="mt-auto grid grid-cols-4 gap-1.5 pt-4" aria-hidden>
+            {signal.levels.map((level, index) => (
+              <span
+                key={`${signal.tone}-${index}`}
+                className="h-1.5 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.42)]"
+                style={{ opacity: level }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    </BorderGlow>
+  );
+}
+
+function SignalExpander({
+  metrics,
+  expandedMetric,
+  onToggleMetric,
+}: {
+  metrics: SignalMetric[];
+  expandedMetric: MetricKey | null;
+  onToggleMetric: (metric: MetricKey) => void;
+}) {
+  const activeMetric = expandedMetric
+    ? metrics.find((metric) => metric.key === expandedMetric) ?? null
+    : null;
+
+  return (
+    <section className="mt-3" aria-label="Expandable live signal details">
+      <div className="grid grid-cols-4 gap-1.5">
+        {metrics.map((metric) => (
+          <SignalTile
+            key={metric.key}
+            metric={metric}
+            active={metric.key === activeMetric?.key}
+            onSelect={() => onToggleMetric(metric.key)}
+          />
+        ))}
+      </div>
+
+      {activeMetric && (
+        <div
+          className={`-mt-px rounded-b-lg rounded-tr-lg border bg-paper px-3 py-2.5 shadow-[inset_0_3px_0_var(--metric-accent)] ${metricDetailClass(activeMetric.tone)}`}
+        >
+          <div className="text-[12px] font-bold leading-snug text-ink-2">
+            {activeMetric.detailTitle}
+          </div>
+          <p className="mt-1 text-[11.5px] leading-relaxed text-ink-3">
+            {activeMetric.detailBody}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {activeMetric.examples.map((example) => (
+              <span
+                key={example}
+                className="rounded-full border border-line bg-cream px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-ink-2"
+              >
+                {example}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function RailDetailTabs({
+  focus,
+  onFocusChange,
+  transcriptTurns,
+  transcriptLines,
+  hasTabAudioText,
+  tabAudioInterim,
+  phase,
+  noCaptions,
+  captionTotal,
+  currentTime,
+  claimsCount,
+  markersCount,
+}: {
+  focus: RailFocus;
+  onFocusChange: (focus: RailFocus) => void;
+  transcriptTurns: TranscriptTurn[];
+  transcriptLines: TranscriptSegment[];
+  hasTabAudioText: boolean;
+  tabAudioInterim: string;
+  phase: Phase;
+  noCaptions: boolean;
+  captionTotal: number;
+  currentTime: number;
+  claimsCount: number;
+  markersCount: number;
+}) {
+  return (
+    <section className="mt-3 rounded-lg border border-line bg-paper" aria-label="Analysis detail tabs">
+      <div className="grid grid-cols-2 gap-1.5 border-b border-line p-1.5">
+        <button
+          type="button"
+          onClick={() => onFocusChange("transcript")}
+          className={`yentl-action-button min-h-9 rounded-md text-[12px] font-bold transition-all ${
+            focus === "transcript"
+              ? "bg-ink text-white shadow-sm"
+              : "bg-cream text-ink-3 hover:bg-teal-soft hover:text-teal"
+          }`}
+        >
+          Transcript
+        </button>
+        <button
+          type="button"
+          onClick={() => onFocusChange("findings")}
+          className={`yentl-action-button min-h-9 rounded-md text-[12px] font-bold transition-all ${
+            focus === "findings"
+              ? "bg-ink text-white shadow-sm"
+              : "bg-cream text-ink-3 hover:bg-teal-soft hover:text-teal"
+          }`}
+        >
+          Findings
+        </button>
+      </div>
+
+      {focus === "transcript" ? (
+        <TranscriptPanel
+          transcriptTurns={transcriptTurns}
+          transcriptLines={transcriptLines}
+          hasTabAudioText={hasTabAudioText}
+          tabAudioInterim={tabAudioInterim}
+          phase={phase}
+          noCaptions={noCaptions}
+          captionTotal={captionTotal}
+          currentTime={currentTime}
+        />
+      ) : (
+        <FindingsPanel
+          currentTime={currentTime}
+          claimsCount={claimsCount}
+          markersCount={markersCount}
+          transcriptTurns={transcriptTurns}
+        />
+      )}
+    </section>
+  );
+}
+
+function TranscriptPanel({
+  transcriptTurns,
+  transcriptLines,
+  hasTabAudioText,
+  tabAudioInterim,
+  phase,
+  noCaptions,
+  captionTotal,
+  currentTime,
+}: {
+  transcriptTurns: TranscriptTurn[];
+  transcriptLines: TranscriptSegment[];
+  hasTabAudioText: boolean;
+  tabAudioInterim: string;
+  phase: Phase;
+  noCaptions: boolean;
+  captionTotal: number;
+  currentTime: number;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between border-b border-line px-3 py-2">
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-4">
+          Live transcript
+        </div>
+        <span className="font-mono text-[11px] text-ink-4">{formatTime(currentTime)}</span>
+      </div>
+      <div className="max-h-[360px] overflow-y-auto p-3">
+        {transcriptLines.length > 0 || tabAudioInterim ? (
+          <div
+            className="grid gap-2"
+            data-testid={hasTabAudioText ? "youtube-tab-audio-transcript" : "youtube-caption-transcript"}
+          >
+            {transcriptTurns.slice(-5).map((turn, index) => (
+              <TranscriptTurnCard key={`${turn.key}:${index}`} turn={turn} active={index === transcriptTurns.slice(-5).length - 1} />
+            ))}
+            {tabAudioInterim && (
+              <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] italic leading-relaxed text-teal">
+                {tabAudioInterim}
+              </div>
+            )}
+            <div className="text-center text-[10.5px] font-medium text-ink-4">
+              More lines below · auto-scroll follows playback
+            </div>
+          </div>
+        ) : phase.kind === "armed" ? (
+          <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] text-teal">
+            Press play. Yentl will release {captionTotal} timed caption line{captionTotal === 1 ? "" : "s"} here as the video clock advances.
+          </div>
+        ) : phase.kind === "checking" || phase.kind === "launching" ? (
+          <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] text-teal">
+            Preparing synced transcript...
+          </div>
+        ) : noCaptions ? (
+          <div className="rounded-md border border-amber/50 bg-amber-soft px-3 py-2 text-[12px] leading-relaxed text-amber-2">
+            Public captions were not available. Use Share tab audio below while this player keeps running.
+          </div>
+        ) : (
+          <div className="rounded-md border border-line bg-cream px-3 py-2 text-[12px] italic text-ink-4">
+            Transcript lines will appear here in time with playback.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TranscriptTurnCard({ turn, active }: { turn: TranscriptTurn; active: boolean }) {
+  return (
+    <div
+      className={`rounded-md border bg-cream px-3 py-2 text-[12px] leading-relaxed text-ink-2 ${
+        turn.speakerId === 0
+          ? "border-teal/25 shadow-[inset_3px_0_0_rgba(49,130,123,0.75)]"
+          : "border-amber/45 shadow-[inset_3px_0_0_rgba(217,119,6,0.72)]"
+      } ${active ? "ring-2 ring-teal/20" : ""}`}
+    >
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="truncate text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-3">
+          {turn.speakerName}
+        </span>
+        <span className="font-mono text-[10px] text-ink-4">{formatTime(turn.start)}</span>
+      </div>
+      <p>{turn.text}</p>
+      {active && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <span className="rounded-full bg-amber-soft px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-amber-2">
+            live line
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FindingsPanel({
+  currentTime,
+  claimsCount,
+  markersCount,
+  transcriptTurns,
+}: {
+  currentTime: number;
+  claimsCount: number;
+  markersCount: number;
+  transcriptTurns: TranscriptTurn[];
+}) {
+  const latestTurn = transcriptTurns.at(-1);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between border-b border-line px-3 py-2">
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-4">
+          Findings
+        </div>
+        <span className="text-[11px] font-semibold text-ink-4">
+          {claimsCount} open · {markersCount} markers
+        </span>
+      </div>
+      <div className="max-h-[360px] overflow-y-auto p-3">
+        <div className="rounded-md border border-red-soft bg-red-soft/45 px-3 py-2 text-[12px] leading-relaxed text-red">
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <b>Misleading risk</b>
+            <time className="font-mono text-[10px]">{formatTime(currentTime)}</time>
+          </div>
+          <p>
+            {latestTurn
+              ? `${latestTurn.speakerName}'s latest turn is being checked for source trail, baseline, and loaded framing.`
+              : "Yentl will group findings by claim, evidence state, and rhetoric marker once the video starts speaking."}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-amber-soft px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-amber-2">
+              yellow flag
+            </span>
+            <span className="rounded-full bg-cream px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-ink-2">
+              source needed
+            </span>
+          </div>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="rounded-md border border-line bg-cream px-3 py-2">
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Claim</div>
+            <p className="mt-1 text-[12px] text-ink-2">
+              {claimsCount > 0 ? "Open assertion awaiting context." : "No open claim yet."}
+            </p>
+          </div>
+          <div className="rounded-md border border-line bg-cream px-3 py-2">
+            <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">Evidence</div>
+            <p className="mt-1 text-[12px] text-ink-2">
+              {claimsCount > 0 ? "Needs source, year, and comparator." : "No evidence lane active."}
+            </p>
+          </div>
+        </div>
+        <div className="mt-2 rounded-md border border-line bg-paper px-3 py-2">
+          <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-4">
+            Rhetoric markers
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-cream px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-ink-2">
+              loaded phrasing
+            </span>
+            <span className="rounded-full bg-cream px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-ink-2">
+              missing qualifier
+            </span>
+            <span className="rounded-full bg-cream px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em] text-ink-2">
+              implied consensus
+            </span>
+          </div>
+        </div>
+        <div className="mt-2 text-center text-[10.5px] font-medium text-ink-4">
+          More findings below · grouped by claim, marker, and evidence state
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SignalTile({
+  metric,
+  active,
+  onSelect,
+}: {
+  metric: SignalMetric;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const classes = metricTileClass(metric.tone, active);
+  const glowColors = metricGlowColors(metric.tone);
+  const glowColor =
+    metric.tone === "green"
+      ? "142 72 45"
+      : metric.tone === "amber"
+        ? "38 92 50"
+        : metric.tone === "red"
+          ? "0 84 60"
+          : metric.tone === "blue"
+            ? "217 91 60"
+            : "230 12 62";
+
+  return (
+    <BorderGlow
+      className="yentl-metric-glow"
+      edgeSensitivity={34}
+      glowColor={glowColor}
+      backgroundColor="transparent"
+      borderRadius={6}
+      glowRadius={18}
+      glowIntensity={active ? 0.72 : 0.35}
+      coneSpread={22}
+      animated={active && metric.tone !== "neutral"}
+      colors={glowColors}
+      fillOpacity={active ? 0.16 : 0.06}
+    >
+      <button
+        type="button"
+        onClick={onSelect}
+        title={metric.tooltip}
+        aria-pressed={active}
+        className={`yentl-action-button h-full min-h-[74px] w-full rounded-md border px-2.5 py-2 text-left transition-all ${classes}`}
+      >
+        <div className="text-[9.5px] font-bold uppercase tracking-[0.12em] opacity-80">
+          {metric.label}
+        </div>
+        <div className="mt-1 text-[13px] font-semibold leading-tight">{metric.value}</div>
+        <div className="mt-0.5 truncate text-[10.5px] font-semibold opacity-70">{metric.caption}</div>
+      </button>
+    </BorderGlow>
+  );
+}
+
+function metricTileClass(tone: SignalTone, active: boolean): string {
+  const activeBase = active ? "rounded-b-none shadow-[inset_0_-3px_0_var(--metric-accent)]" : "";
+  if (tone === "green") {
+    return `${activeBase} border-green/35 bg-green-soft text-green [--metric-accent:#22c55e]`;
+  }
+  if (tone === "amber") {
+    return `${activeBase} border-amber/50 bg-amber-soft text-amber-2 [--metric-accent:#f59e0b]`;
+  }
+  if (tone === "red") {
+    return `${activeBase} border-red/50 bg-red-soft/55 text-red [--metric-accent:#ef4444]`;
+  }
+  if (tone === "blue") {
+    return `${activeBase} border-teal/30 bg-teal-soft text-teal [--metric-accent:#2563eb]`;
+  }
+  return `${activeBase} border-line bg-cream text-ink-3 [--metric-accent:#b5b8c5]`;
+}
+
+function metricDetailClass(tone: SignalTone): string {
+  if (tone === "green") return "border-green/35 [--metric-accent:#22c55e]";
+  if (tone === "amber") return "border-amber/50 [--metric-accent:#f59e0b]";
+  if (tone === "red") return "border-red/50 [--metric-accent:#ef4444]";
+  if (tone === "blue") return "border-teal/35 [--metric-accent:#2563eb]";
+  return "border-line [--metric-accent:#b5b8c5]";
+}
+
+function metricGlowColors(tone: SignalTone): string[] {
+  if (tone === "green") return ["#22C55E", "#38BDF8", "#2563EB"];
+  if (tone === "amber") return ["#F59E0B", "#F97316", "#EF4444"];
+  if (tone === "red") return ["#EF4444", "#BE123C", "#F59E0B"];
+  if (tone === "blue") return ["#2563EB", "#38BDF8", "#0F4C81"];
+  return ["#B5B8C5", "#E8E1CE", "#5B6075"];
+}
+
+function UrlReadiness({
+  videoId,
+  url,
+  preview,
+}: {
+  videoId: string | null;
+  url: string;
+  preview: PreviewState;
+}) {
+  if (!url) {
+    return null;
   }
 
   if (!videoId) {
     return (
-      <div className="rounded-md border border-amber/50 bg-amber-soft px-3 py-2 text-[12px] text-amber-2">
-        That link is not a supported YouTube URL yet.
-      </div>
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/50 bg-amber-soft px-2.5 py-1 text-[10.5px] font-semibold text-amber-2">
+        <AlertCircle className="h-3.5 w-3.5" aria-hidden />
+        Unsupported link
+      </span>
     );
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-md border border-green/25 bg-green-soft px-3 py-2 text-[12px] text-ink-2">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-green/25 bg-green-soft px-2.5 py-1 text-[10.5px] font-semibold text-green">
       <CheckCircle2 className="h-3.5 w-3.5 text-green" aria-hidden />
-      Video recognized
-      <span className="rounded-full bg-paper px-2 py-0.5 font-mono text-[10px] text-ink-3">
-        {videoId}
-      </span>
-    </div>
+      {preview.kind === "loading"
+        ? "Resolving video"
+        : preview.kind === "error"
+          ? preview.message
+          : "Video ready"}
+    </span>
   );
 }
 
 function FetchProgress({ phase }: { phase: Phase }) {
-  if (phase.kind !== "fetching" && phase.kind !== "ingesting") return null;
+  if (phase.kind !== "checking" && phase.kind !== "launching") return null;
 
   const steps = [
-    {
-      label: "Find video",
-      state: "done",
-    },
-    {
-      label: "Check public captions",
-      state: phase.kind === "fetching" ? "active" : "done",
-    },
-    {
-      label: "Build transcript",
-      state: phase.kind === "ingesting" ? "active" : "waiting",
-    },
-    {
-      label: "Open Watch view",
-      state: "waiting",
-    },
+    { label: "Resolve video", state: "done" },
+    { label: "Check captions", state: phase.kind === "checking" ? "active" : "done" },
+    { label: "Arm live release", state: phase.kind === "launching" ? "active" : "waiting" },
+    { label: "Keep player and Yentl together", state: phase.kind === "launching" ? "active" : "waiting" },
   ] as const;
 
   return (
-    <div className="mt-5 rounded-lg border border-line bg-cream p-4">
+    <div className="rounded-lg border border-line bg-cream p-4">
       <div className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink-2">
         <Loader2 className="h-4 w-4 animate-spin text-teal" aria-hidden />
-        Preparing video analysis
+        Preparing live YouTube analysis
       </div>
-      <div className="grid gap-2 sm:grid-cols-4">
+      <div className="grid gap-2 sm:grid-cols-2">
         {steps.map((step) => (
           <div
             key={step.label}
@@ -355,121 +1931,18 @@ function FetchProgress({ phase }: { phase: Phase }) {
   );
 }
 
-function VideoPreviewCard({ videoId }: { videoId: string | null }) {
-  return (
-    <section className="overflow-hidden rounded-lg border border-line bg-paper shadow-sm">
-      <div className="border-b border-line-soft px-4 py-3">
-        <h2 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-ink-3">
-          Video preview
-        </h2>
-      </div>
-      {videoId ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={youtubeThumbnail(videoId)}
-            alt="YouTube video thumbnail"
-            className="aspect-video w-full bg-ink object-cover"
-          />
-          <div className="grid gap-2 p-4 text-[12.5px] text-ink-3">
-            <div className="font-mono text-[11px] text-ink-4">youtube:{videoId}</div>
-            <div className="rounded-md border border-line bg-cream px-3 py-2">
-              Public captions are the fastest path. If they are missing, switch
-              straight to tab capture.
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="grid min-h-[220px] place-items-center bg-cream p-6 text-center">
-          <div>
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-teal-soft text-teal">
-              <Play className="h-5 w-5" aria-hidden />
-            </div>
-            <p className="text-[13px] font-medium text-ink-2">Waiting for a video link</p>
-            <p className="mt-1 text-[12px] text-ink-3">Thumbnail and caption check appear here.</p>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function RecoveryLadder({
-  onBrowserTab,
-  onAudioFile,
-  onMediaUrl,
-}: {
-  onBrowserTab: () => void;
-  onAudioFile: () => void;
-  onMediaUrl: () => void;
-}) {
-  return (
-    <section className="rounded-lg border border-line bg-paper p-4 shadow-sm">
-      <h2 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-ink-3">
-        If captions fail
-      </h2>
-      <div className="mt-3 grid gap-2">
-        <RecoveryButton
-          icon={<MonitorPlay className="h-4 w-4" aria-hidden />}
-          title="Browser tab"
-          detail="Best for any video on any page."
-          onClick={onBrowserTab}
-        />
-        <RecoveryButton
-          icon={<Upload className="h-4 w-4" aria-hidden />}
-          title="Audio file"
-          detail="Use when you already have the media."
-          onClick={onAudioFile}
-        />
-        <RecoveryButton
-          icon={<LinkIcon className="h-4 w-4" aria-hidden />}
-          title="Media URL"
-          detail="Direct MP3, MP4, or podcast feed."
-          onClick={onMediaUrl}
-        />
-      </div>
-    </section>
-  );
-}
-
-function RecoveryButton({
-  icon,
-  title,
-  detail,
-  onClick,
-}: {
-  icon: ReactNode;
-  title: string;
-  detail: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-md border border-line bg-cream px-3 py-2.5 text-left transition-colors hover:border-teal/40 hover:bg-teal-soft/70"
-    >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-paper text-teal">
-        {icon}
-      </span>
-      <span className="min-w-0">
-        <span className="block text-[13px] font-semibold text-ink-2">{title}</span>
-        <span className="block text-[11.5px] leading-snug text-ink-3">{detail}</span>
-      </span>
-    </button>
-  );
-}
-
 function YoutubeErrorRecovery({
   phase,
   onBrowserTab,
   onAudioFile,
   onMediaUrl,
+  onOpenYouTube,
 }: {
   phase: Phase;
   onBrowserTab: () => void;
   onAudioFile: () => void;
   onMediaUrl: () => void;
+  onOpenYouTube: () => void;
 }) {
   if (phase.kind !== "error") return null;
 
@@ -478,53 +1951,70 @@ function YoutubeErrorRecovery({
     phase.code === "PRIVATE" ||
     phase.code === "YT_DLP_MISSING";
 
+  const title =
+    phase.code === "NO_CAPTIONS"
+      ? "This video needs live tab capture"
+      : phase.code === "INVALID_URL"
+        ? "That YouTube link is not supported"
+        : "Caption path stopped";
+
   const message =
     phase.code === "NO_CAPTIONS"
-      ? "No captions available on this video. Yentl can still listen to the playing tab, ingest an audio file, or process a direct media URL."
+      ? "No public captions are available for this video. Keep the player open on the left and click the Yentl Chrome extension on this same tab, or open the video on YouTube and capture that tab."
       : phase.code === "INVALID_URL"
-        ? "That doesn't look like a YouTube URL. Paste a link from youtube.com or youtu.be."
+        ? "Paste a watch, shorts, embed, or youtu.be link from youtube.com or youtu.be."
         : phase.code === "PRIVATE"
-          ? "This video is private, age-restricted, or unavailable in your region. If you can play it in your browser, tab capture is the better route."
+          ? "This video is private, age-restricted, or unavailable in this environment. If it plays in Chrome, use live tab capture."
           : phase.code === "YT_DLP_MISSING"
-            ? "The server is not configured for YouTube caption ingest right now. Browser tab capture or Audio file can keep you moving."
-            : `Could not fetch captions: ${phase.message}`;
+            ? "The server is not configured for caption ingest right now. Live tab capture or audio-file ingest can keep the same review loop moving."
+            : `Could not prepare live captions: ${phase.message}`;
 
   return (
-    <div className="mt-5 rounded-lg border border-amber/60 bg-amber-soft p-4">
+    <div className="rounded-lg border border-amber/60 bg-amber-soft p-4">
       <div className="flex items-start gap-3">
         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-2" aria-hidden />
         <div className="min-w-0">
-          <div className="text-[13px] font-semibold text-ink">Caption import stopped</div>
+          <div className="text-[13px] font-semibold text-ink">{title}</div>
           <p className="mt-1 text-[13px] leading-relaxed text-amber-2">{message}</p>
         </div>
       </div>
 
       {recoverable && (
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="mt-4 grid gap-2">
           <button
             type="button"
-            onClick={onBrowserTab}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-ink px-3 py-2 text-[12px] font-medium text-white transition-colors hover:bg-ink/90"
+            onClick={onOpenYouTube}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-ink px-3 text-[12px] font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0 active:scale-[0.99]"
           >
-            <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
-            Browser tab
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            Open video on YouTube
           </button>
-          <button
-            type="button"
-            onClick={onAudioFile}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-amber/60 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 transition-colors hover:bg-cream"
-          >
-            <Upload className="h-3.5 w-3.5" aria-hidden />
-            Audio file
-          </button>
-          <button
-            type="button"
-            onClick={onMediaUrl}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-amber/60 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 transition-colors hover:bg-cream"
-          >
-            <LinkIcon className="h-3.5 w-3.5" aria-hidden />
-            Media URL
-          </button>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={onBrowserTab}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-amber/60 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream active:translate-y-0 active:scale-[0.99]"
+            >
+              <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
+              Browser tab
+            </button>
+            <button
+              type="button"
+              onClick={onAudioFile}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-amber/60 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream active:translate-y-0 active:scale-[0.99]"
+            >
+              <Upload className="h-3.5 w-3.5" aria-hidden />
+              Audio file
+            </button>
+            <button
+              type="button"
+              onClick={onMediaUrl}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-amber/60 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream active:translate-y-0 active:scale-[0.99]"
+            >
+              <LinkIcon className="h-3.5 w-3.5" aria-hidden />
+              Media URL
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -168,9 +168,11 @@ describe("createYouTubeAdapter — player creation", () => {
     const [el, opts] = lastPlayerCtorArgs!;
     expect(el).toBeInstanceOf(HTMLElement);
     expect((opts as { videoId: string }).videoId).toBe("testVideoId");
-    expect((opts as { playerVars: Record<string, number> }).playerVars).toMatchObject({
+    expect((opts as { playerVars: Record<string, number | string> }).playerVars).toMatchObject({
+      origin: "http://localhost:3000",
       playsinline: 1,
       rel: 0,
+      widget_referrer: "http://localhost:3000/",
     });
   });
 

@@ -37,7 +37,10 @@ const SAMPLE_OEMBED = {
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/youtube-ingest", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: JSON.stringify(body),
   });
 }
@@ -145,7 +148,10 @@ describe("POST /api/youtube-ingest", () => {
       const { POST } = await import("@/app/api/youtube-ingest/route");
       const req = new Request("http://localhost/api/youtube-ingest", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-yentl-source-consent": "source-analysis-v1",
+        },
         body: "{{bad json",
       });
       const res = await POST(req as never);

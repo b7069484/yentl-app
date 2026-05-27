@@ -18,6 +18,7 @@ import {
   loadSession,
   renameSession,
   deleteSession,
+  clearAllSessions,
   type SavedSessionMeta,
 } from "@/lib/client/session-storage";
 import { useSession } from "@/lib/client/session-store";
@@ -58,6 +59,7 @@ type IconComponent = React.ComponentType<{ className?: string }>;
 
 const SOURCE_CONFIG: Record<string, { label: string; icon: IconComponent }> = {
   mic: { label: "Mic", icon: Mic },
+  browser_tab: { label: "Tab", icon: Video },
   audio_file: { label: "Audio", icon: FileAudio },
   text_doc: { label: "Text", icon: FileText },
   youtube: { label: "YouTube", icon: Video },
@@ -212,6 +214,7 @@ export default function SessionsLibraryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const router = useRouter();
   const restoreSession = useSession((s) => s.restoreSession);
@@ -273,6 +276,18 @@ export default function SessionsLibraryPage() {
     }
   }, []);
 
+  const handleClearAll = useCallback(async () => {
+    try {
+      await clearAllSessions();
+      setSessions([]);
+      setConfirmingClear(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to clear local saves",
+      );
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
@@ -290,7 +305,7 @@ export default function SessionsLibraryPage() {
           </Link>
           <span className="text-ink-4 text-[13px]">/</span>
           <span className="font-serif text-[18px] text-ink-2 font-medium">
-            Sessions
+            Local saves
           </span>
           <div className="ml-auto">
             <Link
@@ -307,7 +322,7 @@ export default function SessionsLibraryPage() {
         <div className="flex items-center gap-3 mb-8">
           <BookOpen className="h-5 w-5 text-ink-3" />
           <h1 className="font-serif text-[28px] font-medium text-ink">
-            Saved sessions
+            Saved in this browser
           </h1>
         </div>
 
@@ -322,31 +337,89 @@ export default function SessionsLibraryPage() {
         )}
 
         {!loading && sessions.length === 0 && (
-          <div className="rounded-xl border border-line-soft bg-cream-2 px-8 py-16 text-center">
-            <p className="font-serif text-[18px] text-ink-2 mb-2">
-              No saved sessions yet.
+          <div className="rounded-xl border border-line-soft bg-cream-2 px-8 py-14 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-paper text-teal">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <p className="mb-2 font-serif text-[22px] text-ink-2">
+              No local saves yet.
             </p>
-            <p className="text-[13px] text-ink-3">
-              Save one from your current session using the{" "}
-              <span className="font-medium text-ink-2">Save</span> button in
-              the session header.
+            <p className="mx-auto max-w-md text-[13px] leading-relaxed text-ink-3">
+              Start an analysis first. Once Yentl has transcript, claims,
+              markers, or a report brief, the{" "}
+              <span className="font-medium text-ink-2">Save</span> action adds
+              a browser-local snapshot to this library.
             </p>
+            <p className="mx-auto mt-3 max-w-md text-[12px] leading-relaxed text-ink-4">
+              Saves stay on this device and do not sync across browsers or
+              accounts in v1. Use exports when you need a portable record.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/session"
+                className="inline-flex min-h-11 items-center justify-center rounded-lg bg-teal px-4 text-[13px] font-medium text-white transition-colors hover:bg-teal-2"
+              >
+                Start a new analysis
+              </Link>
+              <Link
+                href="/privacy"
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-line bg-paper px-4 text-[13px] font-medium text-ink-2 transition-colors hover:bg-cream"
+              >
+                Review local-save privacy
+              </Link>
+            </div>
           </div>
         )}
 
         {!loading && sessions.length > 0 && (
-          <div className="divide-y divide-line-soft rounded-xl border border-line-soft bg-white overflow-hidden shadow-sm">
-            {sessions.map((s) => (
-              <SessionRow
-                key={s.id}
-                session={s}
-                onRestore={handleRestore}
-                onRename={handleRename}
-                onDelete={handleDelete}
-                restoring={restoringId === s.id}
-              />
-            ))}
-          </div>
+          <>
+            <div className="divide-y divide-line-soft rounded-xl border border-line-soft bg-white overflow-hidden shadow-sm">
+              {sessions.map((s) => (
+                <SessionRow
+                  key={s.id}
+                  session={s}
+                  onRestore={handleRestore}
+                  onRename={handleRename}
+                  onDelete={handleDelete}
+                  restoring={restoringId === s.id}
+                />
+              ))}
+            </div>
+            <div className="mt-5 rounded-xl border border-line-soft bg-paper px-4 py-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[12.5px] leading-relaxed text-ink-3">
+                  Local saves live only in this browser. Clearing them removes
+                  the saved snapshots from this device.
+                </p>
+                {confirmingClear ? (
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleClearAll}
+                      className="inline-flex min-h-9 items-center rounded-lg bg-red-600 px-3 text-[12px] font-medium text-white hover:bg-red-700"
+                    >
+                      Clear all local saves
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingClear(false)}
+                      className="inline-flex min-h-9 items-center rounded-lg border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 hover:bg-cream-2"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingClear(true)}
+                    className="inline-flex min-h-9 shrink-0 items-center rounded-lg border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 hover:bg-cream-2"
+                  >
+                    Clear local saves
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
         )}
       </main>
     </div>

@@ -8,7 +8,14 @@ import { stringify } from "csv-stringify/sync";
 const execFileAsync = promisify(execFile);
 
 export const REPO_ROOT = path.resolve(import.meta.dirname ?? __dirname, "..", "..");
-export const CORPUS_DIR = path.join(REPO_ROOT, "test-corpus");
+
+function resolveCorpusDir(): string {
+  const configured = process.env.YENTL_CORPUS_DIR;
+  if (!configured) return path.join(REPO_ROOT, "test-corpus");
+  return path.isAbsolute(configured) ? configured : path.join(REPO_ROOT, configured);
+}
+
+export const CORPUS_DIR = resolveCorpusDir();
 export const CSV_PATH = path.join(CORPUS_DIR, "videos.csv");
 export const AUDIO_DIR = path.join(CORPUS_DIR, "audio");
 export const TRANSCRIPTS_DIR = path.join(CORPUS_DIR, "transcripts");
@@ -19,13 +26,20 @@ export const LOGS_DIR = path.join(CORPUS_DIR, "logs");
 export type VideoRow = {
   id: string;
   category: string;
+  failure_mode?: string;
   descriptor: string;
   search_query: string;
   duration_min_target: string;
+  speaker_count_target?: string;
   speakers: string;
   overlap: string;
+  sensitivity_level?: string;
+  quotation_risk?: string;
+  identity_or_harm_risk?: string;
   topic_tags: string;
   review_required: string;
+  ideal_pass_behavior?: string;
+  critical_trap?: string;
   url: string;
   video_id: string;
   title_resolved: string;
@@ -60,18 +74,27 @@ export type YtdlpVideoInfo = {
 };
 
 export async function ytdlpSearch(query: string, limit = 5): Promise<YtdlpVideoInfo[]> {
-  const { stdout } = await execFileAsync(
-    "yt-dlp",
-    [
-      `ytsearch${limit}:${query}`,
-      "--dump-json",
-      "--no-download",
-      "--no-warnings",
-      "--no-playlist",
-      "--ignore-errors",
-    ],
-    { maxBuffer: 50 * 1024 * 1024 }
-  );
+  let stdout = "";
+  try {
+    const result = await execFileAsync(
+      "yt-dlp",
+      [
+        `ytsearch${limit}:${query}`,
+        "--dump-json",
+        "--no-download",
+        "--no-warnings",
+        "--no-playlist",
+        "--ignore-errors",
+      ],
+      { maxBuffer: 50 * 1024 * 1024 }
+    );
+    stdout = result.stdout;
+  } catch (err) {
+    stdout = typeof (err as { stdout?: unknown }).stdout === "string"
+      ? (err as { stdout: string }).stdout
+      : "";
+    if (!stdout.trim()) throw err;
+  }
   return stdout
     .trim()
     .split("\n")
@@ -101,10 +124,72 @@ export async function ytdlpDownloadAudio(
   clip?: { startS: number; endS: number }
 ): Promise<void> {
   await fs.mkdir(path.dirname(outPath), { recursive: true });
+
+  if (clip) {
+    const dir = path.dirname(outPath);
+    const stem = path.basename(outPath, ".opus");
+    const sourceStem = path.join(dir, `${stem}.source`);
+    const sourceTemplate = `${sourceStem}.%(ext)s`;
+
+    const existing = await fs.readdir(dir).catch(() => [] as string[]);
+    await Promise.all(
+      existing
+        .filter((file) => file.startsWith(`${stem}.source.`) || file === `${stem}.webm.part`)
+        .map((file) => fs.rm(path.join(dir, file), { force: true }))
+    );
+
+    await execFileAsync(
+      "yt-dlp",
+      [
+        url,
+        "-f",
+        "bestaudio[abr<=96]/bestaudio/best",
+        "-o",
+        sourceTemplate,
+        "--no-warnings",
+        "--no-playlist",
+        "--force-ipv4",
+      ],
+      { maxBuffer: 50 * 1024 * 1024 }
+    );
+
+    const files = await fs.readdir(dir);
+    const sourceFile = files.find((file) => file.startsWith(`${stem}.source.`) && !file.endsWith(".part"));
+    if (!sourceFile) {
+      throw new Error(`yt-dlp did not produce a source audio file for ${stem}`);
+    }
+
+    const sourcePath = path.join(dir, sourceFile);
+    await execFileAsync(
+      "ffmpeg",
+      [
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-ss",
+        fmtSecs(clip.startS),
+        "-t",
+        String(Math.max(1, clip.endS - clip.startS)),
+        "-i",
+        sourcePath,
+        "-vn",
+        "-acodec",
+        "libopus",
+        "-b:a",
+        "48k",
+        outPath,
+      ],
+      { maxBuffer: 50 * 1024 * 1024 }
+    );
+    await fs.rm(sourcePath, { force: true });
+    return;
+  }
+
   const args = [
     url,
     "-f",
-    "bestaudio/best",
+    "bestaudio[abr<=96]/bestaudio/best",
     "--extract-audio",
     "--audio-format",
     "opus",
@@ -114,11 +199,8 @@ export async function ytdlpDownloadAudio(
     outPath.replace(/\.opus$/, ".%(ext)s"),
     "--no-warnings",
     "--no-playlist",
+    "--force-ipv4",
   ];
-  if (clip) {
-    args.push("--download-sections", `*${fmtSecs(clip.startS)}-${fmtSecs(clip.endS)}`);
-    args.push("--force-keyframes-at-cuts");
-  }
   await execFileAsync("yt-dlp", args, { maxBuffer: 50 * 1024 * 1024 });
 }
 

@@ -4,19 +4,57 @@ import { readVideos, TRANSCRIPTS_DIR, GROUND_TRUTH_DIR, SCORES_DIR, LOGS_DIR, lo
 
 const LOG = path.join(LOGS_DIR, "score-wer.log");
 
-function parseVtt(vtt: string): string {
+function parseTimestamp(value: string): number | null {
+  const parts = value.trim().split(":");
+  if (parts.length < 2 || parts.length > 3) return null;
+  const secondsPart = Number(parts.at(-1));
+  const minutesPart = Number(parts.at(-2));
+  const hoursPart = parts.length === 3 ? Number(parts[0]) : 0;
+  if ([secondsPart, minutesPart, hoursPart].some((part) => Number.isNaN(part))) return null;
+  return hoursPart * 3600 + minutesPart * 60 + secondsPart;
+}
+
+function cueOverlapsClip(startS: number | null, endS: number | null, clip?: { startS: number; endS: number }): boolean {
+  if (!clip || startS === null || endS === null) return true;
+  return endS >= clip.startS && startS <= clip.endS;
+}
+
+function cleanVttText(line: string): string {
+  return line.replace(/<[^>]+>/g, "").trim();
+}
+
+function parseVtt(vtt: string, clip?: { startS: number; endS: number }): string {
   const lines = vtt.split(/\r?\n/);
   const out: string[] = [];
-  for (const line of lines) {
-    if (!line.trim()) continue;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
     if (line.startsWith("WEBVTT")) continue;
     if (line.startsWith("NOTE")) continue;
-    if (/^\d+$/.test(line.trim())) continue;
-    if (/-->/.test(line)) continue;
     if (line.startsWith("STYLE")) continue;
-    const cleaned = line.replace(/<[^>]+>/g, "").trim();
-    if (cleaned) out.push(cleaned);
+    if (line.startsWith("REGION")) continue;
+
+    const timingLine = line.includes("-->") ? line : lines[i + 1]?.trim();
+    if (!timingLine?.includes("-->")) continue;
+    if (timingLine !== line) i++;
+
+    const [rawStart, rawEnd] = timingLine.split("-->");
+    const startS = parseTimestamp(rawStart);
+    const endS = parseTimestamp(rawEnd.trim().split(/\s+/)[0]);
+    const cueLines: string[] = [];
+
+    while (i + 1 < lines.length && lines[i + 1].trim()) {
+      i++;
+      const cleaned = cleanVttText(lines[i]);
+      if (cleaned) cueLines.push(cleaned);
+    }
+
+    if (cueOverlapsClip(startS, endS, clip)) {
+      out.push(...cueLines);
+    }
   }
+
   return out.join(" ");
 }
 
@@ -94,8 +132,17 @@ async function main() {
   await fs.mkdir(SCORES_DIR, { recursive: true });
   await fs.mkdir(LOGS_DIR, { recursive: true });
 
+  const argv = process.argv.slice(2);
+  const onlyId = argv.find((a) => a.startsWith("--id="))?.slice(5);
+  const onlyIds = argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",").filter(Boolean) ?? [];
+
   const rows = await readVideos();
-  const targets = rows.filter((r) => r.verified === "TRUE" && r.video_id);
+  const targets = rows.filter((r) => {
+    if (r.verified !== "TRUE" || !r.video_id) return false;
+    if (onlyId && r.id !== onlyId) return false;
+    if (onlyIds.length > 0 && !onlyIds.includes(r.id)) return false;
+    return true;
+  });
   const results: { id: string; wer: number; refLen: number; hypLen: number }[] = [];
   let scored = 0;
   let skipped = 0;
@@ -118,7 +165,10 @@ async function main() {
       fs.readFile(vttPath, "utf8"),
     ]);
     const dgText = extractDeepgramTranscript(JSON.parse(tJson));
-    const refText = parseVtt(vtt);
+    const clip = row.clip_end_s
+      ? { startS: Number(row.clip_start_s || "0"), endS: Number(row.clip_end_s) }
+      : undefined;
+    const refText = parseVtt(vtt, clip);
 
     const ref = normalize(refText);
     const hyp = normalize(dgText);

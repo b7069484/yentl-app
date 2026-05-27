@@ -40,9 +40,9 @@ const VERDICT_LABEL: Record<VerdictKind, string> = {
   MISLEADING: "Misleading",
   OMISSION: "Omission",
   FALSE: "False",
-  UNVERIFIABLE: "Unverifiable",
+  UNVERIFIABLE: "No reliable backing",
   OPINION: "Opinion",
-  CHECKING: "checking",
+  CHECKING: "Checking",
 };
 
 // Inline SVG icons — 10px, stroke-width 2, stroke currentColor, fill none

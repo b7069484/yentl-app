@@ -90,6 +90,8 @@ export async function createYouTubeAdapter(
   opts: CreateYouTubeAdapterOptions,
 ): Promise<MediaAdapter> {
   const { container, videoId, onTimeUpdate, onReady, onError } = opts;
+  const origin = window.location.origin;
+  const widgetReferrer = window.location.href;
 
   await loadYTApi();
 
@@ -123,9 +125,11 @@ export async function createYouTubeAdapter(
         width: "100%",
         videoId,
         playerVars: {
+          origin,
           playsinline: 1,
           modestbranding: 1,
           rel: 0,
+          widget_referrer: widgetReferrer,
         },
         events: {
           onReady() {

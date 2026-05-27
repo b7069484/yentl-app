@@ -1,6 +1,11 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
+import {
+  sourceAnalysisConsentHeaders,
+  sourceAnalysisConsentPayload,
+} from "@/lib/source-consent";
+import { apiErrorMessage } from "@/lib/client/api-errors";
 import type { TranscriptSegment, Speaker } from "@/lib/types";
 
 /**
@@ -120,6 +125,7 @@ async function transcribeViaMultipart(
 
   const res = await fetch("/api/transcribe-batch", {
     method: "POST",
+    headers: sourceAnalysisConsentHeaders(),
     body: formData,
     signal,
   });
@@ -137,8 +143,11 @@ async function transcribeViaBlob(
 ): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
   // 1 — Upload directly to Vercel Blob (no function body limit)
   const blobResult = await upload(file.name, file, {
-    access: "public",
+    access: "private",
     handleUploadUrl: "/api/upload-audio",
+    headers: sourceAnalysisConsentHeaders(),
+    clientPayload: sourceAnalysisConsentPayload(),
+    abortSignal: signal,
     ...(onUploadProgress
       ? {
           onUploadProgress: (event) => {
@@ -156,7 +165,10 @@ async function transcribeViaBlob(
   // 2 — Call transcribe-batch with the blob URL (JSON branch)
   const res = await fetch("/api/transcribe-batch", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...sourceAnalysisConsentHeaders(),
+    },
     body: JSON.stringify({ blob_url: blobResult.url, duration_sec: durationSec }),
     signal,
   });
@@ -170,10 +182,7 @@ async function parseTranscribeResponse(
   res: Response,
 ): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
   if (!res.ok) {
-    const errBody = await res.json().catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      (errBody as { error?: string }).error ?? `Transcription failed (${res.status})`,
-    );
+    throw new Error(await apiErrorMessage(res, `Transcription failed (${res.status})`));
   }
   return res.json() as Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }>;
 }

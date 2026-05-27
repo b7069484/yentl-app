@@ -69,7 +69,10 @@ function makeMultipartRequest(fields: {
 
   const req = new Request("http://localhost/api/transcribe-batch", {
     method: "POST",
-    headers: { "Content-Type": "multipart/form-data; boundary=boundary" },
+    headers: {
+      "Content-Type": "multipart/form-data; boundary=boundary",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: "placeholder",
   });
   (req as unknown as Record<string, unknown>).formData = () =>

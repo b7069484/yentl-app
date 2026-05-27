@@ -5,9 +5,10 @@ import type { ClaimCard, RhetoricMarker, Speaker, TranscriptSegment, SessionSour
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
 let mockSearchParamsRaw = new URLSearchParams("");
+const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: mockRouterPush }),
   usePathname: () => "/session",
   useSearchParams: () => mockSearchParamsRaw,
 }));
@@ -60,6 +61,21 @@ vi.mock("@/components/session/EndSessionDialog", () => ({
     ) : null,
 }));
 
+vi.mock("@/components/session/SaveSessionDialog", () => ({
+  SaveSessionDialog: ({
+    open,
+    onClose,
+  }: {
+    open: boolean;
+    onClose: () => void;
+  }) =>
+    open ? (
+      <div role="dialog" aria-label="save-session-dialog">
+        <button onClick={onClose}>Close Save</button>
+      </div>
+    ) : null,
+}));
+
 vi.mock("@/components/session/speaker-rail", () => ({
   SpeakerRail: ({
     speakers,
@@ -85,6 +101,10 @@ vi.mock("@/components/session/speaker-rail", () => ({
   ),
 }));
 
+vi.mock("@/components/session/ExtensionBridge", () => ({
+  stopBrowserTabCapture: vi.fn(),
+}));
+
 // ─── Mock useSession store ────────────────────────────────────────────────────
 
 vi.mock("@/lib/client/session-store", () => ({
@@ -93,6 +113,7 @@ vi.mock("@/lib/client/session-store", () => ({
 
 import { useSession } from "@/lib/client/session-store";
 import { SessionShell, useElapsed } from "@/components/session/session-shell";
+import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
 
 // ─── Store helpers ────────────────────────────────────────────────────────────
 
@@ -196,6 +217,7 @@ function makeSegment(overrides: Partial<TranscriptSegment> = {}): TranscriptSegm
 
 beforeEach(() => {
   mockSearchParamsRaw = new URLSearchParams("");
+  mockRouterPush.mockClear();
   mockStore(makeDefaultStoreState());
 });
 
@@ -239,6 +261,20 @@ describe("SessionShell – basic render", () => {
     expect(screen.queryByText("UX Flows")).toBeNull();
   });
 
+  it("renders mobile session tabs as wrapped touch targets", () => {
+    mockStore(makeDefaultStoreState());
+    const { container } = render(<SessionShell>Body</SessionShell>);
+    const nav = container.querySelector('nav[aria-label="Session views"]');
+    const overviewLink = Array.from(container.querySelectorAll("a")).find(
+      (a) => a.textContent === "Overview",
+    );
+
+    expect(nav?.className).toContain("grid");
+    expect(nav?.className).toContain("grid-cols-2");
+    expect(nav?.className).toContain("min-[380px]:grid-cols-3");
+    expect(overviewLink?.className).toContain("min-h-11");
+  });
+
   it("hides controls before a session starts", () => {
     mockStore(makeDefaultStoreState({ startedAt: null }));
     render(<SessionShell>Body</SessionShell>);
@@ -258,9 +294,9 @@ describe("SessionShell – basic render", () => {
   it("renders Pause/Resume and End when startedAt is set", () => {
     mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
     render(<SessionShell>Body</SessionShell>);
-    expect(screen.getByRole("button", { name: /Pause|Resume/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /Export/ })).toBeTruthy();
-    expect(screen.getByRole("button", { name: /End/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Pause|Resume/ }).className).toContain("h-11");
+    expect(screen.getByRole("button", { name: /Export/ }).className).toContain("h-11");
+    expect(screen.getByRole("button", { name: /End/ }).className).toContain("h-11");
   });
 });
 
@@ -280,8 +316,9 @@ describe("SessionShell – live pill states", () => {
         isRecording: true,
       }),
     );
-    render(<SessionShell>Body</SessionShell>);
+    const { container } = render(<SessionShell>Body</SessionShell>);
     expect(screen.getByText("Listening")).toBeTruthy();
+    expect(container.innerHTML).toContain("motion-safe:animate-pulse");
   });
 
   it("shows Paused when startedAt is set but isRecording is false", () => {
@@ -518,7 +555,98 @@ describe("SessionShell – EndSessionDialog", () => {
   });
 });
 
-// ─── 10. SpeakerRail rendered with speakers from store ───────────────────────
+// ─── 10. Source switch confirmation ──────────────────────────────────────────
+
+describe("SessionShell – source switch confirmation", () => {
+  it("opens a product confirmation dialog instead of a native confirm", () => {
+    const confirmSpy = vi.spyOn(window, "confirm");
+    mockStore(
+      makeDefaultStoreState({
+        transcript: [makeSegment()],
+        claims: [makeClaim()],
+        markers: [makeMarker()],
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Sources/ }));
+
+    expect(screen.getByRole("dialog", { name: /Choose another source/i })).toBeTruthy();
+    expect(screen.getByText("Utterances")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Save first/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Export first/i })).toBeTruthy();
+    expect(confirmSpy).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
+  });
+
+  it("Save first opens the save dialog without resetting the session", () => {
+    const reset = vi.fn();
+    mockStore(
+      makeDefaultStoreState({
+        transcript: [makeSegment()],
+        reset,
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Sources/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Save first/i }));
+
+    expect(screen.getByRole("dialog", { name: "save-session-dialog" })).toBeTruthy();
+    expect(reset).not.toHaveBeenCalled();
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+
+  it("Export first opens export without resetting the session", () => {
+    const reset = vi.fn();
+    mockStore(
+      makeDefaultStoreState({
+        claims: [makeClaim()],
+        reset,
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Sources/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Export first/i }));
+
+    expect(screen.getByRole("dialog", { name: "export-dialog" })).toBeTruthy();
+    expect(reset).not.toHaveBeenCalled();
+    expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+
+  it("confirming a new source resets and returns to the source picker", () => {
+    const reset = vi.fn();
+    mockStore(makeDefaultStoreState({ reset }));
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Sources/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Choose new source/i }));
+
+    expect(reset).toHaveBeenCalled();
+    expect(mockRouterPush).toHaveBeenCalledWith("/session");
+  });
+
+  it("stops browser-tab capture before switching away from an active tab source", () => {
+    const reset = vi.fn();
+    mockStore(
+      makeDefaultStoreState({
+        source: { kind: "browser_tab", title: "Live page" },
+        reset,
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Sources/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Choose new source/i }));
+
+    expect(stopBrowserTabCapture).toHaveBeenCalled();
+    expect(reset).toHaveBeenCalled();
+    expect(mockRouterPush).toHaveBeenCalledWith("/session");
+  });
+});
+
+// ─── 11. SpeakerRail rendered with speakers from store ───────────────────────
 
 describe("SessionShell – SpeakerRail integration", () => {
   it("renders SpeakerRail with speakers from store", () => {

@@ -9,6 +9,7 @@ const { mockSetPrerecordStage, mockSetSource, mockBulkIngest, mockPush } = vi.ho
   mockBulkIngest: vi.fn().mockResolvedValue(undefined),
   mockPush: vi.fn(),
 }));
+let mockSource: { kind: string; url: string } = { kind: "media_url", url: "" };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -19,6 +20,7 @@ vi.mock("@/lib/client/session-store", () => ({
     const state = {
       setPrerecordStage: mockSetPrerecordStage,
       setSource: mockSetSource,
+      source: mockSource,
     };
     return selector ? selector(state) : state;
   }),
@@ -76,6 +78,7 @@ import { MediaUrlIngestPane } from "@/components/session/ingest-panes/media-url-
 beforeEach(() => {
   vi.clearAllMocks();
   mockBulkIngest.mockResolvedValue(undefined);
+  mockSource = { kind: "media_url", url: "" };
 });
 
 // ─── 1. Renders ───────────────────────────────────────────────────────────────
@@ -96,6 +99,15 @@ describe("MediaUrlIngestPane — renders", () => {
     const input = screen.getByPlaceholderText(/https:\/\/example\.com\/episode\.mp3/i);
     expect(input.tagName.toLowerCase()).toBe("input");
     expect((input as HTMLInputElement).type).toBe("url");
+  });
+
+  it("prefills a shared media URL from the selected source", () => {
+    mockSource = { kind: "media_url", url: VALID_URL };
+
+    render(<MediaUrlIngestPane />);
+
+    expect(screen.getByDisplayValue(VALID_URL)).toBeTruthy();
+    expect(screen.getByRole("button", { name: /^Process$/i })).not.toBeDisabled();
   });
 
   it("renders the Process button", () => {
@@ -129,7 +141,12 @@ describe("MediaUrlIngestPane — Process button disabled state", () => {
     render(<MediaUrlIngestPane />);
     const input = screen.getByPlaceholderText(/episode\.mp3/i);
     fireEvent.change(input, { target: { value: VALID_URL } });
-    expect(screen.getByRole("button", { name: /Process/i })).not.toBeDisabled();
+    const btn = screen.getByRole("button", { name: /^Process$/i });
+    expect(btn).not.toBeDisabled();
+    expect(btn.className).toContain("text-white");
+    expect(btn.className).not.toContain("text-bg");
+    expect(screen.getByText(/Direct media URL recognized/i)).toBeTruthy();
+    expect(screen.getByText("MP3")).toBeTruthy();
   });
 
   it("Process button is disabled again when URL is cleared", () => {
@@ -170,6 +187,10 @@ describe("MediaUrlIngestPane — happy path", () => {
         "/api/media-ingest",
         expect.objectContaining({
           method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "x-yentl-source-consent": "source-analysis-v1",
+          }),
           body: expect.stringContaining(VALID_URL),
         }),
       );
@@ -199,7 +220,8 @@ describe("MediaUrlIngestPane — happy path", () => {
   it("shows completion message after successful ingest", async () => {
     await typeAndProcess();
     await waitFor(() => {
-      expect(screen.getByText(/session is live/i)).toBeTruthy();
+      expect(screen.getByText(/Transcription complete/i)).toBeTruthy();
+      expect(screen.getByText(/Opening the synchronized Watch view/i)).toBeTruthy();
     });
   });
 

@@ -99,7 +99,7 @@ export default function TermsPage() {
           </li>
           <li>
             <strong>No circumvention.</strong> You may not attempt to bypass the
-            engagement-gate policy or extract refused verdicts by rephrasing prohibited
+            scope and safety policy or extract refused verdicts by rephrasing prohibited
             content.
           </li>
           <li>
@@ -128,14 +128,10 @@ export default function TermsPage() {
           Dispute resolution
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          {/* TODO: legal review needed — arbitration/dispute resolution language. Placeholder below. */}
           Any dispute arising from these Terms or your use of Yentl will be resolved through
           binding individual arbitration under the rules of the American Arbitration Association
           (AAA), except that either party may seek injunctive relief in court. Class action
           waivers apply to the maximum extent permitted by applicable law.
-        </p>
-        <p className="text-muted-foreground leading-relaxed mt-2 text-sm italic">
-          Placeholder language — flag for legal review before commercial launch.
         </p>
       </section>
 

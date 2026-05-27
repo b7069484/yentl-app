@@ -12,6 +12,7 @@ export type StartMicOptions = {
    * Deepgram sees it).
    */
   speakersMode?: boolean;
+  deviceId?: string | null;
 };
 
 export async function startMic(
@@ -19,10 +20,15 @@ export async function startMic(
   opts: StartMicOptions = {},
 ): Promise<MicHandle> {
   const speakersMode = opts.speakersMode ?? false;
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: speakersMode
+  const deviceId = opts.deviceId?.trim();
+  const audioConstraints = {
+    ...(deviceId ? { deviceId: { exact: deviceId } } : {}),
+    ...(speakersMode
       ? { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-      : { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      : { echoCancellation: true, noiseSuppression: true, autoGainControl: true }),
+  };
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: audioConstraints,
   });
   const mimeType = pickMime();
   const recorder = new MediaRecorder(stream, { mimeType });

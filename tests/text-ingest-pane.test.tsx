@@ -17,6 +17,13 @@ const { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx
     const mockPush = vi.fn();
     return { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx, mockPush };
   });
+let mockSource: {
+  kind: string;
+  filename: string;
+  mime: string;
+  byte_count: number;
+  initial_text?: string;
+} = { kind: "text_doc", filename: "", mime: "", byte_count: 0 };
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -24,7 +31,10 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: unknown) => unknown) => {
-    const state = { setPrerecordStage: mockSetPrerecordStage };
+    const state = {
+      setPrerecordStage: mockSetPrerecordStage,
+      source: mockSource,
+    };
     return selector ? selector(state) : state;
   }),
 }));
@@ -51,6 +61,7 @@ beforeEach(() => {
   mockBulkIngest.mockResolvedValue(undefined);
   mockParseDocx.mockResolvedValue("Extracted docx text");
   mockPush.mockReset();
+  mockSource = { kind: "text_doc", filename: "", mime: "", byte_count: 0 };
 });
 
 // ─── 1. Renders ───────────────────────────────────────────────────────────────
@@ -65,6 +76,20 @@ describe("TextIngestPane — rendering", () => {
     render(<TextIngestPane />);
     const ta = screen.getByPlaceholderText(/Paste your transcript here/i);
     expect(ta.tagName.toLowerCase()).toBe("textarea");
+  });
+
+  it("prefills shared text from the selected source", () => {
+    mockSource = {
+      kind: "text_doc",
+      filename: "Shared text",
+      mime: "text/plain",
+      byte_count: 12,
+      initial_text: "Shared claim",
+    };
+
+    render(<TextIngestPane />);
+
+    expect(screen.getByDisplayValue("Shared claim")).toBeTruthy();
   });
 
   it("renders char count row", () => {

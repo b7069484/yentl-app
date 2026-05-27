@@ -1,0 +1,11 @@
+{
+  "id": "political_002",
+  "phase": "A",
+  "wer": 0.062351261304140884,
+  "substitutions": 62,
+  "deletions": 33,
+  "insertions": 36,
+  "hits": 2006,
+  "refLen": 2101,
+  "hypLen": 2104
+}

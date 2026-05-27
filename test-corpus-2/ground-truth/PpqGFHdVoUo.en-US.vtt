@@ -1,0 +1,694 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:00.520 --> 00:00:02.990
+- Are deepfakes rewriting history?
+
+00:00:02.990 --> 00:00:05.400
+(logo beeping)
+(upbeat music)
+
+00:00:05.400 --> 00:00:06.930
+It's March 2021,
+
+00:00:06.930 --> 00:00:08.350
+a woman is arrested
+
+00:00:08.350 --> 00:00:10.600
+after sharing a manipulated video
+
+00:00:10.600 --> 00:00:13.310
+of her daughter's
+cheerleading rival vaping
+
+00:00:13.310 --> 00:00:15.320
+to get her kicked off the team.
+
+00:00:15.320 --> 00:00:18.770
+After all, who needs the
+threat of physical violence
+
+00:00:18.770 --> 00:00:20.850
+when it's possible to ruin someone's life
+
+00:00:20.850 --> 00:00:25.263
+using nothing but social
+media photos and a video.
+
+00:00:26.860 --> 00:00:29.570
+Welcome to "CyberNews.com."
+
+00:00:29.570 --> 00:00:31.010
+My name is Leah Bolton.
+
+00:00:31.010 --> 00:00:34.400
+Join me today as we
+explore what a deepfake is
+
+00:00:34.400 --> 00:00:37.040
+and how deepfakes can completely distort
+
+00:00:37.040 --> 00:00:39.060
+the reality we live in.
+
+00:00:39.060 --> 00:00:40.610
+Make sure to like and subscribe
+
+00:00:40.610 --> 00:00:42.930
+if you like explainer
+videos like this one,
+
+00:00:42.930 --> 00:00:45.400
+and don't forget to turn on notifications
+
+00:00:45.400 --> 00:00:47.320
+so you don't miss our weekly updates
+
+00:00:47.320 --> 00:00:51.580
+on everything related to
+technology and cyber security.
+
+00:00:51.580 --> 00:00:54.500
+Let's dive into this deepfake explainer.
+
+00:00:54.500 --> 00:00:56.883
+So what exactly is a deepfake?
+
+00:00:57.780 --> 00:01:00.560
+Simply put, deepfakes are videos
+
+00:01:00.560 --> 00:01:02.570
+in which one person's face
+
+00:01:02.570 --> 00:01:05.810
+has been replaced by a
+computer-generated face
+
+00:01:05.810 --> 00:01:08.640
+that closely looks like another person.
+
+00:01:08.640 --> 00:01:10.160
+The term was born in Reddit
+
+00:01:10.160 --> 00:01:12.110
+when members of a group called Deepfake
+
+00:01:13.100 --> 00:01:16.800
+used AI to put celebrities
+faces on porn actors.
+
+00:01:16.800 --> 00:01:18.763
+Take a look at this Tom Cruise video.
+
+00:01:20.740 --> 00:01:21.740
+- What's up, TikTok?
+
+00:01:24.490 --> 00:01:26.290
+You guys cool if I play some sports?
+
+00:01:27.620 --> 00:01:30.250
+- Looks close to reality
+
+00:01:30.250 --> 00:01:32.760
+yet it is a deepfake.
+
+00:01:32.760 --> 00:01:35.010
+The programs that create deepfakes
+
+00:01:35.010 --> 00:01:39.340
+usually use two different
+AIs at the same time.
+
+00:01:39.340 --> 00:01:42.460
+The first one will scan images, videos,
+
+00:01:42.460 --> 00:01:44.160
+and audio of the victim
+
+00:01:44.160 --> 00:01:46.993
+and then generate a
+tampered image or video.
+
+00:01:48.040 --> 00:01:49.640
+- I'm gonna show you some magic.
+
+00:01:51.200 --> 00:01:55.170
+- The second AI will
+compare them to real images
+
+00:01:55.170 --> 00:01:57.200
+and report any difference.
+
+00:01:57.200 --> 00:02:00.290
+Finally, the first AI
+will receive this feedback
+
+00:02:00.290 --> 00:02:02.420
+and repeat the process several times
+
+00:02:02.420 --> 00:02:04.760
+until the second one can't tell a fake
+
+00:02:04.760 --> 00:02:06.560
+from the real thing anymore.
+
+00:02:06.560 --> 00:02:08.660
+This technology has evolved
+
+00:02:08.660 --> 00:02:12.160
+to the point that it is
+accessible to nearly everyone
+
+00:02:12.160 --> 00:02:14.100
+and it is likely to get easier
+
+00:02:14.100 --> 00:02:16.530
+as computing power improves,
+
+00:02:16.530 --> 00:02:20.020
+but the power of deepfakes
+is even more sinister
+
+00:02:20.020 --> 00:02:22.460
+than might originally seen.
+
+00:02:22.460 --> 00:02:23.930
+Channel 4 in England
+
+00:02:23.930 --> 00:02:25.700
+made a statement with the video
+
+00:02:25.700 --> 00:02:29.570
+known as Queen Elizabeth's
+"Alternative Christmas Speech"
+
+00:02:29.570 --> 00:02:30.680
+in 2020.
+
+00:02:30.680 --> 00:02:31.640
+The video began
+
+00:02:31.640 --> 00:02:33.860
+with the Queen addressing
+the British people
+
+00:02:33.860 --> 00:02:35.870
+as she does every year
+
+00:02:35.870 --> 00:02:38.130
+but then things got twisted
+
+00:02:38.130 --> 00:02:39.930
+when she began to make jokes
+
+00:02:39.930 --> 00:02:43.200
+about public crown
+scandals from that year.
+
+00:02:43.200 --> 00:02:44.850
+Only when she stood up to dance,
+
+00:02:44.850 --> 00:02:48.141
+people started to realize
+it wasn't really her.
+
+00:02:48.141 --> 00:02:49.746
+♪ Don't need your love ♪
+
+00:02:49.746 --> 00:02:51.751
+♪ I'm a sinner ♪
+
+00:02:51.751 --> 00:02:54.150
+♪ There's my lover crying ♪
+
+00:02:54.150 --> 00:02:55.890
+The video raised awareness,
+
+00:02:55.890 --> 00:02:57.850
+as well as some eyebrows
+
+00:02:57.850 --> 00:02:59.420
+and opened up the conversation
+
+00:02:59.420 --> 00:03:02.790
+about the seriousness and
+even maybe the dangers
+
+00:03:02.790 --> 00:03:05.010
+of deepfake technology.
+
+00:03:05.010 --> 00:03:06.880
+And that's just the beginning.
+
+00:03:06.880 --> 00:03:08.720
+Deepfakes can be used in warfare
+
+00:03:08.720 --> 00:03:10.930
+to raise or kill military morale.
+
+00:03:10.930 --> 00:03:12.520
+In March 2022,
+
+00:03:12.520 --> 00:03:15.330
+Meta removed a video posted on Facebook
+
+00:03:15.330 --> 00:03:19.386
+of President Zelensky
+encouraging Ukrainian people-
+
+00:03:19.386 --> 00:03:24.386
+(President Zelensky speaking
+in foreign language)
+
+00:03:29.640 --> 00:03:31.040
+To lay down their arms,
+
+00:03:31.040 --> 00:03:34.160
+after realizing it was a deepfake.
+
+00:03:34.160 --> 00:03:36.500
+The video went viral on the platform
+
+00:03:36.500 --> 00:03:41.470
+and was shown in TV 24's hacked
+website as breaking news.
+
+00:03:41.470 --> 00:03:44.730
+The Ukrainian president
+had to debunk the scam
+
+00:03:44.730 --> 00:03:48.390
+posting a video of himself
+on his own Telegram channel
+
+00:03:48.390 --> 00:03:50.540
+supporting Ukrainian troops.
+
+00:03:50.540 --> 00:03:53.560
+Not everything is merely
+misinformation though,
+
+00:03:53.560 --> 00:03:57.790
+deepfakes can be used to
+target pretty much everyone,
+
+00:03:57.790 --> 00:04:00.740
+from celebrities and political figures,
+
+00:04:00.740 --> 00:04:02.350
+to regular citizens.
+
+00:04:02.350 --> 00:04:04.590
+It was only two years ago that Sensity,
+
+00:04:04.590 --> 00:04:08.590
+an intelligence company
+specialized in visual threats,
+
+00:04:08.590 --> 00:04:12.670
+recorded 85,000 deepfake videos.
+
+00:04:12.670 --> 00:04:15.450
+These meant to destroy reputations.
+
+00:04:15.450 --> 00:04:16.840
+These videos consisted
+
+00:04:16.840 --> 00:04:19.650
+of creating non-consensual pornography
+
+00:04:19.650 --> 00:04:22.860
+or even inciting fear and violence
+
+00:04:22.860 --> 00:04:27.340
+through incendiary speeches
+from targeted politicians.
+
+00:04:27.340 --> 00:04:29.220
+These incidents are getting worse
+
+00:04:29.220 --> 00:04:31.210
+and involve digital abuse,
+
+00:04:31.210 --> 00:04:35.670
+such as harassment,
+blackmail, and public shaming.
+
+00:04:35.670 --> 00:04:39.610
+Of course, the ability of
+putting someone's face or voice
+
+00:04:39.610 --> 00:04:41.280
+into another person
+
+00:04:41.280 --> 00:04:43.550
+presents a huge opportunity
+
+00:04:43.550 --> 00:04:46.440
+to a bunch of unscrupulous people.
+
+00:04:46.440 --> 00:04:49.040
+In 2019, "The Wall
+Street Journal" reported
+
+00:04:49.040 --> 00:04:52.250
+that this CEO of a UK-based company
+
+00:04:52.250 --> 00:04:54.970
+believed he was on the phone with his boss
+
+00:04:54.970 --> 00:04:59.970
+when he instantly
+transferred 220,000 euros
+
+00:05:00.200 --> 00:05:01.970
+following his orders
+
+00:05:01.970 --> 00:05:02.850
+only to find out
+
+00:05:02.850 --> 00:05:05.350
+he was actually speaking to scammers
+
+00:05:05.350 --> 00:05:08.000
+who imitated his employer's voice
+
+00:05:08.000 --> 00:05:10.830
+using AI technology.
+
+00:05:10.830 --> 00:05:12.900
+Many experts state that deepfakes
+
+00:05:12.900 --> 00:05:16.020
+are the biggest cybersecurity
+threat nowadays,
+
+00:05:16.020 --> 00:05:18.690
+and they're kind of right.
+
+00:05:18.690 --> 00:05:20.120
+Recent tech developments
+
+00:05:20.120 --> 00:05:23.470
+have advanced towards
+biometrical technologies,
+
+00:05:23.470 --> 00:05:25.000
+from cell phone locks,
+
+00:05:25.000 --> 00:05:27.800
+to bank accounts and passports.
+
+00:05:27.800 --> 00:05:29.210
+These types of security
+
+00:05:29.210 --> 00:05:31.930
+that rely heavily on face recognition
+
+00:05:31.930 --> 00:05:35.210
+seem to be at risk with deepfakes evolving
+
+00:05:35.210 --> 00:05:38.230
+at such a fast pace.
+
+00:05:38.230 --> 00:05:41.110
+Big tech companies are aware
+of this harmful potential
+
+00:05:41.110 --> 00:05:43.210
+and are coming up with powerful tools,
+
+00:05:43.210 --> 00:05:45.480
+including cutting edge technology,
+
+00:05:45.480 --> 00:05:48.200
+to detect this kind of video.
+
+00:05:48.200 --> 00:05:51.280
+Wondering how to recognize
+a deepfake video?
+
+00:05:51.280 --> 00:05:52.540
+Some experts say
+
+00:05:52.540 --> 00:05:55.490
+it's the blinking that gives fakes away.
+
+00:05:55.490 --> 00:05:57.130
+It's hard for an AI
+
+00:05:57.130 --> 00:05:59.660
+to closely recreate human behavior.
+
+00:05:59.660 --> 00:06:00.493
+As a result,
+
+00:06:00.493 --> 00:06:04.160
+deepfakes blink much less
+frequently than humans.
+
+00:06:04.160 --> 00:06:07.190
+Maybe one of the most talked
+about dangers of deepfake
+
+00:06:07.190 --> 00:06:09.550
+is related to politics.
+
+00:06:09.550 --> 00:06:12.660
+In the 2020 US presidential elections,
+
+00:06:12.660 --> 00:06:14.300
+many feared that deepfakes
+
+00:06:14.300 --> 00:06:16.630
+could influence the voting results.
+
+00:06:16.630 --> 00:06:19.470
+Fortunately, these fears
+didn't materialize,
+
+00:06:19.470 --> 00:06:22.150
+with the only deepfakes
+related to the elections
+
+00:06:22.150 --> 00:06:23.500
+being satirical.
+
+00:06:23.500 --> 00:06:27.710
+However, the US government
+established a deepfake task force
+
+00:06:27.710 --> 00:06:30.660
+which aims to safeguard the
+population from scammers
+
+00:06:30.660 --> 00:06:32.620
+who want to defraud America
+
+00:06:32.620 --> 00:06:35.190
+using artificial intelligence.
+
+00:06:35.190 --> 00:06:36.550
+There are already fears
+
+00:06:36.550 --> 00:06:38.170
+that if people don't get better
+
+00:06:38.170 --> 00:06:41.580
+at differentiating fakes
+from authentic videos,
+
+00:06:41.580 --> 00:06:44.180
+it could cost them prison sentences,
+
+00:06:44.180 --> 00:06:45.860
+fake accusations,
+
+00:06:45.860 --> 00:06:48.080
+or even false fakes.
+
+00:06:48.080 --> 00:06:50.070
+Just to give you an example,
+
+00:06:50.070 --> 00:06:51.810
+three years ago in Malaysia,
+
+00:06:51.810 --> 00:06:54.380
+a politician was caught on several videos
+
+00:06:54.380 --> 00:06:56.560
+proving his sexual misconduct
+
+00:06:56.560 --> 00:07:00.810
+to which he sustained were manipulated
+
+00:07:00.810 --> 00:07:02.750
+when they actually weren't.
+
+00:07:02.750 --> 00:07:03.583
+Oh, and by the way,
+
+00:07:03.583 --> 00:07:05.330
+do you remember that case I mentioned
+
+00:07:05.330 --> 00:07:07.150
+at the beginning of this video,
+
+00:07:07.150 --> 00:07:09.470
+the one about the cheerleader's mom?
+
+00:07:09.470 --> 00:07:12.590
+Well, they couldn't prove
+the video was manipulated
+
+00:07:12.590 --> 00:07:15.910
+and even many experts
+concluded it might be real.
+
+00:07:15.910 --> 00:07:19.000
+The woman's most high
+profile charges were dropped
+
+00:07:19.000 --> 00:07:22.470
+not without first making it
+to international headlines
+
+00:07:22.470 --> 00:07:26.190
+and seriously damaging her reputation.
+
+00:07:26.190 --> 00:07:28.330
+Not everything is grim though,
+
+00:07:28.330 --> 00:07:32.510
+there have been positive
+uses of deepfake technology.
+
+00:07:32.510 --> 00:07:33.343
+For example,
+
+00:07:33.343 --> 00:07:36.160
+it is being used in training
+videos for companies,
+
+00:07:36.160 --> 00:07:39.600
+and there are TV shows
+like "Sassy Justice"
+
+00:07:39.600 --> 00:07:42.720
+that create characters faces using AI.
+
+00:07:42.720 --> 00:07:43.830
+There're even cases
+
+00:07:43.830 --> 00:07:46.680
+like the "Welcome to Chechnya" documentary
+
+00:07:46.680 --> 00:07:49.490
+in which the creators
+use deepfake technology
+
+00:07:49.490 --> 00:07:53.460
+to protect the identity
+of the LGBTQ+ community
+
+00:07:53.460 --> 00:07:56.540
+they were portraying in Southern Russia.
+
+00:07:56.540 --> 00:08:01.340
+So, is it a good or a bad technology?
+
+00:08:01.340 --> 00:08:03.930
+Before jumping to my final conclusions,
+
+00:08:03.930 --> 00:08:05.470
+remember to like this video,
+
+00:08:05.470 --> 00:08:06.610
+if you haven't already,
+
+00:08:06.610 --> 00:08:08.490
+and to subscribe for more content
+
+00:08:08.490 --> 00:08:11.470
+on technology and cyber security.
+
+00:08:11.470 --> 00:08:14.560
+The technology behind
+deepfakes is very new
+
+00:08:14.560 --> 00:08:17.340
+and maybe we shouldn't judge it just yet.
+
+00:08:17.340 --> 00:08:18.670
+Like any technology,
+
+00:08:18.670 --> 00:08:20.670
+it can bring positive innovations
+
+00:08:20.670 --> 00:08:24.630
+regardless of the fact that
+there is a dark side to it.
+
+00:08:24.630 --> 00:08:26.460
+One thing I'm certainly worried about
+
+00:08:26.460 --> 00:08:29.510
+is something called the Liar's Dividend.
+
+00:08:29.510 --> 00:08:31.120
+According to the concept,
+
+00:08:31.120 --> 00:08:34.640
+deepfakes might allow
+criminals to walk free.
+
+00:08:34.640 --> 00:08:36.400
+This is already happening
+
+00:08:36.400 --> 00:08:40.020
+and it's hindering legal
+processes along the way.
+
+00:08:40.020 --> 00:08:42.590
+Experts suggest, in the coming years,
+
+00:08:42.590 --> 00:08:46.080
+we should expect more and
+more of this to happen.
+
+00:08:46.080 --> 00:08:49.490
+What are your actual
+thoughts on deepfakes?
+
+00:08:49.490 --> 00:08:51.240
+What's the craziest deepfake video
+
+00:08:51.240 --> 00:08:52.970
+that you've ever watched,
+
+00:08:52.970 --> 00:08:55.330
+and what do you think this technology
+
+00:08:55.330 --> 00:08:57.210
+will bring to the future?
+
+00:08:57.210 --> 00:08:59.010
+Let me know in the comments down below.
+
+00:08:59.010 --> 00:09:01.860
+I'd love to read your
+takes on this technology.
+
+00:09:01.860 --> 00:09:03.420
+Thank you so much for joining me
+
+00:09:03.420 --> 00:09:05.570
+on this deepfakes explainer video.
+
+00:09:05.570 --> 00:09:07.860
+I will see you in the next one.
+
+00:09:07.860 --> 00:09:10.943
+(light upbeat music)
+

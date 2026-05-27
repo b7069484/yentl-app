@@ -78,33 +78,35 @@ function ActivityRow({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 px-3.5 py-2.5 bg-paper border border-line rounded-[10px] cursor-pointer hover:border-line-strong"
+      className="flex min-h-11 flex-col gap-2 rounded-[10px] border border-line bg-paper px-3.5 py-3 cursor-pointer hover:border-line-strong sm:flex-row sm:items-center sm:gap-3 sm:py-2.5"
     >
-      {/* Timestamp */}
-      <span className="text-[10px] text-ink-4 tabular-nums flex-shrink-0 w-9">
-        {formatTs(event.ts)}
-      </span>
+      <span className="flex min-w-0 items-center gap-2 sm:contents">
+        {/* Timestamp */}
+        <span className="w-9 flex-shrink-0 text-[10px] tabular-nums text-ink-4">
+          {formatTs(event.ts)}
+        </span>
 
-      {/* Speaker avatar */}
-      <span
-        className={`w-5.5 h-5.5 rounded-full flex items-center justify-center text-white text-[9px] font-semibold flex-shrink-0 bg-spk-${avatarIndex}`}
-      >
-        {event.speakerLabel[0]}
-      </span>
+        {/* Speaker avatar */}
+        <span
+          className={`w-5.5 h-5.5 rounded-full flex items-center justify-center text-white text-[9px] font-semibold flex-shrink-0 bg-spk-${avatarIndex}`}
+        >
+          {event.speakerLabel[0]}
+        </span>
 
-      {/* Verdict or Marker chip */}
-      {event.kind === "claim" ? (
-        <VerdictChip verdict={event.verdict} score={event.score} />
-      ) : (
-        <MarkerChip
-          type={event.markerType}
-          display={event.display}
-          severity={event.severity}
-        />
-      )}
+        {/* Verdict or Marker chip */}
+        {event.kind === "claim" ? (
+          <VerdictChip verdict={event.verdict} score={event.score} />
+        ) : (
+          <MarkerChip
+            type={event.markerType}
+            display={event.display}
+            severity={event.severity}
+          />
+        )}
+      </span>
 
       {/* Quote */}
-      <span className="font-serif italic text-[13px] text-ink-3 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+      <span className="min-w-0 flex-1 font-serif text-[13.5px] italic leading-snug text-ink-3 line-clamp-3 sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap sm:text-[13px] sm:line-clamp-none">
         &ldquo;{event.quote}&rdquo;
       </span>
 

@@ -31,12 +31,12 @@ export default function ChangelogPage() {
           <strong>launch trust layer + accessibility · compliance foundation goal</strong>
         </p>
         <ul className="mt-3 space-y-1 text-muted-foreground list-disc list-inside">
-          <li>Initial v1 methodology published (claim extraction → engagement gate → fact-check → verdict).</li>
-          <li>Model: Anthropic Claude Opus 4.7 for fact-check; Haiku-class for claim extraction and engagement gate.</li>
+          <li>Initial v1 methodology published (claim extraction → claim-scope check → fact-check → verdict).</li>
+          <li>Model: Anthropic Claude Opus 4.7 for fact-check; Haiku-class support for claim extraction and scope checks.</li>
           <li>Transcription: Deepgram Nova-3.</li>
           <li>Taxonomy: 123-entry bias/fallacy/rhetoric taxonomy (CC-BY-4.0).</li>
-          <li>Engagement gate policy defined; hard refusals: private-individual harassment, doxxing, hate speech, CSAM, extremism.</li>
-          <li>Trust pages published: /about, /methodology, /privacy, /terms, /subprocessors, /accessibility.</li>
+          <li>Claim-scope policy defined; hard refusals include private-individual harassment, doxxing, hate speech, CSAM, and extremism.</li>
+          <li>Trust pages published: /about, /methodology, /privacy, /terms, /subprocessors, /accessibility, /contact, /pricing, and /faq.</li>
           <li>WCAG 2.2 AA baseline: skip-to-content, focus rings, 44px touch targets, prefers-reduced-motion, aria-live regions.</li>
           <li>DPIA completed (docs/dpia.md).</li>
           <li>AI-generated content disclosure added to all session views.</li>

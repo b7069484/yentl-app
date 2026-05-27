@@ -1,10 +1,14 @@
 import { Readable } from "stream";
+import { del, get } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import {
   transcribeFile,
   transcribeStream,
   transcribeUrl,
 } from "@/lib/server/deepgram-batch";
+import { requireSourceAnalysisConsent } from "@/lib/server/consent";
+import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { emitSecurityEvent } from "@/lib/server/security-events";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
@@ -14,7 +18,62 @@ const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
 /** Files above this threshold are streamed to Deepgram rather than buffered. */
 const STREAM_THRESHOLD_BYTES = 50 * 1024 * 1024; // 50 MB
 
+function isVercelBlobUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname.endsWith(".blob.vercel-storage.com");
+  } catch {
+    return false;
+  }
+}
+
+function blobAccessForUrl(url: string): "private" | "public" {
+  try {
+    return new URL(url).hostname.includes(".public.") ? "public" : "private";
+  } catch {
+    return "private";
+  }
+}
+
+async function deleteUploadedBlob(url: string): Promise<void> {
+  if (!isVercelBlobUrl(url)) return;
+  try {
+    await del(url);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    let blobHost = "unknown";
+    try {
+      blobHost = new URL(url).hostname;
+    } catch {
+      // Keep the raw URL out of logs.
+    }
+    emitSecurityEvent("blob_deletion_failed", {
+      route: "/api/transcribe-batch",
+      blob_host: blobHost,
+      reason: message.slice(0, 180),
+    }, "error");
+  }
+}
+
+async function transcribePrivateBlobUrl(url: string) {
+  const blob = await get(url, { access: blobAccessForUrl(url), useCache: false });
+  if (!blob || blob.statusCode !== 200 || !blob.stream) {
+    throw new Error("uploaded audio was unavailable");
+  }
+
+  const mime = blob.blob.contentType || "audio/mpeg";
+  const nodeStream = Readable.fromWeb(
+    blob.stream as import("stream/web").ReadableStream<Uint8Array>,
+  );
+  return transcribeStream(nodeStream, mime);
+}
+
 export async function POST(req: Request): Promise<NextResponse> {
+  const limited = await enforceRateLimit(req, RATE_LIMITS.transcription);
+  if (limited) return limited;
+
+  const consentError = requireSourceAnalysisConsent(req);
+  if (consentError) return consentError;
+
   const contentType = req.headers.get("content-type") ?? "";
 
   // ── multipart/form-data: direct file upload (no Vercel Blob required) ──────
@@ -135,7 +194,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     try {
-      const result = await transcribeUrl(targetUrl);
+      const result = isVercelBlobUrl(targetUrl)
+        ? await transcribePrivateBlobUrl(targetUrl)
+        : await transcribeUrl(targetUrl);
       return NextResponse.json(result);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -144,6 +205,10 @@ export async function POST(req: Request): Promise<NextResponse> {
         { error: `Deepgram transcription failed: ${message}` },
         { status: 500 },
       );
+    } finally {
+      if (typeof blob_url === "string") {
+        await deleteUploadedBlob(blob_url);
+      }
     }
   }
 

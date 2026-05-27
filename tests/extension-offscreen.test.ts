@@ -178,7 +178,12 @@ describe("extension offscreen capture", () => {
 
     expect(harness.fetchMock).toHaveBeenCalledWith(
       "http://localhost:3000/api/deepgram/token",
-      expect.objectContaining({ method: "POST" }),
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          "x-yentl-source-consent": "source-analysis-v1",
+        }),
+      }),
     );
     expect(FakeWebSocket.instances).toHaveLength(0);
     expect(FakeMediaRecorder.instances[0]?.startedWith).toBe(250);

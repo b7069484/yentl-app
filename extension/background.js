@@ -1,7 +1,7 @@
 /* global chrome */
 
 const OFFSCREEN_PATH = "offscreen.html";
-const DEFAULT_APP_ORIGIN = "http://localhost:3000";
+const DEFAULT_APP_ORIGIN = "https://yentl.it";
 const APP_ORIGIN_KEY = "appOrigin";
 const CAPTURE_STATE_KEY = "captureState";
 const EXTENSION_MESSAGE_SOURCE = "yentl-tab-capture-extension";
@@ -261,8 +261,29 @@ async function buildCaptureStatus() {
     tab = undefined;
   }
 
+  let activeTab;
+  try {
+    const activeTabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    activeTab = activeTabs?.[0];
+  } catch {
+    activeTab = undefined;
+  }
+
+  if (activeTab?.id && state.targetTabId && activeTab.id !== state.targetTabId) {
+    return {
+      running: true,
+      phase: "tab_changed",
+      title: tab?.title,
+      url: tab?.url,
+      message: tab?.title
+        ? `Yentl is still listening to "${tab.title}". Return to that tab to keep the page and analysis together.`
+        : "Yentl is still listening to the original tab. Return to it to keep the page and analysis together.",
+    };
+  }
+
   return {
     running: true,
+    phase: "capturing",
     title: tab?.title,
     url: tab?.url,
     message: "Browser tab capture is active.",

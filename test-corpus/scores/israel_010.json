@@ -1,0 +1,11 @@
+{
+  "id": "israel_010",
+  "phase": "A",
+  "wer": 0.11261682242990655,
+  "substitutions": 76,
+  "deletions": 119,
+  "insertions": 46,
+  "hits": 1945,
+  "refLen": 2140,
+  "hypLen": 2067
+}

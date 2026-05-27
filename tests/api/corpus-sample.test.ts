@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/corpus-sample/route";
 
 function makeRequest(id: string): Request {
@@ -6,6 +6,10 @@ function makeRequest(id: string): Request {
 }
 
 describe("GET /api/corpus-sample", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("returns a functional Watch sample with transcript, claims, and markers", async () => {
     const res = await GET(makeRequest("cable_008") as never);
     const json = await res.json();
@@ -18,6 +22,18 @@ describe("GET /api/corpus-sample", () => {
     expect(json.claims).toHaveLength(1);
     expect(json.markers).toHaveLength(6);
     expect(json.replay.errors).toEqual([]);
+  });
+
+  it("does not turn unverified replay extraction into an unverifiable verdict", async () => {
+    const res = await GET(makeRequest("solo_005") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.claims[0].claim_text).toContain("3,000,000,000");
+    expect(json.claims[0].primary_label).toBe("TRUE");
+    expect(json.claims[0].status).toBe("confirmed");
+    expect(json.claims[0].sources[0].domain).toBe("worldbank.org");
+    expect(json.claims[1].status).toBe("checking");
   });
 
   it("returns the provisional verification sample with mapped labels", async () => {
@@ -37,5 +53,14 @@ describe("GET /api/corpus-sample", () => {
 
     expect(res.status).toBe(404);
     expect(json.error.code).toBe("UNKNOWN_SAMPLE");
+  });
+
+  it("stays disabled when validation demos are not enabled for the environment", async () => {
+    vi.stubEnv("YENTL_DISABLE_VALIDATION_DEMO", "1");
+    const res = await GET(makeRequest("solo_005") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.error.code).toBe("VALIDATION_DEMO_DISABLED");
   });
 });

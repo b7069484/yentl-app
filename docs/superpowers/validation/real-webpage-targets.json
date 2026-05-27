@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-21T17:09:27.114Z",
+  "generated_at": "2026-05-21T23:17:05.896Z",
   "results": [
     {
       "id": "browser-tab-real-video-page",
@@ -8,12 +8,12 @@
       "requiresMedia": true,
       "panelInjected": true,
       "panelStatus": "Page text captured",
-      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&bridge=validation-browser-tab-real-video-page&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
       "videoCount": 2,
       "audioCount": 0,
       "pageTextChunks": 1,
-      "pageTextLength": 1268,
-      "pageTextSample": "Summary DescriptionDavid Korten, The Green Interview.webm English: David Korten in conversation with Silver Donald Cameron Date 26 June 2014, 19:44:53 Source YouTube: https://www.youtube.com/watch?v=ysCtpyhmsY4 – View/save archived versions"
+      "pageTextLength": 214,
+      "pageTextSample": "DescriptionDavid Korten, The Green Interview.webm\n\nEnglish: David Korten in conversation with Silver Donald Cameron\n\nYouTube: https://www.youtube.com/watch?v=ysCtpyhmsY4 – View/save archived versions on archive.org"
     },
     {
       "id": "browser-page-real-text",
@@ -22,7 +22,7 @@
       "requiresMedia": false,
       "panelInjected": true,
       "panelStatus": "Page text captured",
-      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&bridge=validation-browser-page-real-text&title=Residents+shelter+in+place+for+hours+after+gas+leak+outside+of+Los+Angeles+-+Wikinews%2C+the+free+news+source",
+      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&title=Residents+shelter+in+place+for+hours+after+gas+leak+outside+of+Los+Angeles+-+Wikinews%2C+the+free+news+source",
       "videoCount": 0,
       "audioCount": 0,
       "pageTextChunks": 1,

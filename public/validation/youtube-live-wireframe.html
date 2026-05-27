@@ -1,0 +1,3442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yentl YouTube Live Workspace Wireframe</title>
+  <style>
+    :root {
+      --cream: #faf9f5;
+      --surface: #f4f1e8;
+      --paper: #ffffff;
+      --ink: #1a1a1f;
+      --ink-2: #2a2f40;
+      --ink-3: #5b6075;
+      --ink-4: #8b8fa0;
+      --line: #e8e1ce;
+      --line-strong: #d8cfb4;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --amber: #f59e0b;
+      --amber-soft: #fef3c7;
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, .16);
+      --red-soft: rgba(239, 68, 68, .12);
+      --rail-width: 420px;
+      --radius: 8px;
+      color-scheme: light;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    .page {
+      width: min(1800px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .intro {
+      display: grid;
+      gap: 10px;
+      margin: 0 auto 18px;
+      width: min(1320px, 100%);
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 54px);
+      font-weight: 500;
+      line-height: .98;
+    }
+
+    .intro p {
+      max-width: 840px;
+      color: var(--ink-3);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .control-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .control {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: inline-flex;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 12px;
+      box-shadow: 0 1px 4px rgba(42, 47, 64, .05);
+    }
+
+    .control label {
+      color: var(--ink-3);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .control input {
+      accent-color: var(--blue);
+      width: 180px;
+    }
+
+    .pill {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      gap: 7px;
+      line-height: 1;
+      min-height: 28px;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .pill.blue {
+      background: var(--blue-soft);
+      border-color: rgba(37, 99, 235, .22);
+      color: var(--blue);
+    }
+
+    .pill.green {
+      background: var(--green-soft);
+      border-color: rgba(34, 197, 94, .28);
+      color: #17833d;
+    }
+
+    .pill.neutral {
+      background: var(--surface);
+      color: var(--ink-3);
+    }
+
+    .dot {
+      background: var(--amber);
+      border-radius: 99px;
+      display: inline-block;
+      height: 9px;
+      width: 9px;
+    }
+
+    .canvas-label {
+      align-items: center;
+      color: var(--ink-3);
+      display: flex;
+      font-size: 12px;
+      font-weight: 800;
+      justify-content: space-between;
+      letter-spacing: .06em;
+      margin: 22px auto 8px;
+      text-transform: uppercase;
+      width: min(1680px, 100%);
+    }
+
+    .desktop-shell {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(42, 47, 64, .09);
+      display: grid;
+      grid-template-rows: 56px minmax(0, 1fr);
+      height: min(900px, calc(100vh - 52px));
+      min-height: 760px;
+      overflow: hidden;
+      width: min(1680px, 100%);
+      margin: 0 auto;
+    }
+
+    .system-strip {
+      align-items: center;
+      background: rgba(255, 255, 255, .92);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .back {
+      align-items: center;
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-3);
+      display: inline-flex;
+      font-size: 13px;
+      font-weight: 700;
+      gap: 8px;
+      height: 36px;
+      padding: 0 12px;
+    }
+
+    .workspace-id {
+      align-items: center;
+      color: var(--ink-4);
+      display: inline-flex;
+      font-size: 13px;
+      gap: 10px;
+    }
+
+    .desktop-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 10px minmax(360px, var(--rail-width));
+      min-height: 0;
+    }
+
+    .watch-card,
+    .rail {
+      min-width: 0;
+    }
+
+    .watch-card {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) 64px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .watch-head {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(270px, .75fr) minmax(420px, 1fr);
+      min-height: 122px;
+      padding: 18px 22px;
+    }
+
+    .title-stack {
+      min-width: 0;
+    }
+
+    .title-stack h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      display: -webkit-box;
+      font-size: clamp(24px, 2.3vw, 36px);
+      font-weight: 500;
+      line-height: 1.02;
+      margin-top: 9px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .title-stack p {
+      color: var(--ink-4);
+      font-size: 13px;
+      margin-top: 7px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .url-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .url-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 164px;
+    }
+
+    .url-box,
+    .btn {
+      align-items: center;
+      border-radius: var(--radius);
+      display: flex;
+      min-height: 46px;
+      padding: 0 14px;
+    }
+
+    .url-box {
+      border: 1px solid #bfc3cf;
+      color: var(--ink-2);
+      font-size: 15px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn {
+      background: var(--ink);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .status-line {
+      align-items: center;
+      background: var(--green-soft);
+      border: 1px solid rgba(34, 197, 94, .28);
+      border-radius: var(--radius);
+      color: #246f3b;
+      display: flex;
+      font-size: 13px;
+      font-weight: 700;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    .player-wrap {
+      align-items: center;
+      background: #15161d;
+      display: flex;
+      justify-content: center;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .player {
+      aspect-ratio: 16 / 9;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, .08), rgba(0, 0, 0, .25)),
+        linear-gradient(135deg, #363d4a 0%, #1a1c23 52%, #0f1015 100%);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08) inset;
+      height: min(100%, calc((100vw - var(--rail-width) - 82px) * .5625));
+      max-height: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+    }
+
+    .speaker-left,
+    .speaker-right {
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.1);
+      bottom: 13%;
+      position: absolute;
+      top: 15%;
+      width: 36%;
+    }
+
+    .speaker-left {
+      left: 8%;
+    }
+
+    .speaker-right {
+      right: 8%;
+    }
+
+    .face {
+      background: rgba(255,255,255,.12);
+      border-radius: 999px 999px 40px 40px;
+      height: 28%;
+      margin: 12% auto 0;
+      width: 34%;
+    }
+
+    .body-block {
+      background: rgba(255,255,255,.11);
+      height: 35%;
+      margin: 7% auto 0;
+      width: 58%;
+    }
+
+    .youtube-chrome {
+      align-items: center;
+      background: rgba(0,0,0,.48);
+      bottom: 0;
+      color: white;
+      display: flex;
+      gap: 12px;
+      left: 0;
+      min-height: 58px;
+      padding: 0 22px;
+      position: absolute;
+      right: 0;
+    }
+
+    .play-dot {
+      border-bottom: 8px solid transparent;
+      border-left: 12px solid white;
+      border-top: 8px solid transparent;
+      height: 0;
+      width: 0;
+    }
+
+    .timeline {
+      background: rgba(255,255,255,.34);
+      border-radius: 999px;
+      flex: 1;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .timeline span {
+      background: var(--blue);
+      display: block;
+      height: 100%;
+      width: 38%;
+    }
+
+    .caption-burst {
+      background: rgba(0, 0, 0, .72);
+      border-radius: var(--radius);
+      bottom: 74px;
+      color: #fff;
+      font-size: clamp(14px, 1.4vw, 20px);
+      font-weight: 800;
+      left: 50%;
+      line-height: 1.25;
+      max-width: 74%;
+      padding: 10px 14px;
+      position: absolute;
+      text-align: center;
+      transform: translateX(-50%);
+    }
+
+    .player-foot {
+      align-items: center;
+      background: var(--paper);
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      min-height: 64px;
+      padding: 0 22px;
+    }
+
+    .source-meta {
+      min-width: 0;
+    }
+
+    .source-meta strong {
+      display: block;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .source-meta span {
+      color: var(--ink-4);
+      display: block;
+      font-size: 12px;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .foot-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .resize-gutter {
+      align-items: center;
+      background: linear-gradient(90deg, rgba(232, 225, 206, .2), rgba(232, 225, 206, .65), rgba(232, 225, 206, .2));
+      cursor: col-resize;
+      display: flex;
+      justify-content: center;
+    }
+
+    .resize-gutter::before {
+      background: var(--line-strong);
+      border-radius: 999px;
+      content: "";
+      height: 72px;
+      width: 3px;
+    }
+
+    .rail {
+      border-left: 1px solid var(--line);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .rail-scroll {
+      display: grid;
+      gap: 12px;
+      grid-auto-rows: max-content;
+      min-height: 0;
+      overflow: auto;
+      padding: 16px 18px;
+    }
+
+    .signals {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .tile {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      min-height: 72px;
+      padding: 11px 12px;
+    }
+
+    .tile.hot {
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, .36);
+    }
+
+    .tile.good {
+      background: var(--green-soft);
+      border-color: rgba(34, 197, 94, .28);
+    }
+
+    .tile small,
+    .panel small {
+      color: var(--ink-4);
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .tile b {
+      color: var(--ink-2);
+      display: block;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    .tile span {
+      color: var(--ink-3);
+      display: block;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .read-panel {
+      min-height: 118px;
+    }
+
+    .read-panel p {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .transcript-panel {
+      display: grid;
+      gap: 10px;
+      min-height: 250px;
+    }
+
+    .panel-head {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .panel-head span {
+      color: var(--ink-4);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+
+    .line {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-3);
+      font-size: 13px;
+      line-height: 1.45;
+      padding: 10px;
+    }
+
+    .line.active {
+      background: var(--blue-soft);
+      border-color: rgba(37, 99, 235, .26);
+      box-shadow: inset 3px 0 0 var(--blue);
+      color: var(--ink-2);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border-radius: 999px;
+      color: var(--ink-3);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      padding: 5px 8px;
+      text-transform: uppercase;
+    }
+
+    .chip.claim {
+      background: var(--amber-soft);
+      color: #855900;
+    }
+
+    .chip.marker {
+      background: var(--red-soft);
+      color: #b62929;
+    }
+
+    .finding-panel {
+      background: #fffaf0;
+      border-color: rgba(245, 158, 11, .34);
+      min-height: 108px;
+    }
+
+    .finding-panel h3 {
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .finding-panel p {
+      color: #7c5220;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .rail-dock {
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      padding: 14px 18px;
+    }
+
+    .dock-btn {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: flex;
+      font-size: 13px;
+      font-weight: 800;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    .dock-btn.primary {
+      background: var(--ink);
+      color: white;
+    }
+
+    .dock-btn.secondary {
+      background: var(--paper);
+      color: var(--ink-2);
+    }
+
+    .mobile-section {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1fr) minmax(340px, 390px);
+      margin: 28px auto 0;
+      width: min(1320px, 100%);
+    }
+
+    .mobile-notes {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 10px 22px rgba(42, 47, 64, .06);
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .mobile-notes h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 1.05;
+    }
+
+    .mobile-notes p,
+    .mobile-notes li {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .mobile-notes ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .phone {
+      background: #111217;
+      border: 10px solid #111217;
+      border-radius: 34px;
+      box-shadow: 0 18px 36px rgba(26, 26, 31, .22);
+      height: 844px;
+      overflow: hidden;
+      width: 390px;
+    }
+
+    .phone-screen {
+      background: var(--cream);
+      border-radius: 24px;
+      display: grid;
+      grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .phone-top {
+      align-items: center;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      height: 52px;
+      justify-content: space-between;
+      padding: 0 14px;
+    }
+
+    .phone-source {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+      padding: 12px 14px;
+    }
+
+    .phone-source .url-row {
+      grid-template-columns: minmax(0, 1fr) 78px;
+      gap: 8px;
+    }
+
+    .phone-source .url-box,
+    .phone-source .btn {
+      font-size: 12px;
+      min-height: 38px;
+      padding: 0 10px;
+    }
+
+    .phone-start {
+      display: none;
+    }
+
+    .phone-source h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .phone-player {
+      background: #15161d;
+      border-bottom: 1px solid var(--line);
+      padding: 0;
+    }
+
+    .phone-player .player {
+      aspect-ratio: 16 / 9;
+      height: auto;
+      max-height: none;
+      width: 100%;
+    }
+
+    .phone-player .caption-burst {
+      bottom: 52px;
+      font-size: 12px;
+      max-width: 82%;
+      padding: 7px 9px;
+    }
+
+    .phone-player .youtube-chrome {
+      min-height: 42px;
+      padding: 0 12px;
+    }
+
+    .phone-live-strip {
+      align-items: center;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr auto;
+      min-height: 58px;
+      padding: 9px 14px;
+    }
+
+    .phone-live-strip b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .phone-live-strip span {
+      color: var(--ink-4);
+      display: block;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .phone-scroll {
+      display: grid;
+      gap: 10px;
+      overflow: auto;
+      padding: 12px 14px 92px;
+      scrollbar-width: none;
+    }
+
+    .phone-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tabs {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      min-height: 38px;
+      overflow: hidden;
+    }
+
+    .tab {
+      align-items: center;
+      color: var(--ink-3);
+      display: flex;
+      font-size: 11px;
+      font-weight: 900;
+      justify-content: center;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .tab.active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .phone .signals {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .phone .tile {
+      min-height: 66px;
+      padding: 10px;
+    }
+
+    .phone .read-panel {
+      min-height: 104px;
+    }
+
+    .phone .transcript-panel {
+      min-height: 210px;
+    }
+
+    .phone-dock {
+      background: rgba(255, 255, 255, .96);
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      padding: 10px 14px 14px;
+    }
+
+    .phone-dock .dock-btn {
+      min-height: 44px;
+      min-width: 0;
+    }
+
+    .spec-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 26px auto 0;
+      width: min(1320px, 100%);
+    }
+
+    .spec {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      min-height: 92px;
+      padding: 13px;
+    }
+
+    .spec b {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .spec span {
+      color: var(--ink-3);
+      display: block;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .state-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .tone-tabs {
+      margin-top: 8px;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="calm"] {
+      border-color: rgba(96, 165, 250, .4);
+      color: #1d4ed8;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="productive"] {
+      border-color: rgba(34, 197, 94, .4);
+      color: #15803d;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="misleading"] {
+      border-color: rgba(234, 179, 8, .52);
+      color: #a16207;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="contentious"] {
+      border-color: rgba(249, 115, 22, .48);
+      color: #c2410c;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="heated"] {
+      border-color: rgba(239, 68, 68, .42);
+      color: #b91c1c;
+    }
+
+    .tone-tabs .state-tab[data-set-tone="mixed"] {
+      border-color: rgba(124, 58, 237, .36);
+      color: #6d28d9;
+    }
+
+    .state-tab,
+    .rail-focus-controls button {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-3);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 0 12px;
+    }
+
+    .state-tab.is-active,
+    .rail-focus-controls button.is-active {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    .desktop-shell-v2 {
+      grid-template-rows: 50px minmax(0, 1fr);
+      height: min(1080px, calc(100vh - 52px));
+      min-height: 920px;
+    }
+
+    .system-strip-v2 {
+      display: flex;
+      gap: 16px;
+      min-height: 58px;
+      position: relative;
+    }
+
+    .strip-actions {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-left: auto;
+      min-width: 0;
+    }
+
+    .session-toast {
+      align-items: center;
+      background: #fff;
+      border: 1px solid rgba(37, 99, 235, .18);
+      border-radius: 999px;
+      box-shadow: 0 14px 34px rgba(42, 47, 64, .12);
+      color: var(--ink-4);
+      display: flex;
+      font-size: 12px;
+      font-weight: 900;
+      left: 50%;
+      min-height: 32px;
+      padding: 0 14px;
+      pointer-events: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      transform: translate(-50%, 0);
+      z-index: 9;
+    }
+
+    .session-toast.is-arrival {
+      animation: session-toast-in 5.8s ease forwards;
+    }
+
+    .session-toast.is-saved {
+      animation: session-toast-saved 2.8s ease forwards;
+      border-color: rgba(34, 197, 94, .28);
+      color: #15803d;
+    }
+
+    .session-toast.is-hidden {
+      display: none;
+    }
+
+    @keyframes session-toast-in {
+      0% { opacity: 0; transform: translate(-50%, -5px); }
+      10% { opacity: 1; transform: translate(-50%, 0); }
+      82% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -5px); visibility: hidden; }
+    }
+
+    @keyframes session-toast-saved {
+      0% { opacity: 0; transform: translate(-50%, -4px); visibility: visible; }
+      18% { opacity: 1; transform: translate(-50%, 0); }
+      76% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -4px); visibility: hidden; }
+    }
+
+    .strip-button {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 0 12px;
+    }
+
+    .header-source-control {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      left: 50%;
+      min-width: 0;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(560px, calc(100% - 620px));
+    }
+
+    .desktop-shell-v2:not([data-state="fresh"]) .header-source-control {
+      width: min(430px, calc(100% - 760px));
+    }
+
+    .header-url-box {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid #bfc3cf;
+      border-radius: var(--radius);
+      color: var(--ink-4);
+      display: flex;
+      flex: 1 1 auto;
+      font-size: 14px;
+      min-height: 40px;
+      min-width: 0;
+      overflow: hidden;
+      padding: 0 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header-url-box.loaded {
+      border-radius: 999px;
+      color: var(--ink-3);
+      font-size: 12px;
+      min-height: 36px;
+      padding: 0 7px 0 13px;
+    }
+
+    .header-url-text {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header-start-button {
+      align-items: center;
+      background: var(--ink);
+      border: 0;
+      border-radius: var(--radius);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      flex: 0 0 auto;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 18px;
+    }
+
+    .header-change-button {
+      align-items: center;
+      background: #fff;
+      border: 1px solid rgba(37, 99, 235, .18);
+      border-radius: 999px;
+      color: var(--blue);
+      cursor: pointer;
+      display: inline-flex;
+      flex: 0 0 auto;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      justify-content: center;
+      margin-left: auto;
+      min-height: 26px;
+      padding: 0 12px;
+    }
+
+    .desktop-grid-v2 {
+      grid-template-columns: minmax(0, 1fr) 10px minmax(380px, var(--rail-width));
+      transition: filter .25s ease, opacity .25s ease;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .desktop-grid-v2 {
+      filter: grayscale(.25);
+      opacity: .34;
+      pointer-events: none;
+    }
+
+    .watch-card-v2 {
+      grid-template-rows: auto minmax(0, 1fr) 64px;
+      position: relative;
+    }
+
+    .watch-head-v2 {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: block;
+      min-height: 126px;
+      padding: 18px 22px;
+    }
+
+    .source-story {
+      min-width: 0;
+    }
+
+    .source-badges {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .source-story h2 {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 4.1vw, 58px);
+      font-weight: 500;
+      line-height: .98;
+      max-width: 900px;
+    }
+
+    .source-story p {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-top: 10px;
+      max-width: 720px;
+    }
+
+    .status-badge {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 800;
+      gap: 7px;
+      min-height: 28px;
+      padding: 0 10px;
+    }
+
+    .status-badge.status-awaiting {
+      background: var(--surface);
+      color: var(--ink-3);
+    }
+
+    .status-badge.status-starting,
+    .status-badge.status-live {
+      background: var(--green-soft);
+      border-color: rgba(34, 197, 94, .3);
+      color: #17833d;
+    }
+
+    .status-badge.status-issue {
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, .38);
+      color: #8a5a08;
+    }
+
+    .status-dot {
+      border-radius: 99px;
+      display: inline-block;
+      height: 9px;
+      width: 9px;
+    }
+
+    .status-dot.waiting {
+      background: var(--ink-4);
+    }
+
+    .status-dot.starting,
+    .status-dot.ready,
+    .status-dot.live {
+      background: var(--green);
+    }
+
+    .status-dot.issue {
+      background: var(--amber);
+    }
+
+    .status-dot.live {
+      animation: yentl-dot-pulse 2.4s ease-in-out infinite;
+    }
+
+    .source-control-v2 {
+      display: none;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .url-entry-v2 {
+      gap: 8px;
+    }
+
+    .url-entry-v2 label {
+      color: var(--ink-4);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .url-action-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 150px;
+    }
+
+    .url-box.muted {
+      color: var(--ink-4);
+    }
+
+    .btn.wide {
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .ready-action-v2 {
+      gap: 8px;
+    }
+
+    .ready-action-v2 span {
+      color: var(--ink-4);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .collapsed-url {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink-3);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      gap: 10px;
+      justify-content: space-between;
+      min-height: 38px;
+      min-width: 0;
+      padding: 0 12px;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .collapsed-url span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .collapsed-url b {
+      color: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .collapsed-url:hover,
+    .collapsed-url:focus {
+      border-color: rgba(37, 99, 235, .45);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .08);
+      transform: translateY(-1px);
+    }
+
+    .player-wrap-v2 {
+      align-items: stretch;
+      background: #15161d;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .player-empty,
+    .player-ready,
+    .player-issue {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(37, 99, 235, .18), transparent 28%),
+        linear-gradient(135deg, #20232d, #111218);
+      color: #fff;
+      min-height: 100%;
+      padding: 30px;
+      place-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .player-empty > div,
+    .ready-poster,
+    .issue-poster {
+      max-width: 420px;
+    }
+
+    .empty-icon,
+    .play-halo {
+      align-items: center;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px;
+      display: inline-flex;
+      height: 64px;
+      justify-content: center;
+      margin-bottom: 14px;
+      width: 64px;
+    }
+
+    .player-empty h3,
+    .player-ready h3,
+    .player-issue h3,
+    .ready-poster strong {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 500;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+
+    .player-empty p,
+    .player-ready p,
+    .player-issue p {
+      color: rgba(255, 255, 255, .72);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .fallback-actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .fallback-actions .dock-btn {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(255, 255, 255, .22);
+      color: #fff;
+      min-height: 42px;
+    }
+
+    .player-v2 {
+      height: 100%;
+    }
+
+    .live-feedback-burst {
+      background: var(--blue);
+      border-radius: 999px;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, .35);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      padding: 8px 12px;
+      position: absolute;
+      right: 7%;
+      top: 10%;
+      text-transform: uppercase;
+    }
+
+    .switch-sheet {
+      align-items: center;
+      background: rgba(17, 18, 24, .78);
+      inset: 0;
+      justify-content: center;
+      padding: 24px;
+      position: absolute;
+      z-index: 4;
+    }
+
+    .switch-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 22px 44px rgba(0, 0, 0, .24);
+      max-width: 520px;
+      padding: 22px;
+    }
+
+    .switch-card small {
+      color: var(--ink-4);
+      display: block;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .switch-card h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 500;
+      line-height: 1.08;
+      margin-top: 8px;
+    }
+
+    .switch-card p {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .switch-actions {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr 96px;
+      margin-top: 18px;
+    }
+
+    .player-foot-v2 {
+      min-height: 64px;
+    }
+
+    .rail-v2 {
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .rail-focus-controls {
+      background: var(--paper);
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, 1fr);
+      padding: 0;
+    }
+
+    .rail-focus-controls button {
+      min-height: 38px;
+      padding: 0 8px;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .rail-focus-controls,
+    .desktop-shell-v2[data-state="ready"] .rail-focus-controls,
+    .desktop-shell-v2[data-state="issue"] .rail-focus-controls,
+    .desktop-shell-v2[data-state="fresh"] .rail-dock-v2,
+    .desktop-shell-v2[data-state="ready"] .rail-dock-v2,
+    .desktop-shell-v2[data-state="issue"] .rail-dock-v2 {
+      display: none;
+    }
+
+    .rail-body-v2 {
+      display: grid;
+      gap: 12px;
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 0;
+      overflow: hidden;
+      padding: 10px 18px 14px;
+    }
+
+    .rail-standby {
+      align-content: start;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(37, 99, 235, .1), transparent 32%),
+        var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .rail-standby small {
+      color: var(--ink-4);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .rail-standby h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.05;
+    }
+
+    .rail-standby p {
+      color: var(--ink-3);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .standby-steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .standby-steps div {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 12px;
+    }
+
+    .rail-active-content {
+      gap: 10px;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-height: 0;
+    }
+
+    .signal-expander {
+      --metric-accent: var(--blue);
+      --metric-border: rgba(37, 99, 235, .38);
+      display: grid;
+      gap: 0;
+      grid-template-rows: auto auto;
+    }
+
+    .desktop-shell-v2[data-metric="pulse"] .signal-expander {
+      --metric-accent: var(--blue);
+      --metric-border: rgba(37, 99, 235, .46);
+    }
+
+    .desktop-shell-v2[data-metric="claims"] .signal-expander {
+      --metric-accent: var(--amber);
+      --metric-border: rgba(245, 158, 11, .46);
+    }
+
+    .desktop-shell-v2[data-metric="heat"] .signal-expander {
+      --metric-accent: #ef4444;
+      --metric-border: rgba(239, 68, 68, .46);
+    }
+
+    .desktop-shell-v2[data-metric="evidence"] .signal-expander {
+      --metric-accent: var(--green);
+      --metric-border: rgba(34, 197, 94, .46);
+    }
+
+    .signal-ribbon {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: -1px;
+      position: relative;
+      z-index: 3;
+    }
+
+    .signal-tile {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      cursor: pointer;
+      font: inherit;
+      min-width: 0;
+      padding: 10px;
+      position: relative;
+      text-align: left;
+      transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .signal-tile:hover,
+    .signal-tile.is-active {
+      background: var(--paper);
+      border-color: var(--metric-border);
+      box-shadow: 0 8px 20px rgba(42, 47, 64, .08);
+      transform: translateY(-1px);
+    }
+
+    .signal-tile.is-active {
+      border-bottom-color: var(--paper);
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      box-shadow: inset 0 3px 0 var(--metric-accent), 0 8px 20px rgba(42, 47, 64, .08);
+      z-index: 5;
+    }
+
+    .signal-tile.metric-pulse.is-active {
+      box-shadow: inset 0 3px 0 var(--blue), 0 8px 20px rgba(42, 47, 64, .08);
+    }
+
+    .signal-tile.metric-claims.is-active {
+      box-shadow: inset 0 3px 0 var(--amber), 0 8px 20px rgba(42, 47, 64, .08);
+    }
+
+    .signal-tile.metric-heat.is-active {
+      box-shadow: inset 0 3px 0 #ef4444, 0 8px 20px rgba(42, 47, 64, .08);
+    }
+
+    .signal-tile.metric-evidence.is-active {
+      box-shadow: inset 0 3px 0 var(--green), 0 8px 20px rgba(42, 47, 64, .08);
+    }
+
+    .signal-tile.is-active::before {
+      background: var(--paper);
+      bottom: -10px;
+      content: "";
+      height: 10px;
+      left: -1px;
+      position: absolute;
+      right: -1px;
+      z-index: 4;
+    }
+
+    .signal-tile:hover::after,
+    .signal-tile:focus-visible::after {
+      background: var(--ink);
+      border-radius: var(--radius);
+      box-shadow: 0 14px 32px rgba(26, 26, 31, .22);
+      color: #fff;
+      content: attr(data-tooltip);
+      font-size: 12px;
+      font-weight: 700;
+      left: 0;
+      line-height: 1.35;
+      padding: 10px 11px;
+      position: absolute;
+      top: calc(100% + 8px);
+      width: min(260px, 72vw);
+      z-index: 8;
+    }
+
+    .signal-ribbon small,
+    .rail-panel small {
+      color: var(--ink-4);
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .signal-ribbon b {
+      color: var(--ink-2);
+      display: block;
+      font-size: 13px;
+      margin-top: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .signal-tile span {
+      color: var(--ink-4);
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .metric-detail {
+      background: var(--paper);
+      border: 1px solid var(--metric-border);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: inset 0 3px 0 var(--metric-accent);
+      min-height: 62px;
+      overflow: hidden;
+      padding: 9px 11px 10px;
+    }
+
+    .metric-panel {
+      display: none;
+    }
+
+    .desktop-shell-v2[data-metric="pulse"] [data-metric-panel="pulse"],
+    .desktop-shell-v2[data-metric="claims"] [data-metric-panel="claims"],
+    .desktop-shell-v2[data-metric="heat"] [data-metric-panel="heat"],
+    .desktop-shell-v2[data-metric="evidence"] [data-metric-panel="evidence"] {
+      display: block;
+    }
+
+    .metric-panel b {
+      color: var(--ink-2);
+      display: block;
+      font-size: 13px;
+    }
+
+    .metric-panel p {
+      color: var(--ink-3);
+      font-size: 11px;
+      line-height: 1.35;
+      margin-top: 3px;
+    }
+
+    .metric-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .metric-examples span {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink-2);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .03em;
+      padding: 4px 7px;
+      text-transform: uppercase;
+    }
+
+    .rail-detail-stack {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .rail-detail-stack .rail-focus-controls {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+    }
+
+    .rail-detail-stack .rail-focus-controls button {
+      border-radius: calc(var(--radius) - 2px);
+      min-height: 34px;
+    }
+
+    .rail-tab-panels {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .rail-tab-panel {
+      border: 0;
+      border-radius: 0;
+      display: none;
+      height: 100%;
+      min-height: 0;
+      padding: 12px;
+      transform: none !important;
+    }
+
+    .desktop-shell-v2[data-focus="transcript"] .rail-transcript-pane,
+    .desktop-shell-v2[data-focus="findings"] .rail-findings-pane {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .tab-scroll {
+      align-content: start;
+      display: grid;
+      gap: 9px;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 0 4px 10px 0;
+    }
+
+    .tab-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .tab-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 151, 166, .36);
+      border-radius: 999px;
+    }
+
+    .rail-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      min-height: 0;
+      overflow: hidden;
+      padding: 14px;
+      transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .rail-panel:hover {
+      border-color: rgba(37, 99, 235, .28);
+      box-shadow: 0 10px 26px rgba(42, 47, 64, .08);
+      transform: translateY(-1px);
+    }
+
+    .rail-panel p {
+      color: var(--ink-3);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .read-meter {
+      background: var(--surface);
+      border-radius: 999px;
+      height: 8px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .read-meter span {
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      display: block;
+      height: 100%;
+    }
+
+    .rail-read {
+      --read-accent: #ef4444;
+      --read-bg:
+        radial-gradient(circle at 18% 14%, rgba(239, 68, 68, .9), transparent 34%),
+        radial-gradient(circle at 88% 72%, rgba(245, 158, 11, .68), transparent 40%),
+        linear-gradient(135deg, #4a1020 0%, #7f1d1d 46%, #18111c 100%);
+      --read-aura: rgba(239, 68, 68, .22);
+      background: #111827;
+      border-color: transparent;
+      box-shadow:
+        0 14px 36px rgba(26, 26, 31, .16),
+        0 0 34px var(--read-aura);
+      color: #fff;
+      padding: 0;
+      position: relative;
+    }
+
+    .rail-top-read {
+      margin: 14px 18px 0;
+      min-height: 230px;
+    }
+
+    .rail-read::before {
+      animation: yentl-tone-drift 8s ease-in-out infinite alternate;
+      background: var(--read-bg);
+      content: "";
+      filter: saturate(1.15);
+      inset: -18%;
+      opacity: .96;
+      position: absolute;
+      transform-origin: center;
+    }
+
+    .rail-read::after {
+      background:
+        linear-gradient(180deg, rgba(7, 10, 19, .32), rgba(7, 10, 19, .74)),
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .18), transparent 42%);
+      content: "";
+      inset: 0;
+      position: absolute;
+    }
+
+    @keyframes yentl-tone-drift {
+      0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+      100% { transform: translate3d(2%, 1%, 0) scale(1.08); }
+    }
+
+    .desktop-shell-v2[data-tone="calm"] .rail-read {
+      --read-accent: #60a5fa;
+      --read-aura: rgba(96, 165, 250, .2);
+      --read-bg:
+        radial-gradient(circle at 22% 24%, rgba(96, 165, 250, .78), transparent 32%),
+        radial-gradient(circle at 82% 76%, rgba(14, 165, 233, .34), transparent 42%),
+        linear-gradient(135deg, #0a2448 0%, #0b3a6f 54%, #06121f 100%);
+    }
+
+    .desktop-shell-v2[data-tone="productive"] .rail-read {
+      --read-accent: #22c55e;
+      --read-aura: rgba(34, 197, 94, .2);
+      --read-bg:
+        radial-gradient(circle at 18% 22%, rgba(34, 197, 94, .78), transparent 32%),
+        radial-gradient(circle at 84% 74%, rgba(20, 184, 166, .32), transparent 42%),
+        linear-gradient(135deg, #0c321f 0%, #14532d 56%, #061914 100%);
+    }
+
+    .desktop-shell-v2[data-tone="misleading"] .rail-read {
+      --read-accent: #eab308;
+      --read-aura: rgba(234, 179, 8, .28);
+      --read-bg:
+        radial-gradient(circle at 18% 18%, rgba(250, 204, 21, .92), transparent 31%),
+        radial-gradient(circle at 86% 72%, rgba(202, 138, 4, .48), transparent 42%),
+        linear-gradient(135deg, #3b2f05 0%, #854d0e 52%, #151005 100%);
+    }
+
+    .desktop-shell-v2[data-tone="contentious"] .rail-read {
+      --read-accent: #f97316;
+      --read-aura: rgba(249, 115, 22, .24);
+      --read-bg:
+        radial-gradient(circle at 18% 18%, rgba(249, 115, 22, .86), transparent 32%),
+        radial-gradient(circle at 86% 76%, rgba(234, 88, 12, .5), transparent 42%),
+        linear-gradient(135deg, #431407 0%, #9a3412 54%, #1a0f08 100%);
+    }
+
+    .desktop-shell-v2[data-tone="heated"] .rail-read {
+      --read-accent: #ef4444;
+      --read-aura: rgba(239, 68, 68, .28);
+      --read-bg:
+        radial-gradient(circle at 18% 16%, rgba(239, 68, 68, .88), transparent 32%),
+        radial-gradient(circle at 86% 74%, rgba(190, 24, 93, .42), transparent 42%),
+        linear-gradient(135deg, #4a1020 0%, #7f1d1d 56%, #160b13 100%);
+    }
+
+    .desktop-shell-v2[data-tone="mixed"] .rail-read {
+      --read-accent: #a78bfa;
+      --read-aura: rgba(167, 139, 250, .24);
+      --read-bg:
+        radial-gradient(circle at 18% 18%, rgba(37, 99, 235, .5), transparent 30%),
+        radial-gradient(circle at 76% 22%, rgba(239, 68, 68, .58), transparent 32%),
+        radial-gradient(circle at 76% 82%, rgba(245, 158, 11, .42), transparent 36%),
+        linear-gradient(135deg, #1e1b4b 0%, #3b0764 52%, #0f172a 100%);
+    }
+
+    .desktop-shell-v2[data-tone-mode="auto"] .rail-read {
+      box-shadow:
+        0 14px 36px rgba(26, 26, 31, .16),
+        0 0 42px var(--read-aura);
+    }
+
+    .read-tone-strip {
+      display: grid;
+      gap: 6px;
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .tone-step {
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 999px;
+      height: 8px;
+      opacity: .42;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .tone-step::before {
+      content: "";
+      inset: 0;
+      position: absolute;
+    }
+
+    .tone-step[data-step="calm"]::before {
+      background: #60a5fa;
+    }
+
+    .tone-step[data-step="productive"]::before {
+      background: #22c55e;
+    }
+
+    .tone-step[data-step="misleading"]::before {
+      background: #eab308;
+    }
+
+    .tone-step[data-step="contentious"]::before {
+      background: #f97316;
+    }
+
+    .tone-step[data-step="heated"]::before {
+      background: #ef4444;
+    }
+
+    .tone-step[data-step="mixed"]::before {
+      background: linear-gradient(90deg, #60a5fa, #eab308, #ef4444, #f97316);
+    }
+
+    .desktop-shell-v2[data-tone="calm"] .tone-step[data-step="calm"],
+    .desktop-shell-v2[data-tone="productive"] .tone-step[data-step="productive"],
+    .desktop-shell-v2[data-tone="misleading"] .tone-step[data-step="misleading"],
+    .desktop-shell-v2[data-tone="contentious"] .tone-step[data-step="contentious"],
+    .desktop-shell-v2[data-tone="heated"] .tone-step[data-step="heated"],
+    .desktop-shell-v2[data-tone="mixed"] .tone-step[data-step="mixed"] {
+      border-color: rgba(255, 255, 255, .62);
+      opacity: 1;
+      transform: scaleY(1.45);
+    }
+
+    .read-stage {
+      display: grid;
+      gap: 11px;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      min-height: 100%;
+      padding: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .read-panel-top,
+    .read-stream-head {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .read-stage small {
+      color: rgba(255, 255, 255, .72);
+    }
+
+    .read-mood {
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 999px;
+      box-shadow: inset 0 -2px 0 var(--read-accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      padding: 6px 9px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hot-take {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(24px, 2vw, 34px);
+      font-weight: 500;
+      line-height: 1.03;
+      max-width: 100%;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, .25);
+    }
+
+    .read-subline {
+      color: rgba(255, 255, 255, .82) !important;
+      font-size: 14px !important;
+      line-height: 1.35 !important;
+      margin-top: 10px !important;
+    }
+
+    .speaker-signal {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .speaker-card {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: var(--radius);
+      min-width: 0;
+      padding: 8px;
+    }
+
+    .speaker-card b {
+      display: block;
+      font-size: 12px;
+    }
+
+    .speaker-card span {
+      color: rgba(255, 255, 255, .76);
+      display: block;
+      font-size: 11px;
+      line-height: 1.3;
+      margin-top: 3px;
+    }
+
+    .read-stream {
+      border-top: 1px solid rgba(255, 255, 255, .18);
+      display: grid;
+      padding-top: 9px;
+    }
+
+    .read-stream-head span,
+    .read-stream-head button {
+      color: rgba(255, 255, 255, .8);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .read-stream-head button {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px;
+      font: inherit;
+      padding: 4px 8px;
+    }
+
+    .read-history-pill {
+      align-items: center;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, .84);
+      display: flex;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      justify-content: space-between;
+      min-height: 30px;
+      padding: 0 10px;
+      width: 100%;
+    }
+
+    .read-bottom-grid {
+      display: grid;
+      gap: 7px;
+    }
+
+    .read-insight-bar {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .18);
+      box-shadow: inset 3px 0 0 var(--read-accent);
+      border-radius: var(--radius);
+      color: rgba(255, 255, 255, .82);
+      font-size: 11px;
+      line-height: 1.3;
+      padding: 8px 9px;
+    }
+
+    .read-insight-bar b {
+      color: #fff;
+      display: block;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .read-history-link {
+      color: #fff;
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      margin-top: 5px;
+      text-transform: uppercase;
+    }
+
+    .read-feed-row {
+      align-items: start;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: var(--radius);
+      color: rgba(255, 255, 255, .84);
+      display: grid;
+      font-size: 11px;
+      gap: 7px;
+      grid-template-columns: 38px 1fr;
+      line-height: 1.28;
+      padding: 7px 8px;
+    }
+
+    .read-feed-row time {
+      color: rgba(255, 255, 255, .58);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+    }
+
+    .rail-findings {
+      background: #fffaf0;
+      border-color: rgba(245, 158, 11, .32);
+    }
+
+    .rail-findings h3 {
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .tab-panel-head,
+    .panel-head {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      margin: -12px -12px 12px;
+      min-height: 40px;
+      padding: 0 12px;
+    }
+
+    .tab-panel-head span,
+    .panel-head span {
+      color: var(--ink-4);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .transcript-card,
+    .finding-card,
+    .evidence-card,
+    .marker-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      display: grid;
+      gap: 6px;
+      padding: 11px 12px;
+    }
+
+    .transcript-card.active {
+      background: #eff6ff;
+      border-color: rgba(37, 99, 235, .34);
+      box-shadow: inset 4px 0 0 var(--blue);
+    }
+
+    .transcript-card.yentl-note {
+      background: #f8fafc;
+      border-style: dashed;
+    }
+
+    .transcript-meta,
+    .finding-meta {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .transcript-meta b,
+    .finding-meta b {
+      font-size: 12px;
+    }
+
+    .transcript-meta time,
+    .finding-meta time {
+      color: var(--ink-4);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .transcript-card p,
+    .finding-card p,
+    .evidence-card p,
+    .marker-card p {
+      color: var(--ink-3);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .mini-timeline {
+      display: grid;
+      gap: 4px;
+      grid-template-columns: 1fr 1.5fr 1fr;
+      margin: 2px 0;
+    }
+
+    .mini-timeline span {
+      background: var(--line);
+      border-radius: 999px;
+      height: 5px;
+    }
+
+    .mini-timeline span:nth-child(2) {
+      background: var(--blue);
+    }
+
+    .finding-card.priority {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(250, 204, 21, .22), transparent 36%),
+        #fff8db;
+      border-color: rgba(234, 179, 8, .5);
+      box-shadow: inset 4px 0 0 #eab308;
+    }
+
+    .finding-card.risk {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(239, 68, 68, .16), transparent 34%),
+        #fff7f5;
+      border-color: rgba(239, 68, 68, .3);
+      box-shadow: inset 4px 0 0 #ef4444;
+    }
+
+    .finding-card.sourceable {
+      background:
+        radial-gradient(circle at 10% 0%, rgba(34, 197, 94, .16), transparent 34%),
+        #f2fbf5;
+      border-color: rgba(34, 197, 94, .28);
+      box-shadow: inset 4px 0 0 #22c55e;
+    }
+
+    .finding-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .evidence-card,
+    .marker-card {
+      background: #fff;
+    }
+
+    .rail-section-label {
+      color: var(--ink-4);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      margin: 2px 0 -2px;
+      text-transform: uppercase;
+    }
+
+    .scroll-cue {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink-4);
+      display: flex;
+      font-size: 10px;
+      font-weight: 900;
+      gap: 6px;
+      justify-content: center;
+      letter-spacing: .06em;
+      min-height: 28px;
+      text-transform: uppercase;
+    }
+
+    .rail-dock-v2 {
+      gap: 8px;
+      grid-template-columns: 1.35fr 1fr;
+      padding: 10px 18px 12px;
+    }
+
+    .rail-dock-v2 .dock-btn {
+      font-size: 12px;
+      min-height: 38px;
+    }
+
+    .state-fresh-only,
+    .state-ready-only,
+    .state-live-only,
+    .state-issue-only,
+    .state-switch-only,
+    .state-not-fresh,
+    .state-has-url,
+    .state-analysis-active,
+    .state-live-player,
+    .status-awaiting,
+    .status-starting,
+    .status-issue,
+    .status-live {
+      display: none !important;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .state-fresh-only.as-grid,
+    .desktop-shell-v2[data-state="ready"] .state-ready-only.as-grid,
+    .desktop-shell-v2[data-state="live"] .state-live-only.as-grid,
+    .desktop-shell-v2[data-state="issue"] .state-issue-only.as-grid,
+    .desktop-shell-v2[data-state="switch"] .state-switch-only.as-grid,
+    .desktop-shell-v2[data-state="live"] .state-analysis-active.as-grid,
+    .desktop-shell-v2[data-state="switch"] .state-analysis-active.as-grid {
+      display: grid !important;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .state-fresh-only.as-flex,
+    .desktop-shell-v2[data-state="ready"] .state-ready-only.as-flex,
+    .desktop-shell-v2[data-state="live"] .state-live-only.as-flex,
+    .desktop-shell-v2[data-state="issue"] .state-issue-only.as-flex,
+    .desktop-shell-v2[data-state="switch"] .state-switch-only.as-flex,
+    .desktop-shell-v2[data-state="ready"] .state-has-url.as-flex,
+    .desktop-shell-v2[data-state="live"] .state-has-url.as-flex,
+    .desktop-shell-v2[data-state="issue"] .state-has-url.as-flex,
+    .desktop-shell-v2[data-state="switch"] .state-has-url.as-flex {
+      display: flex !important;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .state-fresh-only.as-block,
+    .desktop-shell-v2[data-state="ready"] .state-ready-only.as-block,
+    .desktop-shell-v2[data-state="live"] .state-live-only.as-block,
+    .desktop-shell-v2[data-state="issue"] .state-issue-only.as-block,
+    .desktop-shell-v2[data-state="switch"] .state-switch-only.as-block,
+    .desktop-shell-v2[data-state="live"] .state-live-player.as-block,
+    .desktop-shell-v2[data-state="switch"] .state-live-player.as-block {
+      display: block !important;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .state-fresh-only.as-inline,
+    .desktop-shell-v2[data-state="ready"] .state-ready-only.as-inline,
+    .desktop-shell-v2[data-state="live"] .state-live-only.as-inline,
+    .desktop-shell-v2[data-state="issue"] .state-issue-only.as-inline,
+    .desktop-shell-v2[data-state="switch"] .state-switch-only.as-inline,
+    .desktop-shell-v2[data-state="live"] .state-not-fresh.as-inline,
+    .desktop-shell-v2[data-state="switch"] .state-not-fresh.as-inline {
+      display: inline !important;
+    }
+
+    .desktop-shell-v2[data-state="fresh"] .status-awaiting,
+    .desktop-shell-v2[data-state="ready"] .status-starting,
+    .desktop-shell-v2[data-state="issue"] .status-issue,
+    .desktop-shell-v2[data-state="live"] .status-live,
+    .desktop-shell-v2[data-state="switch"] .status-live {
+      display: inline-flex !important;
+    }
+
+    @media (max-width: 1180px) {
+      .desktop-shell {
+        height: auto;
+        min-height: 0;
+      }
+
+      .desktop-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resize-gutter {
+        display: none;
+      }
+
+      .rail {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        padding: 16px;
+      }
+
+      .watch-head {
+        grid-template-columns: 1fr;
+      }
+
+      .url-row {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-source .url-row {
+        display: flex;
+        grid-template-columns: none;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .phone-source .url-box {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .phone-source .btn {
+        display: none;
+      }
+
+      .phone-source .phone-start {
+        display: flex;
+        min-height: 38px;
+      }
+
+      .phone .tabs {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .phone .tabs .tab:nth-child(3) {
+        display: none;
+      }
+
+      .mobile-section {
+        grid-template-columns: 1fr;
+      }
+
+      .phone {
+        justify-self: center;
+      }
+
+      .spec-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        padding: 0;
+        width: 100vw;
+      }
+
+      .intro {
+        display: none;
+      }
+
+      .canvas-label,
+      .desktop-shell,
+      .mobile-notes,
+      .spec-grid {
+        display: none;
+      }
+
+      .mobile-section {
+        display: block;
+        margin: 0;
+        width: 100vw;
+      }
+
+      .phone {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        height: 100vh;
+        max-width: 100vw;
+        width: 100vw;
+      }
+
+      .phone-screen {
+        border-radius: 0;
+        max-width: 100vw;
+        min-width: 0;
+        overflow-x: hidden;
+        width: 100vw;
+      }
+
+      .phone-source,
+      .phone-player,
+      .phone-live-strip,
+      .phone-scroll,
+      .phone-dock {
+        max-width: 100vw;
+        min-width: 0;
+        overflow-x: hidden;
+        width: 100%;
+      }
+
+      .phone-scroll > *,
+      .phone-dock > * {
+        min-width: 0;
+      }
+
+      .phone-source {
+        padding: 10px 12px;
+      }
+
+      .phone-source .url-row {
+        display: flex;
+        grid-template-columns: none !important;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .phone-source .url-box,
+      .phone-source .btn {
+        min-height: 36px;
+      }
+
+      .phone-source .url-box {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
+      .phone-source .btn {
+        display: none;
+      }
+
+      .phone-source .phone-start {
+        display: flex;
+        min-height: 38px;
+      }
+
+      .phone .tabs {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .phone .tabs .tab:nth-child(3) {
+        display: none;
+      }
+
+      .phone-source h2 {
+        font-size: 24px;
+      }
+
+      .phone-player .player {
+        aspect-ratio: 16 / 9;
+        border-radius: 8px;
+        height: auto;
+        max-height: none;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .phone-player .speaker-left,
+      .phone-player .speaker-right {
+        width: 32%;
+      }
+
+      .phone-player .speaker-left {
+        left: 9%;
+      }
+
+      .phone-player .speaker-right {
+        right: 12%;
+      }
+
+      .phone-live-strip {
+        min-height: 54px;
+        padding: 8px 12px;
+      }
+
+      .phone-scroll {
+        padding: 10px 12px 90px;
+      }
+
+      .phone-player {
+        padding: 8px 12px 10px;
+      }
+
+      .phone-player .player {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .12) inset;
+      }
+
+      .tab {
+        font-size: 10px;
+        letter-spacing: .03em;
+      }
+
+      .phone-dock .dock-btn {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro" aria-labelledby="wireframe-title">
+      <div class="eyebrow">Wireframe layer 1 - proportional layout</div>
+      <h1 id="wireframe-title">YouTube live watch workspace</h1>
+      <p>
+        This is a proportional layout simulation for approval: the YouTube player owns the left side,
+        Yentl owns one bounded analysis rail on the right, and mobile keeps the video first while
+        folding analysis into a stacked rail.
+      </p>
+      <div class="control-row">
+        <div class="control">
+          <label for="rail-slider">Rail width</label>
+          <input id="rail-slider" type="range" min="360" max="480" value="420">
+          <strong id="rail-value">420px</strong>
+        </div>
+        <span class="pill neutral">Desktop split: player first, rail bounded</span>
+        <span class="pill neutral">Mobile split: video, live strip, analysis tabs</span>
+      </div>
+      <div class="state-tabs" aria-label="Desktop wireframe states">
+        <button type="button" class="state-tab" data-set-state="fresh">Fresh URL entry</button>
+        <button type="button" class="state-tab" data-set-state="ready">Starting after one click</button>
+        <button type="button" class="state-tab" data-set-state="live">Live playback</button>
+        <button type="button" class="state-tab" data-set-state="issue">Fallback if blocked</button>
+        <button type="button" class="state-tab" data-set-state="switch">Change URL prompt</button>
+      </div>
+      <div class="state-tabs tone-tabs" aria-label="Yentl read tone states">
+        <button type="button" class="state-tab" data-set-tone="calm">Calm blue</button>
+        <button type="button" class="state-tab" data-set-tone="productive">Productive green</button>
+        <button type="button" class="state-tab" data-set-tone="misleading">Misleading yellow</button>
+        <button type="button" class="state-tab" data-set-tone="contentious">Contentious orange</button>
+        <button type="button" class="state-tab" data-set-tone="heated">Heated red</button>
+        <button type="button" class="state-tab" data-set-tone="mixed">Mixed</button>
+        <button type="button" class="state-tab" data-set-tone="auto">Auto shift</button>
+      </div>
+    </section>
+
+    <div class="canvas-label">
+      <span>Desktop target: 1440-1680px wide</span>
+      <span>Rail adjusts from 360-480px; player keeps 16:9</span>
+    </div>
+
+    <section class="desktop-shell desktop-shell-v2" data-state="live" data-focus="transcript" data-metric="heat" data-tone="heated" aria-label="Desktop proportional wireframe">
+      <header class="system-strip system-strip-v2">
+        <div class="back">← Sources</div>
+          <div class="header-source-control">
+            <div class="header-url-box state-fresh-only as-flex">Paste YouTube URL here</div>
+            <div class="header-url-box loaded state-has-url as-flex">
+              <span class="header-url-text">youtube.com/watch?v=IDC8PrZQHts</span>
+              <button type="button" class="header-change-button" data-set-state="switch">Update</button>
+            </div>
+            <button type="button" class="header-start-button state-fresh-only as-flex">Start analysis</button>
+            <button type="button" class="header-start-button state-ready-only as-flex">Starting...</button>
+            <button type="button" class="header-start-button state-issue-only as-flex">Retry</button>
+          </div>
+        <div class="session-toast is-hidden" data-session-toast>Autosaves as a browser-local session</div>
+        <div class="strip-actions state-has-url as-flex">
+          <button type="button" class="strip-button" data-save-snapshot>Save snapshot</button>
+        </div>
+      </header>
+
+      <div class="desktop-grid desktop-grid-v2">
+        <section class="watch-card watch-card-v2" aria-label="Watch area">
+          <header class="watch-head-v2">
+            <div class="source-story">
+              <div class="source-badges">
+                <span class="pill blue">▷ Watch + live analysis</span>
+                <span class="status-badge status-awaiting">
+                  <span class="status-dot waiting"></span>
+                  Awaiting YouTube URL
+                </span>
+                <span class="status-badge status-starting">
+                  <span class="status-dot starting"></span>
+                  Starting analysis
+                </span>
+                <span class="status-badge status-issue">
+                  <span class="status-dot issue"></span>
+                  Needs fallback
+                </span>
+                <span class="status-badge status-live">
+                  <span class="status-dot live"></span>
+                  Live with Yentl
+                </span>
+              </div>
+
+              <h2>
+                <span class="state-fresh-only as-inline">YouTube watch room</span>
+                <span class="state-ready-only as-inline">Loading the YouTube video and Yentl</span>
+                <span class="state-issue-only as-inline">Yentl needs another capture path</span>
+                <span class="state-not-fresh as-inline">Tucker Debates Kevin O'Leary in Heated Exchange</span>
+              </h2>
+              <p>
+                <span class="state-fresh-only as-inline">Paste a link in the header. Everything below stays muted until the real session starts.</span>
+                <span class="state-ready-only as-inline">One click starts playback and analysis. If captions or audio fail, Yentl offers the fallback path.</span>
+                <span class="state-issue-only as-inline">The video can still play here; Yentl is asking for tab audio or a direct audio file so analysis can continue.</span>
+                <span class="state-not-fresh as-inline">Tucker Carlson Network · live transcript and analysis stay synced to playback.</span>
+              </p>
+            </div>
+
+            <div class="source-control-v2">
+              <div class="url-entry-v2 state-fresh-only as-grid">
+                <label for="desktop-youtube-url">YouTube URL</label>
+                <div class="url-action-row">
+                  <div class="url-box muted">https://www.youtube.com/watch?v=...</div>
+                  <div class="btn">Start analysis</div>
+                </div>
+              </div>
+
+              <div class="ready-action-v2 state-ready-only as-grid">
+                <button type="button" class="btn wide">Starting analysis</button>
+                <span>Loading player, captions, and live read in one motion.</span>
+              </div>
+
+              <button type="button" class="collapsed-url state-has-url as-flex">
+                <span>youtube.com/watch?v=IDC8PrZQHts</span>
+                <b>Update</b>
+              </button>
+            </div>
+          </header>
+
+          <div class="player-wrap-v2">
+            <div class="player-empty state-fresh-only as-grid">
+              <div>
+                <span class="empty-icon">▷</span>
+                <h3>No video loaded yet</h3>
+                <p>Paste a YouTube URL above. This area becomes the real playable YouTube player.</p>
+              </div>
+            </div>
+
+            <div class="player-ready state-ready-only as-grid">
+              <div class="ready-poster">
+                <span class="play-halo">▶</span>
+                <strong>Starting analysis</strong>
+                <p>The player opens and Yentl starts listening from the same action.</p>
+              </div>
+            </div>
+
+            <div class="player-issue state-issue-only as-grid">
+              <div class="issue-poster">
+                <span class="play-halo">!</span>
+                <h3>Captions unavailable or audio permission needed</h3>
+                <p>The video remains in place. Yentl pivots to the clearest fallback without making the user restart the flow.</p>
+                <div class="fallback-actions">
+                  <div class="dock-btn">Share this tab's audio</div>
+                  <div class="dock-btn">Open on YouTube + use extension</div>
+                  <div class="dock-btn">Upload audio instead</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="player player-v2 state-live-player as-block" aria-label="Playable YouTube iframe simulation">
+              <div class="speaker-left"><div class="face"></div><div class="body-block"></div></div>
+              <div class="speaker-right"><div class="face"></div><div class="body-block"></div></div>
+              <div class="caption-burst">"...and that claim needs the actual source, not just the phrasing."</div>
+              <div class="live-feedback-burst">Claim surfaced</div>
+              <div class="youtube-chrome">
+                <span class="play-dot" aria-hidden="true"></span>
+                <strong>03:21 / 42:10</strong>
+                <div class="timeline"><span></span></div>
+                <span>HD</span>
+              </div>
+            </div>
+
+            <div class="switch-sheet state-switch-only as-flex">
+              <div class="switch-card">
+                <small>Change source?</small>
+                <h3>Save this session before replacing the video?</h3>
+                <p>The current transcript, claims, markers, and read can be saved to the library before loading a new URL.</p>
+                <div class="switch-actions">
+                  <button type="button" class="dock-btn primary">Save and switch</button>
+                  <button type="button" class="dock-btn secondary">Switch without saving</button>
+                  <button type="button" class="dock-btn secondary" data-set-state="live">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="player-foot player-foot-v2">
+            <div class="source-meta">
+              <strong>
+                <span class="state-fresh-only as-inline">Ready for a YouTube source</span>
+                <span class="state-ready-only as-inline">Starting YouTube and Yentl together</span>
+                <span class="state-issue-only as-inline">Fallback needed for this source</span>
+                <span class="state-not-fresh as-inline">Tucker Debates Kevin O'Leary in Heated Exchange</span>
+              </strong>
+              <span>
+                <span class="state-fresh-only as-inline">No session ID shown to the user until save/export details.</span>
+                <span class="state-ready-only as-inline">No second confirmation step; this is the same action moving into playback.</span>
+                <span class="state-issue-only as-inline">Yentl keeps the source loaded while asking for another audio path.</span>
+                <span class="state-not-fresh as-inline">Tucker Carlson Network · current source is saved in the session record.</span>
+              </span>
+            </div>
+            <div class="foot-pills">
+              <span class="pill neutral state-live-only as-inline">03:21</span>
+              <span class="pill green state-ready-only as-inline">Starting</span>
+              <span class="pill neutral state-issue-only as-inline">Fallback</span>
+              <span class="pill green state-live-only as-inline">Player ready</span>
+            </div>
+          </footer>
+        </section>
+
+        <div class="resize-gutter" title="Resize rail"></div>
+
+        <aside class="rail rail-v2" aria-label="Yentl analysis rail">
+          <section class="rail-panel rail-read rail-top-read state-analysis-active as-grid">
+            <div class="read-stage">
+              <div class="read-panel-top">
+                <small>Yentl's Read</small>
+                <span class="read-mood">Heated: accusation rising</span>
+              </div>
+              <div>
+                <h3 class="hot-take">The debate just turned into a checkable accusation.</h3>
+                <p class="read-subline">Carlson is compressing context; O'Leary is forcing the missing baseline year before the claim can land.</p>
+              </div>
+              <div class="read-tone-strip" aria-label="Dominant Yentl read color state">
+                <span class="tone-step" data-step="calm" title="Calm blue"></span>
+                <span class="tone-step" data-step="productive" title="Productive green"></span>
+                <span class="tone-step" data-step="misleading" title="Misleading yellow"></span>
+                <span class="tone-step" data-step="contentious" title="Contentious orange"></span>
+                <span class="tone-step" data-step="heated" title="Heated red"></span>
+                <span class="tone-step" data-step="mixed" title="Collision state"></span>
+              </div>
+              <div class="read-bottom-grid">
+                <div class="read-insight-bar">
+                  <b>Speaker read</b>
+                  <span data-speaker-read>Carlson is escalating certainty; O'Leary is pressing for numbers and a baseline year.</span>
+                  <span class="read-history-link">Expand read history: 2 earlier reads</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="rail-body-v2">
+            <section class="rail-standby state-fresh-only as-grid">
+              <small>Before URL</small>
+              <h3>Yentl waits quietly until there is media.</h3>
+              <p>No fake counts, no fake transcript. The page is muted so the header URL box is the obvious first move.</p>
+              <div class="standby-steps">
+                <div>1. Paste YouTube URL</div>
+                <div>2. Press Start analysis once</div>
+                <div>3. Video and Yentl come alive together</div>
+              </div>
+            </section>
+
+            <section class="rail-standby state-ready-only as-grid">
+              <small>Starting now</small>
+              <h3>One click is doing both jobs.</h3>
+              <p>The player is loading and Yentl is trying captions first, then tab-audio capture if captions are not usable.</p>
+              <div class="standby-steps">
+                <div>Player: opening</div>
+                <div>Transcript: waiting for first words</div>
+                <div>Fallbacks: ready only if needed</div>
+              </div>
+            </section>
+
+            <section class="rail-standby state-issue-only as-grid">
+              <small>Fallback path</small>
+              <h3>Keep the video, switch the capture method.</h3>
+              <p>Yentl should not strand the user. It explains the problem plainly and offers the next workable input path.</p>
+              <div class="standby-steps">
+                <div>Share this tab's audio</div>
+                <div>Use the Chrome extension on YouTube</div>
+                <div>Upload audio or paste direct media URL</div>
+              </div>
+            </section>
+
+            <div class="rail-active-content state-analysis-active as-grid">
+              <div class="signal-expander" aria-label="Expandable live signal details">
+                <div class="signal-ribbon">
+                  <button type="button" class="signal-tile metric-pulse" data-set-metric="pulse" data-tooltip="Pulse is Yentl's sense of the conversation's live rhythm: pace, overlap, interruptions, and whether the exchange is accelerating or settling.">
+                    <small>Pulse</small>
+                    <b>Hearing</b>
+                    <span>pace + overlap</span>
+                  </button>
+                  <button type="button" class="signal-tile metric-claims" data-set-metric="claims" data-tooltip="Claims counts checkable assertions that may need evidence, context, or source comparison.">
+                    <small>Claims</small>
+                    <b>3 open</b>
+                    <span>assertions</span>
+                  </button>
+                  <button type="button" class="signal-tile metric-heat" data-set-metric="heat" data-tooltip="Heat tracks rhetorical temperature: accusation, pressure, evasiveness, escalation, and emotional intensity.">
+                    <small>Heat</small>
+                    <b>Rising</b>
+                    <span>contention</span>
+                  </button>
+                  <button type="button" class="signal-tile metric-evidence" data-set-metric="evidence" data-tooltip="Evidence shows whether Yentl has enough source support to resolve the live claim or needs a missing baseline, citation, or document.">
+                    <small>Evidence</small>
+                    <b>Queued</b>
+                    <span>source trail</span>
+                  </button>
+                </div>
+
+                <div class="metric-detail" aria-label="Expanded signal detail">
+                  <div class="metric-panel" data-metric-panel="pulse">
+                    <b>Pulse: active but controlled</b>
+                    <p>Yentl hears fast turn-taking, one interruption cluster, and a clean opening for a follow-up.</p>
+                    <div class="metric-examples">
+                      <span>pace rising</span>
+                      <span>overlap low</span>
+                      <span>speaker turn clean</span>
+                    </div>
+                  </div>
+                  <div class="metric-panel" data-metric-panel="claims">
+                    <b>Claims: 3 unresolved assertions</b>
+                    <p>One economic comparison needs a baseline year; two implied causal claims need source support.</p>
+                    <div class="metric-examples">
+                      <span>baseline missing</span>
+                      <span>causal leap</span>
+                      <span>source needed</span>
+                    </div>
+                  </div>
+                  <div class="metric-panel" data-metric-panel="heat">
+                    <b>Heat: pressure is building</b>
+                    <p>The exchange is shifting from explanation into accusation; Yentl flags loaded phrasing before it becomes a verdict.</p>
+                    <div class="metric-examples">
+                      <span>loaded phrasing</span>
+                      <span>contentious turn</span>
+                      <span>red-orange mix</span>
+                    </div>
+                  </div>
+                  <div class="metric-panel" data-metric-panel="evidence">
+                    <b>Evidence: waiting for one missing anchor</b>
+                    <p>The claim can be checked once the comparison year and source trail are explicit enough to resolve.</p>
+                    <div class="metric-examples">
+                      <span>baseline year</span>
+                      <span>source trail</span>
+                      <span>verdict pending</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rail-detail-stack">
+                <div class="rail-focus-controls" aria-label="Analysis detail tabs">
+                  <button type="button" data-set-focus="transcript">Transcript</button>
+                  <button type="button" data-set-focus="findings">Findings</button>
+                </div>
+
+                <div class="rail-tab-panels">
+                  <section class="rail-panel rail-tab-panel rail-transcript-pane" aria-label="Transcript tab content">
+                    <div class="tab-panel-head">
+                      <small>Live Transcript</small>
+                      <span>03:21</span>
+                    </div>
+                    <div class="tab-scroll">
+                      <div class="transcript-card">
+                        <div class="transcript-meta">
+                          <b>O'Leary</b>
+                          <time>03:13</time>
+                        </div>
+                        <p>You cannot just say the market doubled without naming the year.</p>
+                        <div class="chips">
+                          <span class="chip claim">baseline demand</span>
+                        </div>
+                      </div>
+                      <div class="transcript-card active">
+                        <div class="transcript-meta">
+                          <b>Carlson</b>
+                          <time>03:21</time>
+                        </div>
+                        <p>But the administration keeps presenting it as settled fact.</p>
+                        <div class="chips">
+                          <span class="chip claim">claim</span>
+                          <span class="chip marker">loaded phrasing</span>
+                          <span class="chip marker">yellow flag</span>
+                        </div>
+                      </div>
+                      <div class="mini-timeline" aria-hidden="true">
+                        <span></span><span></span><span></span>
+                      </div>
+                      <div class="transcript-card yentl-note">
+                        <div class="transcript-meta">
+                          <b>Yentl</b>
+                          <time>03:22</time>
+                        </div>
+                        <p>Checking the comparison point and the source trail before labeling this claim.</p>
+                      </div>
+                      <div class="rail-section-label">Earlier in this exchange</div>
+                      <div class="transcript-card">
+                        <div class="transcript-meta">
+                          <b>O'Leary</b>
+                          <time>02:54</time>
+                        </div>
+                        <p>The number depends on whether you are talking about nominal value or inflation-adjusted value.</p>
+                        <div class="chips">
+                          <span class="chip claim">definition split</span>
+                        </div>
+                      </div>
+                      <div class="transcript-card">
+                        <div class="transcript-meta">
+                          <b>Carlson</b>
+                          <time>02:41</time>
+                        </div>
+                        <p>People hear the same official line every week and are told not to question it.</p>
+                        <div class="chips">
+                          <span class="chip marker">generalization</span>
+                        </div>
+                      </div>
+                      <div class="scroll-cue">More lines below · auto-scroll follows playback</div>
+                    </div>
+                  </section>
+
+                  <section class="rail-panel rail-tab-panel rail-findings-pane" aria-label="Findings tab content">
+                    <div class="tab-panel-head">
+                      <small>Findings</small>
+                      <span>3 open · 6 markers</span>
+                    </div>
+                    <div class="tab-scroll">
+                      <div class="finding-card priority">
+                        <div class="finding-meta">
+                          <b>Misleading risk</b>
+                          <time>03:21</time>
+                        </div>
+                        <p>"Settled fact" sounds conclusive, but Yentl has not seen the source trail or baseline year.</p>
+                        <div class="chips">
+                          <span class="chip claim">open claim</span>
+                          <span class="chip marker">yellow flag</span>
+                        </div>
+                      </div>
+                      <div class="finding-grid">
+                        <div class="finding-card risk">
+                          <div class="finding-meta">
+                            <b>Claim</b>
+                            <time>#2</time>
+                          </div>
+                          <p>Market doubled after policy change.</p>
+                        </div>
+                        <div class="finding-card sourceable">
+                          <div class="finding-meta">
+                            <b>Evidence</b>
+                            <time>queued</time>
+                          </div>
+                          <p>Needs year, index, and source document.</p>
+                        </div>
+                      </div>
+                      <div class="rail-section-label">Evidence anchors</div>
+                      <div class="evidence-card">
+                        <div class="finding-meta">
+                          <b>Missing baseline</b>
+                          <time>blocking</time>
+                        </div>
+                        <p>Yentl should ask: which market, which date range, nominal or real?</p>
+                      </div>
+                      <div class="evidence-card">
+                        <div class="finding-meta">
+                          <b>Possible source trail</b>
+                          <time>next</time>
+                        </div>
+                        <p>Economic dataset, policy memo, or public report named by either speaker.</p>
+                      </div>
+                      <div class="rail-section-label">Rhetoric markers</div>
+                      <div class="marker-card">
+                        <div class="chips">
+                          <span class="chip marker">loaded phrasing</span>
+                          <span class="chip marker">implied consensus</span>
+                          <span class="chip marker">missing qualifier</span>
+                        </div>
+                      </div>
+                      <div class="scroll-cue">More findings below · grouped by claim, marker, and evidence state</div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="rail-dock rail-dock-v2">
+            <div class="dock-btn primary">Share this tab's audio</div>
+            <div class="dock-btn secondary">Open on YouTube</div>
+          </footer>
+        </aside>
+      </div>
+    </section>
+
+    <section class="mobile-section" aria-label="Responsive mobile wireframe">
+      <div class="mobile-notes">
+        <div class="eyebrow">Mobile target: 390px wide</div>
+        <h2>Responsive behavior</h2>
+        <p>
+          Mobile cannot keep a full side rail without crushing the video. The player stays first,
+          followed by a compact live strip, then analysis tabs. The action dock stays reachable at the bottom.
+        </p>
+        <ul>
+          <li>At tablet widths, the rail drops below the player as a full-width analysis area.</li>
+          <li>At phone widths, URL controls stack and Yentl's rail becomes tabbed.</li>
+          <li>The transcript scrolls inside the analysis area, while the video remains easy to return to.</li>
+        </ul>
+      </div>
+
+      <div class="phone" aria-label="Phone layout simulation">
+        <div class="phone-screen">
+          <header class="phone-top">
+            <div class="back">← Sources</div>
+            <span class="pill green">Live</span>
+          </header>
+
+          <section class="phone-source">
+            <span class="pill blue">▷ Watch + live</span>
+            <h2>Tucker debates Kevin O'Leary</h2>
+            <div class="url-row">
+              <div class="url-box">youtube.com/watch?v=IDC8PrZQHts</div>
+              <div class="btn">Start</div>
+            </div>
+            <div class="btn phone-start">Start live analysis</div>
+          </section>
+
+          <section class="phone-player">
+            <div class="player">
+              <div class="speaker-left"><div class="face"></div><div class="body-block"></div></div>
+              <div class="speaker-right"><div class="face"></div><div class="body-block"></div></div>
+              <div class="caption-burst">"...not just the phrasing."</div>
+              <div class="youtube-chrome">
+                <span class="play-dot" aria-hidden="true"></span>
+                <strong>03:21</strong>
+                <div class="timeline"><span></span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="phone-live-strip">
+            <div>
+              <b>yentl <span class="dot"></span> Live analysis</b>
+              <span>47 transcript lines · 3 claims · 6 markers</span>
+            </div>
+            <span class="pill green">Hearing</span>
+          </section>
+
+          <section class="phone-scroll">
+            <div class="tabs">
+              <div class="tab active">Read</div>
+              <div class="tab">Lines</div>
+              <div class="tab">Finds</div>
+            </div>
+
+            <div class="signals">
+              <div class="tile hot">
+                <small>Claim risk</small>
+                <b>1 high</b>
+              </div>
+              <div class="tile good">
+                <small>Rhetoric</small>
+                <b>Heating</b>
+              </div>
+            </div>
+
+            <section class="panel read-panel">
+              <small>Yentl's Read</small>
+              <p>The exchange is moving into a checkable economic claim. Yentl is waiting for the baseline year.</p>
+            </section>
+
+            <section class="panel transcript-panel">
+              <div class="panel-head">
+                <small>Live Transcript</small>
+                <span>03:21</span>
+              </div>
+              <div class="line active">
+                Carlson: But the administration keeps presenting it as settled fact.
+                <div class="chips">
+                  <span class="chip claim">Claim</span>
+                  <span class="chip marker">Marker</span>
+                </div>
+              </div>
+              <div class="line">Yentl: Checking the comparison point and source trail.</div>
+            </section>
+          </section>
+
+          <footer class="phone-dock">
+            <div class="dock-btn primary">Share audio</div>
+            <div class="dock-btn secondary">Open</div>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="spec-grid" aria-label="Sizing rules">
+      <div class="spec">
+        <b>Desktop columns</b>
+        <span>Player column fills remaining width. Rail starts at 420px, adjustable between 360px and 480px.</span>
+      </div>
+      <div class="spec">
+        <b>Player block</b>
+        <span>Real playable iframe area, locked to 16:9 and kept visually dominant. No thumbnail-only preview.</span>
+      </div>
+      <div class="spec">
+        <b>Rail order</b>
+        <span>Header, persistent Yentl's Read, then signal tiles, transcript/finding tabs, and action dock.</span>
+      </div>
+      <div class="spec">
+        <b>Mobile collapse</b>
+        <span>Top controls stack, player stays first, Yentl becomes tabbed below the player with bottom actions.</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slider = document.getElementById("rail-slider");
+    const value = document.getElementById("rail-value");
+    const shell = document.querySelector(".desktop-shell-v2");
+    const stateButtons = document.querySelectorAll("[data-set-state]");
+    const focusButtons = document.querySelectorAll("[data-set-focus]");
+    const metricButtons = document.querySelectorAll("[data-set-metric]");
+    const toneButtons = document.querySelectorAll("[data-set-tone]");
+    const sessionToast = document.querySelector("[data-session-toast]");
+    const saveSnapshotButton = document.querySelector("[data-save-snapshot]");
+    const toneSequence = ["calm", "productive", "misleading", "contentious", "heated", "mixed"];
+    let toneTimer = null;
+
+    const toneCopy = {
+      calm: {
+        metric: "pulse",
+        mood: "Calm blue: context setting",
+        take: "The exchange is explanatory, not combative yet.",
+        subline: "Yentl is mapping the topic, identifying the speakers' baseline assumptions, and waiting for the first concrete claim.",
+        speaker: "Both speakers are measured; no one is forcing a verdict yet."
+      },
+      productive: {
+        metric: "evidence",
+        mood: "Productive green: sourceable",
+        take: "The conversation is getting more useful.",
+        subline: "A loose claim is narrowing into checkable terms, and the speakers are moving toward evidence instead of pure framing.",
+        speaker: "One speaker clarifies scope while the other asks for support."
+      },
+      misleading: {
+        metric: "claims",
+        mood: "Misleading yellow: slippery framing",
+        take: "Something is being made to sound settled before it is sourced.",
+        subline: "Yentl sees selective wording, missing qualifiers, or a causal leap tucked inside confident phrasing.",
+        speaker: "One speaker is using implication and omission; Yentl keeps the claim open instead of treating it as proven."
+      },
+      contentious: {
+        metric: "claims",
+        mood: "Contentious orange: unresolved pressure",
+        take: "The conversation is becoming adversarial.",
+        subline: "The rhetoric is sharpening and the speakers are pressing each other, but Yentl still needs the missing baseline before it can resolve the claim.",
+        speaker: "One side is framing hard; the other is testing the comparison point."
+      },
+      heated: {
+        metric: "heat",
+        mood: "Heated red: accusation rising",
+        take: "The debate just turned into a checkable accusation.",
+        subline: "Carlson is compressing context; O'Leary is forcing the missing baseline year before the claim can land.",
+        speaker: "Carlson is escalating certainty; O'Leary is pressing for numbers and a baseline year."
+      },
+      mixed: {
+        metric: "heat",
+        mood: "Collision state: heat + yellow flag",
+        take: "Yentl sees heat, slippery wording, and one useful challenge at once.",
+        subline: "The moment is mixed but not rainbow-colored: red or orange can dominate, yellow carries the misleading-speech warning, and blue/green stay secondary.",
+        speaker: "Carlson is escalating certainty while O'Leary pulls the exchange back toward the source trail."
+      }
+    };
+
+    slider.addEventListener("input", () => {
+      const next = `${slider.value}px`;
+      document.documentElement.style.setProperty("--rail-width", next);
+      value.textContent = next;
+    });
+
+    function setState(next) {
+      if (!shell) return;
+      shell.dataset.state = next;
+      stateButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.setState === next);
+      });
+      if (next === "fresh") {
+        showSessionToast("Autosaves as a browser-local session", "arrival");
+      }
+    }
+
+    function setFocus(next) {
+      if (!shell) return;
+      shell.dataset.focus = next;
+      focusButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.setFocus === next);
+      });
+    }
+
+    function setMetric(next) {
+      if (!shell) return;
+      shell.dataset.metric = next;
+      metricButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.setMetric === next);
+      });
+    }
+
+    function setRailScroll(mode = "top") {
+      window.requestAnimationFrame(() => {
+        document.querySelectorAll(".rail-tab-panel .tab-scroll").forEach((scroller) => {
+          scroller.scrollTop = mode === "lower" ? scroller.scrollHeight : 0;
+        });
+      });
+    }
+
+    function showSessionToast(message, variant = "arrival") {
+      if (!sessionToast) return;
+      sessionToast.textContent = message;
+      sessionToast.classList.remove("is-hidden", "is-arrival", "is-saved");
+      sessionToast.classList.add(variant === "saved" ? "is-saved" : "is-arrival");
+      sessionToast.style.animation = "none";
+      void sessionToast.offsetWidth;
+      sessionToast.style.animation = "";
+    }
+
+    function applyTone(next, mode = "manual") {
+      if (!shell) return;
+      const tone = toneCopy[next] ? next : "heated";
+      const copy = toneCopy[tone];
+      shell.dataset.tone = tone;
+      shell.dataset.toneMode = mode;
+
+      const mood = document.querySelector(".read-mood");
+      const take = document.querySelector(".hot-take");
+      const subline = document.querySelector(".read-subline");
+      const speaker = document.querySelector("[data-speaker-read]");
+
+      if (mood) mood.textContent = copy.mood;
+      if (take) take.textContent = copy.take;
+      if (subline) subline.textContent = copy.subline;
+      if (speaker) speaker.textContent = copy.speaker;
+
+      setMetric(copy.metric);
+      toneButtons.forEach((button) => {
+        const isAuto = mode === "auto" && button.dataset.setTone === "auto";
+        const isManual = mode !== "auto" && button.dataset.setTone === tone;
+        button.classList.toggle("is-active", isAuto || isManual);
+      });
+    }
+
+    function setTone(next) {
+      window.clearInterval(toneTimer);
+      toneTimer = null;
+
+      if (next === "auto") {
+        let index = Math.max(0, toneSequence.indexOf(shell?.dataset.tone || "calm"));
+        applyTone(toneSequence[index], "auto");
+        toneTimer = window.setInterval(() => {
+          index = (index + 1) % toneSequence.length;
+          applyTone(toneSequence[index], "auto");
+        }, 1800);
+        return;
+      }
+
+      applyTone(next, "manual");
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    setState(params.get("state") || shell?.dataset.state || "live");
+    setFocus(params.get("focus") || shell?.dataset.focus || "transcript");
+    setMetric(params.get("metric") || shell?.dataset.metric || "heat");
+    setTone(params.get("tone") || shell?.dataset.tone || "heated");
+    setRailScroll(params.get("scroll") || "top");
+    if (params.get("toast") === "saved") {
+      showSessionToast("Snapshot saved", "saved");
+    }
+
+    stateButtons.forEach((button) => {
+      button.addEventListener("click", () => setState(button.dataset.setState));
+    });
+
+    focusButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setFocus(button.dataset.setFocus);
+        setRailScroll("top");
+      });
+    });
+
+    metricButtons.forEach((button) => {
+      button.addEventListener("click", () => setMetric(button.dataset.setMetric));
+    });
+
+    toneButtons.forEach((button) => {
+      button.addEventListener("click", () => setTone(button.dataset.setTone));
+    });
+
+    sessionToast?.addEventListener("animationend", () => {
+      sessionToast.classList.add("is-hidden");
+    });
+
+    saveSnapshotButton?.addEventListener("click", () => {
+      showSessionToast("Snapshot saved", "saved");
+    });
+  </script>
+</body>
+</html>

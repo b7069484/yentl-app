@@ -200,7 +200,7 @@ function ReadingCard({
       {icon}
       <div className="flex-1 min-w-0">
         <div className="text-[13px] font-semibold text-ink truncate">{title}</div>
-        <div className="text-[11px] text-ink-4 mt-px">{subtitle}</div>
+        <div className="text-[11px] text-ink-4 mt-px truncate">{subtitle}</div>
       </div>
       <svg
         className="w-3.5 h-3.5 text-ink-4 flex-shrink-0"
@@ -218,7 +218,7 @@ function ReadingCard({
   );
 }
 
-function ChapterPlaceholder({ canonicalId: _canonicalId }: { canonicalId: string }) {
+function ChapterPlaceholder() {
   // For v1, no real book-chapters.json mapping exists yet. Render placeholder card.
   // When book-chapters.json lands, this component is upgraded to read it and link out.
   return (
@@ -229,8 +229,7 @@ function ChapterPlaceholder({ canonicalId: _canonicalId }: { canonicalId: string
       <div className="flex-1 min-w-0">
         <div className="text-[13px] font-semibold text-ink-3">Book chapter</div>
         <div className="text-[11px] text-ink-4 mt-px">
-          Chapter mapping coming soon — drop{" "}
-          <code className="text-ink-3">lib/taxonomy/book-chapters.json</code> to enable.
+          Chapter mapping is not available in this build.
         </div>
       </div>
     </div>
@@ -282,8 +281,8 @@ export function MarkerLearnMore({
         >
           <GenericTypeIcon type={entry.type} className={`w-6 h-6 ${typeTextMap[entry.type]}`} />
         </div>
-        <div>
-          <div className={`text-[11px] tracking-wider uppercase font-bold mb-0.5 ${typeTextMap[entry.type]}`}>
+        <div className="min-w-0">
+          <div className={`text-[11px] tracking-wider uppercase font-bold mb-0.5 break-words ${typeTextMap[entry.type]}`}>
             {entry.type === "fallacy"
               ? "Logical fallacy"
               : entry.type === "bias"
@@ -291,7 +290,7 @@ export function MarkerLearnMore({
                 : "Rhetorical device"}{" "}
             · archetype: {entry.archetype ?? "unknown"}
           </div>
-          <h1 className="font-serif text-[32px] font-medium tracking-tight text-ink mb-1">
+          <h1 className="font-serif text-[32px] font-medium leading-tight tracking-tight text-ink mb-1">
             {entry.display}
           </h1>
           {entry.aka && (
@@ -329,7 +328,7 @@ export function MarkerLearnMore({
       <Section title="Further reading">
         <div className="flex flex-col gap-2">
           {/* Chapter card placeholder per Q16 */}
-          <ChapterPlaceholder canonicalId={entry.canonical_id} />
+          <ChapterPlaceholder />
 
           {/* Wikipedia auto-derived */}
           {wikiUrl && (

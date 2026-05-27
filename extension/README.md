@@ -18,22 +18,37 @@ Manifest V3 Chrome extension for live browser-tab audio capture.
   the injected panel is not a squeezed copy of the full desktop workspace.
 - Surfaces connected/no-speech status from the offscreen capture worker when
   the tab stream is open but no transcript has arrived yet.
+- Warns when the active Chrome tab no longer matches the tab Yentl is capturing,
+  so the user can return to the original source page or choose a fallback path.
 - Lets the existing Yentl app pipeline handle claim extraction, verification,
   rhetoric markers, synthesis, and the Grok-backed Devil's Advocate brief.
 
-## Local Install
+## Production Install
 
-1. Run the app with `npm run dev` at `http://localhost:3000`.
-2. In Chrome, open `chrome://extensions`.
-3. Enable Developer mode.
-4. Click Load unpacked and select this `extension/` directory.
-5. Open `http://localhost:3000/validation/browser-capture.html`.
-6. Play either the 16:9 video fixture or the audio-only fixture.
-7. Click the Yentl extension action while that fixture page is the active tab.
-8. Yentl should appear as a right-side panel on that same page while the media
+1. In Chrome, open `chrome://extensions`.
+2. Enable Developer mode for unpacked validation, or install the packaged build.
+3. Click Load unpacked and select this `extension/` directory.
+4. Open a media page or article page in Chrome.
+5. Click the Yentl extension action while that source page is the active tab.
+6. Yentl should appear as a right-side panel on that same page while the media
    continues playing.
 
-The default Yentl origin is `http://localhost:3000`. Change it in the extension options page for production or preview deployments.
+The default Yentl origin is `https://yentl.it`. Change it in the extension
+options page only for preview or internal validation deployments.
+
+## Local Validation
+
+The launch manifest is production-first and does not grant localhost access by
+default. For local end-to-end validation:
+
+1. Run the app with `npm run dev` at `http://localhost:3000`.
+2. Temporarily copy `manifest.local.json` over `manifest.json`.
+3. Load the unpacked `extension/` directory in Chrome.
+4. Open `http://localhost:3000/validation/browser-capture.html`.
+5. Set the extension options page origin to `http://localhost:3000`.
+6. Play either the 16:9 video fixture or the audio-only fixture.
+7. Click the Yentl extension action while that fixture page is the active tab.
+8. Restore the production `manifest.json` before packaging or launch review.
 
 ## Architecture Notes
 

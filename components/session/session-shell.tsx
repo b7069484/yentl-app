@@ -11,6 +11,7 @@ import { SpeakerRail } from "@/components/session/speaker-rail";
 import { ExportDialog } from "@/components/session/ExportDialog";
 import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
+import { SourceSwitchDialog } from "@/components/session/SourceSwitchDialog";
 import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
 export { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
@@ -21,7 +22,7 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   const fontMap = { sm: "text-[18px]", md: "text-[22px]", lg: "text-[32px]" };
   const dotMap = { sm: "w-1.5 h-1.5 ml-1.5", md: "w-2 h-2 ml-1.5", lg: "w-2.5 h-2.5 ml-2" };
   return (
-    <span className="inline-flex items-baseline gap-3">
+    <span className="inline-flex min-w-0 items-baseline gap-2 sm:gap-3">
       <Link
         href="/session"
         className={`font-serif ${fontMap[size]} font-medium tracking-tight text-ink inline-flex items-baseline`}
@@ -34,7 +35,7 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
       </Link>
       <Link
         href="/sessions"
-        className="inline-flex items-center gap-1 text-[11px] font-medium text-ink-3 hover:text-ink-2 transition-colors self-center"
+        className="inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-[11px] font-medium text-ink-3 transition-colors hover:text-ink-2 self-center"
         title="Sessions library"
       >
         <Library className="h-3 w-3" />
@@ -53,7 +54,7 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
     listening: {
       bg: "bg-green-soft",
       border: "border-[rgba(15,138,95,0.2)]",
-      dot: "bg-green animate-pulse",
+      dot: "bg-green motion-safe:animate-pulse",
       label: "Listening",
     },
     waiting: {
@@ -142,13 +143,13 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   return (
     <nav
       aria-label="Session views"
-      className="flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-0.5 sm:w-auto sm:pb-0"
+      className="grid w-full min-w-0 grid-cols-2 gap-1 min-[380px]:grid-cols-3 sm:flex sm:w-auto sm:items-center sm:overflow-x-auto sm:pb-0"
     >
       {tabs.map((t) => (
         <Link
           key={t.key}
           href={t.href}
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium whitespace-nowrap ${
+          className={`inline-flex min-h-11 items-center justify-center rounded-lg px-2.5 py-2 text-center text-[12px] font-medium leading-tight sm:min-h-9 sm:justify-start sm:px-3 sm:py-1.5 ${
             isActive(t.key)
               ? "bg-cream-2 text-ink"
               : "text-ink-3 hover:text-ink-2"
@@ -172,38 +173,56 @@ function TopControls() {
   const transcriptCount = useSession((s) => s.transcript.length);
   const claimsCount = useSession((s) => s.claims.length);
   const markersCount = useSession((s) => s.markers.length);
+  const synthesis = useSession((s) => s.synthesis);
+  const devilAdvocate = useSession((s) => s.devilAdvocate);
   const setRecording = useSession((s) => s.setRecording);
   const reset = useSession((s) => s.reset);
   const [exportOpen, setExportOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [sourceSwitchOpen, setSourceSwitchOpen] = useState(false);
+  const hasUsefulContent =
+    transcriptCount > 0 ||
+    claimsCount > 0 ||
+    markersCount > 0 ||
+    synthesis?.state === "fresh" ||
+    synthesis?.state === "refreshing" ||
+    (synthesis?.state === "error" && !!synthesis.text) ||
+    devilAdvocate?.state === "fresh" ||
+    devilAdvocate?.state === "refreshing" ||
+    (devilAdvocate?.state === "error" && !!devilAdvocate.brief);
 
   function handleChooseSource() {
-    const hasWork = transcriptCount > 0 || claimsCount > 0 || markersCount > 0;
-    const active = !!startedAt && !endedAt;
-    if (active || hasWork) {
-      const confirmed = window.confirm(
-        active
-          ? "Stop this session and choose another source? Export or save first if you need to keep this run."
-          : "Choose another source? Export or save first if you need to keep this run.",
-      );
-      if (!confirmed) return;
-    }
+    setSourceSwitchOpen(true);
+  }
 
+  function confirmChooseSource() {
     if (sourceKind === "browser_tab" && startedAt && !endedAt) {
       stopBrowserTabCapture();
     }
     reset();
+    setSourceSwitchOpen(false);
     router.push("/session");
+  }
+
+  function saveBeforeSwitching() {
+    setSourceSwitchOpen(false);
+    setSaveOpen(true);
+  }
+
+  function exportBeforeSwitching() {
+    setSourceSwitchOpen(false);
+    setExportOpen(true);
   }
 
   return (
     <>
-      <div className="flex w-full min-w-0 items-center gap-1.5 overflow-x-auto sm:ml-auto sm:w-auto sm:justify-end">
+      <div className="grid w-full min-w-0 grid-cols-2 gap-2 min-[460px]:grid-cols-4 sm:ml-auto sm:flex sm:w-auto sm:items-center sm:justify-end sm:gap-1.5">
         {startedAt && sourceKind === "mic" && (
           <Button
             variant="ghost"
             size="sm"
+            className="h-11 w-full px-3 sm:h-10 sm:w-auto"
             disabled={!!endedAt}
             onClick={() => setRecording(!isRecording)}
           >
@@ -216,23 +235,38 @@ function TopControls() {
           </Button>
         )}
         {startedAt && (
-          <Button variant="ghost" size="sm" onClick={handleChooseSource}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-11 w-full px-3 sm:h-10 sm:w-auto"
+            onClick={handleChooseSource}
+          >
             <Plus className="h-3.5 w-3.5" /> Sources
           </Button>
         )}
-        {startedAt && (
-          <Button variant="ghost" size="sm" onClick={() => setSaveOpen(true)}>
+        {startedAt && hasUsefulContent && (
+          <Button
+            variant="default"
+            size="sm"
+            className="h-11 w-full bg-teal px-3 text-white hover:bg-teal-2 sm:h-10 sm:w-auto"
+            onClick={() => setSaveOpen(true)}
+          >
             <Save className="h-3.5 w-3.5" /> Save
           </Button>
         )}
-        <Button variant="outline" size="sm" onClick={() => setExportOpen(true)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-11 w-full px-3 sm:h-10 sm:w-auto"
+          onClick={() => setExportOpen(true)}
+        >
           <Download className="h-3.5 w-3.5" /> Export
         </Button>
         {startedAt && (
           <Button
             variant="ghost"
             size="sm"
-            className="text-red-600 border border-transparent hover:bg-red-50 hover:text-red-700"
+            className="h-11 w-full border border-transparent px-3 text-red-600 hover:bg-red-50 hover:text-red-700 sm:h-10 sm:w-auto"
             disabled={!!endedAt}
             onClick={() => setEndOpen(true)}
           >
@@ -243,6 +277,19 @@ function TopControls() {
       <SaveSessionDialog open={saveOpen} onClose={() => setSaveOpen(false)} />
       <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
       <EndSessionDialog open={endOpen} onClose={() => setEndOpen(false)} />
+      <SourceSwitchDialog
+        open={sourceSwitchOpen}
+        onClose={() => setSourceSwitchOpen(false)}
+        onConfirm={confirmChooseSource}
+        onSaveFirst={saveBeforeSwitching}
+        onExportFirst={exportBeforeSwitching}
+        active={!!startedAt && !endedAt}
+        counts={{
+          transcript: transcriptCount,
+          claims: claimsCount,
+          markers: markersCount,
+        }}
+      />
     </>
   );
 }
@@ -283,7 +330,8 @@ function usePillState(): PillState {
       !isRecording ||
       browserTabStatus?.phase === "waiting_for_extension" ||
       browserTabStatus?.phase === "extension_connected" ||
-      browserTabStatus?.phase === "no_audio_detected"
+      browserTabStatus?.phase === "no_audio_detected" ||
+      browserTabStatus?.phase === "tab_changed"
     ) {
       return "waiting";
     }
@@ -314,6 +362,7 @@ function useSpeakerRailEmptyLabel(): string {
     if (browserTabStatus?.phase === "waiting_for_extension") return "Waiting for the Yentl extension…";
     if (browserTabStatus?.phase === "extension_connected") return "Connected; waiting for media audio…";
     if (browserTabStatus?.phase === "no_audio_detected") return "No media audio detected yet…";
+    if (browserTabStatus?.phase === "tab_changed") return "Return to the captured tab…";
     if (!isRecording) return "Waiting for in-page media audio…";
     return "Analyzing media on this page…";
   }
@@ -360,8 +409,8 @@ function SessionShellInner({ children }: { children: ReactNode }) {
         <>
           {/* Sticky header */}
           <header className="sticky top-0 z-20 bg-cream border-b border-line-soft">
-            <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-2 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:px-6 md:px-8">
-              <div className="flex min-w-0 items-center gap-3">
+            <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-2.5 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:px-6 md:px-8">
+              <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
                 <BrandMark size="md" />
                 <LivePill state={pillState} elapsed={elapsed} />
               </div>

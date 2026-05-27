@@ -14,6 +14,24 @@ describe("Chrome extension same-page panel wiring", () => {
     expect(manifest.permissions).toContain("activeTab");
     expect(manifest.permissions).toContain("scripting");
     expect(manifest.permissions).toContain("tabCapture");
+    expect(manifest.commands?._execute_action?.suggested_key?.mac).toBe("Alt+Shift+Y");
+  });
+
+  it("uses the production Yentl origin as the extension default", () => {
+    const background = read("extension/background.js");
+    const options = read("extension/options.js");
+    const optionsHtml = read("extension/options.html");
+    expect(background).toContain('const DEFAULT_APP_ORIGIN = "https://yentl.it"');
+    expect(options).toContain('const DEFAULT_APP_ORIGIN = "https://yentl.it"');
+    expect(optionsHtml).toContain('placeholder="https://yentl.it"');
+  });
+
+  it("keeps localhost out of the launch manifest while retaining a local validation manifest", () => {
+    const manifest = read("extension/manifest.json");
+    const localManifest = read("extension/manifest.local.json");
+    expect(manifest).not.toContain("localhost");
+    expect(localManifest).toContain("http://localhost:3000");
+    expect(localManifest).toContain("http://127.0.0.1:3000");
   });
 
   it("injects the content script and opens an in-page panel instead of creating a separate session tab", () => {
@@ -24,11 +42,11 @@ describe("Chrome extension same-page panel wiring", () => {
     expect(background).not.toContain("chrome.tabs.create");
   });
 
-  it("renders a same-page iframe panel with a bridge token for app messages", () => {
+  it("renders a same-page iframe panel without exposing the bridge token in the iframe URL", () => {
     const contentScript = read("extension/content-script.js");
     expect(contentScript).toContain("Yentl analysis panel");
     expect(contentScript).toContain('src.searchParams.set("surface", "extension-panel")');
-    expect(contentScript).toContain('src.searchParams.set("bridge", panelBridgeToken)');
+    expect(contentScript).not.toContain('src.searchParams.set("bridge", panelBridgeToken)');
     expect(contentScript).toContain("panelIframe.contentWindow.postMessage");
   });
 
@@ -55,6 +73,8 @@ describe("Chrome extension same-page panel wiring", () => {
     const background = read("extension/background.js");
     const offscreen = read("extension/offscreen.js");
     expect(background).toContain('message.type === "capture-status"');
+    expect(background).toContain("chrome.tabs.query");
+    expect(background).toContain('phase: "tab_changed"');
     expect(offscreen).toContain("NO_TRANSCRIPT_NOTICE_MS");
     expect(offscreen).toContain('phase: "no_audio_detected"');
     expect(offscreen).toContain('sendBackground("capture-status"');

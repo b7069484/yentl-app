@@ -1,0 +1,57 @@
+{
+  "wait": false,
+  "dry_run": true,
+  "assets": [
+    {
+      "canonical_id": "confirmation_bias",
+      "display": "Confirmation Bias",
+      "command": [
+        "higgsfield",
+        "generate",
+        "create",
+        "gpt_image_2",
+        "--prompt",
+        "Create one bespoke icon for \"Confirmation Bias\" (bias, identity). Style: clean duotone stroke vector icon, pure white background, no text, no letters, no labels. Use a 1:1 square composition, readable at 24px and 64px, with a consistent 2px rounded stroke. Use deep ink as the primary stroke and one restrained accent color keyed to the marker type. The metaphor must be specific to the concept, not a generic warning symbol. Concept cues: Speaker cites only sources that agree with them. Counter-evidence dismissed quickly; supporting evidence accepted uncritically. 'See? This proves it' after one corroborating example.",
+        "--aspect_ratio",
+        "1:1",
+        "--resolution",
+        "2k"
+      ],
+      "status": "dry_run"
+    },
+    {
+      "canonical_id": "ad_hominem",
+      "display": "Ad Hominem",
+      "command": [
+        "higgsfield",
+        "generate",
+        "create",
+        "gpt_image_2",
+        "--prompt",
+        "Create one bespoke icon for \"Ad Hominem\" (fallacy, dismissal). Style: clean duotone stroke vector icon, pure white background, no text, no letters, no labels. Use a 1:1 square composition, readable at 24px and 64px, with a consistent 2px rounded stroke. Use deep ink as the primary stroke and one restrained accent color keyed to the marker type. The metaphor must be specific to the concept, not a generic warning symbol. Concept cues: Response targets the speaker's character, motives, or appearance, not the claim. 'You would say that, because you're a...' framing. Insults or labels replace engagement with the actual argument.",
+        "--aspect_ratio",
+        "1:1",
+        "--resolution",
+        "2k"
+      ],
+      "status": "dry_run"
+    },
+    {
+      "canonical_id": "loaded_language",
+      "display": "Loaded Language",
+      "command": [
+        "higgsfield",
+        "generate",
+        "create",
+        "gpt_image_2",
+        "--prompt",
+        "Create one bespoke icon for \"Loaded Language\" (rhetoric, framing). Style: clean duotone stroke vector icon, pure white background, no text, no letters, no labels. Use a 1:1 square composition, readable at 24px and 64px, with a consistent 2px rounded stroke. Use deep ink as the primary stroke and one restrained accent color keyed to the marker type. The metaphor must be specific to the concept, not a generic warning symbol. Concept cues: Word choice carries strong emotional charge beyond neutral description. 'Regime' vs 'government', 'slaughter' vs 'killed', 'crusade' vs 'campaign'. Adjectives doing argumentative work: 'reckless', 'brave', 'so-called'.",
+        "--aspect_ratio",
+        "1:1",
+        "--resolution",
+        "2k"
+      ],
+      "status": "dry_run"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "holocaust_004",
+  "phase": "A",
+  "wer": 0.08935185185185185,
+  "substitutions": 67,
+  "deletions": 95,
+  "insertions": 31,
+  "hits": 1998,
+  "refLen": 2160,
+  "hypLen": 2096
+}

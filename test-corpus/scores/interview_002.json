@@ -1,0 +1,11 @@
+{
+  "id": "interview_002",
+  "phase": "A",
+  "wer": 0.20881226053639848,
+  "substitutions": 70,
+  "deletions": 31,
+  "insertions": 226,
+  "hits": 1465,
+  "refLen": 1566,
+  "hypLen": 1761
+}

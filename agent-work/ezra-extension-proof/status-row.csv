@@ -1,0 +1,3 @@
+agent,role,status,latest_update,roadblock,next_checkpoint,last_updated
+Ezra,Chrome Extension Proof Lead,partial-pass-fix-landed,"Local fixture and Wikimedia video same-page capture passed; Wikinews rails injected but Chrome blocked localhost iframe without site permission; Open snapshot failure reproduced and scoped fix added.","Fresh manual proof still needed for fixed real-site Open snapshot handoff; YouTube tab not attempted.","Run a clean post-fix Chrome capture and verify Open snapshot restores transcript/markers in top-level workspace.",2026-05-21T19:17:24-0400
+

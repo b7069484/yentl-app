@@ -1,0 +1,11 @@
+{
+  "id": "misinfo_004",
+  "phase": "A",
+  "wer": 0.09410339256865913,
+  "substitutions": 102,
+  "deletions": 101,
+  "insertions": 30,
+  "hits": 2273,
+  "refLen": 2476,
+  "hypLen": 2405
+}

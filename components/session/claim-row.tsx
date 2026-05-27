@@ -62,7 +62,7 @@ const VERDICT_LABEL: Record<PrimaryLabel, string> = {
   MISLEADING:   "MISLEADING",
   OMISSION:     "OMISSION",
   FALSE:        "FALSE",
-  UNVERIFIABLE: "UNVERIFIABLE",
+  UNVERIFIABLE: "NO RELIABLE BACKING",
   OPINION:      "OPINION",
 };
 
@@ -92,10 +92,10 @@ export function ClaimRow({
   return (
     <Link
       href={href}
-      className={`group bg-paper border border-line border-l-4 ${verdictColor.borderLeft} rounded-xl p-4 flex gap-4 items-center hover:border-ink-5 transition-colors`}
+      className={`group flex min-h-11 flex-col gap-3 rounded-xl border border-line border-l-4 bg-paper p-4 transition-colors hover:border-ink-5 sm:flex-row sm:items-center sm:gap-4 ${verdictColor.borderLeft}`}
     >
       {/* Score block */}
-      <div className="flex-shrink-0 w-[72px]">
+      <div className="flex-shrink-0 sm:w-[72px]">
         <div className={`font-serif text-[36px] font-medium ${verdictColor.text} leading-none`}>
           {score}
           <span className="font-sans text-[10px] font-bold uppercase tracking-wide text-ink-4 ml-0.5">
@@ -144,7 +144,7 @@ export function ClaimRow({
 
       {/* Chevron */}
       <svg
-        className="w-4 h-4 text-ink-4 flex-shrink-0 group-hover:text-ink-2 transition-colors"
+        className="hidden h-4 w-4 flex-shrink-0 text-ink-4 transition-colors group-hover:text-ink-2 sm:block"
         viewBox="0 0 16 16"
         fill="none"
         stroke="currentColor"

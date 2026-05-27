@@ -86,7 +86,7 @@ export function TranscriptView({
         className={`${
           isPresent
             ? "mx-auto max-w-3xl px-8 py-10 text-[22px] leading-[1.55]"
-            : "px-4 py-3 text-[15px] leading-relaxed"
+            : "mx-auto w-full max-w-3xl px-5 py-5 text-[15px] leading-relaxed sm:px-6 md:px-8"
         }`}
       >
         {transcript.length === 0 && !interim && (
@@ -156,7 +156,7 @@ export function TranscriptView({
       </div>
       {/* Interim text rendered OUTSIDE the live region — no SR floods from partial words */}
       {interim && (
-        <p className="px-4 py-1 text-muted-foreground/70" aria-hidden="true">{interim}</p>
+        <p className="mx-auto w-full max-w-3xl px-5 py-1 text-muted-foreground/70 sm:px-6 md:px-8" aria-hidden="true">{interim}</p>
       )}
     </ScrollArea>
   );

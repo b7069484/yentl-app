@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { assertSafeUrl } from "@/lib/server/ssrf-guard";
 import { checkMediaMime } from "@/lib/server/media-mime";
 import { transcribeUrl } from "@/lib/server/deepgram-batch";
+import { requireSourceAnalysisConsent } from "@/lib/server/consent";
+import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
@@ -19,6 +21,12 @@ function errorResponse(
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const limited = await enforceRateLimit(req, RATE_LIMITS.sourceIngest);
+  if (limited) return limited;
+
+  const consentError = requireSourceAnalysisConsent(req);
+  if (consentError) return consentError;
+
   // 1. Parse body
   let body: unknown;
   try {

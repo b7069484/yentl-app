@@ -85,10 +85,15 @@ async function main() {
   const { deepgramKey } = loadEnv();
   const argv = process.argv.slice(2);
   const categoryFilter = argv.find((a) => a.startsWith("--category="))?.slice(11);
+  const onlyIds = argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",").filter(Boolean) ?? [];
   const limit = Number(argv.find((a) => a.startsWith("--limit="))?.slice(8) || 0);
 
   const rows = await readVideos();
-  const targets = rows.filter((r) => !categoryFilter || r.category === categoryFilter);
+  const targets = rows.filter((r) => {
+    if (categoryFilter && r.category !== categoryFilter) return false;
+    if (onlyIds.length > 0 && !onlyIds.includes(r.id)) return false;
+    return true;
+  });
   const sliced = limit > 0 ? targets.slice(0, limit) : targets;
 
   console.log(`Ingesting ${sliced.length} videos${categoryFilter ? ` in category=${categoryFilter}` : ""}`);

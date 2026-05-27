@@ -30,4 +30,11 @@ describe("aria-live regions", () => {
     const liveRegion = container.querySelector("[aria-live]");
     expect(liveRegion).toHaveAttribute("aria-live", "polite");
   });
+
+  it("TranscriptView uses a constrained reading measure", () => {
+    const { container } = render(<TranscriptView />);
+    const liveRegion = container.querySelector("[aria-live]");
+    expect(liveRegion?.className).toContain("max-w-3xl");
+    expect(liveRegion?.className).toContain("px-5");
+  });
 });

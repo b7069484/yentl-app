@@ -2,6 +2,7 @@ import { join } from "node:path";
 import { spawn, mkdtemp, readFile, rm, tmpdir, getYtDlpBinaryPath } from "./yt-dlp-runner";
 import type { TranscriptSegment } from "@/lib/types";
 import { Innertube } from "youtubei.js";
+import { YoutubeTranscript } from "youtube-transcript";
 
 // ─── Custom error class ────────────────────────────────────────────────────────
 
@@ -426,6 +427,84 @@ export async function fetchViaInnertube(videoId: string): Promise<TranscriptSegm
   return segments;
 }
 
+// ─── youtube-transcript (scraping fallback) ───────────────────────────────────
+
+type YoutubeTranscriptItem = {
+  text: string;
+  duration: number;
+  offset: number;
+  lang?: string;
+};
+
+/**
+ * Fetches captions through youtube-transcript. This package currently succeeds
+ * against videos where youtubei.js and yt-dlp report false NO_CAPTIONS results.
+ */
+export async function fetchViaYoutubeTranscript(
+  videoId: string,
+): Promise<TranscriptSegment[]> {
+  const languageCandidates = ["en", "en-US", "en-GB"];
+  let lastError: unknown;
+
+  for (const lang of languageCandidates) {
+    try {
+      const items = (await YoutubeTranscript.fetchTranscript(videoId, {
+        lang,
+      })) as YoutubeTranscriptItem[];
+      const segments = transcriptItemsToSegments(items);
+      if (segments.length > 0) return segments;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw mapYoutubeTranscriptError(lastError);
+}
+
+function transcriptItemsToSegments(
+  items: YoutubeTranscriptItem[],
+): TranscriptSegment[] {
+  const segments: TranscriptSegment[] = [];
+
+  for (const item of items) {
+    const text = item.text.replace(/\s+/g, " ").trim();
+    if (!text) continue;
+
+    const start = normalizeTranscriptTime(item.offset);
+    const duration = normalizeTranscriptTime(item.duration);
+    if (!Number.isFinite(start) || !Number.isFinite(duration)) continue;
+
+    segments.push({
+      text,
+      start,
+      end: start + Math.max(duration, 0.1),
+      is_final: true,
+      speaker_id: 0,
+    });
+  }
+
+  return segments;
+}
+
+function normalizeTranscriptTime(value: number): number {
+  if (!Number.isFinite(value)) return NaN;
+  return value > 1000 ? value / 1000 : value;
+}
+
+function mapYoutubeTranscriptError(error: unknown): CaptionError {
+  const message = error instanceof Error ? error.message : String(error);
+
+  if (/unavailable|private|login|sign in|age/i.test(message)) {
+    return new CaptionError("PRIVATE", message);
+  }
+
+  if (/too many|captcha|429/i.test(message)) {
+    return new CaptionError("NETWORK_ERROR", message);
+  }
+
+  return new CaptionError("NO_CAPTIONS", message || "No English captions available");
+}
+
 // ─── yt-dlp (fallback path) ───────────────────────────────────────────────────
 
 /**
@@ -520,7 +599,9 @@ export async function fetchViaYtDlp(videoId: string): Promise<TranscriptSegment[
  * Strategy:
  *   1. Try Innertube (youtubei.js) — uses YouTube's internal mobile/web API
  *      endpoints, which are not blocked on cloud datacenter IPs (unlike yt-dlp).
- *   2. Fall back to yt-dlp if Innertube fails for any non-PRIVATE reason.
+ *   2. Fall back to youtube-transcript, which currently catches videos where
+ *      Innertube / yt-dlp can incorrectly report no captions.
+ *   3. Fall back to yt-dlp if the scraping fallback fails for any non-PRIVATE reason.
  *      yt-dlp handles more edge cases (age-restricted, region-locked) with the
  *      right cookies and has an active maintenance team.
  *
@@ -547,6 +628,13 @@ export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[
     }
   }
 
-  // ── Fallback: yt-dlp ─────────────────────────────────────────────────────
+  // ── Fallback: youtube-transcript ─────────────────────────────────────────
+  try {
+    return await fetchViaYoutubeTranscript(videoId);
+  } catch (err) {
+    if (err instanceof CaptionError && err.code === "PRIVATE") throw err;
+  }
+
+  // ── Final fallback: yt-dlp ───────────────────────────────────────────────
   return fetchViaYtDlp(videoId);
 }

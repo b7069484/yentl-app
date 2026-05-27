@@ -33,7 +33,10 @@ const SAMPLE_SPEAKERS = [{ id: 0, label: "Speaker 1" }];
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/media-ingest", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: JSON.stringify(body),
   });
 }
@@ -133,7 +136,10 @@ describe("POST /api/media-ingest", () => {
       const { POST } = await import("@/app/api/media-ingest/route");
       const req = new Request("http://localhost/api/media-ingest", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-yentl-source-consent": "source-analysis-v1",
+        },
         body: "{{bad json",
       });
       const res = await POST(req as never);

@@ -113,7 +113,6 @@ function openPanel(message) {
   const src = new URL("/session", panelAppOrigin);
   src.searchParams.set("source", "browser-tab");
   src.searchParams.set("surface", "extension-panel");
-  src.searchParams.set("bridge", panelBridgeToken);
   if (message.tab?.title) src.searchParams.set("title", message.tab.title);
 
   if (panelIframe) {
@@ -269,7 +268,9 @@ function enqueueOrPost(pageMessage) {
 
 function emitDebugMessage(message) {
   if (!window.__YENTL_CAPTURE_DEBUG__) return;
-  window.dispatchEvent(new CustomEvent("yentl-extension-message", { detail: message }));
+  const safeMessage = { ...message };
+  delete safeMessage.bridgeToken;
+  window.dispatchEvent(new CustomEvent("yentl-extension-message", { detail: safeMessage }));
 }
 
 function flushPendingMessages() {
@@ -294,7 +295,10 @@ function isAppBridgeEvent(event) {
     return (
       event.source === panelIframe.contentWindow &&
       event.origin === panelAppOrigin &&
-      event.data?.bridgeToken === panelBridgeToken
+      (
+        event.data?.bridgeToken === undefined ||
+        event.data.bridgeToken === panelBridgeToken
+      )
     );
   }
 

@@ -1,7 +1,7 @@
 /* global chrome */
 
 const APP_ORIGIN_KEY = "appOrigin";
-const DEFAULT_APP_ORIGIN = "http://localhost:3000";
+const DEFAULT_APP_ORIGIN = "https://yentl.it";
 
 const input = document.getElementById("app-origin");
 const button = document.getElementById("save");

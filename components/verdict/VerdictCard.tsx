@@ -53,8 +53,8 @@ const VERDICT_CONFIG: Record<
   UNVERIFIED: {
     stripe: "bg-[#6B7280]",
     icon: HelpCircle,
-    label: "? UNVERIFIED",
-    aria: "Verdict: Unverified",
+    label: "NO RELIABLE BACKING",
+    aria: "Verdict: no reliable backing",
   },
 };
 

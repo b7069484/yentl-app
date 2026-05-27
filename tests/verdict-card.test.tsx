@@ -27,7 +27,7 @@ describe("VerdictCard", () => {
 
   it("renders UNVERIFIED state without errors", () => {
     render(<VerdictCard verdict="UNVERIFIED" {...baseProps} />);
-    expect(screen.getByText(/\? UNVERIFIED/i)).toBeInTheDocument();
+    expect(screen.getByText(/NO RELIABLE BACKING/i)).toBeInTheDocument();
   });
 
   it("has aria-label for verdict state (accessible)", () => {

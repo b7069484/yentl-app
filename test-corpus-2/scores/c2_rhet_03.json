@@ -1,0 +1,11 @@
+{
+  "id": "c2_rhet_03",
+  "phase": "A",
+  "wer": 0.8733031674208145,
+  "substitutions": 103,
+  "deletions": 12,
+  "insertions": 464,
+  "hits": 548,
+  "refLen": 663,
+  "hypLen": 1115
+}

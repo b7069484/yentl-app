@@ -1,0 +1,26 @@
+{
+  "wait": true,
+  "dry_run": false,
+  "assets": [
+    {
+      "canonical_id": "loaded_language",
+      "display": "Loaded Language",
+      "command": [
+        "higgsfield",
+        "generate",
+        "create",
+        "gpt_image_2",
+        "--prompt",
+        "Create one bespoke icon for \"Loaded Language\" (rhetoric, framing). Style: clean duotone stroke vector icon, pure white background, no text, no letters, no labels. Use a 1:1 square composition, readable at 24px and 64px, with a consistent 2px rounded stroke. Use deep ink as the primary stroke and one restrained accent color keyed to the marker type. The metaphor must be specific to the concept, not a generic warning symbol. Concept cues: Word choice carries strong emotional charge beyond neutral description. 'Regime' vs 'government', 'slaughter' vs 'killed', 'crusade' vs 'campaign'. Adjectives doing argumentative work: 'reckless', 'brave', 'so-called'.",
+        "--aspect_ratio",
+        "1:1",
+        "--resolution",
+        "2k",
+        "--wait"
+      ],
+      "status": "started",
+      "stdout": "https://d8j0ntlcm91z4.cloudfront.net/user_2zuoUzYzUUhdioaNyEmtXSzW2b6/hf_20260521_210658_5ca6d334-4249-4289-99ad-541ed1ee0faf.png",
+      "stderr": ""
+    }
+  ]
+}

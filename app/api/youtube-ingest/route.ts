@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { parseYouTubeUrl, fetchCaptions } from "@/lib/server/youtube-captions";
 import { fetchOEmbed } from "@/lib/server/youtube-oembed";
 import { loadYouTubeValidationFixture } from "@/lib/server/youtube-validation-fixtures";
+import { requireSourceAnalysisConsent } from "@/lib/server/consent";
+import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import type { CaptionErrorCode } from "@/lib/server/youtube-captions";
 
 /** Duck-typed check for CaptionError shape — works across module boundaries and mocks. */
@@ -26,6 +28,12 @@ export const runtime = "nodejs";
  *       codes: INVALID_URL | NO_CAPTIONS | NETWORK_ERROR
  */
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const limited = await enforceRateLimit(req, RATE_LIMITS.sourceIngest);
+  if (limited) return limited;
+
+  const consentError = requireSourceAnalysisConsent(req);
+  if (consentError) return consentError;
+
   // ── Parse body ────────────────────────────────────────────────────────────────
   let body: unknown;
   try {

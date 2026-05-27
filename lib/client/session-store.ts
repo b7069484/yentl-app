@@ -47,6 +47,7 @@ export type BrowserTabCaptureStatus = {
     | "capturing"
     | "transcribing"
     | "no_audio_detected"
+    | "tab_changed"
     | "stopped"
     | "error";
   message?: string;
@@ -71,8 +72,11 @@ type State = {
   synthesis: SynthesisState;
   devilAdvocate: DevilAdvocateState;
   micStream: MediaStream | null;
+  micDeviceId: string | null;
+  micConsentAccepted: boolean;
   prerecordStage: "picker" | "selected";
   browserTabStatus: BrowserTabCaptureStatus;
+  pendingYouTubeCaptions: TranscriptSegment[];
 
   // actions
   startSession: (title?: string) => void;
@@ -91,8 +95,12 @@ type State = {
   setSynthesis: (s: SynthesisState) => void;
   setDevilAdvocate: (s: DevilAdvocateState) => void;
   setMicStream: (stream: MediaStream | null) => void;
+  setMicDeviceId: (deviceId: string | null) => void;
+  setMicConsentAccepted: (accepted: boolean) => void;
   setPrerecordStage: (stage: "picker" | "selected") => void;
   setBrowserTabStatus: (status: BrowserTabCaptureStatus) => void;
+  setPendingYouTubeCaptions: (segments: TranscriptSegment[]) => void;
+  clearPendingYouTubeCaptions: () => void;
   restoreSession: (session: Session) => void;
   toSession: () => Session;
   reset: () => void;
@@ -136,8 +144,9 @@ const initialState: Omit<State,
   | "startSession" | "endSession" | "setInterim" | "appendFinal"
   | "addClaim" | "updateClaim" | "addMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
-  | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream"
-  | "setDevilAdvocate" | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
+  | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream" | "setMicDeviceId"
+  | "setMicConsentAccepted" | "setDevilAdvocate" | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
+  | "setPendingYouTubeCaptions" | "clearPendingYouTubeCaptions"
   | "reassignUtterance" | "addNewSpeaker" | "splitSegmentAt"
 > = {
   title: "",
@@ -155,8 +164,11 @@ const initialState: Omit<State,
   synthesis: null,
   devilAdvocate: null,
   micStream: null,
+  micDeviceId: null,
+  micConsentAccepted: false,
   prerecordStage: "picker",
   browserTabStatus: { phase: "idle" },
+  pendingYouTubeCaptions: [],
 };
 
 export const useSession = create<State>((set, get) => ({
@@ -168,6 +180,9 @@ export const useSession = create<State>((set, get) => ({
     // back to mic. For non-mic ingest paths (text/audio/youtube/media), the
     // pane sets source via setSource() before startSession() runs.
     source: s.source,
+    pendingYouTubeCaptions: s.pendingYouTubeCaptions,
+    micDeviceId: s.micDeviceId,
+    micConsentAccepted: s.micConsentAccepted,
     // We've moved past the picker — the session is now "selected" stage.
     prerecordStage: "selected",
     title: title ?? new Date().toISOString(),
@@ -239,6 +254,10 @@ export const useSession = create<State>((set, get) => ({
 
   setBrowserTabStatus: (status) => set({ browserTabStatus: status }),
 
+  setPendingYouTubeCaptions: (segments) => set({ pendingYouTubeCaptions: segments }),
+
+  clearPendingYouTubeCaptions: () => set({ pendingYouTubeCaptions: [] }),
+
   setSpeakersMode: (b) => set({ speakersMode: b }),
 
   toggleMode: () => set((s) => ({ mode: s.mode === "A" ? "D" : "A" })),
@@ -250,6 +269,10 @@ export const useSession = create<State>((set, get) => ({
   setDevilAdvocate: (s) => set({ devilAdvocate: s }),
 
   setMicStream: (stream) => set({ micStream: stream }),
+
+  setMicDeviceId: (deviceId) => set({ micDeviceId: deviceId }),
+
+  setMicConsentAccepted: (accepted) => set({ micConsentAccepted: accepted }),
 
   restoreSession: (session: Session) => set({
     title: session.title,
@@ -283,7 +306,10 @@ export const useSession = create<State>((set, get) => ({
         }
       : null,
     micStream: null,
+    micDeviceId: null,
+    micConsentAccepted: false,
     browserTabStatus: { phase: "idle" },
+    pendingYouTubeCaptions: [],
   }),
 
   toSession: () => {

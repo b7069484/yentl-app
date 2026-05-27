@@ -81,7 +81,7 @@ type ExtensionMessage =
       bridgeToken?: string;
       payload?: {
         running?: boolean;
-        phase?: "extension_connected" | "capturing" | "transcribing" | "no_audio_detected";
+        phase?: "extension_connected" | "capturing" | "transcribing" | "no_audio_detected" | "tab_changed";
         title?: string;
         url?: string;
         message?: string;
@@ -101,7 +101,9 @@ type BrowserTabSessionPayload = {
   source_context?: BrowserTabContext;
 };
 
-function getBridgeToken() {
+let trustedExtensionBridgeToken: string | null = null;
+
+function getUrlBridgeToken() {
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get("bridge");
 }
@@ -113,11 +115,9 @@ function isExtensionPanelSurface() {
 
 function postAppBridgeMessage(message: AppBridgeMessage) {
   if (typeof window === "undefined") return;
-  const bridgeToken = getBridgeToken();
-  const bridgedMessage = bridgeToken ? { ...message, bridgeToken } : message;
-  window.postMessage(bridgedMessage, window.location.origin);
+  window.postMessage(message, window.location.origin);
   if (window.parent !== window) {
-    window.parent.postMessage(bridgedMessage, "*");
+    window.parent.postMessage(message, "*");
   }
 }
 
@@ -147,7 +147,7 @@ export function checkBrowserTabCaptureStatus() {
       title: latest.title,
       url: latest.url,
       message:
-        "No extension response yet. This check only works in Chrome with the Yentl extension loaded. Open a real media or article page in Chrome, click the extension there, and keep this app origin set to http://localhost:3000.",
+        "No extension response yet. This check only works in Chrome with the Yentl extension loaded. Open a media or article page in Chrome, click the extension there, and keep the extension pointed at this Yentl app.",
       updatedAt: Date.now(),
     });
   }, 1600);
@@ -171,8 +171,19 @@ function isAllowedExtensionMessageEvent(event: MessageEvent, msg: ExtensionMessa
   if (!isExtensionPanelSurface()) return false;
   if (event.source !== window.parent) return false;
 
-  const bridgeToken = getBridgeToken();
-  return !!bridgeToken && msg.bridgeToken === bridgeToken;
+  const urlBridgeToken = getUrlBridgeToken();
+  if (urlBridgeToken) return msg.bridgeToken === urlBridgeToken;
+
+  if (typeof msg.bridgeToken !== "string" || msg.bridgeToken.length < 8) {
+    return false;
+  }
+
+  if (!trustedExtensionBridgeToken) {
+    trustedExtensionBridgeToken = msg.bridgeToken;
+    return true;
+  }
+
+  return msg.bridgeToken === trustedExtensionBridgeToken;
 }
 
 function ensureBrowserTabSession(payload?: BrowserTabSessionPayload): boolean {
@@ -344,6 +355,9 @@ function appendPageText(payload: Extract<ExtensionMessage, { type: "page-text" }
 export function ExtensionBridge() {
   useEffect(() => {
     const isValidationDemo = new URLSearchParams(window.location.search).get("demo") === "validation";
+    if (isExtensionPanelSurface() && !getUrlBridgeToken()) {
+      trustedExtensionBridgeToken = null;
+    }
 
     function handleMessage(event: MessageEvent) {
       if (!isExtensionMessage(event.data)) return;

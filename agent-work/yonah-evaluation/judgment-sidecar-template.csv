@@ -1,0 +1,11 @@
+row_id,corpus,reviewer,review_date,target_failure_observed,transcript_usable,speaker_attribution_score,speaker_attribution_notes,claim_completeness_score,claim_completeness_notes,quote_stance_correctness_score,quote_stance_correctness_notes,verdict_correctness_score,verdict_correctness_notes,marker_usefulness_score,marker_usefulness_notes,over_pettiness_score,over_pettiness_notes,missed_broader_context_score,missed_broader_context_notes,earlier_verdict_should_change,later_context_trigger,crosstalk_repair_irony_risk,trap_labels,overall_score_0_3,human_review_required_before_tuning,keep_in_pack,reviewer_notes
+cable_008,test-corpus,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+political_010,test-corpus,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+israel_010,test-corpus,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+holocaust_010,test-corpus,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_mech_01,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_mech_05,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_quote_09,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_ident_10,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_rhet_03,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,
+c2_platform_03,test-corpus-2,,,,,,,,,,,,,,,,,,,,,,,,yes,,

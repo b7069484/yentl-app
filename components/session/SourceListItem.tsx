@@ -1,9 +1,12 @@
 import type { Source } from "@/lib/types";
 import { REPUTATION_TIER, STANCE } from "@/lib/client/verdict-theme";
+import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
 
 export function SourceListItem({ source }: { source: Source }) {
   const tier = REPUTATION_TIER[source.reputation_tier];
   const stance = STANCE[source.stance];
+  const preview = source.preview;
+  const hasThumbnail = isValidatedSourceImage(preview);
 
   return (
     <a
@@ -12,13 +15,22 @@ export function SourceListItem({ source }: { source: Source }) {
       rel="noreferrer"
       className="group flex items-start gap-3 rounded-lg border border-border/60 bg-card/70 p-2.5 transition hover:border-foreground/30 hover:bg-card"
     >
-      <span
-        aria-hidden
-        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold leading-none ${stance.tone}`}
-        title={stance.label}
-      >
-        {stance.icon}
-      </span>
+      {hasThumbnail ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={preview.image_url}
+          alt={preview.image_alt ?? preview.title ?? source.title}
+          className="mt-0.5 h-14 w-20 shrink-0 rounded-md border border-border/60 bg-white object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className={`mt-0.5 flex h-14 w-20 shrink-0 items-center justify-center rounded-md border bg-background text-[13px] font-semibold leading-none ${stance.tone}`}
+          title={stance.label}
+        >
+          {source.domain[0]?.toUpperCase() ?? stance.icon}
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <div className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
           {source.title}
@@ -38,6 +50,9 @@ export function SourceListItem({ source }: { source: Source }) {
             &ldquo;{source.excerpt}&rdquo;
           </p>
         )}
+        <p className="mt-1.5 line-clamp-2 text-[11px] leading-snug text-muted-foreground">
+          {sourceImageTrustLabel(source.preview)}
+        </p>
       </div>
     </a>
   );

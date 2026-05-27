@@ -100,7 +100,7 @@ beforeEach(() => {
 describe("AudioIngestPane — renders", () => {
   it("renders the headline", () => {
     render(<AudioIngestPane />);
-    expect(screen.getByText(/Drop an audio file/i)).toBeTruthy();
+    expect(screen.getByText(/Drop an audio or video file/i)).toBeTruthy();
   });
 
   it("renders a drop zone", () => {
@@ -197,6 +197,10 @@ describe("AudioIngestPane — valid file preview", () => {
       // Process button appears (enabled)
       const btn = screen.getByRole("button", { name: /Process audio/i });
       expect(btn).not.toBeDisabled();
+      expect(btn.className).toContain("text-white");
+      expect(btn.className).not.toContain("text-bg");
+      expect(screen.getByText(/Ready to process/i)).toBeTruthy();
+      expect(screen.getByText(/What happens next/i)).toBeTruthy();
     });
   });
 

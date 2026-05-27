@@ -47,4 +47,17 @@ describe("startMic — constraint mapping", () => {
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
     });
   });
+
+  it("adds an exact deviceId constraint when a microphone is selected", async () => {
+    const { startMic } = await import("@/lib/client/mic");
+    await startMic(() => {}, { deviceId: "usb-mic" });
+    expect(getUserMediaMock).toHaveBeenCalledWith({
+      audio: {
+        deviceId: { exact: "usb-mic" },
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
+  });
 });

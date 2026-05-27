@@ -22,7 +22,8 @@ Output JSON with: primary_label, score (0–100), annotations (short tags like
 DO NOT cite specific sources, URLs, domains, or studies — citations are
 forbidden in this provisional pass. The next pass will add citations.
 
-If the claim is verifiable but your knowledge is stale or insufficient,
-use UNVERIFIABLE rather than guessing.
+If the claim is checkable but your knowledge is stale or insufficient, use the
+backward-compatible enum value UNVERIFIABLE to mean "not enough reliable
+backing found yet"; do not describe the fact itself as impossible to verify.
 
 If the claim is a personal opinion, use OPINION and score 0.`;

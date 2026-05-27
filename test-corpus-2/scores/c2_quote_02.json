@@ -1,0 +1,11 @@
+{
+  "id": "c2_quote_02",
+  "phase": "A",
+  "wer": 0.1636073423782921,
+  "substitutions": 79,
+  "deletions": 59,
+  "insertions": 67,
+  "hits": 1115,
+  "refLen": 1253,
+  "hypLen": 1261
+}

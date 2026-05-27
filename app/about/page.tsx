@@ -16,32 +16,46 @@ export default function AboutPage() {
           What Yentl does
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Yentl is a real-time speech analysis tool that listens to live audio, transcribes
-          it, and evaluates factual claims, cognitive biases, logical fallacies, and rhetorical
-          patterns — with source-backed verdicts. It is designed to support critical thinking
-          during talks, debates, and media consumption. It does not record audio to any server,
-          and its verdicts are explicitly advisory: AI-generated, potentially incomplete, and
-          always subject to your own judgment.
+          Yentl checks what is being said. It can work from a live tab,
+          microphone audio, uploaded media, a YouTube link, a media URL, or
+          pasted text, then keeps the source, transcript, claims, evidence, and
+          rhetoric markers together. It is designed to support critical thinking
+          during talks, debates, classes, and media consumption. Its verdicts are
+          advisory: AI-generated, potentially incomplete, and always subject to
+          your own judgment.
+        </p>
+      </section>
+
+      <section aria-labelledby="account-saves">
+        <h2 id="account-saves" className="text-xl font-semibold mb-3">
+          Accounts and saved sessions
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          The current v1 experience is guest-first. Saved sessions are stored in
+          this browser so you can return to work on the same device. Account
+          sign-in and cross-device session sync are not part of this v1 save
+          story unless a deployment explicitly enables them and updates the
+          product copy to say so.
         </p>
       </section>
 
       <section aria-labelledby="engines-used">
         <h2 id="engines-used" className="text-xl font-semibold mb-3">
-          Engines used
+          Processing services
         </h2>
         <ul className="space-y-2 text-muted-foreground">
           <li>
-            <strong>Deepgram Nova-3</strong> — real-time speech-to-text transcription. Audio
-            streams directly from your browser to Deepgram&apos;s API; no audio is stored on
-            Yentl&apos;s servers.
+            <strong>Deepgram</strong> — speech-to-text transcription for live
+            audio and uploaded or linked media.
           </li>
           <li>
-            <strong>Anthropic Claude Opus 4.7</strong> — large-language-model fact-checking,
-            bias identification, fallacy detection, and source citation analysis.
+            <strong>Anthropic</strong> — claim checking, bias identification,
+            fallacy detection, and source citation analysis from transcript
+            text.
           </li>
           <li>
-            <strong>Vercel AI Gateway</strong> — API request routing and observability layer
-            between the application and upstream AI providers.
+            <strong>Vercel</strong> — application hosting, API routing, and
+            temporary server processing needed to run the app.
           </li>
         </ul>
       </section>
@@ -64,8 +78,10 @@ export default function AboutPage() {
           Funding model
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Self-funded · seeking responsible partners. Yentl does not sell user data.
-          No advertising. No third-party data brokers.
+          Self-funded; seeking responsible partners. Yentl does not sell user
+          data. No advertising. No third-party data brokers. See{" "}
+          <Link href="/pricing" className="underline">Pricing</Link> for the
+          current public-preview posture.
         </p>
       </section>
 
@@ -98,10 +114,10 @@ export default function AboutPage() {
             <Link href="/terms" className="underline">Terms of Service</Link>.
           </li>
           <li>
-            <strong>Engagement limits.</strong> Yentl declines to adjudicate certain claim
+            <strong>Scope limits.</strong> Yentl declines to adjudicate certain claim
             types (private individuals, harassment vectors, extremism). See{" "}
             <Link href="/methodology" className="underline">Methodology</Link> for the full
-            engagement-gate policy.
+            scope policy.
           </li>
         </ul>
       </section>
@@ -122,7 +138,7 @@ export default function AboutPage() {
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
           <strong>Known gaps:</strong> Audio playback controls are not yet implemented (v1 does
-          not persist audio). Complex data visualizations (planned for v2) will require
+          not save replayable audio in the local library). Complex data visualizations will require
           additional table/chart accessibility work.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
@@ -130,8 +146,8 @@ export default function AboutPage() {
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
           <strong>Contact for accessibility issues:</strong>{" "}
-          <a href="/contact" className="underline">contact page</a> or email
-          the address listed there. We aim to respond within 5 business days.
+          <Link href="/contact" className="underline">Use the accessibility contact</Link>{" "}
+          for barriers, assistive-technology bugs, or accommodation requests.
         </p>
       </section>
     </main>

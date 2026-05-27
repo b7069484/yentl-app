@@ -18,13 +18,13 @@ function formatTs(seconds: number): string {
 // ─── Verdict theme maps ───────────────────────────────────────────────────────
 
 const VERDICT_LABEL: Record<PrimaryLabel, string> = {
-  TRUE: "True",
-  MOSTLY_TRUE: "Mostly True",
-  PARTIAL: "Partially True",
-  MISLEADING: "Misleading",
-  OMISSION: "Missing Context",
+  TRUE: "Supported",
+  MOSTLY_TRUE: "Supported",
+  PARTIAL: "Mixed",
+  MISLEADING: "Mixed",
+  OMISSION: "Mixed",
   FALSE: "False",
-  UNVERIFIABLE: "Unverifiable",
+  UNVERIFIABLE: "No reliable backing",
   OPINION: "Opinion",
 };
 
@@ -74,12 +74,19 @@ const VERDICT_BORDER_LEFT: Record<PrimaryLabel, string> = {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function VerdictLabel({ verdict }: { verdict: PrimaryLabel }) {
+function VerdictLabel({
+  status,
+  verdict,
+}: {
+  status: ClaimCard["status"];
+  verdict: PrimaryLabel;
+}) {
+  const label = status === "checking" ? "Checking" : VERDICT_LABEL[verdict];
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border ${VERDICT_PILL[verdict]}`}
+      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold border ${VERDICT_PILL[verdict]}`}
     >
-      {VERDICT_LABEL[verdict]}
+      {label}
     </span>
   );
 }
@@ -221,7 +228,7 @@ export function ClaimDetail({
         className={`bg-paper border border-line border-l-[6px] ${VERDICT_BORDER_LEFT[claim.primary_label]} rounded-2xl p-5`}
       >
         <div className="flex items-center justify-between mb-3.5 flex-wrap gap-2">
-          <VerdictLabel verdict={claim.primary_label} />
+          <VerdictLabel status={claim.status} verdict={claim.primary_label} />
           <ScorePill score={claim.score} verdict={claim.primary_label} />
         </div>
         <div className="font-serif italic font-medium text-[20px] text-ink-2 leading-snug tracking-tight">

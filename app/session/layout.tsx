@@ -51,21 +51,71 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
       });
       mic.current = await startMic(
         (chunk) => dg.current?.send(chunk),
-        { speakersMode: session.speakersMode },
+        { speakersMode: session.speakersMode, deviceId: session.micDeviceId },
       );
       if (mic.current) session.setMicStream(mic.current.stream);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      const friendly = /permission|denied|notallowed/i.test(msg)
+      const permissionDenied = /permission|denied|notallowed/i.test(msg);
+      const canReturnToMicSetup =
+        permissionDenied &&
+        sourceKind === "mic" &&
+        session.transcript.length === 0 &&
+        session.claims.length === 0 &&
+        session.markers.length === 0;
+      const selectedMicDeviceId = session.micDeviceId;
+      const micConsentAccepted = session.micConsentAccepted;
+      const friendly = permissionDenied
         ? "Microphone access was blocked. Allow mic permission in your browser and try again."
         : /token/i.test(msg)
           ? "Couldn't reach the transcription service. Check that the dev server has VERCEL_OIDC_TOKEN and DEEPGRAM_API_KEY set."
           : `Couldn't start the session: ${msg}`;
       setError(friendly);
       teardown();
-      session.setRecording(false);
+      if (canReturnToMicSetup) {
+        session.reset();
+        session.setSource({ kind: "mic" });
+        session.setMicDeviceId(selectedMicDeviceId);
+        session.setMicConsentAccepted(micConsentAccepted);
+        session.setPrerecordStage("selected");
+      } else {
+        session.setRecording(false);
+      }
     }
   };
+
+  const micPermissionBlocked =
+    sourceKind === "mic" &&
+    typeof error === "string" &&
+    /microphone access was blocked/i.test(error);
+
+  function retryMicrophone() {
+    setError(null);
+    if (session.startedAt) {
+      session.setRecording(true);
+    } else {
+      session.startSession();
+    }
+  }
+
+  function chooseRecoverySource(source: "audio" | "text" | "claim") {
+    setError(null);
+    session.reset();
+    if (source === "audio") {
+      session.setSource({ kind: "audio_file", blob_url: "", duration_sec: 0, filename: "", mime: "" });
+    } else if (source === "claim") {
+      session.setSource({
+        kind: "text_doc",
+        filename: "Claim quick check",
+        mime: "text/plain",
+        byte_count: 0,
+        intent: "claim_only",
+      });
+    } else {
+      session.setSource({ kind: "text_doc", filename: "", mime: "", byte_count: 0 });
+    }
+    session.setPrerecordStage("selected");
+  }
 
   // React to isRecording transitions
   useEffect(() => {
@@ -113,8 +163,8 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
       e.preventDefault();
       if (!startedAt) {
         // Only start a mic session when the user has navigated through the picker
-        // and selected mic — otherwise Space is a no-op in pre-record state.
-        if (prerecordStage === "selected" && sourceKind === "mic") {
+        // and accepted consent — otherwise Space is a no-op in pre-record state.
+        if (prerecordStage === "selected" && sourceKind === "mic" && session.micConsentAccepted) {
           session.startSession();
         }
       } else if (!session.endedAt) {
@@ -131,20 +181,51 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
       {error && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-3 border-b border-red-soft bg-red-soft/40 px-6 py-2.5 text-[12.5px] text-red"
+          className="border-b border-red-soft bg-red-soft/40 px-6 py-2.5 text-[12.5px] text-red"
         >
-          <span>{error}</span>
-          <button
-            type="button"
-            onClick={() => setError(null)}
-            className="rounded px-2 py-0.5 text-[11px] font-medium text-red/80 hover:bg-red-soft"
-            aria-label="Dismiss error"
-          >
-            Dismiss
-          </button>
+          <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <div>{error}</div>
+              {micPermissionBlocked && (
+                <>
+                  <div className="mt-1 max-w-3xl text-[12px] leading-relaxed text-red/80">
+                    If the browser says this site is blocked, use the microphone icon or site settings
+                    in the address bar to allow access, then try again. You can also pick a different
+                    microphone before restarting.
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <RecoveryButton label="Try microphone again" onClick={retryMicrophone} />
+                    <RecoveryButton label="Upload recording" onClick={() => chooseRecoverySource("audio")} />
+                    <RecoveryButton label="Paste text" onClick={() => chooseRecoverySource("text")} />
+                    <RecoveryButton label="Check one claim" onClick={() => chooseRecoverySource("claim")} />
+                  </div>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="shrink-0 self-start rounded px-2 py-0.5 text-[11px] font-medium text-red/80 hover:bg-red-soft"
+              aria-label="Dismiss error"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
       {children}
     </SessionShell>
+  );
+}
+
+function RecoveryButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-lg border border-red-soft bg-paper px-3 py-1.5 text-[12px] font-medium text-red transition-colors hover:bg-red-soft/40"
+    >
+      {label}
+    </button>
   );
 }

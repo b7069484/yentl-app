@@ -46,3 +46,16 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# local agent/worktree scratch spaces
+/.claude/
+/.claire/
+
+# generated corpus media and transcript bulk; keep curated manifests/scores tracked
+/test-corpus/audio/
+/test-corpus/logs/
+/test-corpus/report/
+/test-corpus/transcripts/
+/test-corpus-2/audio/
+/test-corpus-2/logs/
+/test-corpus-2/transcripts/

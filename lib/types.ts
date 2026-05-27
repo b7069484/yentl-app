@@ -130,6 +130,16 @@ export type SourcePreview = {
   title: string | null;
   description: string | null;
   fetched_at: number;                       // epoch ms — for cache TTL
+  /** Exact publisher/source image validation status. Never use generated art as evidence. */
+  image_status?: "validated" | "missing" | "invalid" | "blocked";
+  /** Where the image candidate came from before validation. */
+  image_source?: "open_graph" | "twitter_card" | "schema_org" | "youtube_oembed" | "none";
+  /** Final URL after redirects for a validated image, when known. */
+  image_final_url?: string | null;
+  image_content_type?: string | null;
+  image_dimensions?: { width: number; height: number } | null;
+  validated_at?: number | null;
+  unavailable_reason?: string | null;
 };
 
 /* ── Session provenance (added in Sprint 1) ────────────────────── */
@@ -149,6 +159,6 @@ export type SessionSource =
   | { kind: "mic" }
   | { kind: "browser_tab"; tab_id?: number; title?: string; url?: string; context?: BrowserTabContext }
   | { kind: "audio_file"; blob_url: string; duration_sec: number; filename: string; mime: string }
-  | { kind: "text_doc"; filename: string; mime: string; byte_count: number }
+  | { kind: "text_doc"; filename: string; mime: string; byte_count: number; intent?: "document" | "claim_only"; initial_text?: string }
   | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }
   | { kind: "media_url"; url: string };

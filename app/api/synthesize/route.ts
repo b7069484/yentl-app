@@ -7,11 +7,15 @@ import {
   userPrompt,
 } from "@/lib/prompts/synthesize";
 import { NextRequest, NextResponse } from "next/server";
+import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  const limited = await enforceRateLimit(req, RATE_LIMITS.model);
+  if (limited) return limited;
+
   const body = await req.json();
 
   // Validate request body

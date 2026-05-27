@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Yentl",
@@ -16,12 +18,15 @@ export default function PrivacyPage() {
       <section aria-labelledby="overview">
         <h2 id="overview" className="text-xl font-semibold mb-3">Overview</h2>
         <p className="text-muted-foreground leading-relaxed">
-          Yentl is a real-time speech analysis tool. This Privacy Policy explains what data
-          is processed, by whom, on what legal basis, and what rights you have.{" "}
+          Yentl is a source-anchored speech and media analysis tool. This
+          Privacy Policy explains what data is processed, by whom, on what
+          legal basis, and what rights you have.{" "}
           <strong>
-            In v1, Yentl does not persist audio or transcripts on its own servers.
+            In v1, Yentl is guest-first and saves sessions locally in your
+            browser, not in an account-backed server library.
           </strong>{" "}
-          All processing is in-memory and ephemeral.
+          API requests may temporarily process audio, media, transcript text,
+          claims, sources, and analysis so the app can work.
         </p>
       </section>
 
@@ -34,9 +39,10 @@ export default function PrivacyPage() {
         </p>
         <ul className="space-y-4 text-muted-foreground">
           <li>
-            <strong>Deepgram</strong> — Processes audio for real-time transcription. Audio
-            streams from your browser directly to Deepgram&apos;s API. For EU/EEA users,
-            Yentl routes traffic to Deepgram&apos;s EU endpoint (api.eu.deepgram.com). Deepgram
+            <strong>Deepgram</strong> — Processes audio for transcription,
+            including live audio and uploaded or linked media. For EU/EEA
+            users, Yentl routes traffic to Deepgram&apos;s EU endpoint
+            (api.eu.deepgram.com) where technically feasible. Deepgram
             is a US-based processor covered by the EU-US Data Privacy Framework and Standard
             Contractual Clauses (SCCs). See{" "}
             <a
@@ -67,7 +73,9 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Vercel</strong> — Hosts the Yentl web application and routes API requests
-            via Vercel AI Gateway. Vercel operates a global edge network (US/EU/global).
+            via Vercel AI Gateway. Vercel may also temporarily handle uploaded
+            media or media URLs during transcription workflows. Vercel operates
+            a global edge network (US/EU/global).
             Vercel maintains a DPA and SCCs for EU data subjects. See{" "}
             <a
               href="https://vercel.com/legal/privacy-policy"
@@ -120,15 +128,20 @@ export default function PrivacyPage() {
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           <strong>
-            No audio or transcripts are persisted on Yentl&apos;s servers in v1; analysis is
-            in-memory only.
+            Saved sessions in v1 are browser-local.
           </strong>{" "}
-          When your browser tab closes or your session ends, session data is gone. Yentl does
-          not maintain user accounts, session histories, or server-side logs of session content.
+          If you use the Save button, the session snapshot is stored in this
+          browser&apos;s IndexedDB so it can appear in the local saved sessions
+          library. Clearing site data, changing browsers, or using another
+          device can remove or hide those saves. Yentl does not provide
+          account-backed session history or cross-device sync in this v1 build.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
-          Deepgram and Anthropic may retain API request data per their own retention policies.
-          Refer to their respective privacy policies for details.
+          Yentl server routes may temporarily process media, transcript text,
+          and analysis while a request runs. Deepgram, Anthropic, Vercel, and
+          any deployment-specific auth provider may retain API request or
+          account metadata per their own retention policies. Refer to their
+          respective privacy policies for details.
         </p>
       </section>
 
@@ -195,10 +208,18 @@ export default function PrivacyPage() {
           </li>
         </ul>
         <p className="text-muted-foreground mt-3">
-          Note: Because Yentl v1 does not persist server-side data, most rights (access,
-          erasure, portability) are satisfied by the in-memory-only architecture. To exercise
-          rights regarding data held by our processors, contact them directly using the links
-          above.
+          Note: Because Yentl v1 session saves are local to your browser, most
+          saved-session access, erasure, and portability actions are handled by
+          your local library, exports, or browser site-data controls. To
+          exercise rights regarding request metadata or processor-handled data,
+          email{" "}
+          <a
+            href={mailto(contactEmails.privacy, "Yentl privacy rights request")}
+            className="underline"
+          >
+            {contactEmails.privacy}
+          </a>
+          .
         </p>
       </section>
 
@@ -230,8 +251,8 @@ export default function PrivacyPage() {
         <p className="text-muted-foreground leading-relaxed">
           Quebec&apos;s Act respecting the protection of personal information in the private
           sector (Law 25 / Bill 64) applies to processing of Quebec residents&apos; personal
-          information. Yentl&apos;s in-memory-only architecture minimizes personal data
-          retention consistent with Law 25 data minimization principles.
+          information. Yentl&apos;s guest-first, browser-local save model minimizes account-backed
+          personal data retention consistent with Law 25 data minimization principles.
           {/* TODO: legal review needed — confirm full Law 25 compliance including privacy impact assessment (PIA) requirements before commercial launch in Quebec */}
         </p>
       </section>
@@ -239,11 +260,19 @@ export default function PrivacyPage() {
       <section aria-labelledby="contact">
         <h2 id="contact" className="text-xl font-semibold mb-3">Contact</h2>
         <p className="text-muted-foreground leading-relaxed">
-          For privacy inquiries, contact us via the{" "}
-          <a href="/contact" className="underline">
+          For privacy questions, data-rights requests, processor questions, or
+          consent and retention concerns, email{" "}
+          <a
+            href={mailto(contactEmails.privacy, "Yentl privacy request")}
+            className="underline"
+          >
+            {contactEmails.privacy}
+          </a>{" "}
+          or use the{" "}
+          <Link href="/contact" className="underline">
             contact page
-          </a>
-          .{/* TODO: replace with actual email address before launch */}
+          </Link>
+          .
         </p>
       </section>
     </main>

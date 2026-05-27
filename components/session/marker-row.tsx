@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { RhetoricMarker, MarkerType } from "@/lib/types";
 import { getEntry } from "@/lib/taxonomy";
+import { MarkerAssetIcon } from "./marker-asset-icon";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,29 +30,6 @@ function SpeakerAvatar({
     >
       {initial}
     </span>
-  );
-}
-
-// Generic marker icon — per-archetype icons land in a follow-up
-function MarkerIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className={className}
-    >
-      {/* Generic exclamation triangle */}
-      <polygon points="8,2 14.5,14 1.5,14" />
-      <line x1="8" y1="6.5" x2="8" y2="10" />
-      <circle cx="8" cy="12" r="0.5" fill="currentColor" stroke="none" />
-    </svg>
   );
 }
 
@@ -88,14 +66,19 @@ export function MarkerRow({
   return (
     <Link
       href={href}
-      className={`group bg-paper border border-line border-l-[3px] ${markerColor.borderLeft} rounded-xl p-3.5 hover:border-ink-5 transition-colors block`}
+      className={`group block min-h-11 rounded-xl border border-line border-l-[3px] bg-paper p-3.5 transition-colors hover:border-ink-5 ${markerColor.borderLeft}`}
     >
       {/* Header row */}
-      <div className="flex items-center gap-2 mb-2">
-        <MarkerIcon className={`w-[18px] h-[18px] ${markerColor.text}`} />
-        <span className="text-[13px] font-semibold text-ink">{marker.display}</span>
+      <div className="mb-2 flex min-w-0 flex-wrap items-center gap-2">
+        <MarkerAssetIcon
+          canonicalId={marker.name}
+          type={marker.type}
+          display={marker.display}
+          size="sm"
+        />
+        <span className="min-w-0 text-[13px] font-semibold text-ink">{marker.display}</span>
         <span
-          className={`text-[9.5px] tracking-wide uppercase font-medium ml-auto ${dotColor}`}
+          className={`ml-auto text-[9.5px] tracking-wide uppercase font-medium ${dotColor}`}
         >
           ● {marker.severity}
         </span>
@@ -107,7 +90,7 @@ export function MarkerRow({
       </div>
 
       {/* Footer row */}
-      <div className="flex items-center justify-between text-[11px] text-ink-4 mt-2">
+      <div className="mt-2 flex flex-col gap-1.5 text-[11px] text-ink-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="inline-flex items-center gap-1.5">
           <SpeakerAvatar speakerId={marker.speaker_id ?? 0} label={speakerLabel} />
           <span>{speakerLabel} · {formatTs(marker.start_time)}</span>

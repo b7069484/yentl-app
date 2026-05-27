@@ -1,0 +1,2 @@
+timestamp,agent_slug,agent_name,lane,status,deliverable_folder,files_changed,tests_run,preview_or_url,decisions_needed,scope_confirmed,signoff
+2026-05-21T00:00:00-04:00,orchestrator,Codex,Command setup,initialized,/Users/israelbitton/Live FactCheck/agent-work,Created orchestration packet and tracker,Not applicable,/Users/israelbitton/Live FactCheck/docs/orchestration/2026-05-21-yentl-agent-orchestration.md,None,yes,Codex

@@ -27,7 +27,7 @@ async function fetchManualSubs(url: string, videoId: string): Promise<string | n
       ],
       { maxBuffer: 50 * 1024 * 1024 }
     );
-  } catch (err) {
+  } catch {
     return null;
   }
   const files = await fs.readdir(GROUND_TRUTH_DIR);
@@ -42,8 +42,14 @@ async function main() {
   const rows = await readVideos();
   const argv = process.argv.slice(2);
   const onlyId = argv.find((a) => a.startsWith("--id="))?.slice(5);
+  const onlyIds = argv.find((a) => a.startsWith("--ids="))?.slice(6).split(",").filter(Boolean) ?? [];
 
-  const targets = rows.filter((r) => r.verified === "TRUE" && r.url && (!onlyId || r.id === onlyId));
+  const targets = rows.filter((r) => {
+    if (r.verified !== "TRUE" || !r.url) return false;
+    if (onlyId && r.id !== onlyId) return false;
+    if (onlyIds.length > 0 && !onlyIds.includes(r.id)) return false;
+    return true;
+  });
   console.log(`Fetching ground-truth captions for ${targets.length} videos...`);
 
   let found = 0;

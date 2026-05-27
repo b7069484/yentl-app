@@ -89,6 +89,13 @@ describe("session store — speakers", () => {
     expect(useSession.getState().prerecordStage).toBe("selected");
   });
 
+  it("startSession preserves the selected microphone device", () => {
+    useSession.getState().reset();
+    useSession.getState().setMicDeviceId("usb-mic");
+    useSession.getState().startSession();
+    expect(useSession.getState().micDeviceId).toBe("usb-mic");
+  });
+
   it("startSession sets truthful recording state by source", () => {
     useSession.getState().reset();
     // mic: should record

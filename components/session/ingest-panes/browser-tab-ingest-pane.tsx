@@ -1,24 +1,31 @@
 "use client";
 
-import Link from "next/link";
+import type { ComponentType } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
-  ExternalLink,
+  FileText,
+  Link,
+  Loader2,
+  Mic,
   MonitorPlay,
-  PlayCircle,
   Radio,
   Settings2,
+  Upload,
 } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { checkBrowserTabCaptureStatus } from "@/components/session/ExtensionBridge";
-import { corpusFunctionalSamples } from "@/lib/validation/fixtures";
 
 export function BrowserTabIngestPane() {
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setBrowserTabStatus = useSession((s) => s.setBrowserTabStatus);
   const setSource = useSession((s) => s.setSource);
   const browserTabStatus = useSession((s) => s.browserTabStatus);
+  const isWaitingForExtension = browserTabStatus.phase === "waiting_for_extension";
+  const needsRecovery =
+    browserTabStatus.phase === "error" ||
+    browserTabStatus.phase === "no_audio_detected" ||
+    browserTabStatus.phase === "tab_changed";
 
   function handleStartWaiting() {
     setSource({ kind: "browser_tab" });
@@ -29,6 +36,26 @@ export function BrowserTabIngestPane() {
       updatedAt: Date.now(),
     });
     checkBrowserTabCaptureStatus();
+  }
+
+  function chooseAudioUpload() {
+    setSource({ kind: "audio_file", blob_url: "", duration_sec: 0, filename: "", mime: "" });
+    setPrerecordStage("selected");
+  }
+
+  function chooseText() {
+    setSource({ kind: "text_doc", filename: "", mime: "", byte_count: 0 });
+    setPrerecordStage("selected");
+  }
+
+  function chooseMediaUrl() {
+    setSource({ kind: "media_url", url: "" });
+    setPrerecordStage("selected");
+  }
+
+  function chooseMic() {
+    setSource({ kind: "mic" });
+    setPrerecordStage("selected");
   }
 
   return (
@@ -48,7 +75,7 @@ export function BrowserTabIngestPane() {
           </div>
 
           <h1 className="font-serif text-[26px] leading-tight text-ink sm:text-[30px]">
-            Analyze any video in place
+            Use the desktop Chrome extension
           </h1>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-3">
             Open the page where the video, podcast, livestream, class, or meeting
@@ -80,14 +107,59 @@ export function BrowserTabIngestPane() {
               <Settings2 className="h-4 w-4" aria-hidden />
               Check extension
             </button>
-            <a
-              href="/validation/browser-capture.html"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-line bg-cream px-5 py-3 text-[14px] font-medium text-ink-2 shadow-sm transition-colors hover:bg-cream-2 sm:w-auto"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden />
-              Open real test page
-            </a>
           </div>
+
+          {isWaitingForExtension && (
+            <div className="mt-6 rounded-lg border border-teal/30 bg-teal-soft p-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-paper text-teal">
+                  <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden />
+                </div>
+                <div>
+                  <div className="text-[15px] font-semibold text-ink">
+                    Waiting for Chrome extension
+                  </div>
+                  <p className="mt-1 text-[13px] leading-relaxed text-ink-3">
+                    Go to the Chrome tab where the media is visible, click the Yentl extension,
+                    and keep the extension pointed at this Yentl app.
+                  </p>
+                  {browserTabStatus.message && (
+                    <p className="mt-3 rounded-md border border-teal/20 bg-paper px-3 py-2 text-[12.5px] text-ink-2">
+                      {browserTabStatus.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {needsRecovery && (
+            <div className="mt-6 rounded-lg border border-amber-2/30 bg-amber-soft p-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-paper text-amber-2">
+                  <Settings2 className="h-4 w-4" aria-hidden />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[15px] font-semibold text-ink">
+                    Browser capture needs a different path
+                  </div>
+                  <p className="mt-1 text-[13px] leading-relaxed text-ink-3">
+                    {browserTabStatus.phase === "no_audio_detected"
+                      ? "Yentl connected to the tab but did not hear usable speech. The tab may be muted, paused, protected, or the wrong source."
+                      : browserTabStatus.phase === "tab_changed"
+                        ? browserTabStatus.message ?? "Yentl is still tied to the original tab. Return to that tab, or choose a different source path."
+                        : browserTabStatus.message ?? "Chrome did not allow this browser-tab capture."}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <RecoveryButton icon={Upload} label="Upload recording" onClick={chooseAudioUpload} />
+                    <RecoveryButton icon={Link} label="Use media URL" onClick={chooseMediaUrl} />
+                    <RecoveryButton icon={FileText} label="Paste text" onClick={chooseText} />
+                    <RecoveryButton icon={Mic} label="Use microphone" onClick={chooseMic} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         <aside className="rounded-lg border border-line bg-cream p-5">
@@ -102,17 +174,16 @@ export function BrowserTabIngestPane() {
               browser.
             </p>
             <p>
-              The extension option must point to this app origin:
-              <span className="mt-1 block rounded-md border border-line bg-paper px-2 py-1 font-mono text-[12px] text-ink-2">
-                http://localhost:3000
-              </span>
+              The extension option must point to this Yentl app. If it was
+              configured for a different environment, update the extension
+              settings and try again.
             </p>
             <p>
               If the status stays waiting, reload the extension from
               <span className="font-mono"> chrome://extensions</span>, reopen
               the media page, and click the extension while the media is visible.
             </p>
-            {browserTabStatus.message && (
+            {!isWaitingForExtension && browserTabStatus.message && (
               <p className="rounded-md border border-line bg-paper px-3 py-2 text-ink-2">
                 {browserTabStatus.message}
               </p>
@@ -120,63 +191,28 @@ export function BrowserTabIngestPane() {
           </div>
         </aside>
       </div>
-
-      <section className="mt-5 rounded-lg border border-line bg-paper p-5 shadow-sm">
-        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-4">
-              <PlayCircle className="h-3.5 w-3.5" aria-hidden />
-              Functional samples
-            </div>
-            <h2 className="font-serif text-[24px] leading-tight text-ink">
-              Want something that works right now?
-            </h2>
-            <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-ink-3">
-              These replay-backed samples load proven transcripts, claims, and
-              markers into the real Watch UI. They do not require the Chrome
-              extension.
-            </p>
-          </div>
-          <Link
-            href="/project/validation"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12px] font-medium text-ink-2 hover:bg-cream-2"
-          >
-            Validation lab
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-          </Link>
-        </div>
-
-        <div className="grid gap-3 lg:grid-cols-3">
-          {corpusFunctionalSamples.map((sample) => (
-            <article
-              key={sample.id}
-              className="rounded-lg border border-line bg-cream p-3"
-            >
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-line bg-paper px-2 py-0.5 font-mono text-[10.5px] text-ink-3">
-                  {sample.id}
-                </span>
-                <span className="rounded-full border border-line bg-paper px-2 py-0.5 text-[10.5px] font-semibold text-ink-3">
-                  {sample.claims} claims · {sample.markers} markers
-                </span>
-              </div>
-              <h3 className="text-[14px] font-semibold leading-snug text-ink">
-                {sample.title}
-              </h3>
-              <p className="mt-1 min-h-12 text-[12.5px] leading-relaxed text-ink-3">
-                {sample.purpose}
-              </p>
-              <Link
-                href={sample.sessionHref}
-                className="mt-3 inline-flex items-center justify-center rounded-lg bg-teal px-3 py-2 text-[12px] font-medium text-white hover:bg-teal-2"
-              >
-                Open working sample
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
     </div>
+  );
+}
+
+function RecoveryButton({
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2 text-[12.5px] font-medium text-ink-2 shadow-sm transition-colors hover:border-teal hover:bg-cream-2"
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden />
+      {label}
+    </button>
   );
 }
 

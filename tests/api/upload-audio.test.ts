@@ -26,7 +26,10 @@ import { POST } from "@/app/api/upload-audio/route";
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/upload-audio", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: JSON.stringify(body),
   });
 }
@@ -98,6 +101,18 @@ describe("POST /api/upload-audio — token generation", () => {
     const json = await res.json();
     expect(json.error).toMatch(/Invalid token/);
   });
+
+  it("requires source analysis consent before generating an upload token", async () => {
+    const req = new Request("http://localhost/api/upload-audio", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(GENERATE_TOKEN_BODY),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(428);
+    expect(mockHandleUpload).not.toHaveBeenCalled();
+  });
 });
 
 describe("POST /api/upload-audio — onBeforeGenerateToken validation", () => {
@@ -149,6 +164,23 @@ describe("POST /api/upload-audio — onBeforeGenerateToken validation", () => {
     await POST(req);
 
     expect(capturedToken!.addRandomSuffix).toBe(true);
+  });
+
+  it("onBeforeGenerateToken stores consent in the token payload", async () => {
+    let capturedToken: Awaited<ReturnType<Parameters<typeof mockHandleUpload>[0]["onBeforeGenerateToken"]>> | undefined;
+
+    mockHandleUpload.mockImplementation(async ({ onBeforeGenerateToken }) => {
+      capturedToken = await onBeforeGenerateToken("audio.mp3", null);
+      return { clientToken: "tok_abc" };
+    });
+
+    const req = makeRequest(GENERATE_TOKEN_BODY);
+    await POST(req);
+
+    expect(capturedToken!.tokenPayload).toBe(JSON.stringify({
+      pathname: "audio.mp3",
+      consent: "source-analysis-v1",
+    }));
   });
 });
 

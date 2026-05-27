@@ -148,6 +148,9 @@ describe("transcribeAudioFile — multipart path (small files)", () => {
       "/api/transcribe-batch",
       expect.objectContaining({
         method: "POST",
+        headers: expect.objectContaining({
+          "x-yentl-source-consent": "source-analysis-v1",
+        }),
         body: expect.any(FormData),
       }),
     );
@@ -184,6 +187,24 @@ describe("transcribeAudioFile — multipart path (small files)", () => {
 
     const file = makeSmallFile();
     await expect(transcribeAudioFile(file, 100)).rejects.toThrow("audio exceeds 4-hour cap");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("throws friendly retry copy for structured rate-limit errors", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 429,
+      headers: new Headers({ "Retry-After": "12" }),
+      json: () => Promise.resolve({
+        error: { code: "RATE_LIMITED", message: "Too many requests" },
+      }),
+    }));
+
+    const file = makeSmallFile();
+    await expect(transcribeAudioFile(file, 100)).rejects.toThrow(
+      "Wait about 12 seconds and try again",
+    );
 
     vi.unstubAllGlobals();
   });
@@ -255,8 +276,12 @@ describe("transcribeAudioFile — blob path (large files)", () => {
       file.name,
       file,
       expect.objectContaining({
-        access: "public",
+        access: "private",
         handleUploadUrl: "/api/upload-audio",
+        headers: expect.objectContaining({
+          "x-yentl-source-consent": "source-analysis-v1",
+        }),
+        clientPayload: JSON.stringify({ consent: "source-analysis-v1" }),
       }),
     );
 
@@ -280,7 +305,10 @@ describe("transcribeAudioFile — blob path (large files)", () => {
       "/api/transcribe-batch",
       expect.objectContaining({
         method: "POST",
-        headers: expect.objectContaining({ "Content-Type": "application/json" }),
+        headers: expect.objectContaining({
+          "Content-Type": "application/json",
+          "x-yentl-source-consent": "source-analysis-v1",
+        }),
         body: JSON.stringify({ blob_url: blobUrl, duration_sec: 300 }),
       }),
     );

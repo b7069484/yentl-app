@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Methodology — Yentl",
-  description: "How Yentl evaluates claims: version, decision tree, reputation tiers, taxonomy, engagement rules.",
+  description: "How Yentl evaluates claims: version, decision tree, reputation tiers, taxonomy, and scope rules.",
 };
 
 export default function MethodologyPage() {
@@ -24,41 +24,40 @@ export default function MethodologyPage() {
         </h2>
         <ol className="space-y-3 text-muted-foreground list-decimal list-inside">
           <li>
-            <strong>Transcription</strong> — Deepgram Nova-3 converts live microphone audio
-            to text in near-real-time (word-level timestamps, speaker diarization off in v1).
+            <strong>Transcription</strong> — Yentl converts audio or media into
+            transcript text with timestamps and, where available, speaker
+            separation.
           </li>
           <li>
-            <strong>Claim extraction</strong> — An Anthropic Claude model (Haiku-class)
-            identifies discrete factual claims in the transcript segment. Claims that are pure
-            opinions, jokes, rhetorical questions, or contain no verifiable proposition are
-            not forwarded for fact-check.
+            <strong>Claim extraction</strong> — Yentl identifies discrete
+            factual claims in the transcript segment. Pure opinions, jokes,
+            rhetorical questions, and statements with no checkable proposition
+            are not treated as factual verdicts.
           </li>
           <li>
-            <strong>Engagement gate</strong> — Each claim passes through a classifier that
-            determines whether Yentl should <em>engage</em>, <em>engage cautiously</em>,
-            <em>decline</em>, or <em>refuse silently</em>. See the{" "}
-            <Link href="/methodology#engagement-gate-rules" className="underline">
-              engagement-gate rules
+            <strong>Scope screen</strong> — Each claim is checked for whether
+            it is appropriate to assess, needs caution, or should be left
+            without a factual verdict. See the{" "}
+            <Link href="/methodology#scope-rules" className="underline">
+              scope rules
             </Link>{" "}
-            section below and the full policy specification at{" "}
-            <Link href="/docs/engagement-gate" className="underline">
-              docs/engagement-gate.md
-            </Link>.
+            section below.
           </li>
           <li>
-            <strong>Provisional fact-check</strong> — Claude Opus performs a web-search-backed
-            analysis, retrieving sources and evaluating their stance (supports / contradicts /
-            mixed). A provisional verdict is issued while deeper verification runs in the
-            background.
+            <strong>Initial check</strong> — Yentl searches for evidence,
+            retrieves sources, and evaluates whether those sources support,
+            contradict, or complicate the claim while deeper review continues.
           </li>
           <li>
-            <strong>Confirmed fact-check</strong> — After source reconciliation, a final
-            verdict is issued: <strong>TRUE</strong>, <strong>FALSE</strong>,{" "}
-            <strong>MIXED</strong>, or <strong>UNVERIFIED</strong>.
+            <strong>Reviewed verdict</strong> — After source reconciliation,
+            the visible label becomes <strong>Supported</strong>,{" "}
+            <strong>Mixed</strong>, <strong>False</strong>,{" "}
+            <strong>No reliable backing</strong>, or <strong>Opinion</strong>.
           </li>
           <li>
-            <strong>Bias / fallacy / rhetoric markers</strong> — In parallel, Claude identifies
-            cognitive biases, logical fallacies, and rhetorical patterns from the{" "}
+            <strong>Bias / fallacy / rhetoric markers</strong> — In parallel,
+            Yentl identifies cognitive biases, logical fallacies, and
+            rhetorical patterns from the{" "}
             <Link href="/taxonomy.json" className="underline">
               Yentl taxonomy
             </Link>{" "}
@@ -116,33 +115,30 @@ export default function MethodologyPage() {
         </p>
       </section>
 
-      <section aria-labelledby="engagement-gate-rules">
-        <h2 id="engagement-gate-rules" className="text-xl font-semibold mb-3">
-          Decline-to-engage rules
+      <section aria-labelledby="scope-rules">
+        <h2 id="scope-rules" className="text-xl font-semibold mb-3">
+          Scope rules
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-3">
-          Yentl applies an engagement-gate classifier to every claim before running
-          fact-checking. The full policy specification is at{" "}
-          <Link href="/docs/engagement-gate" className="underline">
-            docs/engagement-gate.md
-          </Link>. In summary:
+          Yentl checks claims when there is a public factual proposition and
+          enough context to search for evidence responsibly. In summary:
         </p>
         <dl className="space-y-3 text-muted-foreground">
           <div>
-            <dt className="font-semibold text-foreground">Engage</dt>
+            <dt className="font-semibold text-foreground">Check</dt>
             <dd>Verifiable factual claim about public facts, public figures in their public roles, scientific consensus, or historical record.</dd>
           </div>
           <div>
-            <dt className="font-semibold text-foreground">Engage cautiously</dt>
+            <dt className="font-semibold text-foreground">Check carefully</dt>
             <dd>Contested empirical matters where reasonable experts disagree; Yentl includes confidence level, named dissenting positions, and extra source requirements.</dd>
           </div>
           <div>
-            <dt className="font-semibold text-foreground">Decline</dt>
+            <dt className="font-semibold text-foreground">Treat as opinion or context</dt>
             <dd>Pure opinions, jokes, rhetorical questions, claims with no verifiable proposition.</dd>
           </div>
           <div>
-            <dt className="font-semibold text-foreground">Refuse (silent)</dt>
-            <dd>Private-individual harassment vectors, doxxing, hate speech, extremist or threatening content, CSAM, defamation-trap setups. Yentl silently drops these without generating a verdict or error message.</dd>
+            <dt className="font-semibold text-foreground">Do not verdict</dt>
+            <dd>Private-individual harassment vectors, doxxing, hate speech, extremist or threatening content, CSAM, defamation-trap setups. Yentl avoids turning these into verdict-like output.</dd>
           </div>
         </dl>
       </section>
@@ -163,7 +159,7 @@ export default function MethodologyPage() {
             <tr className="border-b">
               <td className="py-2 pr-4">v1</td>
               <td className="py-2 pr-4">2026-05-17</td>
-              <td className="py-2">Initial prompt set. Claim extraction, fact-check, bias/fallacy/rhetoric detection. Claude Opus 4.7.</td>
+              <td className="py-2">Initial claim extraction, fact-check, bias/fallacy/rhetoric detection, and scope-screen prompt set.</td>
             </tr>
           </tbody>
         </table>

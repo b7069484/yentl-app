@@ -35,12 +35,14 @@ const mockListSessions = vi.fn<() => Promise<SavedSessionMeta[]>>();
 const mockLoadSession = vi.fn<(id: string) => Promise<{ session: Session } & SavedSessionMeta>>();
 const mockRenameSession = vi.fn<(id: string, name: string) => Promise<void>>();
 const mockDeleteSession = vi.fn<(id: string) => Promise<void>>();
+const mockClearAllSessions = vi.fn<() => Promise<void>>();
 
 vi.mock("@/lib/client/session-storage", () => ({
   listSessions: (...args: unknown[]) => mockListSessions(...args as []),
   loadSession: (...args: unknown[]) => mockLoadSession(...(args as [string])),
   renameSession: (...args: unknown[]) => mockRenameSession(...(args as [string, string])),
   deleteSession: (...args: unknown[]) => mockDeleteSession(...(args as [string])),
+  clearAllSessions: (...args: unknown[]) => mockClearAllSessions(...args as []),
 }));
 
 // ─── Mock session-store ───────────────────────────────────────────────────────
@@ -98,6 +100,7 @@ beforeEach(() => {
   mockLoadSession.mockResolvedValue(makeFullSession());
   mockRenameSession.mockResolvedValue(undefined);
   mockDeleteSession.mockResolvedValue(undefined);
+  mockClearAllSessions.mockResolvedValue(undefined);
   mockPush.mockReset();
 });
 
@@ -106,8 +109,12 @@ describe("SessionsLibraryPage — empty state", () => {
     mockListSessions.mockResolvedValue([]);
     render(<SessionsLibraryPage />);
     await waitFor(() =>
-      expect(screen.getByText(/No saved sessions yet/)).toBeTruthy(),
+      expect(screen.getByText(/No local saves yet/)).toBeTruthy(),
     );
+    expect(screen.getByText(/adds a browser-local snapshot/)).toBeTruthy();
+    expect(screen.getByText(/do not sync across browsers or accounts/)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Start a new analysis" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Review local-save privacy" })).toBeTruthy();
   });
 });
 
@@ -209,5 +216,22 @@ describe("SessionsLibraryPage — with sessions", () => {
     fireEvent.click(screen.getByText("Cancel"));
 
     expect(mockDeleteSession).not.toHaveBeenCalled();
+  });
+
+  it("requires confirmation before clearing every local save", async () => {
+    render(<SessionsLibraryPage />);
+    await waitFor(() =>
+      expect(screen.getByText("Morning debate")).toBeTruthy(),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear local saves" }));
+    expect(mockClearAllSessions).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear all local saves" }));
+
+    await waitFor(() =>
+      expect(mockClearAllSessions).toHaveBeenCalledOnce(),
+    );
+    expect(screen.getByText(/No local saves yet/i)).toBeTruthy();
   });
 });

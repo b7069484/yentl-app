@@ -1,0 +1,4921 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:00.073 --> 00:00:01.860
+- I really do not like being the guest.
+
+00:00:01.860 --> 00:00:03.150
+It's my dream to be the guest,
+
+00:00:03.150 --> 00:00:06.210
+I think being the guest
+is easier in some way,
+
+00:00:06.210 --> 00:00:07.560
+but I don't like it.
+
+00:00:07.560 --> 00:00:09.750
+- So should Nick and I be asking
+you how you make decisions?
+
+00:00:09.750 --> 00:00:11.340
+- I have no framework
+for making decisions.
+
+00:00:11.340 --> 00:00:13.620
+It's all chaos and panic every single day.
+
+00:00:13.620 --> 00:00:15.150
+- You said that you think some portion
+
+00:00:15.150 --> 00:00:16.650
+of the "Decoder" audience just wants you
+
+00:00:16.650 --> 00:00:19.334
+to end every episode by arresting a CEO.
+
+00:00:19.334 --> 00:00:22.650
+(Nilay laughing)
+(upbeat music)
+
+00:00:22.650 --> 00:00:23.940
+- Hello and welcome to "Decoder."
+
+00:00:23.940 --> 00:00:26.580
+I'm Nilay Patel,
+editor-in-chief of "The Verge."
+
+00:00:26.580 --> 00:00:29.370
+No, I'm Kate Cox, senior
+producer at "The Verge,"
+
+00:00:29.370 --> 00:00:30.750
+and "Decoder" is Nilay's show
+
+00:00:30.750 --> 00:00:32.490
+about big ideas and other problems,
+
+00:00:32.490 --> 00:00:35.850
+that's why it has his face
+and voice all over it.
+
+00:00:35.850 --> 00:00:38.130
+My co-producer Nick
+Statt and I run this show
+
+00:00:38.130 --> 00:00:40.320
+and it is fun for us every year
+
+00:00:40.320 --> 00:00:43.920
+to bring in Nilay to answer
+your audience questions.
+
+00:00:43.920 --> 00:00:45.450
+Nilay, welcome to "Decoder."
+
+00:00:45.450 --> 00:00:47.700
+- I really do not like being the guest.
+
+00:00:47.700 --> 00:00:49.050
+It's my dream to be the guest.
+
+00:00:49.050 --> 00:00:52.140
+I think being the guest
+is easier in some way,
+
+00:00:52.140 --> 00:00:53.490
+but I don't like it.
+
+00:00:53.490 --> 00:00:54.930
+- Tough. (laughs)
+
+00:00:54.930 --> 00:00:55.890
+- I'm just saying, it's just like
+
+00:00:56.763 --> 00:00:58.740
+if you sense the abject
+terror, here it is,
+
+00:00:58.740 --> 00:00:59.573
+let's go.
+
+00:00:59.573 --> 00:01:02.580
+- The "Decoder" team had had quite a year,
+
+00:01:02.580 --> 00:01:04.050
+among us personally,
+
+00:01:04.050 --> 00:01:05.730
+we've had births, deaths,
+
+00:01:05.730 --> 00:01:08.130
+marriages and house purchases.
+
+00:01:08.130 --> 00:01:09.420
+We've been very busy.
+
+00:01:09.420 --> 00:01:12.060
+We've also been very busy
+making you lots of "Decoder"
+
+00:01:12.060 --> 00:01:14.490
+that you, the audience, have
+had lots of opinions about
+
+00:01:14.490 --> 00:01:18.120
+and you have written to us and
+we love getting those emails.
+
+00:01:18.120 --> 00:01:20.670
+- We got a lot of
+incredibly positive feedback
+
+00:01:20.670 --> 00:01:23.670
+over the summer when Nilay
+was out for parental leave.
+
+00:01:23.670 --> 00:01:24.630
+So thank you for that.
+
+00:01:24.630 --> 00:01:26.700
+It was really awesome
+to see some other people
+
+00:01:26.700 --> 00:01:28.170
+in the "Decoder" chair
+
+00:01:28.170 --> 00:01:30.330
+and to see everybody have
+a lot of big thoughts
+
+00:01:30.330 --> 00:01:32.760
+on what those guest host
+brought to the show,
+
+00:01:32.760 --> 00:01:33.780
+what we should do differently,
+
+00:01:33.780 --> 00:01:35.130
+how we might improve.
+
+00:01:35.130 --> 00:01:36.840
+So thank you for those.
+
+00:01:36.840 --> 00:01:38.370
+- With that said, we're
+gonna jump right in
+
+00:01:38.370 --> 00:01:39.630
+with some listener questions.
+
+00:01:39.630 --> 00:01:41.070
+- Yeah, the first question we have is
+
+00:01:41.070 --> 00:01:43.920
+from listener Joe Rodericks.
+
+00:01:43.920 --> 00:01:46.500
+It's actually a two-part question, Nilay.
+
+00:01:46.500 --> 00:01:48.877
+The first part is, "Do you
+really read all the emails?
+
+00:01:48.877 --> 00:01:50.790
+"And that must be exhausting."
+
+00:01:50.790 --> 00:01:53.100
+His second question is
+he gets a ton of value
+
+00:01:53.100 --> 00:01:54.420
+from the "Decoder" questions,
+
+00:01:54.420 --> 00:01:57.090
+which he's actually
+started asking candidates
+
+00:01:57.090 --> 00:01:58.560
+in job interviews,
+
+00:01:58.560 --> 00:02:00.570
+particularly how they make decisions.
+
+00:02:00.570 --> 00:02:02.377
+So he says, "I can't believe
+I'm going to suggest this,
+
+00:02:02.377 --> 00:02:03.210
+"but I'd love it
+
+00:02:03.210 --> 00:02:05.677
+"if there were more in-the-weeds
+Decoder-type questions
+
+00:02:05.677 --> 00:02:07.830
+"about business decision-making."
+
+00:02:07.830 --> 00:02:09.067
+So his question is, "Nilay,
+
+00:02:09.067 --> 00:02:10.657
+"what questions do you want to add
+
+00:02:10.657 --> 00:02:12.720
+"to the 'Decoder' question list?"
+
+00:02:12.720 --> 00:02:15.570
+- Well, first, I will say
+we do read all the emails
+
+00:02:15.570 --> 00:02:16.890
+and I think we really enjoy reading them.
+
+00:02:16.890 --> 00:02:18.840
+The promise is that we read them all,
+
+00:02:18.840 --> 00:02:20.160
+not that we reply to them.
+
+00:02:20.160 --> 00:02:22.890
+That's where the work escalates
+to be too hard very quickly.
+
+00:02:22.890 --> 00:02:25.020
+But we love reading
+them, keep sending them.
+
+00:02:25.020 --> 00:02:26.910
+They're very useful.
+
+00:02:26.910 --> 00:02:28.440
+They shape a lot of the questions I ask
+
+00:02:28.440 --> 00:02:30.600
+in the episodes afterwards.
+
+00:02:30.600 --> 00:02:31.440
+So just keep sending 'em.
+
+00:02:31.440 --> 00:02:33.340
+We love 'em, we talk about them a lot.
+
+00:02:34.200 --> 00:02:35.640
+The "Decoder" questions
+are really interesting.
+
+00:02:35.640 --> 00:02:36.630
+So you know, we started the show,
+
+00:02:36.630 --> 00:02:39.480
+I think we're five years into the show now
+
+00:02:39.480 --> 00:02:42.720
+and podcasts are a forever project,
+
+00:02:42.720 --> 00:02:44.850
+like, especially interview podcasts.
+
+00:02:44.850 --> 00:02:45.810
+Kate and Nick spend a lot of time
+
+00:02:45.810 --> 00:02:47.820
+trying to get guests to show up.
+
+00:02:47.820 --> 00:02:49.200
+Like, literally just show up on time
+
+00:02:49.200 --> 00:02:50.100
+and make their headphones work.
+
+00:02:50.100 --> 00:02:52.170
+Like that's a lot to do every week
+
+00:02:52.170 --> 00:02:53.460
+unless you have some goals.
+
+00:02:53.460 --> 00:02:55.530
+And so one of my goals
+at the very beginning was
+
+00:02:55.530 --> 00:02:58.020
+to impose some structure on the show
+
+00:02:58.020 --> 00:03:00.360
+to try to learn something over time
+
+00:03:00.360 --> 00:03:02.100
+to make the show,
+
+00:03:02.100 --> 00:03:04.650
+like, make a promise
+to you, the listeners,
+
+00:03:04.650 --> 00:03:05.880
+and deliver on that promise every week
+
+00:03:05.880 --> 00:03:07.320
+so it's not just a forever project
+
+00:03:07.320 --> 00:03:08.550
+about whatsoever in the news.
+
+00:03:08.550 --> 00:03:09.720
+And so that's where they came from.
+
+00:03:09.720 --> 00:03:12.720
+'Cause I figured I could ask every CEO
+
+00:03:12.720 --> 00:03:14.700
+how their company was structured
+and how they make decisions
+
+00:03:14.700 --> 00:03:15.533
+and they would have to,
+
+00:03:15.533 --> 00:03:17.460
+like, it's not a gotcha question.
+
+00:03:17.460 --> 00:03:19.500
+The fascinating thing is it turns out
+
+00:03:19.500 --> 00:03:21.030
+to be a gotcha question
+
+00:03:21.030 --> 00:03:22.830
+and I think Kate and Nick,
+
+00:03:22.830 --> 00:03:24.600
+we all have this experience,
+
+00:03:24.600 --> 00:03:27.210
+every now and again,
+someone is just not prepared
+
+00:03:27.210 --> 00:03:28.650
+for the "Decoder" questions.
+
+00:03:28.650 --> 00:03:30.900
+They cannot tell us
+how they make decisions
+
+00:03:30.900 --> 00:03:33.450
+or most interestingly of all,
+
+00:03:33.450 --> 00:03:35.550
+they avoid telling us how
+their company is structured
+
+00:03:35.550 --> 00:03:38.790
+because it turns out that's
+a very political answer.
+
+00:03:38.790 --> 00:03:41.640
+So we could add more to it.
+
+00:03:41.640 --> 00:03:45.000
+I think there's a lot to get
+from the "Decoder" questions.
+
+00:03:45.000 --> 00:03:46.710
+There's a "Decoder" book
+that's gonna come out,
+
+00:03:46.710 --> 00:03:47.543
+that deal is signed.
+
+00:03:47.543 --> 00:03:48.690
+I'm not gonna reveal too much about it,
+
+00:03:48.690 --> 00:03:50.130
+but it's based on those questions.
+
+00:03:50.130 --> 00:03:53.400
+And the number one thing I would say is
+
+00:03:53.400 --> 00:03:55.260
+it might be interesting for you
+
+00:03:55.260 --> 00:03:57.720
+as the person who's hiring or the boss
+
+00:03:57.720 --> 00:03:59.220
+to ask the people who work for you,
+
+00:03:59.220 --> 00:04:01.530
+or might want to work for
+you, the "Decoder" questions,
+
+00:04:01.530 --> 00:04:02.970
+how they make decisions,
+
+00:04:02.970 --> 00:04:05.700
+it is vastly more revealing
+to go ask your boss
+
+00:04:05.700 --> 00:04:09.150
+and if your boss can't answer
+how they make decisions,
+
+00:04:09.150 --> 00:04:11.880
+you should run, you should
+start applying for a new job.
+
+00:04:11.880 --> 00:04:14.640
+That might be the biggest
+takeaway from doing the show is,
+
+00:04:14.640 --> 00:04:17.490
+boy, when somebody can't
+answer the questions,
+
+00:04:17.490 --> 00:04:18.577
+all three of us are like,
+
+00:04:18.577 --> 00:04:22.020
+"Oh, this episode is gonna
+go totally sideways."
+
+00:04:22.020 --> 00:04:25.140
+I know there's deeper in-the-weeds
+decision-making questions
+
+00:04:25.140 --> 00:04:25.973
+we could ask.
+
+00:04:25.973 --> 00:04:27.180
+I thought Jon Fortt,
+
+00:04:27.180 --> 00:04:29.730
+when he interviewed Google's
+former chief decision scientist
+
+00:04:29.730 --> 00:04:30.750
+as a guest episode,
+
+00:04:30.750 --> 00:04:32.280
+super fascinating episode
+
+00:04:32.280 --> 00:04:33.487
+and I thought a lot about,
+
+00:04:33.487 --> 00:04:36.270
+"Should I incorporate more
+of these kinds of questions."
+
+00:04:36.270 --> 00:04:39.810
+But to me, getting the
+framework of decisions
+
+00:04:39.810 --> 00:04:41.880
+and then putting the
+framework into practice
+
+00:04:41.880 --> 00:04:43.590
+with what's actually
+happening in the company
+
+00:04:43.590 --> 00:04:44.580
+is so revealing.
+
+00:04:44.580 --> 00:04:45.990
+I don't wanna get away from it.
+
+00:04:45.990 --> 00:04:46.920
+So I could definitely think of more,
+
+00:04:46.920 --> 00:04:50.400
+I'm eager for your
+contributions or your thoughts,
+
+00:04:50.400 --> 00:04:52.530
+but actually my suggestion
+is go ask your boss
+
+00:04:52.530 --> 00:04:54.960
+how they make decisions and
+let me know how the answers go.
+
+00:04:54.960 --> 00:04:57.157
+'Cause I think that would be
+a fundamentally interesting
+
+00:04:57.157 --> 00:04:58.680
+"Decoder" episode all on its own.
+
+00:04:58.680 --> 00:05:00.870
+- So should Nick and I be asking
+you how you make decisions?
+
+00:05:00.870 --> 00:05:02.460
+- I have no framework
+for making decisions.
+
+00:05:02.460 --> 00:05:05.100
+It's all chaos and panic every single day.
+
+00:05:05.100 --> 00:05:06.000
+Sorry, Kate.
+
+00:05:06.000 --> 00:05:07.495
+- That's not, not true actually.
+
+00:05:07.495 --> 00:05:09.870
+(Nilay and Kate laughing)
+
+00:05:09.870 --> 00:05:10.770
+- So, one of the...
+
+00:05:10.770 --> 00:05:12.420
+I get asked this question a lot.
+
+00:05:12.420 --> 00:05:15.090
+I do think about how I make decisions,
+
+00:05:15.090 --> 00:05:17.910
+fundamentally, my goal
+is to be predictable.
+
+00:05:17.910 --> 00:05:19.890
+Like, we run a newsroom,
+
+00:05:19.890 --> 00:05:21.840
+newsrooms have to run really fast.
+
+00:05:21.840 --> 00:05:23.610
+If I am not predictable
+
+00:05:23.610 --> 00:05:25.560
+then all the people who
+work in the newsroom
+
+00:05:25.560 --> 00:05:27.390
+are always, like, destabilized.
+
+00:05:27.390 --> 00:05:28.800
+All of us have worked in newsrooms before,
+
+00:05:28.800 --> 00:05:30.570
+we've worked in unstable newsrooms before,
+
+00:05:30.570 --> 00:05:34.170
+and like, that is just one of
+those things about working...
+
+00:05:34.170 --> 00:05:35.490
+Like "The Verge" newsroom operates
+
+00:05:35.490 --> 00:05:37.860
+in basically 20-minute increments.
+
+00:05:37.860 --> 00:05:40.350
+Like, news happens and then
+something has to happen
+
+00:05:40.350 --> 00:05:42.720
+on our site within 20
+minutes for us to be on time.
+
+00:05:42.720 --> 00:05:44.250
+That means I have to
+be really predictable.
+
+00:05:44.250 --> 00:05:47.130
+So, you know, we are always joking
+
+00:05:47.130 --> 00:05:48.690
+that anybody who's been
+
+00:05:48.690 --> 00:05:51.570
+within 1,000 miles of Amazon headquarters
+
+00:05:51.570 --> 00:05:54.630
+gets, like, infected like Pluribus,
+
+00:05:54.630 --> 00:05:56.340
+you know, like they
+all just come out of it
+
+00:05:56.340 --> 00:05:57.600
+saying the hive-mind thing
+
+00:05:57.600 --> 00:05:59.400
+about type-one and type-two decisions
+
+00:05:59.400 --> 00:06:00.990
+and the decisions you can make quickly
+
+00:06:00.990 --> 00:06:01.860
+'cause you can reverse them,
+
+00:06:01.860 --> 00:06:02.970
+and the decisions you can't reverse,
+
+00:06:02.970 --> 00:06:03.803
+you have to go slow.
+
+00:06:03.803 --> 00:06:05.370
+"The Verge" newsroom is almost entirely
+
+00:06:05.370 --> 00:06:07.810
+like a type-one decisions newsroom
+
+00:06:09.240 --> 00:06:10.500
+'cause we just have to go fast.
+
+00:06:10.500 --> 00:06:11.760
+Like, there'll be another story tomorrow,
+
+00:06:11.760 --> 00:06:12.610
+we can try again.
+
+00:06:13.860 --> 00:06:15.180
+Type-two decisions for us are like,
+
+00:06:15.180 --> 00:06:16.013
+what should the product look like?
+
+00:06:16.013 --> 00:06:17.910
+You know, like, how should we think
+
+00:06:17.910 --> 00:06:18.900
+about expanding to YouTube?
+
+00:06:18.900 --> 00:06:20.070
+And we did take a lot of time
+
+00:06:20.070 --> 00:06:21.900
+to make sure we got that stuff right.
+
+00:06:21.900 --> 00:06:23.777
+- Speaking of predictable, CarPlay,
+
+00:06:23.777 --> 00:06:27.060
+Nilay, you talk about CarPlay a lot.
+
+00:06:27.060 --> 00:06:28.590
+Every time we have a car CEO,
+
+00:06:28.590 --> 00:06:30.390
+you ask them about CarPlay.
+
+00:06:30.390 --> 00:06:32.970
+We had Joanna Stern guest
+hosting for you this summer.
+
+00:06:32.970 --> 00:06:35.730
+She asked all our car CEOs about CarPlay.
+
+00:06:35.730 --> 00:06:37.350
+Also, you personally like cars,
+
+00:06:37.350 --> 00:06:39.753
+so we have car CEOs on kind of a lot.
+
+00:06:39.753 --> 00:06:40.586
+(Nilay laughing)
+
+00:06:40.586 --> 00:06:42.480
+Listeners have a lot
+of thought about this.
+
+00:06:42.480 --> 00:06:45.150
+So, for example, listener
+Matt McCurdy agrees with you
+
+00:06:45.150 --> 00:06:47.850
+and he said he finds it
+"infuriating," that's a quote,
+
+00:06:47.850 --> 00:06:50.910
+when CEOs don't seem to get
+why people want CarPlay.
+
+00:06:50.910 --> 00:06:52.470
+This is a very popular sentiment
+
+00:06:52.470 --> 00:06:54.390
+in our comments and our inboxes,
+
+00:06:54.390 --> 00:06:55.223
+in my house,
+
+00:06:55.223 --> 00:06:57.330
+my husband is buying a new
+car literally tomorrow,
+
+00:06:57.330 --> 00:07:00.120
+CarPlay was one of his top
+features that he had to have.
+
+00:07:00.120 --> 00:07:02.400
+But we also got an email
+from listener Joseph Quinn
+
+00:07:02.400 --> 00:07:05.640
+who wrote to make the case
+for CarPlay not being good.
+
+00:07:05.640 --> 00:07:07.837
+And he wrote "CarPlay
+is a bandaid solution
+
+00:07:07.837 --> 00:07:09.637
+"to make the best of a bad situation
+
+00:07:09.637 --> 00:07:11.017
+"in the majority of cars,
+
+00:07:11.017 --> 00:07:13.447
+"and there exists a lot
+of legacy entrenchment
+
+00:07:13.447 --> 00:07:15.150
+"in that convenience."
+
+00:07:15.150 --> 00:07:16.530
+So they're both kind of right.
+
+00:07:16.530 --> 00:07:18.517
+But the overall question
+from the inbox is,
+
+00:07:18.517 --> 00:07:22.110
+"Nilay, why do you care
+so much about CarPlay?"
+
+00:07:22.110 --> 00:07:23.220
+- Well, first, I need to know
+
+00:07:23.220 --> 00:07:24.930
+what kind of car are you buying?
+
+00:07:24.930 --> 00:07:27.003
+- Hyundai Elantra Hybrid.
+- Oh, sure.
+
+00:07:28.080 --> 00:07:29.786
+We should just do an entire
+episode about hybrids.
+
+00:07:29.786 --> 00:07:32.130
+- Yeah, it's replacing a 2011 Civic,
+
+00:07:32.130 --> 00:07:34.110
+so, you know.
+- Very good.
+
+00:07:34.110 --> 00:07:36.390
+No, no CarPlay in the Civic.
+
+00:07:36.390 --> 00:07:37.710
+Okay, why do I care about CarPlay?
+
+00:07:37.710 --> 00:07:39.360
+I actually don't like CarPlay.
+
+00:07:39.360 --> 00:07:41.550
+I have it in one car.
+
+00:07:41.550 --> 00:07:42.383
+We don't have it.
+
+00:07:42.383 --> 00:07:45.843
+Well, you know, we had
+Mary Barra on from GM,
+
+00:07:46.860 --> 00:07:48.720
+I have a Cadillac, it
+doesn't have CarPlay.
+
+00:07:48.720 --> 00:07:50.010
+No one misses it, it's fine.
+
+00:07:50.010 --> 00:07:51.780
+I mounted a phone at the end,
+
+00:07:51.780 --> 00:07:53.400
+it solved its problems.
+
+00:07:53.400 --> 00:07:54.450
+Why do we talk about it so much?
+
+00:07:54.450 --> 00:07:56.130
+Why do we pay so much attention to it?
+
+00:07:56.130 --> 00:07:59.520
+One, the audience loves it.
+
+00:07:59.520 --> 00:08:00.870
+So that is easy.
+
+00:08:00.870 --> 00:08:04.080
+The numbers on CarPlay
+episodes are so high.
+
+00:08:04.080 --> 00:08:05.850
+It's remarkable to us even.
+
+00:08:05.850 --> 00:08:07.857
+Two, I like a fight
+
+00:08:07.857 --> 00:08:10.350
+and CarPlay is just a huge fight
+
+00:08:10.350 --> 00:08:13.290
+and you can see the contours of the fight
+
+00:08:13.290 --> 00:08:16.740
+if you've paid attention
+to computers at all
+
+00:08:16.740 --> 00:08:17.820
+over the past 20 years.
+
+00:08:17.820 --> 00:08:19.470
+Who gets to own the interface?
+
+00:08:19.470 --> 00:08:21.390
+Who gets to own the apps?
+
+00:08:21.390 --> 00:08:24.180
+Who gets to take 30% out of
+every single thing you buy
+
+00:08:24.180 --> 00:08:25.650
+on this interface?
+
+00:08:25.650 --> 00:08:27.030
+And historically, the
+answer has been Apple.
+
+00:08:27.030 --> 00:08:28.830
+I think Apple wants to
+keep winning that fight.
+
+00:08:28.830 --> 00:08:33.360
+The car makers all know that
+they should not give up control
+
+00:08:33.360 --> 00:08:36.630
+of things like maps to Apple and Google.
+
+00:08:36.630 --> 00:08:38.910
+They all know that they're bad at it
+
+00:08:38.910 --> 00:08:39.900
+and they're losing ground
+
+00:08:39.900 --> 00:08:42.180
+to companies like Tesla
+who are good at it.
+
+00:08:42.180 --> 00:08:45.180
+Upstarts like Rivian think
+they will be good at it.
+
+00:08:45.180 --> 00:08:46.620
+And then they are also making deals
+
+00:08:46.620 --> 00:08:48.090
+with Google to provide maps
+
+00:08:48.090 --> 00:08:49.590
+'cause they're not gonna
+be good at making maps.
+
+00:08:49.590 --> 00:08:53.880
+And so you just get 500
+different competing interests
+
+00:08:53.880 --> 00:08:55.860
+all in a screen,
+
+00:08:55.860 --> 00:08:57.690
+in an interface people
+can see and understand
+
+00:08:57.690 --> 00:08:59.490
+and have feelings about.
+
+00:08:59.490 --> 00:09:01.140
+And that's very unusual in tech.
+
+00:09:01.140 --> 00:09:04.170
+Like, I would love to do 50
+episodes on the Fediverse
+
+00:09:04.170 --> 00:09:06.840
+but I can't make you
+care about the Fediverse.
+
+00:09:06.840 --> 00:09:09.240
+Like, there has to be a
+thing that you care about,
+
+00:09:09.240 --> 00:09:11.310
+and people are very passionate about cars
+
+00:09:11.310 --> 00:09:13.740
+and they're very passionate
+about CarPlay oddly,
+
+00:09:13.740 --> 00:09:16.290
+again, they're not passionate
+about Android Auto,
+
+00:09:16.290 --> 00:09:17.820
+they're passionate about CarPlay.
+
+00:09:17.820 --> 00:09:20.520
+And so you just see here's this fight,
+
+00:09:20.520 --> 00:09:22.440
+this clash of titans
+
+00:09:22.440 --> 00:09:24.330
+and in the center of it
+
+00:09:24.330 --> 00:09:26.700
+is something consumers care about a lot.
+
+00:09:26.700 --> 00:09:28.470
+So I personally agree
+with Joseph Quinn here
+
+00:09:28.470 --> 00:09:30.090
+who says CarPlay is a crutch.
+
+00:09:30.090 --> 00:09:31.260
+It is a crutch
+
+00:09:31.260 --> 00:09:33.180
+and it's a crutch because
+the car makers are lazy
+
+00:09:33.180 --> 00:09:36.270
+and they allowed Apple this
+big inroad into their product
+
+00:09:36.270 --> 00:09:37.230
+and Apple's not giving up,
+
+00:09:37.230 --> 00:09:38.580
+and the consumers aren't giving up,
+
+00:09:38.580 --> 00:09:39.450
+and they've gotta make something
+
+00:09:39.450 --> 00:09:41.190
+that's good enough for
+you to not want that.
+
+00:09:41.190 --> 00:09:42.330
+Can they do that?
+
+00:09:42.330 --> 00:09:43.920
+I do not know the answer to that question.
+
+00:09:43.920 --> 00:09:44.910
+I think a lot of you think
+
+00:09:44.910 --> 00:09:45.900
+you know the answer to that question
+
+00:09:45.900 --> 00:09:47.550
+and the answer is obviously no.
+
+00:09:47.550 --> 00:09:49.050
+But there are improvements,
+
+00:09:49.050 --> 00:09:51.690
+there is a lot of
+incentive to figure it out
+
+00:09:51.690 --> 00:09:53.430
+and that's why we keep talking about it
+
+00:09:53.430 --> 00:09:56.520
+because honestly,
+getting a CEO on the show
+
+00:09:56.520 --> 00:09:57.727
+and saying, "Have you
+looked at your own product?
+
+00:09:57.727 --> 00:09:58.650
+"It's not good,"
+
+00:09:58.650 --> 00:10:02.370
+is like the prototype of a
+great episode of "Decoder."
+
+00:10:02.370 --> 00:10:03.240
+This is why I keep wanting
+
+00:10:03.240 --> 00:10:04.920
+enterprise software CEOs in the show
+
+00:10:04.920 --> 00:10:06.180
+and why they don't come.
+
+00:10:06.180 --> 00:10:07.980
+But car makers love talking to other cars,
+
+00:10:07.980 --> 00:10:09.360
+they love talking to me for some reason,
+
+00:10:09.360 --> 00:10:11.257
+and saying, "Is your software good?
+
+00:10:11.257 --> 00:10:12.750
+"Really?" is like, that's it.
+
+00:10:12.750 --> 00:10:14.010
+I can do that for an hour every week
+
+00:10:14.010 --> 00:10:15.870
+for the rest of my life.
+
+00:10:15.870 --> 00:10:19.470
+- So we've gotten a bunch
+of good topic suggestions
+
+00:10:19.470 --> 00:10:21.000
+from listeners.
+
+00:10:21.000 --> 00:10:22.680
+One of them, Laura Cracknell,
+
+00:10:22.680 --> 00:10:25.470
+is a librarian in the U.K.
+
+00:10:25.470 --> 00:10:27.420
+She says she would love
+for "Decoder" to talk
+
+00:10:27.420 --> 00:10:28.920
+to some information professionals
+
+00:10:28.920 --> 00:10:31.380
+about what it's like
+in the current moment.
+
+00:10:31.380 --> 00:10:33.577
+She says, "Libraries are where
+lots of normal people end up
+
+00:10:33.577 --> 00:10:35.047
+"for tech support and computing.
+
+00:10:35.047 --> 00:10:36.457
+"They're a vital lifeline for people
+
+00:10:36.457 --> 00:10:38.377
+"who might not have digital access.
+
+00:10:38.377 --> 00:10:40.830
+"They're also at the front
+line of the free speech war."
+
+00:10:40.830 --> 00:10:42.967
+She's also writing that, "In particular,
+
+00:10:42.967 --> 00:10:43.957
+"in the U.S. right now,
+
+00:10:43.957 --> 00:10:45.817
+"public libraries are under siege
+
+00:10:45.817 --> 00:10:47.257
+"and they're a canary in the coal mine
+
+00:10:47.257 --> 00:10:49.200
+"for the health of democracy."
+
+00:10:49.200 --> 00:10:51.690
+So, Nilay, are you interested
+
+00:10:51.690 --> 00:10:53.730
+in doing any episodes on libraries
+
+00:10:53.730 --> 00:10:55.870
+or free access to information?
+
+00:10:55.870 --> 00:10:57.120
+- Yeah, I think we should definitely do
+
+00:10:57.120 --> 00:10:58.410
+an episode on libraries.
+
+00:10:58.410 --> 00:11:00.570
+I think that fascinating dynamic
+
+00:11:00.570 --> 00:11:03.150
+of, like, Silicon Valley
+continuing to invent public goods
+
+00:11:03.150 --> 00:11:05.760
+and accidentally inventing
+libraries over and over again
+
+00:11:05.760 --> 00:11:07.260
+is at the heart of all that.
+
+00:11:07.260 --> 00:11:11.430
+Like, what does it mean to
+have, like, the internet
+
+00:11:11.430 --> 00:11:13.500
+and access to information as a public good
+
+00:11:13.500 --> 00:11:15.180
+in the commons supported by the state.
+
+00:11:15.180 --> 00:11:18.210
+Like, boy, there's a lot of
+"Decoder" themes in there
+
+00:11:18.210 --> 00:11:19.950
+and it is under a lot of pressure.
+
+00:11:19.950 --> 00:11:21.510
+I think the framing question I would ask
+
+00:11:21.510 --> 00:11:24.360
+and I welcome the help on this is
+
+00:11:24.360 --> 00:11:27.330
+how do you make the importance
+of a library in a community
+
+00:11:27.330 --> 00:11:29.867
+legible to people who
+might not be going, right?
+
+00:11:29.867 --> 00:11:32.520
+'Cause it's important
+whether or not you're going,
+
+00:11:32.520 --> 00:11:34.530
+it's important that there's
+a place for people to gather.
+
+00:11:34.530 --> 00:11:36.840
+It's important that
+communities just express
+
+00:11:36.840 --> 00:11:39.570
+that they care about knowledge
+in that specific way.
+
+00:11:39.570 --> 00:11:41.520
+But a lot of people aren't going, right?
+
+00:11:41.520 --> 00:11:43.500
+And so finding a way to make that turn
+
+00:11:43.500 --> 00:11:45.420
+seems really important to me.
+
+00:11:45.420 --> 00:11:47.970
+I'm interested for the feedback
+'cause I could use the help.
+
+00:11:47.970 --> 00:11:49.920
+- I have a friend in Los
+Angeles whose job that is
+
+00:11:49.920 --> 00:11:52.680
+and I think she's about to get yoinked
+
+00:11:52.680 --> 00:11:55.530
+into helping me with my job.
+- Oh, very good.
+
+00:11:55.530 --> 00:11:57.840
+- Steven Ebsurry, who's
+a frequent correspondent,
+
+00:11:57.840 --> 00:11:59.880
+writes that he would love
+to see us do something
+
+00:11:59.880 --> 00:12:02.850
+on the ever-increasing issue
+of digital identity online,
+
+00:12:02.850 --> 00:12:06.840
+age verification privacy with
+adult sites and social media.
+
+00:12:06.840 --> 00:12:09.090
+Ben Cooper suggested
+we should have folks on
+
+00:12:09.090 --> 00:12:10.980
+to talk about the tech scene in India
+
+00:12:10.980 --> 00:12:13.140
+and ask if maybe the next Xiaomi or Baidu
+
+00:12:13.140 --> 00:12:14.370
+might be coming out of India,
+
+00:12:14.370 --> 00:12:15.420
+which is interesting.
+
+00:12:16.290 --> 00:12:18.180
+David Jarman actually just sent us a link
+
+00:12:18.180 --> 00:12:21.810
+about the world's oldest
+known org chart from 1855,
+
+00:12:21.810 --> 00:12:23.523
+which was just very cool.
+
+00:12:24.570 --> 00:12:25.530
+All of these, Nilay,
+
+00:12:25.530 --> 00:12:29.070
+so when it comes to
+explainer topics, not guests,
+
+00:12:29.070 --> 00:12:31.080
+we'll come back to that, I promise,
+
+00:12:31.080 --> 00:12:34.230
+what would you like us to cover in 2026?
+
+00:12:34.230 --> 00:12:35.310
+- I gotta see this org chart.
+
+00:12:35.310 --> 00:12:37.020
+Also, I have to believe
+there are org charts
+
+00:12:37.020 --> 00:12:38.119
+older than 1855.
+
+00:12:38.119 --> 00:12:38.952
+- I don't know,
+
+00:12:38.952 --> 00:12:41.490
+they claim it's the the
+world's oldest org chart,
+
+00:12:41.490 --> 00:12:43.530
+but maybe it's just
+Britain's oldest org chart
+
+00:12:43.530 --> 00:12:45.930
+'cause it was a British museum.
+
+00:12:45.930 --> 00:12:47.850
+- Yeah, you don't think
+some, like, Roman emperor
+
+00:12:47.850 --> 00:12:49.380
+had, like, an org chart written down,
+
+00:12:49.380 --> 00:12:51.300
+and like Claudius is cool, (laughs)
+
+00:12:51.300 --> 00:12:54.418
+you know, like, it's there.
+
+00:12:54.418 --> 00:12:56.400
+I know, I know that there's
+an older one than that.
+
+00:12:56.400 --> 00:12:57.570
+We should do that video. That'd be fun.
+
+00:12:57.570 --> 00:12:58.440
+So we should just do that one
+
+00:12:58.440 --> 00:12:59.430
+and like, what is an org chart,
+
+00:12:59.430 --> 00:13:00.263
+where they come from?
+
+00:13:00.263 --> 00:13:01.353
+I think that's fascinating.
+
+00:13:02.730 --> 00:13:04.230
+The other two are,
+
+00:13:04.230 --> 00:13:06.120
+we're gonna do a lot of digital identity
+
+00:13:06.120 --> 00:13:06.953
+on "The Verge" this year
+
+00:13:06.953 --> 00:13:09.090
+and I think that will turn
+into "Decoder" episodes
+
+00:13:09.090 --> 00:13:10.110
+over and over again.
+
+00:13:10.110 --> 00:13:13.380
+Tim Cook is in D.C. this
+week and the week before,
+
+00:13:13.380 --> 00:13:17.370
+lobbying against app stores
+having to do age verification.
+
+00:13:17.370 --> 00:13:19.680
+He does not want that
+to be his responsibility
+
+00:13:19.680 --> 00:13:21.390
+that runs right into
+
+00:13:21.390 --> 00:13:23.010
+do these platform
+providers know who you are,
+
+00:13:23.010 --> 00:13:25.260
+which runs right into identity,
+
+00:13:25.260 --> 00:13:26.467
+at the same time, Tim Cook is like,
+
+00:13:26.467 --> 00:13:29.077
+"Put your driver's license into my phone,
+
+00:13:29.077 --> 00:13:30.600
+"put your passport into the phone."
+
+00:13:30.600 --> 00:13:32.497
+Like, "I wanna get rid of your wallet
+
+00:13:32.497 --> 00:13:34.200
+"but I don't want to know who you are"
+
+00:13:34.200 --> 00:13:37.410
+is a very weird product stance to have
+
+00:13:37.410 --> 00:13:40.440
+and that's Apple's
+product stance right now.
+
+00:13:40.440 --> 00:13:42.240
+So I think we're gonna do a lot here.
+
+00:13:42.240 --> 00:13:45.510
+You can see country by
+country, state by state,
+
+00:13:45.510 --> 00:13:46.590
+there are so many laws
+
+00:13:46.590 --> 00:13:48.000
+that depend on knowing how old you are
+
+00:13:48.000 --> 00:13:49.590
+and what content you should access.
+
+00:13:49.590 --> 00:13:51.360
+Australia just banned
+everybody under the age of 16
+
+00:13:51.360 --> 00:13:52.650
+from having social media.
+
+00:13:52.650 --> 00:13:54.750
+They need to know who you are.
+
+00:13:54.750 --> 00:13:55.890
+So we're gonna see a lot there
+
+00:13:55.890 --> 00:13:57.570
+because the internet, as we know it,
+
+00:13:57.570 --> 00:14:00.660
+is built on anonymity for
+a lot of very good reasons.
+
+00:14:00.660 --> 00:14:04.350
+There's a lot of surveillance
+implications to changing that.
+
+00:14:04.350 --> 00:14:06.450
+So I can pretty much guarantee
+
+00:14:06.450 --> 00:14:09.690
+we'll end up doing a bunch of
+identity and age verification,
+
+00:14:09.690 --> 00:14:12.780
+age laws in the context of kids' safety
+
+00:14:12.780 --> 00:14:14.070
+on "Decoder" in 2026.
+
+00:14:14.070 --> 00:14:17.070
+That seems like a promise
+we can make, right, guys?
+
+00:14:17.070 --> 00:14:19.170
+The India topic is ultra fascinating.
+
+00:14:19.170 --> 00:14:20.850
+Obviously, all the big
+tech companies are there.
+
+00:14:20.850 --> 00:14:22.710
+They've spun off a lot
+of their own talent.
+
+00:14:22.710 --> 00:14:24.630
+There's a lot of money in India.
+
+00:14:24.630 --> 00:14:26.220
+The question of whether India can make
+
+00:14:26.220 --> 00:14:30.390
+its own giant, multinational,
+global tech firm
+
+00:14:30.390 --> 00:14:32.100
+on the order of a Baidu or something
+
+00:14:32.100 --> 00:14:34.830
+kind of runs into India's own nationalism,
+
+00:14:34.830 --> 00:14:39.240
+America's nationalism,
+weird Chinese geopolitics
+
+00:14:39.240 --> 00:14:42.180
+that gets weirder day by
+day from what I can tell.
+
+00:14:42.180 --> 00:14:43.710
+We should do that episode.
+
+00:14:43.710 --> 00:14:47.130
+It will take us a while to
+settle on a theme for that one
+
+00:14:47.130 --> 00:14:49.230
+because there's so many issues at play
+
+00:14:49.230 --> 00:14:53.220
+about whether that's possible
+today in 2026, right?
+
+00:14:53.220 --> 00:14:54.210
+If you'd asked me five years ago,
+
+00:14:54.210 --> 00:14:55.890
+I'd say obviously, this is gonna happen.
+
+00:14:55.890 --> 00:14:57.720
+There's a bunch of Google
+millionaires in India
+
+00:14:57.720 --> 00:14:59.640
+who are gonna start companies.
+
+00:14:59.640 --> 00:15:03.780
+But can you start a new
+kind of multinational today?
+
+00:15:03.780 --> 00:15:04.710
+Big question.
+
+00:15:04.710 --> 00:15:05.543
+- But also the question was
+
+00:15:05.543 --> 00:15:08.340
+do you have other explainers
+you would like us to?
+
+00:15:08.340 --> 00:15:09.750
+- Oh, (laughs)
+
+00:15:09.750 --> 00:15:10.680
+you know, I'm gonna come back
+
+00:15:10.680 --> 00:15:13.380
+and say I think we should do more episodes
+
+00:15:13.380 --> 00:15:17.310
+on what is happening to social media.
+
+00:15:17.310 --> 00:15:20.100
+What happens when AI slop
+overtakes social media?
+
+00:15:20.100 --> 00:15:21.990
+What happens to the creator industry
+
+00:15:21.990 --> 00:15:23.580
+when the supply of content,
+
+00:15:23.580 --> 00:15:25.770
+because of AI, goes through the roof.
+
+00:15:25.770 --> 00:15:29.430
+I predict that the creator
+economy is gonna get rocked
+
+00:15:29.430 --> 00:15:30.263
+in 2026.
+
+00:15:30.263 --> 00:15:31.260
+I basically predict this every year
+
+00:15:31.260 --> 00:15:34.050
+but you can see the
+cracks starting to form.
+
+00:15:34.050 --> 00:15:36.060
+You can see some of the rates
+dropping for brand deals,
+
+00:15:36.060 --> 00:15:38.430
+which I think is really interesting
+
+00:15:38.430 --> 00:15:41.037
+and I think the users are
+gonna rebel against AI
+
+00:15:41.037 --> 00:15:43.680
+and the social networks
+are gonna have to do a form
+
+00:15:43.680 --> 00:15:47.130
+of really interesting content
+moderation to label that stuff
+
+00:15:47.130 --> 00:15:48.720
+that they do not want to do.
+
+00:15:48.720 --> 00:15:49.740
+So I think we're gonna
+
+00:15:49.740 --> 00:15:51.840
+find ourselves doing explainer episodes
+
+00:15:51.840 --> 00:15:54.780
+about content moderation again in '26
+
+00:15:54.780 --> 00:15:56.610
+but in the context of AI and creators,
+
+00:15:56.610 --> 00:15:57.600
+which will be fascinating.
+
+00:15:57.600 --> 00:15:58.620
+- Speaking of AI,
+
+00:15:58.620 --> 00:16:02.730
+we have a lot, a lot
+of audience questions,
+
+00:16:02.730 --> 00:16:05.220
+and feedback, and thoughts
+
+00:16:05.220 --> 00:16:09.150
+about how much we have discussed
+AI on "Decoder" this year.
+
+00:16:09.150 --> 00:16:12.390
+- Yeah, I would say it was
+probably the number one topic
+
+00:16:12.390 --> 00:16:14.253
+for feedback we got all year long.
+
+00:16:15.870 --> 00:16:19.380
+Probably the second one was
+"Don't talk about Trump so much"
+
+00:16:19.380 --> 00:16:20.213
+in the beginning of the year,
+
+00:16:20.213 --> 00:16:23.100
+and then it turned into
+"Don't talk about AI so much."
+
+00:16:23.100 --> 00:16:24.810
+Yeah, we got a lot of feedback about AI.
+
+00:16:24.810 --> 00:16:26.910
+People angry at AI,
+
+00:16:26.910 --> 00:16:28.980
+people who don't want
+us to feature it at all,
+
+00:16:28.980 --> 00:16:30.660
+people who want us to only feature it
+
+00:16:30.660 --> 00:16:32.439
+and light it on fire and
+burn it to the ground.
+
+00:16:32.439 --> 00:16:33.420
+(Nilay laughing)
+
+00:16:33.420 --> 00:16:35.220
+There was just a lot going on
+
+00:16:35.220 --> 00:16:37.950
+in the AI space this year, of course.
+
+00:16:37.950 --> 00:16:39.930
+We got a lot of positive feedback about,
+
+00:16:39.930 --> 00:16:42.600
+for instance, Liz Lappato's
+CoreWeave feature,
+
+00:16:42.600 --> 00:16:45.450
+which we featured an episode on.
+
+00:16:45.450 --> 00:16:48.120
+We got a lot of feedback about
+Alex Heath's guest hosting
+
+00:16:48.120 --> 00:16:49.920
+and Casey Newton's guest
+hosting this summer,
+
+00:16:49.920 --> 00:16:52.530
+which our listeners felt
+they weren't critical enough
+
+00:16:52.530 --> 00:16:54.000
+of the AI industry,
+
+00:16:54.000 --> 00:16:57.210
+which I'm sure they hear
+that enough on their own.
+
+00:16:57.210 --> 00:16:59.880
+We got a lot of feedback
+about Hayden Field's episodes
+
+00:16:59.880 --> 00:17:03.000
+where she talked about AI in the military
+
+00:17:03.000 --> 00:17:04.770
+and how the AI industry is cozying up
+
+00:17:04.770 --> 00:17:06.870
+to the military industrial complex.
+
+00:17:06.870 --> 00:17:10.650
+We also got a lot of positive
+feedback about Jon Fortt,
+
+00:17:10.650 --> 00:17:11.820
+a guest host this summer,
+
+00:17:11.820 --> 00:17:14.280
+interview with author Gil Duran
+
+00:17:14.280 --> 00:17:16.470
+who writes a newsletter
+called "The Nerd Reich."
+
+00:17:16.470 --> 00:17:18.870
+He specifically criticized figures
+
+00:17:18.870 --> 00:17:20.820
+like Elon Musk and Peter Thiel
+
+00:17:20.820 --> 00:17:24.300
+and kind of their connections
+to the Dark Enlightenment
+
+00:17:24.300 --> 00:17:27.330
+and kind of how it's all coming
+together in the AI industry
+
+00:17:27.330 --> 00:17:28.620
+and companies like Palantir
+
+00:17:28.620 --> 00:17:30.813
+in a way that feels
+really scary and weird.
+
+00:17:31.860 --> 00:17:34.290
+So yeah, we got kind of the
+whole spectrum of feedback
+
+00:17:34.290 --> 00:17:36.330
+about covering the AI industry
+
+00:17:36.330 --> 00:17:39.210
+and kind of by extension
+Silicon Valley billionaires
+
+00:17:39.210 --> 00:17:42.540
+and what their vision for the future is.
+
+00:17:42.540 --> 00:17:47.010
+So, Nilay, how do you think
+about AI on "Decoder,"
+
+00:17:47.010 --> 00:17:49.140
+about covering AI more generally?
+
+00:17:49.140 --> 00:17:51.090
+And also the fact that it seems
+
+00:17:51.090 --> 00:17:53.850
+like literally every single
+CEO we have on the show
+
+00:17:53.850 --> 00:17:55.830
+is basically tripping over themselves
+
+00:17:55.830 --> 00:18:00.830
+to say AI is the thing that's
+going to define our future,
+
+00:18:01.050 --> 00:18:02.730
+it's gonna supercharge our businesses
+
+00:18:02.730 --> 00:18:04.830
+and we have to invest in it
+
+00:18:04.830 --> 00:18:06.960
+because if we don't, we're
+gonna get left behind.
+
+00:18:06.960 --> 00:18:09.480
+- Well, first I'll just say something
+
+00:18:09.480 --> 00:18:10.590
+that I feel very deeply
+
+00:18:10.590 --> 00:18:12.900
+about the fact that we run a newsroom,
+
+00:18:12.900 --> 00:18:16.140
+ignoring things does
+not make them go away.
+
+00:18:16.140 --> 00:18:18.930
+And so we could just do
+CarPlay episodes every week
+
+00:18:18.930 --> 00:18:20.160
+for the rest of the year.
+
+00:18:20.160 --> 00:18:21.750
+The AI industry is not gonna stop.
+
+00:18:21.750 --> 00:18:23.430
+What we bring to the table,
+
+00:18:23.430 --> 00:18:26.010
+ideally as a publication, as a show,
+
+00:18:26.010 --> 00:18:29.430
+is a little bit of critical
+distance from the hype
+
+00:18:29.430 --> 00:18:31.530
+and the ability to have these people on
+
+00:18:31.530 --> 00:18:33.690
+and ask them the questions.
+
+00:18:33.690 --> 00:18:35.070
+I talked about the people
+
+00:18:35.070 --> 00:18:36.840
+who can and cannot answer
+the "Decoder" questions.
+
+00:18:36.840 --> 00:18:37.890
+I invite you to go back
+
+00:18:37.890 --> 00:18:40.530
+and see how revealing
+some of those answers are
+
+00:18:40.530 --> 00:18:43.530
+in this context, in the
+context of the AI question.
+
+00:18:43.530 --> 00:18:44.820
+'Cause I learned a lot.
+
+00:18:44.820 --> 00:18:46.200
+And so I like to show my work.
+
+00:18:46.200 --> 00:18:48.540
+I like very much to say,
+
+00:18:48.540 --> 00:18:50.137
+like, "I've asked the questions,
+
+00:18:50.137 --> 00:18:51.210
+"I have my opinions,"
+
+00:18:51.210 --> 00:18:53.340
+it's based on the fact that
+I've done the reporting.
+
+00:18:53.340 --> 00:18:54.990
+You can evaluate the reporting.
+
+00:18:54.990 --> 00:18:56.820
+Maybe you think I'm too soft too,
+
+00:18:56.820 --> 00:18:58.170
+but at least you can
+evaluate the reporting.
+
+00:18:58.170 --> 00:19:00.000
+So that's just the first piece.
+
+00:19:00.000 --> 00:19:02.970
+I don't think me personally
+ignoring the AI industry
+
+00:19:02.970 --> 00:19:04.530
+will make it go away or stop.
+
+00:19:04.530 --> 00:19:06.480
+And I don't think me
+paying attention to it
+
+00:19:06.480 --> 00:19:09.090
+or us paying attention to it
+accelerates it in any way.
+
+00:19:09.090 --> 00:19:10.350
+I really just don't think
+
+00:19:10.350 --> 00:19:12.210
+that's the function of our newsroom.
+
+00:19:12.210 --> 00:19:13.140
+We cover technology
+
+00:19:13.140 --> 00:19:18.140
+and I fundamentally believe
+that there is something about AI
+
+00:19:18.540 --> 00:19:21.510
+that will create a new set of products.
+
+00:19:21.510 --> 00:19:22.343
+And I say this
+
+00:19:22.343 --> 00:19:25.440
+only because every single day
+we are pitched some products
+
+00:19:25.440 --> 00:19:28.050
+built on the enabling technology of AI.
+
+00:19:28.050 --> 00:19:31.110
+Do I think LLMs can get to AGI,
+
+00:19:31.110 --> 00:19:31.943
+I do not.
+
+00:19:31.943 --> 00:19:32.776
+We have published that piece.
+
+00:19:32.776 --> 00:19:34.950
+It's fascinating, it's called
+"Large Language Mistake,"
+
+00:19:34.950 --> 00:19:35.783
+it's by Ben Riley.
+
+00:19:35.783 --> 00:19:36.960
+It's very interesting.
+
+00:19:36.960 --> 00:19:40.290
+I think there's some hard
+limits on what LLMs can do
+
+00:19:40.290 --> 00:19:43.620
+and I've asked a lot of our
+guests about those limits.
+
+00:19:43.620 --> 00:19:45.690
+I asked Sundar Pichai if he
+thinks language is the same
+
+00:19:45.690 --> 00:19:46.860
+as intelligence on the show
+
+00:19:46.860 --> 00:19:49.530
+and he was like, "Why are
+you doing this to me?"
+
+00:19:49.530 --> 00:19:51.810
+So I want to keep asking that question.
+
+00:19:51.810 --> 00:19:54.360
+Underneath that are a lot of
+really interesting questions
+
+00:19:54.360 --> 00:19:57.300
+about how will the web work if
+you actually make agents go,
+
+00:19:57.300 --> 00:19:59.400
+how will anyone get paid?
+
+00:19:59.400 --> 00:20:01.350
+How are you gonna think about labor?
+
+00:20:01.350 --> 00:20:03.030
+What is the next interface?
+
+00:20:03.030 --> 00:20:05.370
+I said I like a fight in
+the context of CarPlay,
+
+00:20:05.370 --> 00:20:07.500
+if you really think
+natural language interface
+
+00:20:07.500 --> 00:20:09.930
+is gonna dominate the computing industry,
+
+00:20:09.930 --> 00:20:12.300
+there's a lot of questions
+downstream of that.
+
+00:20:12.300 --> 00:20:13.530
+Then there's just the opening question,
+
+00:20:13.530 --> 00:20:15.000
+is that a good idea?
+
+00:20:15.000 --> 00:20:17.370
+So I think we're gonna keep covering AI,
+
+00:20:17.370 --> 00:20:19.290
+it's not going anywhere.
+
+00:20:19.290 --> 00:20:22.200
+Our attention or ignorance of it
+
+00:20:22.200 --> 00:20:24.540
+is not gonna affect the
+arc of that industry.
+
+00:20:24.540 --> 00:20:26.640
+I think what we can get is smarter
+
+00:20:26.640 --> 00:20:28.950
+about what's real and what's hype.
+
+00:20:28.950 --> 00:20:31.500
+And you might disagree with me,
+
+00:20:31.500 --> 00:20:33.000
+I know a lot of people disagree with me,
+
+00:20:33.000 --> 00:20:35.940
+but this isn't to me the same as crypto,
+
+00:20:35.940 --> 00:20:37.410
+which we have all but ignored
+
+00:20:37.410 --> 00:20:40.110
+because it's boring and not useful, right?
+
+00:20:40.110 --> 00:20:41.820
+Like, I don't know what
+else to say about that.
+
+00:20:41.820 --> 00:20:44.070
+We've made that point on the
+show as many times as we can.
+
+00:20:44.070 --> 00:20:45.840
+It's kind of boring and not useful.
+
+00:20:45.840 --> 00:20:47.850
+AI doesn't feel that to me.
+
+00:20:47.850 --> 00:20:49.950
+There's parts of it that are super hypey,
+
+00:20:49.950 --> 00:20:51.630
+there's parts of it where Palantir exists,
+
+00:20:51.630 --> 00:20:53.010
+and Palantir's business innovation,
+
+00:20:53.010 --> 00:20:54.300
+as far as I can tell,
+
+00:20:54.300 --> 00:20:56.950
+is just they will do immoral stuff
+
+00:20:57.912 --> 00:21:01.530
+and they'll take some
+warmed-over database tech
+
+00:21:01.530 --> 00:21:03.690
+and then do stuff that
+no one else would do.
+
+00:21:03.690 --> 00:21:05.370
+I don't know, we're trying to
+have Alex Karp in the show.
+
+00:21:05.370 --> 00:21:08.070
+I'm gonna ask him that question
+if I can get ahold of him.
+
+00:21:08.070 --> 00:21:09.900
+We'll see what happens.
+
+00:21:09.900 --> 00:21:11.700
+But the core technology,
+
+00:21:11.700 --> 00:21:12.960
+the piece of the puzzle
+
+00:21:12.960 --> 00:21:16.230
+where you as a user can
+just talk to the computer
+
+00:21:16.230 --> 00:21:19.080
+and the computer can take some actions
+
+00:21:19.080 --> 00:21:22.800
+or instead of APIs will have MCP servers
+
+00:21:22.800 --> 00:21:24.930
+and the agents can just
+query a database in natural,
+
+00:21:24.930 --> 00:21:27.210
+like, there's something there
+
+00:21:27.210 --> 00:21:29.850
+that is going to build a
+new class of applications.
+
+00:21:29.850 --> 00:21:34.440
+I think it is very important
+to pay critical attention to it
+
+00:21:34.440 --> 00:21:36.570
+and figure out what's
+real and what's fake.
+
+00:21:36.570 --> 00:21:37.710
+So we're gonna keep doing it.
+
+00:21:37.710 --> 00:21:39.240
+Again, I don't think the technology
+
+00:21:39.240 --> 00:21:41.130
+that we have today gets you to AGI
+
+00:21:41.130 --> 00:21:44.670
+and I think saying that that's
+wrong over and over again
+
+00:21:44.670 --> 00:21:47.730
+is, like, part of the
+promise I will make to you.
+
+00:21:47.730 --> 00:21:50.550
+But everything up to that is,
+like, I think up for grabs
+
+00:21:50.550 --> 00:21:52.380
+and I think there's a
+lot of just interest,
+
+00:21:52.380 --> 00:21:57.180
+young developers, new
+companies, new structures
+
+00:21:57.180 --> 00:22:00.720
+that are fascinating that
+we should pay attention to
+
+00:22:00.720 --> 00:22:03.810
+beyond just talking to the
+CEOs of the thing companies
+
+00:22:03.810 --> 00:22:04.950
+over and over again.
+
+00:22:04.950 --> 00:22:09.240
+- One specific AI challenge
+we discussed this year.
+
+00:22:09.240 --> 00:22:11.700
+We had your episode on
+the DoorDash problem
+
+00:22:11.700 --> 00:22:14.610
+and you specifically asked
+our listeners and viewers
+
+00:22:14.610 --> 00:22:16.860
+to write into us what their thoughts,
+
+00:22:16.860 --> 00:22:19.113
+and dozens of them did
+what you told them to.
+
+00:22:19.950 --> 00:22:23.220
+We have a few really
+interesting pieces of feedback
+
+00:22:23.220 --> 00:22:24.570
+about the DoorDash problem.
+
+00:22:24.570 --> 00:22:28.050
+So Angela Diffly, who said
+she's a director at Coca-Cola,
+
+00:22:28.050 --> 00:22:31.297
+she said, "I believe Perplexity
+has a fighting chance
+
+00:22:31.297 --> 00:22:32.617
+"against Amazon.
+
+00:22:32.617 --> 00:22:34.117
+"Here's the tension,
+
+00:22:34.117 --> 00:22:37.237
+"restaurants currently
+lose up to 30% margin
+
+00:22:37.237 --> 00:22:40.447
+"to delivery giants like
+DoorDash and Uber Eats.
+
+00:22:40.447 --> 00:22:41.287
+"They've been clawing
+
+00:22:41.287 --> 00:22:43.537
+"to bring customers back
+to native platforms,
+
+00:22:43.537 --> 00:22:45.930
+"not just for margin but for data."
+
+00:22:45.930 --> 00:22:48.967
+She asks, "If AI-driven
+ordering agents take over,
+
+00:22:48.967 --> 00:22:51.097
+"will restaurants finally win
+
+00:22:51.097 --> 00:22:54.457
+"or just continue to lose margin
+to the next big disruptor?
+
+00:22:54.457 --> 00:22:56.730
+"And when delivery becomes autonomous,"
+
+00:22:56.730 --> 00:22:59.587
+which is a whole separate
+other problem, that is a thing,
+
+00:22:59.587 --> 00:23:03.060
+"what happens to the
+economics of convenience?
+
+00:23:03.060 --> 00:23:05.017
+And then Ian Janicki also wrote,
+
+00:23:05.017 --> 00:23:06.517
+"You mentioned that retailers
+
+00:23:06.517 --> 00:23:09.247
+"could have their customer
+connections severed,
+
+00:23:09.247 --> 00:23:11.610
+"but is that necessarily bad?
+
+00:23:11.610 --> 00:23:13.657
+As consumers, do we actually want
+
+00:23:13.657 --> 00:23:15.277
+"to be tracked across the internet
+
+00:23:15.277 --> 00:23:17.797
+"just to satisfy a value calculation
+
+00:23:17.797 --> 00:23:22.110
+"or isn't agentic shopping
+inherently more privacy-first?"
+
+00:23:22.110 --> 00:23:24.960
+So it's only been a few weeks
+since the DoorDash episode,
+
+00:23:26.100 --> 00:23:28.420
+but all of our listeners
+would like to know
+
+00:23:29.910 --> 00:23:31.530
+from their responses,
+
+00:23:31.530 --> 00:23:33.690
+did you hear anything else
+that has really surprised you
+
+00:23:33.690 --> 00:23:36.090
+or changed your thinking on the subject
+
+00:23:36.090 --> 00:23:38.790
+in that last few weeks?
+
+00:23:38.790 --> 00:23:41.160
+- Yeah, the one very
+surprising thing happened
+
+00:23:41.160 --> 00:23:45.030
+and I wanna answer our listener questions,
+
+00:23:45.030 --> 00:23:47.490
+but the episode on YouTube
+kind of broke containment
+
+00:23:47.490 --> 00:23:50.130
+and went into the broader
+YouTube algorithm a little bit.
+
+00:23:50.130 --> 00:23:51.997
+And then the comments were like,
+
+00:23:51.997 --> 00:23:53.580
+"I can't believe capitalists talk
+
+00:23:53.580 --> 00:23:55.320
+about owning the customer."
+
+00:23:55.320 --> 00:23:57.450
+And that, to me, just represents a lot.
+
+00:23:57.450 --> 00:23:58.890
+Like "Decoder" is a
+little bit of a bubble.
+
+00:23:58.890 --> 00:24:00.360
+It's a business podcast.
+
+00:24:00.360 --> 00:24:02.550
+We use business vocabulary,
+
+00:24:02.550 --> 00:24:05.730
+we used acronyms, like,
+we're in the bubble
+
+00:24:05.730 --> 00:24:06.990
+of how do you run a business
+
+00:24:06.990 --> 00:24:08.550
+and how do you make money on the internet?
+
+00:24:08.550 --> 00:24:12.030
+And then you break containment
+on an algorithmic platform
+
+00:24:12.030 --> 00:24:13.440
+and a bunch of people hear you talk
+
+00:24:13.440 --> 00:24:14.910
+about owning the customer
+
+00:24:14.910 --> 00:24:16.620
+and they're like, "This is horrible."
+
+00:24:16.620 --> 00:24:18.960
+Like, "I don't wish to
+be owned in this way."
+
+00:24:18.960 --> 00:24:22.740
+And I think there's something
+very important there, right?
+
+00:24:22.740 --> 00:24:24.300
+I don't think people want to feel
+
+00:24:24.300 --> 00:24:25.890
+like they're a customer that's owned,
+
+00:24:25.890 --> 00:24:28.170
+that, you know, the idea that
+you're perfectly surveilled,
+
+00:24:28.170 --> 00:24:30.240
+that there's dynamic
+pricing on DoorDash now,
+
+00:24:30.240 --> 00:24:31.920
+people hate this.
+
+00:24:31.920 --> 00:24:33.690
+Something very important there.
+
+00:24:33.690 --> 00:24:37.500
+Can your own personal LLM
+insulate you from that
+
+00:24:37.500 --> 00:24:39.600
+by going out in the world on your behalf
+
+00:24:39.600 --> 00:24:41.130
+and prevent you from being tracked
+
+00:24:41.130 --> 00:24:43.230
+and deal with the restaurants directly?
+
+00:24:43.230 --> 00:24:45.180
+'Cause they've set up their
+own little MCP servers.
+
+00:24:45.180 --> 00:24:46.620
+That would be the dream.
+
+00:24:46.620 --> 00:24:47.853
+Is that likely?
+
+00:24:48.870 --> 00:24:50.280
+Right, like, is it likely
+
+00:24:50.280 --> 00:24:53.820
+that we will all have our
+own little agent server
+
+00:24:53.820 --> 00:24:55.890
+in the basement running on a Raspberry Pi
+
+00:24:55.890 --> 00:24:58.440
+and every restaurant is
+gonna have an MCP server
+
+00:24:58.440 --> 00:25:00.540
+and there's gonna be
+an MCP discovery engine
+
+00:25:00.540 --> 00:25:01.800
+that's decentralized.
+
+00:25:01.800 --> 00:25:02.670
+Man, I hope so.
+
+00:25:02.670 --> 00:25:04.170
+If you are building any of those products,
+
+00:25:04.170 --> 00:25:05.310
+you give us a call,
+
+00:25:05.310 --> 00:25:06.750
+we will pay so much attention to you
+
+00:25:06.750 --> 00:25:09.003
+that you have no choice
+but to be successful.
+
+00:25:10.200 --> 00:25:13.350
+But I don't think that's how
+it's gonna work. (laughs)
+
+00:25:13.350 --> 00:25:14.277
+And the flip side of that,
+
+00:25:14.277 --> 00:25:16.620
+and I saw this on the
+comments on our site,
+
+00:25:16.620 --> 00:25:17.760
+I see this on comments on YouTube,
+
+00:25:17.760 --> 00:25:20.370
+I think it's reflected in
+Angela's comment there,
+
+00:25:20.370 --> 00:25:22.950
+people aren't happy with DoorDash, right?
+
+00:25:22.950 --> 00:25:25.800
+They're not happy with these
+middlemen service providers,
+
+00:25:26.790 --> 00:25:29.670
+but those service providers exist, right?
+
+00:25:29.670 --> 00:25:32.760
+So if you disrupt Uber,
+
+00:25:32.760 --> 00:25:34.497
+if you get rid of Uber,
+and Lyft, and DoorDash,
+
+00:25:34.497 --> 00:25:36.180
+and whatever else tomorrow,
+
+00:25:36.180 --> 00:25:38.040
+a lot of people whose income
+
+00:25:38.040 --> 00:25:41.190
+and livelihoods depend on
+those platforms get disrupted.
+
+00:25:41.190 --> 00:25:44.190
+So you have to make some
+trade-offs along the way
+
+00:25:44.190 --> 00:25:46.860
+and you can say, "Man, I
+wish Uber never existed."
+
+00:25:46.860 --> 00:25:48.870
+But the problem is that it does.
+
+00:25:48.870 --> 00:25:51.480
+Like, I can't do anything
+about that for you.
+
+00:25:51.480 --> 00:25:53.227
+So it exists and now you're saying,
+
+00:25:53.227 --> 00:25:55.560
+"Okay, it could change
+and could get disrupted."
+
+00:25:55.560 --> 00:25:57.180
+All the people who make their living
+
+00:25:57.180 --> 00:25:58.560
+driving for Uber today,
+
+00:25:58.560 --> 00:25:59.970
+what are you gonna do with them?
+
+00:25:59.970 --> 00:26:02.820
+And so maybe the 30% should
+move back to the restaurants,
+
+00:26:02.820 --> 00:26:04.710
+but now you've taken away
+from the Uber drivers
+
+00:26:04.710 --> 00:26:06.450
+and you've moved it to robots,
+
+00:26:06.450 --> 00:26:08.490
+that is a trade-off you could make.
+
+00:26:08.490 --> 00:26:11.100
+The technology could force us
+into that trade-off over time.
+
+00:26:11.100 --> 00:26:14.310
+But I think our show is
+gonna just put people
+
+00:26:14.310 --> 00:26:15.990
+in the complicated situation
+
+00:26:15.990 --> 00:26:18.270
+of having to make those trade-offs
+
+00:26:18.270 --> 00:26:19.860
+or at least work through those trade-offs
+
+00:26:19.860 --> 00:26:21.480
+over the course of an hour-long interview.
+
+00:26:21.480 --> 00:26:23.160
+'Cause it's all coming.
+
+00:26:23.160 --> 00:26:25.170
+And I don't think the agents,
+
+00:26:25.170 --> 00:26:27.090
+they're not gonna live in our
+basements on Raspberry Pis.
+
+00:26:27.090 --> 00:26:29.340
+They're gonna live on big,
+centralized cloud services
+
+00:26:29.340 --> 00:26:32.190
+operated by tech giants who
+have their own incentives.
+
+00:26:32.190 --> 00:26:34.470
+Understanding their
+incentives versus your own
+
+00:26:34.470 --> 00:26:36.120
+will be, I think, critical
+
+00:26:36.120 --> 00:26:38.370
+to preserving some consumer agency.
+
+00:26:38.370 --> 00:26:40.890
+- One listener, Asif Saggi,
+
+00:26:40.890 --> 00:26:42.450
+wrote in about your prediction last year
+
+00:26:42.450 --> 00:26:45.150
+related to the economy, Nilay.
+
+00:26:45.150 --> 00:26:46.740
+So you brought it up a little bit earlier
+
+00:26:46.740 --> 00:26:48.780
+that you are kind of always keeping an eye
+
+00:26:48.780 --> 00:26:49.770
+on the creator economy,
+
+00:26:49.770 --> 00:26:51.720
+what might happen to it.
+
+00:26:51.720 --> 00:26:54.670
+He's asking specifically, "Do you think
+
+00:26:54.670 --> 00:26:57.277
+"that with AI dominating
+the industry right now,
+
+00:26:57.277 --> 00:27:01.237
+"will we even notice or hear
+the creator bubble bursting
+
+00:27:01.237 --> 00:27:02.617
+"or do you think the creator economy
+
+00:27:02.617 --> 00:27:04.980
+"has already corrected itself?"
+
+00:27:04.980 --> 00:27:06.360
+- I think there's been some correction
+
+00:27:06.360 --> 00:27:08.460
+in the creator economy already.
+
+00:27:08.460 --> 00:27:11.160
+Let me be specific
+about what I mean there.
+
+00:27:11.160 --> 00:27:14.430
+The creator economy is really expressed
+
+00:27:14.430 --> 00:27:16.470
+as brands can show up,
+
+00:27:16.470 --> 00:27:20.040
+pay creators to do
+endorsements and sponsorships
+
+00:27:20.040 --> 00:27:22.640
+and that will drive some
+sales back to those brands.
+
+00:27:23.490 --> 00:27:24.540
+That's the whole economy.
+
+00:27:24.540 --> 00:27:26.040
+There's not a part of that economy
+
+00:27:26.040 --> 00:27:28.170
+where any of the platforms
+
+00:27:28.170 --> 00:27:30.990
+are paying creators high
+enough rates to survive.
+
+00:27:30.990 --> 00:27:32.314
+So if you are a YouTuber,
+
+00:27:32.314 --> 00:27:35.280
+or an Instagram influencer, or a TikToker,
+
+00:27:35.280 --> 00:27:36.117
+YouTube, Instagram, and TikTok
+
+00:27:36.117 --> 00:27:39.720
+are not paying you nearly
+enough money to eat.
+
+00:27:39.720 --> 00:27:41.280
+It's just not true.
+
+00:27:41.280 --> 00:27:42.960
+And so all of those creators
+
+00:27:42.960 --> 00:27:45.390
+need to get subsidized by brands.
+
+00:27:45.390 --> 00:27:47.250
+They need to do brand
+deals and sponsorships
+
+00:27:47.250 --> 00:27:48.930
+and find other ways to make money,
+
+00:27:48.930 --> 00:27:51.510
+'cause the platforms
+themselves don't pay enough.
+
+00:27:51.510 --> 00:27:54.240
+And this is the heart
+of the creator economy.
+
+00:27:54.240 --> 00:27:55.680
+The platforms don't pay enough money
+
+00:27:55.680 --> 00:27:57.390
+to support the content of the platforms.
+
+00:27:57.390 --> 00:27:59.760
+So advertising has to fill in the gap.
+
+00:27:59.760 --> 00:28:02.310
+And what you're seeing this year is
+
+00:28:02.310 --> 00:28:06.210
+the advertisers are not paying
+the same rates as they were,
+
+00:28:06.210 --> 00:28:07.620
+particularly in like the pandemic
+
+00:28:07.620 --> 00:28:08.670
+when rates shot through the roof
+
+00:28:08.670 --> 00:28:10.050
+'cause no one can measure anything.
+
+00:28:10.050 --> 00:28:12.030
+The advertisers are getting smarter
+
+00:28:12.030 --> 00:28:15.600
+about the return their
+money is delivering.
+
+00:28:15.600 --> 00:28:17.250
+So you can't just pay every creator,
+
+00:28:17.250 --> 00:28:18.810
+you can actually start
+to measure creators.
+
+00:28:18.810 --> 00:28:21.240
+We had the CEO of SharkNinja on the show
+
+00:28:21.240 --> 00:28:23.220
+and he said they do very
+sophisticated measurement
+
+00:28:23.220 --> 00:28:24.510
+of engagement.
+
+00:28:24.510 --> 00:28:25.410
+They don't just want views,
+
+00:28:25.410 --> 00:28:26.820
+they want likes and comments.
+
+00:28:26.820 --> 00:28:29.640
+They're doing sentiment
+analysis on the comments
+
+00:28:29.640 --> 00:28:30.900
+on the videos the creators do
+
+00:28:30.900 --> 00:28:32.490
+to promote SharkNinja products
+
+00:28:32.490 --> 00:28:34.560
+to figure out what creators
+to work with over time
+
+00:28:34.560 --> 00:28:36.060
+in a relationship.
+
+00:28:36.060 --> 00:28:37.830
+That means rates are dropping, right?
+
+00:28:37.830 --> 00:28:39.780
+You're now measuring,
+you're paying for results.
+
+00:28:39.780 --> 00:28:42.900
+The inevitable result of
+metrics is you drop rates
+
+00:28:42.900 --> 00:28:46.320
+'cause you're not paying
+the the margin for unknowns,
+
+00:28:46.320 --> 00:28:47.580
+you're only paying for what you want.
+
+00:28:47.580 --> 00:28:49.410
+That's fascinating to me.
+
+00:28:49.410 --> 00:28:50.730
+Then you have just the reality
+
+00:28:50.730 --> 00:28:52.320
+of SharkNinja is going
+to a bunch of creators
+
+00:28:52.320 --> 00:28:54.780
+and saying, "We're gonna pay
+for exactly this result,"
+
+00:28:54.780 --> 00:28:57.480
+and you have turned all
+these platforms into QVC,
+
+00:28:57.480 --> 00:28:59.190
+and audience engagement might drop.
+
+00:28:59.190 --> 00:29:02.580
+Then you flood the
+platforms with AI content,
+
+00:29:02.580 --> 00:29:04.260
+which is, like, pure engagement slop
+
+00:29:04.260 --> 00:29:05.910
+that you can make for $0
+
+00:29:05.910 --> 00:29:07.770
+and you can drop those rates even farther.
+
+00:29:07.770 --> 00:29:09.277
+Then you have Mark Zuckerberg saying,
+
+00:29:09.277 --> 00:29:11.857
+"You don't even need to make ad creative,
+
+00:29:11.857 --> 00:29:14.227
+"pay us money, we will AI generate you ads
+
+00:29:14.227 --> 00:29:15.510
+"and deliver you business results."
+
+00:29:15.510 --> 00:29:17.310
+Which is the thing he
+said earlier this year.
+
+00:29:17.310 --> 00:29:18.990
+I think that's gonna
+drop rates even farther.
+
+00:29:18.990 --> 00:29:20.340
+So you just see the beginning
+
+00:29:20.340 --> 00:29:22.170
+of the pressure on this economy
+
+00:29:22.170 --> 00:29:25.140
+where because the platforms
+do not value the content,
+
+00:29:25.140 --> 00:29:28.920
+they literally do not pay
+enough to the creators to eat,
+
+00:29:28.920 --> 00:29:30.840
+they are wholly dependent on the dynamics
+
+00:29:30.840 --> 00:29:32.490
+of the advertising industry.
+
+00:29:32.490 --> 00:29:34.650
+And the advertising industry
+is both professionalizing
+
+00:29:34.650 --> 00:29:36.750
+and industrializing the creator economy
+
+00:29:36.750 --> 00:29:40.410
+and dealing with AI like everybody else.
+
+00:29:40.410 --> 00:29:42.600
+And all that means is
+the rates are dropping,
+
+00:29:42.600 --> 00:29:44.490
+the rates for a brand deal are dropping
+
+00:29:44.490 --> 00:29:45.810
+and the middle class of creators
+
+00:29:45.810 --> 00:29:47.340
+is absolutely getting squeezed.
+
+00:29:47.340 --> 00:29:49.650
+So I think that will be a theme.
+
+00:29:49.650 --> 00:29:50.880
+It was a little bit of our theme
+
+00:29:50.880 --> 00:29:52.050
+of our coverage this year.
+
+00:29:52.050 --> 00:29:54.150
+It's gonna be a big theme next year.
+
+00:29:54.150 --> 00:29:54.983
+And like I said,
+
+00:29:54.983 --> 00:29:56.580
+I think the platforms are
+gonna have to start labeling
+
+00:29:56.580 --> 00:29:59.190
+and filtering AI content for
+a huge number of reasons.
+
+00:29:59.190 --> 00:30:01.110
+I think a revolt from creators
+
+00:30:01.110 --> 00:30:02.700
+is gonna be one of those reasons.
+
+00:30:02.700 --> 00:30:04.680
+- That's the AI piece of it all.
+
+00:30:04.680 --> 00:30:07.560
+That really takes us to
+our Monday guest lineups
+
+00:30:07.560 --> 00:30:10.980
+because we've talked to a
+lot of AI CEOs this year
+
+00:30:10.980 --> 00:30:13.770
+and also every CEO we've
+talked to this year claims
+
+00:30:13.770 --> 00:30:16.470
+to be an AI CEO.
+- Yeah, without exception.
+
+00:30:16.470 --> 00:30:18.120
+- Without exception, all of them.
+
+00:30:19.230 --> 00:30:20.580
+The next person we are interviewing
+
+00:30:20.580 --> 00:30:21.420
+is also going to do that.
+
+00:30:21.420 --> 00:30:23.040
+That's just what they are.
+
+00:30:23.040 --> 00:30:26.160
+We get a lot of our
+suggestions for who to talk to
+
+00:30:26.160 --> 00:30:27.150
+from our audience.
+
+00:30:27.150 --> 00:30:29.580
+When we talked to Unity CEO
+Matt Bromberg last year,
+
+00:30:29.580 --> 00:30:30.930
+that started with a listener email.
+
+00:30:30.930 --> 00:30:32.317
+That subject line was literally,
+
+00:30:32.317 --> 00:30:34.350
+"Please, interview my boss."
+
+00:30:34.350 --> 00:30:35.520
+I loved that.
+
+00:30:35.520 --> 00:30:37.170
+If you want us to interview your CEO
+
+00:30:37.170 --> 00:30:39.510
+so we can ask them how they
+make decisions for you,
+
+00:30:39.510 --> 00:30:40.773
+absolutely, let us know.
+
+00:30:41.610 --> 00:30:43.710
+Recent requests we've
+had come into the inbox
+
+00:30:43.710 --> 00:30:46.230
+this past couple weeks
+include the CEO of Stripe,
+
+00:30:46.230 --> 00:30:48.210
+the CEO of Framework Computer,
+
+00:30:48.210 --> 00:30:50.790
+AI guy, Geoffrey Hinton,
+and Linus Torvalds,
+
+00:30:50.790 --> 00:30:52.230
+which are all interesting suggestions.
+
+00:30:52.230 --> 00:30:53.520
+We'll see what next year holds.
+
+00:30:53.520 --> 00:30:55.320
+- If you can get us Linus
+- Yeah, right?
+
+00:30:55.320 --> 00:30:56.400
+- Make the call, let's do it.
+- Yeah,
+
+00:30:56.400 --> 00:30:58.110
+like, let us know please.
+
+00:30:58.110 --> 00:30:58.980
+We would love to.
+
+00:30:58.980 --> 00:31:02.720
+Last year we had a set of
+moonshot guests that was,
+
+00:31:02.720 --> 00:31:03.810
+I don't know, last year we said
+
+00:31:03.810 --> 00:31:05.100
+maybe we'll wanna talk to Tim Cook
+
+00:31:05.100 --> 00:31:07.200
+or maybe we'll wanna talk to Bob Iger.
+
+00:31:07.200 --> 00:31:09.570
+I would still really like
+us to talk to Bob Iger.
+
+00:31:09.570 --> 00:31:11.520
+I wanna know what he's thinking.
+
+00:31:11.520 --> 00:31:15.150
+Nilay, who do you have on this
+year's moonshot guest list?
+
+00:31:15.150 --> 00:31:16.150
+- That's a good one.
+
+00:31:17.130 --> 00:31:18.690
+Yeah, I'm taking Tim Cook off the list.
+
+00:31:18.690 --> 00:31:20.790
+I've said this on "The
+Vergecast" several times.
+
+00:31:20.790 --> 00:31:23.190
+I don't think he has
+anything interesting to say,
+
+00:31:23.190 --> 00:31:25.320
+or if he does, he won't say it.
+
+00:31:25.320 --> 00:31:27.810
+I've watched any number
+of Tim Cook interviews
+
+00:31:27.810 --> 00:31:29.790
+over the past 15 years
+
+00:31:29.790 --> 00:31:33.840
+and I've yet to think that I
+personally can crack the code
+
+00:31:33.840 --> 00:31:35.610
+because no one else has.
+
+00:31:35.610 --> 00:31:37.260
+So just off the list.
+
+00:31:37.260 --> 00:31:38.403
+Like, unless, Tim,
+
+00:31:39.313 --> 00:31:41.570
+you wanna blow it up on your
+way out the door, you know.
+
+00:31:41.570 --> 00:31:43.860
+if you wanna announce you're
+leaving Apple on "Decoder,"
+
+00:31:43.860 --> 00:31:44.693
+now's the time.
+
+00:31:45.570 --> 00:31:46.680
+It's off the list.
+
+00:31:46.680 --> 00:31:50.550
+Moonshots, actually, I do think
+I should do more interviews
+
+00:31:50.550 --> 00:31:54.030
+with people I don't agree
+with or openly disagree with.
+
+00:31:54.030 --> 00:31:55.620
+So Alex Karp is high on my list.
+
+00:31:55.620 --> 00:31:56.490
+I have a lot of questions
+
+00:31:56.490 --> 00:31:59.010
+about what Palantir's
+technology actually is.
+
+00:31:59.010 --> 00:32:00.300
+If you watch any interview with him
+
+00:32:00.300 --> 00:32:01.710
+or any executive at Palantir,
+
+00:32:01.710 --> 00:32:03.150
+they obfuscate the answers
+
+00:32:03.150 --> 00:32:06.840
+to what it is they actually
+make incredibly hard
+
+00:32:06.840 --> 00:32:09.150
+and I don't think you can
+get away with that with me.
+
+00:32:09.150 --> 00:32:10.590
+So he's high on my list.
+
+00:32:10.590 --> 00:32:13.050
+I think we're overdue on Andy Jassy.
+
+00:32:13.050 --> 00:32:15.210
+We've had a lot of Amazon
+executives on the show.
+
+00:32:15.210 --> 00:32:16.680
+I'm dying to know what he thinks
+
+00:32:16.680 --> 00:32:18.660
+about the future of that business
+
+00:32:18.660 --> 00:32:20.730
+in the context of agentic retail,
+
+00:32:20.730 --> 00:32:22.110
+and all those questions there,
+
+00:32:22.110 --> 00:32:24.060
+in the context of having to spend money
+
+00:32:24.060 --> 00:32:25.650
+on data center build-outs.
+
+00:32:25.650 --> 00:32:27.330
+Andy Jassy, come on the show.
+
+00:32:27.330 --> 00:32:28.830
+Bob Iger, definitely on the list,
+
+00:32:28.830 --> 00:32:31.950
+especially now that he's asking Google
+
+00:32:31.950 --> 00:32:35.280
+to stop training on Disney IP
+
+00:32:35.280 --> 00:32:37.800
+and then he's investing a
+billion dollars in OpenAI
+
+00:32:37.800 --> 00:32:39.660
+so that they can use Disney IP.
+
+00:32:39.660 --> 00:32:41.220
+That seems very backwards.
+
+00:32:41.220 --> 00:32:42.960
+I would love to ask him about
+the mechanics of that deal
+
+00:32:42.960 --> 00:32:44.100
+and what he's thinking there.
+
+00:32:44.100 --> 00:32:45.540
+Dario from Anthropic,
+
+00:32:45.540 --> 00:32:47.760
+we've done a lot of AI CEOs,
+
+00:32:47.760 --> 00:32:49.740
+we should have Dario, we
+should have Sam Altman.
+
+00:32:49.740 --> 00:32:51.120
+I think Sam Altman is another one
+
+00:32:51.120 --> 00:32:52.627
+where asking what his actual plans,
+
+00:32:52.627 --> 00:32:55.020
+"Can you describe the structure
+of OpenAI, Sam Altman?"
+
+00:32:55.020 --> 00:32:56.340
+That's a challenge I'll issue to you.
+
+00:32:56.340 --> 00:32:57.990
+This is what this show is for.
+
+00:32:57.990 --> 00:32:59.257
+Everyone gets asked
+where their org chart is.
+
+00:32:59.257 --> 00:33:01.680
+"Can you describe
+OpenAI's org chart, Sam?"
+
+00:33:01.680 --> 00:33:02.970
+I welcome you on the show.
+
+00:33:02.970 --> 00:33:04.357
+And then I have to say this,
+
+00:33:04.357 --> 00:33:07.020
+"Vergecast" listeners
+know this is on my list,
+
+00:33:07.020 --> 00:33:09.150
+FCC Chairman Brendan Carr.
+
+00:33:09.150 --> 00:33:12.270
+Have him anywhere, anytime, any place,
+
+00:33:12.270 --> 00:33:14.580
+but if Brendan wants to
+come on "Decoder" this year,
+
+00:33:14.580 --> 00:33:15.810
+I think we have to take the shot.
+
+00:33:15.810 --> 00:33:18.180
+I think that will be a
+very interesting episode.
+
+00:33:18.180 --> 00:33:19.230
+And it's not so much a moonshot,
+
+00:33:19.230 --> 00:33:20.220
+we've interviewed her before
+
+00:33:20.220 --> 00:33:21.720
+but I actually think Lisa Su from AMD,
+
+00:33:21.720 --> 00:33:23.520
+we should have her back next year.
+
+00:33:23.520 --> 00:33:26.610
+She's in the heart of
+the chip conversation.
+
+00:33:26.610 --> 00:33:29.700
+She needs to compete for
+capacity with TSMC, with Nvidia,
+
+00:33:29.700 --> 00:33:32.610
+which is a fascinatingly hard challenge.
+
+00:33:32.610 --> 00:33:34.200
+We should probably get
+Jensen on from Nvidia too,
+
+00:33:34.200 --> 00:33:35.460
+but I think, actually Lisa,
+
+00:33:35.460 --> 00:33:37.737
+every time we've been on
+she's been refreshingly candid
+
+00:33:37.737 --> 00:33:40.620
+and AMD is, like, mounting
+a little bit of a comeback
+
+00:33:40.620 --> 00:33:42.690
+and I think that would be a
+really good episode next year.
+
+00:33:42.690 --> 00:33:45.810
+- That was a perfect segue
+into our next question,
+
+00:33:45.810 --> 00:33:48.150
+which is about repeat guests.
+
+00:33:48.150 --> 00:33:53.150
+In particular, listener Ian
+wanted to know how that happens.
+
+00:33:53.520 --> 00:33:54.967
+He says, "You often say to a guest
+
+00:33:54.967 --> 00:33:55.800
+"at the end of an interview
+
+00:33:55.800 --> 00:33:57.487
+"that it'd be great to have them back,
+
+00:33:57.487 --> 00:33:59.137
+"but what's your decision-making framework
+
+00:33:59.137 --> 00:34:01.057
+"around actually getting them back?
+
+00:34:01.057 --> 00:34:02.947
+"Do you wait for a new product, a book?
+
+00:34:02.947 --> 00:34:06.117
+"Do you set a reminder, like
+the one I have for 2030"
+
+00:34:06.117 --> 00:34:07.980
+and this person actually has a reminder,
+
+00:34:07.980 --> 00:34:09.540
+a screenshot of their Reminders app
+
+00:34:09.540 --> 00:34:12.577
+where they say, "Contact
+Nilay Patel and remind him
+
+00:34:12.577 --> 00:34:15.900
+"that the Metaverse will
+have a great year in 2030."
+
+00:34:15.900 --> 00:34:16.890
+- That's great.
+- So, yeah,
+
+00:34:16.890 --> 00:34:19.050
+he wants to know how do
+you have a guest back
+
+00:34:19.050 --> 00:34:20.490
+and how does it work?
+
+00:34:20.490 --> 00:34:23.340
+- I should ask you two because
+you two do all the booking.
+
+00:34:23.340 --> 00:34:26.373
+My impression of how
+"Decoder" works right now is
+
+00:34:26.373 --> 00:34:29.340
+that we do very little outbound.
+
+00:34:29.340 --> 00:34:30.390
+We have a lot of incoming,
+
+00:34:30.390 --> 00:34:32.310
+a lot of people wanna be on the show.
+
+00:34:32.310 --> 00:34:34.530
+The joke I keep making is that
+
+00:34:34.530 --> 00:34:37.140
+it's a game called Nilay
+versus media training,
+
+00:34:37.140 --> 00:34:40.560
+which is a game you can win
+but also a game you can lose.
+
+00:34:40.560 --> 00:34:42.690
+And the fact that it's
+a little bit challenging
+
+00:34:42.690 --> 00:34:45.120
+makes a lot of very
+competitive type A CEOs
+
+00:34:45.120 --> 00:34:46.200
+wanna be on the show.
+
+00:34:46.200 --> 00:34:49.020
+'Cause they see their
+peers either win or lose
+
+00:34:49.020 --> 00:34:50.370
+and they think they can do better.
+
+00:34:50.370 --> 00:34:52.080
+By the way, this is not like
+some secret information.
+
+00:34:52.080 --> 00:34:53.820
+I say this out loud all the time
+
+00:34:53.820 --> 00:34:55.470
+and everyone knows this
+is how I think of the show
+
+00:34:55.470 --> 00:34:57.630
+and everyone keeps showing up.
+
+00:34:57.630 --> 00:34:58.650
+So that's great.
+
+00:34:58.650 --> 00:34:59.820
+That continues to work.
+
+00:34:59.820 --> 00:35:01.320
+There's a piece of the puzzle
+which is really interesting.
+
+00:35:01.320 --> 00:35:02.280
+I've heard this from a few people,
+
+00:35:02.280 --> 00:35:04.110
+I'm curious if anyone
+wants to confirm it to us,
+
+00:35:04.110 --> 00:35:06.990
+where a lot of times the
+executives come on the show
+
+00:35:06.990 --> 00:35:08.880
+'cause they wanna prove
+to their own employees
+
+00:35:08.880 --> 00:35:10.290
+that they can take the heat
+
+00:35:10.290 --> 00:35:11.940
+and there's no way to do that
+
+00:35:11.940 --> 00:35:14.160
+in, like, the branded content universe
+
+00:35:14.160 --> 00:35:16.470
+or the softball interview universe
+
+00:35:16.470 --> 00:35:17.940
+or like, the employee town hall.
+
+00:35:17.940 --> 00:35:18.773
+Like,
+
+00:35:18.773 --> 00:35:20.340
+you can't have your own head
+of comms ask you a question
+
+00:35:20.340 --> 00:35:22.230
+that amounts to do you
+know what you're doing,
+
+00:35:22.230 --> 00:35:23.427
+but I'll do that.
+
+00:35:23.427 --> 00:35:25.050
+And so, like, there's
+something important there.
+
+00:35:25.050 --> 00:35:26.730
+So that's one reason
+they keep coming back.
+
+00:35:26.730 --> 00:35:31.230
+The repeat guests for me are
+when someone got a new job,
+
+00:35:31.230 --> 00:35:33.960
+when they're the new CEO or
+they're the outgoing CEO,
+
+00:35:33.960 --> 00:35:36.300
+super fascinating, they're
+a little bit more candid.
+
+00:35:36.300 --> 00:35:37.890
+They have to make some.
+
+00:35:37.890 --> 00:35:38.850
+Anjali Sud, right?
+
+00:35:38.850 --> 00:35:40.980
+She went from Vimeo to Tubi.
+
+00:35:40.980 --> 00:35:43.140
+I love talking to her
+about that transition.
+
+00:35:43.140 --> 00:35:45.120
+I thought that was one
+of our best episodes ever
+
+00:35:45.120 --> 00:35:46.680
+'cause she learned a bunch
+of stuff at one place
+
+00:35:46.680 --> 00:35:48.690
+and she obviously worked at another place.
+
+00:35:48.690 --> 00:35:50.280
+She didn't have to pretend
+
+00:35:50.280 --> 00:35:52.410
+that everything had gone
+well at the previous place.
+
+00:35:52.410 --> 00:35:54.120
+Like, she got to be honest
+about what she'd learned.
+
+00:35:54.120 --> 00:35:56.430
+I think that's an incredible
+time to bring someone back.
+
+00:35:56.430 --> 00:36:00.780
+And then there are structural
+changes in an industry
+
+00:36:00.780 --> 00:36:03.120
+that I think are a really good
+time to bring people back on.
+
+00:36:03.120 --> 00:36:07.260
+So I suspect we will have
+Sundar Pichai and Satya Nadella
+
+00:36:07.260 --> 00:36:09.400
+on the show on a cadence forever
+
+00:36:10.530 --> 00:36:13.350
+because there's huge structural changes
+
+00:36:13.350 --> 00:36:15.030
+in the industries in which they work.
+
+00:36:15.030 --> 00:36:17.460
+They are among the masters of the universe
+
+00:36:17.460 --> 00:36:19.020
+and they like explaining
+
+00:36:19.020 --> 00:36:21.150
+how they are approaching those changes.
+
+00:36:21.150 --> 00:36:22.470
+And I like hearing those answers.
+
+00:36:22.470 --> 00:36:25.470
+I think you can hear those interviews.
+
+00:36:25.470 --> 00:36:27.960
+I obviously disagree with their
+answers from time to time,
+
+00:36:27.960 --> 00:36:29.940
+but that dynamic is
+really important to me.
+
+00:36:29.940 --> 00:36:31.537
+Like, "Is there a structural change?
+
+00:36:31.537 --> 00:36:33.720
+"Can you walk me through
+it in a way that's honest?"
+
+00:36:33.720 --> 00:36:34.560
+That's the other time
+
+00:36:34.560 --> 00:36:36.570
+when I think a repeat
+guest is really important.
+
+00:36:36.570 --> 00:36:39.690
+Having a car CEO back every six months
+
+00:36:39.690 --> 00:36:41.490
+to say they haven't changed
+their mind on CarPlay,
+
+00:36:41.490 --> 00:36:44.700
+I think is of diminishing value. (laughs)
+
+00:36:44.700 --> 00:36:45.990
+So, yeah, big structural changes,
+
+00:36:45.990 --> 00:36:48.180
+or new job, new role,
+
+00:36:48.180 --> 00:36:49.500
+if you've changed your org chart,
+
+00:36:49.500 --> 00:36:50.640
+you've restructured your company.
+
+00:36:50.640 --> 00:36:52.620
+I love those episodes
+
+00:36:52.620 --> 00:36:54.630
+because there's something
+very rich to talk about.
+
+00:36:54.630 --> 00:36:56.430
+- I will say you threw
+it to us for a second.
+
+00:36:56.430 --> 00:36:59.550
+It is much more common for me and Nick
+
+00:36:59.550 --> 00:37:01.357
+to tell somebody, "No,
+you can't come back.
+
+00:37:01.357 --> 00:37:02.730
+"It's too soon,"
+
+00:37:02.730 --> 00:37:04.350
+than it is for us to have to reach out
+
+00:37:04.350 --> 00:37:06.120
+and say, "Will you come back?"
+- Yeah.
+
+00:37:06.120 --> 00:37:07.530
+- Which I think is interesting.
+
+00:37:07.530 --> 00:37:09.120
+I'm glad you mentioned media training,
+
+00:37:09.120 --> 00:37:10.410
+Nilay versus media training
+
+00:37:10.410 --> 00:37:14.310
+because we had one very
+interesting email from Zach Yani
+
+00:37:14.310 --> 00:37:15.907
+who wrote, "My honest feedback is
+
+00:37:15.907 --> 00:37:19.417
+"that Nilay versus media
+training isn't good radio
+
+00:37:19.417 --> 00:37:22.147
+"Nilay and the "Decoder" format
+are one of the best attempts
+
+00:37:22.147 --> 00:37:23.947
+"to make these PR stops interesting
+
+00:37:23.947 --> 00:37:26.917
+"with the 'Decoder' questions
+and asking hard questions.
+
+00:37:26.917 --> 00:37:27.757
+"Occasionally,
+
+00:37:27.757 --> 00:37:29.977
+"Nilay even generates a
+really interesting moment
+
+00:37:29.977 --> 00:37:32.197
+"when he backs them into
+a corner hard enough,
+
+00:37:32.197 --> 00:37:34.567
+"but by and large this
+is not a good format.
+
+00:37:34.567 --> 00:37:35.917
+"It was a great experiment.
+
+00:37:35.917 --> 00:37:38.107
+"If anyone could have done
+it, it would've been Nilay,
+
+00:37:38.107 --> 00:37:41.160
+"but media training makes it boring."
+
+00:37:41.160 --> 00:37:42.667
+But he adds, "On the other hand,
+
+00:37:42.667 --> 00:37:43.897
+"when Nilay talks to people
+
+00:37:43.897 --> 00:37:45.637
+"who aren't selling a company vision
+
+00:37:45.637 --> 00:37:47.287
+"'Decoder' can really shine.
+
+00:37:47.287 --> 00:37:49.957
+"There have been some truly
+great episodes of that format
+
+00:37:49.957 --> 00:37:51.367
+"and I bet leaning into that
+
+00:37:51.367 --> 00:37:53.910
+"could get some even better guests."
+
+00:37:53.910 --> 00:37:56.583
+We've talked about this
+a lot inside our team.
+
+00:37:57.450 --> 00:38:00.000
+Nilay, I would love for our audience
+
+00:38:00.000 --> 00:38:03.570
+to hear your thoughts on
+our Monday guests overall
+
+00:38:03.570 --> 00:38:06.840
+and the whole concept of
+Nilay versus media training.
+
+00:38:06.840 --> 00:38:09.270
+- All right, can I rewind
+the clock all the way.
+
+00:38:09.270 --> 00:38:10.620
+We do think about this a lot.
+
+00:38:10.620 --> 00:38:12.810
+I'm rewinding the clock to the
+very beginning of "Decoder"
+
+00:38:12.810 --> 00:38:17.340
+and this show started as
+Kara Swisher's show, right?
+
+00:38:17.340 --> 00:38:20.730
+It was "Recode Decode"
+hosted by Kara Swisher.
+
+00:38:20.730 --> 00:38:23.790
+And so she went off to do the next thing.
+
+00:38:23.790 --> 00:38:26.700
+She graciously said we
+could take over the feed.
+
+00:38:26.700 --> 00:38:30.300
+And I was like, "I have
+to replace Kara Swisher."
+
+00:38:30.300 --> 00:38:31.584
+Like, just imagine that.
+
+00:38:31.584 --> 00:38:33.240
+Be like, "Oh yeah, I can just do that."
+
+00:38:33.240 --> 00:38:35.850
+And so I made a list of
+all the things Kara did
+
+00:38:35.850 --> 00:38:37.440
+that were of value to the audience
+
+00:38:37.440 --> 00:38:39.180
+and all the things I could do.
+
+00:38:39.180 --> 00:38:40.740
+And there's a whole bunch
+of stuff Kara can do
+
+00:38:40.740 --> 00:38:42.180
+that I can't do.
+
+00:38:42.180 --> 00:38:45.150
+Just you can make that
+list and send me your list,
+
+00:38:45.150 --> 00:38:46.050
+send me the list of things
+
+00:38:46.050 --> 00:38:47.250
+you think Kara can do that I can do
+
+00:38:47.250 --> 00:38:49.890
+and I'll tell you if
+it's the same as mine.
+
+00:38:49.890 --> 00:38:53.130
+And the one thing I could circle that was,
+
+00:38:53.130 --> 00:38:56.790
+I can keep this value
+to the audience going
+
+00:38:56.790 --> 00:38:59.250
+without completely cratering the feed
+
+00:38:59.250 --> 00:39:01.290
+and ruining everyone's experience
+
+00:39:01.290 --> 00:39:02.820
+was I can interview CEOs, right?
+
+00:39:02.820 --> 00:39:03.930
+This is where this all started.
+
+00:39:03.930 --> 00:39:07.410
+Like, what is Kara delivering
+every week on this show
+
+00:39:07.410 --> 00:39:09.960
+that I'm gonna rebrand and
+try to do something new,
+
+00:39:09.960 --> 00:39:11.497
+and instead of being like,
+
+00:39:11.497 --> 00:39:12.480
+"Hey, it's totally different now."
+
+00:39:12.480 --> 00:39:15.570
+Like, I can continue on
+with some scrap of value
+
+00:39:15.570 --> 00:39:17.220
+and maybe earn your
+trust, do something else.
+
+00:39:17.220 --> 00:39:18.053
+And it literally was,
+
+00:39:18.053 --> 00:39:20.130
+"I can get CEOs to show
+up and talk to me."
+
+00:39:20.130 --> 00:39:20.970
+There's a lot of reasons for that.
+
+00:39:20.970 --> 00:39:23.430
+I think chief among them is
+
+00:39:23.430 --> 00:39:24.750
+the version of product review site.
+
+00:39:24.750 --> 00:39:26.820
+And every CEO who makes tech products
+
+00:39:26.820 --> 00:39:28.800
+wants to be near product reviews.
+
+00:39:28.800 --> 00:39:29.880
+And I can do that.
+
+00:39:29.880 --> 00:39:31.530
+Great, so we can get the CEOs show up
+
+00:39:31.530 --> 00:39:32.363
+and talk about product.
+
+00:39:32.363 --> 00:39:33.630
+So that was step one.
+
+00:39:33.630 --> 00:39:36.150
+And I think that was successful.
+
+00:39:36.150 --> 00:39:37.800
+We didn't turn a bunch
+of Kara's audience away
+
+00:39:37.800 --> 00:39:40.710
+and Kara went off to do all her
+amazing things that she does
+
+00:39:40.710 --> 00:39:43.740
+and now we're doing
+something different, right?
+
+00:39:43.740 --> 00:39:46.950
+And over time, we started
+doing really different things.
+
+00:39:46.950 --> 00:39:48.630
+I'm not at all trying to compete with Kara
+
+00:39:48.630 --> 00:39:49.740
+and all the things she does.
+
+00:39:49.740 --> 00:39:50.700
+Again, I think she's doing great.
+
+00:39:50.700 --> 00:39:52.950
+I think it's useless to
+try to compete with that.
+
+00:39:52.950 --> 00:39:55.020
+I'm trying to try to do my own thing.
+
+00:39:55.020 --> 00:39:56.520
+That's where you get "Decoder" questions.
+
+00:39:56.520 --> 00:39:57.810
+How do I deliver different value?
+
+00:39:57.810 --> 00:39:59.400
+How do I make this meaningfully different?
+
+00:39:59.400 --> 00:40:02.790
+Casey Newton is always saying
+the podcast ecosystem is such
+
+00:40:02.790 --> 00:40:05.340
+that any person is always
+talking to someone else
+
+00:40:05.340 --> 00:40:07.170
+and you can find that conversation.
+
+00:40:07.170 --> 00:40:08.490
+Like, you can pick two names out of a hat,
+
+00:40:08.490 --> 00:40:09.930
+they've done a podcast episode together.
+
+00:40:09.930 --> 00:40:11.880
+How are you gonna make it different?
+
+00:40:11.880 --> 00:40:13.590
+So we try to make it different
+with "Decoder" questions
+
+00:40:13.590 --> 00:40:15.360
+by adding the sort of explainer episodes.
+
+00:40:15.360 --> 00:40:17.850
+And we have now gotten to the place
+
+00:40:17.850 --> 00:40:20.580
+where I think our own audience data shows,
+
+00:40:20.580 --> 00:40:22.620
+people like the episodes where I talk
+
+00:40:22.620 --> 00:40:24.813
+more than the episodes
+where the CEOs talk,
+
+00:40:26.070 --> 00:40:26.940
+that's a victory.
+
+00:40:26.940 --> 00:40:29.310
+I feel very weird about
+that, but we have it.
+
+00:40:29.310 --> 00:40:31.530
+We are hearing the feedback.
+
+00:40:31.530 --> 00:40:32.760
+Do the explainer episodes,
+
+00:40:32.760 --> 00:40:34.170
+do the DoorDash problem episodes.
+
+00:40:34.170 --> 00:40:36.240
+The problem with all that
+
+00:40:36.240 --> 00:40:39.990
+is that I am, at my
+core, still a reporter,
+
+00:40:39.990 --> 00:40:42.870
+and I need to show you my reporting.
+
+00:40:42.870 --> 00:40:44.040
+So if I just show up
+
+00:40:44.040 --> 00:40:46.800
+and do ranted-out video
+episodes every week,
+
+00:40:46.800 --> 00:40:49.140
+it would be much easier for all of us.
+
+00:40:49.140 --> 00:40:51.600
+And as you can tell, I
+could probably just do it,
+
+00:40:51.600 --> 00:40:52.890
+but if I don't have the reporting,
+
+00:40:52.890 --> 00:40:53.940
+I won't feel good about it.
+
+00:40:53.940 --> 00:40:56.700
+And so to me a huge part
+of the Monday episode
+
+00:40:56.700 --> 00:40:58.650
+is just showing my work.
+
+00:40:58.650 --> 00:41:00.540
+Here's how I do the things I do.
+
+00:41:00.540 --> 00:41:02.940
+Here's where the opinions
+I have come from.
+
+00:41:02.940 --> 00:41:06.330
+I allow these people to
+challenge my opinions
+
+00:41:06.330 --> 00:41:07.920
+as directly as they want,
+
+00:41:07.920 --> 00:41:09.270
+I challenge theirs.
+
+00:41:09.270 --> 00:41:11.820
+I've come to a deeper, more
+interesting understanding
+
+00:41:11.820 --> 00:41:13.470
+of how this whole industry works,
+
+00:41:13.470 --> 00:41:15.990
+of how the masters of the
+universe make decisions.
+
+00:41:15.990 --> 00:41:18.420
+And then I can show up
+on a Thursday episode
+
+00:41:18.420 --> 00:41:20.370
+and say, "Hey, I think that sucks"
+
+00:41:20.370 --> 00:41:22.770
+and I feel great about
+where that came from.
+
+00:41:22.770 --> 00:41:24.330
+And there's just some honest dealing
+
+00:41:24.330 --> 00:41:25.590
+about all that that's important.
+
+00:41:25.590 --> 00:41:27.900
+Now, does media training suck?
+
+00:41:27.900 --> 00:41:29.190
+Are there episodes where,
+
+00:41:29.190 --> 00:41:30.937
+in the middle of it, I'm like, "Boy,
+
+00:41:30.937 --> 00:41:32.580
+"I could just be talking to AI right now?"
+
+00:41:32.580 --> 00:41:35.850
+Yes, I will try to do better
+at breaking that down.
+
+00:41:35.850 --> 00:41:37.140
+I think one of the big learnings
+
+00:41:37.140 --> 00:41:39.990
+we had this year as a team was,
+
+00:41:39.990 --> 00:41:40.980
+well, we do a lot of prep.
+
+00:41:40.980 --> 00:41:43.620
+Kate and Nick write
+amazing prep docs for me.
+
+00:41:43.620 --> 00:41:47.010
+And I spend an hour before every
+episode just inhaling them.
+
+00:41:47.010 --> 00:41:50.130
+And then the more I leave it behind,
+
+00:41:50.130 --> 00:41:51.960
+the better off we are, right?
+
+00:41:51.960 --> 00:41:53.580
+Where I just let the episodes go
+
+00:41:53.580 --> 00:41:54.840
+to wherever I think is interesting
+
+00:41:54.840 --> 00:41:57.030
+and I don't try to hit all
+the questions on the list.
+
+00:41:57.030 --> 00:41:58.310
+That's a thing that I'm
+gonna start to push on
+
+00:41:58.310 --> 00:42:00.990
+to make the interviews more interesting.
+
+00:42:00.990 --> 00:42:02.640
+But I do think the core dynamic
+
+00:42:02.640 --> 00:42:05.817
+of everybody can see me doing the work
+
+00:42:05.817 --> 00:42:09.150
+and that is the foundation
+for all the other stuff I say
+
+00:42:09.150 --> 00:42:11.040
+that feels very important to me.
+
+00:42:11.040 --> 00:42:12.240
+'Cause if I don't show my work,
+
+00:42:12.240 --> 00:42:14.160
+I'm not sure how I can earn trust
+
+00:42:14.160 --> 00:42:16.440
+in a media environment
+that looks like this one.
+
+00:42:16.440 --> 00:42:17.273
+All right, what do you guys think?
+
+00:42:17.273 --> 00:42:18.450
+Should we just stop interviewing CEOs?
+
+00:42:18.450 --> 00:42:21.870
+- I think you probably won
+
+00:42:21.870 --> 00:42:24.600
+or at least came to a
+draw versus media training
+
+00:42:24.600 --> 00:42:28.440
+for like, like a majority of 2025.
+
+00:42:28.440 --> 00:42:29.640
+I can only think of a couple
+
+00:42:29.640 --> 00:42:32.760
+that, like, media training really won.
+
+00:42:32.760 --> 00:42:35.190
+- I will say that we all know
+
+00:42:35.190 --> 00:42:37.710
+when we get someone from
+McKinsey on the show
+
+00:42:37.710 --> 00:42:39.213
+that it's gonna be a fight.
+
+00:42:40.380 --> 00:42:41.490
+Like, if you're a CEO
+
+00:42:41.490 --> 00:42:42.900
+and you spent time working at McKinsey,
+
+00:42:42.900 --> 00:42:46.623
+like, I come ready for war
+against media training.
+
+00:42:47.820 --> 00:42:48.653
+Like, startup founders,
+
+00:42:48.653 --> 00:42:50.670
+we love startup founders
+'cause they're all just raw.
+
+00:42:50.670 --> 00:42:51.750
+Like, they're just ready to go.
+
+00:42:51.750 --> 00:42:52.920
+They will say anything.
+
+00:42:52.920 --> 00:42:54.375
+And there's a real dynamic there
+
+00:42:54.375 --> 00:42:55.560
+that I think is fascinating.
+
+00:42:55.560 --> 00:42:57.410
+But yeah, the consultant class and I,
+
+00:42:59.010 --> 00:43:00.630
+it's ex consultants and politicians
+
+00:43:00.630 --> 00:43:01.770
+where I'm still working on it.
+
+00:43:01.770 --> 00:43:04.140
+I've taken to just swearing
+at the politicians.
+
+00:43:04.140 --> 00:43:05.310
+- You said this before
+
+00:43:05.310 --> 00:43:07.170
+where you said that you think some portion
+
+00:43:07.170 --> 00:43:08.640
+of the "Decoder" audience just wants you
+
+00:43:08.640 --> 00:43:11.268
+to end every episode by arresting a CEO.
+
+00:43:11.268 --> 00:43:12.572
+(Nilay laughing)
+
+00:43:12.572 --> 00:43:14.340
+I think that's a kind of useful frame too,
+
+00:43:14.340 --> 00:43:16.170
+because you know, as much as,
+
+00:43:16.170 --> 00:43:17.610
+yeah, sometimes you get the McKinsey's,
+
+00:43:17.610 --> 00:43:19.500
+you also do, every once in a while,
+
+00:43:19.500 --> 00:43:22.920
+get those interviews that
+do have explosive moments.
+
+00:43:22.920 --> 00:43:26.430
+And then those interviews
+I do feel like add fuel
+
+00:43:26.430 --> 00:43:29.640
+to the "Decoder" frame for
+future interviews, right?
+
+00:43:29.640 --> 00:43:32.250
+Because if somebody sees
+somebody kind of melt down,
+
+00:43:32.250 --> 00:43:33.457
+they come on the show and they go,
+
+00:43:33.457 --> 00:43:34.297
+"Oh, well, I can't do that.
+
+00:43:34.297 --> 00:43:37.597
+"I don't wanna do what the Intuit CEO did
+
+00:43:37.597 --> 00:43:38.910
+"because that's bad."
+
+00:43:38.910 --> 00:43:40.380
+- I encourage more CEOs to come on
+
+00:43:40.380 --> 00:43:41.520
+and do what the Intuit CEO did,
+
+00:43:41.520 --> 00:43:43.080
+if you could, that would make my day.
+
+00:43:43.080 --> 00:43:44.100
+- I think there is value
+
+00:43:44.100 --> 00:43:45.810
+in, you know, not treating every interview
+
+00:43:45.810 --> 00:43:47.940
+like you're trying to create that moment,
+
+00:43:47.940 --> 00:43:50.340
+but like, giving enough room
+
+00:43:50.340 --> 00:43:53.610
+where that moment could
+happen with almost anybody
+
+00:43:53.610 --> 00:43:56.760
+except for maybe the super,
+super well media-trained folks,
+
+00:43:56.760 --> 00:43:59.430
+does create a good enough dynamic
+
+00:43:59.430 --> 00:44:01.350
+that like, you know,
+
+00:44:01.350 --> 00:44:04.500
+it's kind of like a
+will-it-happen kind of thing.
+
+00:44:04.500 --> 00:44:06.450
+- Yeah, look, I read the comments,
+
+00:44:06.450 --> 00:44:07.590
+we read all the emails.
+
+00:44:07.590 --> 00:44:09.240
+I get the criticism
+
+00:44:09.240 --> 00:44:11.670
+that this sometimes
+feels like free publicity
+
+00:44:11.670 --> 00:44:15.420
+for people who are just trying
+to increase the ferocity
+
+00:44:15.420 --> 00:44:17.970
+of the capitalist hellhole
+in which we all live.
+
+00:44:17.970 --> 00:44:21.000
+Okay, I think my job as a reporter,
+
+00:44:21.000 --> 00:44:24.030
+my job as a person who
+runs this newsroom is
+
+00:44:24.030 --> 00:44:26.190
+to ask the questions as directly as I can.
+
+00:44:26.190 --> 00:44:29.730
+And look, I started my career
+without any access at all.
+
+00:44:29.730 --> 00:44:33.030
+I started as a journalist
+making $12 a post
+
+00:44:33.030 --> 00:44:36.720
+writing about SD cards for
+Engadget, a division of AOL,
+
+00:44:36.720 --> 00:44:39.540
+like, and that might have
+been when I was happiest,
+
+00:44:39.540 --> 00:44:41.820
+to be perfectly honest with all of you.
+
+00:44:41.820 --> 00:44:44.430
+Like, Nick has actually been
+a reporter in our newsroom.
+
+00:44:44.430 --> 00:44:46.500
+Like, I'm like, "We should
+write about SD cards"
+
+00:44:46.500 --> 00:44:47.333
+like all the time. (laughs)
+
+00:44:47.333 --> 00:44:49.380
+- Like-
+- It's a recurring theme
+
+00:44:49.380 --> 00:44:51.540
+since the last 10 years.
+- Yeah.
+
+00:44:51.540 --> 00:44:54.270
+- Being a gadget blogger
+might be where my heart is.
+
+00:44:54.270 --> 00:44:55.770
+I do not care about the access.
+
+00:44:55.770 --> 00:44:56.603
+I really don't.
+
+00:44:56.603 --> 00:44:57.810
+I think access is poison.
+
+00:44:57.810 --> 00:45:00.570
+I think it it changes your worldview,
+
+00:45:00.570 --> 00:45:02.220
+it warps your incentives.
+
+00:45:02.220 --> 00:45:06.570
+And my firm belief is that
+the less access you need,
+
+00:45:06.570 --> 00:45:07.950
+the more you get.
+
+00:45:07.950 --> 00:45:09.000
+And that has been borne out
+
+00:45:09.000 --> 00:45:10.290
+across the entire arc of "The Verge."
+
+00:45:10.290 --> 00:45:12.630
+It's been borne out across
+the entire arc of "Decoder."
+
+00:45:12.630 --> 00:45:14.460
+We are at the point, I keep saying this,
+
+00:45:14.460 --> 00:45:16.470
+the audience is like, "We
+just want you to talk."
+
+00:45:16.470 --> 00:45:18.480
+That is a very powerful position to be in.
+
+00:45:18.480 --> 00:45:19.920
+So we're gonna keep earning that,
+
+00:45:19.920 --> 00:45:22.170
+but then I should use
+that to get the access
+
+00:45:22.170 --> 00:45:23.790
+that other people have to, like, ask for
+
+00:45:23.790 --> 00:45:25.800
+or make concessions to get.
+
+00:45:25.800 --> 00:45:26.667
+And we don't have to do that
+
+00:45:26.667 --> 00:45:28.230
+and I won't ever do that.
+
+00:45:28.230 --> 00:45:29.910
+And I think that puts me in a position
+
+00:45:29.910 --> 00:45:32.460
+where we can create more of
+these moments of conflict,
+
+00:45:32.460 --> 00:45:35.010
+more adversarial moments of journalism,
+
+00:45:35.010 --> 00:45:37.560
+but we also have to not be rude.
+
+00:45:37.560 --> 00:45:40.170
+Like, the people have to
+want to show up and engage
+
+00:45:40.170 --> 00:45:42.060
+and be honest with me.
+
+00:45:42.060 --> 00:45:44.460
+And so I think sometimes people see,
+
+00:45:44.460 --> 00:45:46.890
+like, decorum as concession
+
+00:45:46.890 --> 00:45:49.500
+and there's nothing I can do about that.
+
+00:45:49.500 --> 00:45:51.840
+They have to open their web browser
+
+00:45:51.840 --> 00:45:54.120
+and look into a camera and talk to me.
+
+00:45:54.120 --> 00:45:55.400
+And the fact that often they're not even
+
+00:45:55.400 --> 00:45:58.740
+in the same room as me
+means leaving is trivial.
+
+00:45:58.740 --> 00:46:00.510
+It's like, you're a Command + W away
+
+00:46:00.510 --> 00:46:01.530
+from ending this interaction.
+
+00:46:01.530 --> 00:46:04.470
+And so you do have to walk
+the line a little bit.
+
+00:46:04.470 --> 00:46:06.600
+- This actually brings us very well
+
+00:46:06.600 --> 00:46:09.060
+to the last question we have for you.
+
+00:46:09.060 --> 00:46:12.720
+Listener Jeremy Curl
+wrote in with frustration
+
+00:46:12.720 --> 00:46:15.900
+with tech journalism podcasts overall.
+
+00:46:15.900 --> 00:46:19.957
+And he writes, "The tech
+industry is creating
+
+00:46:19.957 --> 00:46:21.847
+"and exacerbating problems within society.
+
+00:46:21.847 --> 00:46:23.287
+"Aren't we way past the point
+
+00:46:23.287 --> 00:46:25.267
+"of looking at tech as cool and fun
+
+00:46:25.267 --> 00:46:27.937
+"and definitively going
+to solve all problems.
+
+00:46:27.937 --> 00:46:30.637
+"There is some deep, dark
+shit happening because of tech
+
+00:46:30.637 --> 00:46:34.080
+"and it has the power to
+really tear apart society."
+
+00:46:34.080 --> 00:46:35.250
+That's a very valid point.
+
+00:46:35.250 --> 00:46:36.817
+He adds, "We need tech journalism
+
+00:46:36.817 --> 00:46:39.277
+"to be better at shining a
+light on these troubling issues,
+
+00:46:39.277 --> 00:46:41.797
+"otherwise, a podcast sounds
+like two people hanging out
+
+00:46:41.797 --> 00:46:43.140
+"at a dinner party."
+
+00:46:43.140 --> 00:46:45.060
+So based on that, what does the future
+
+00:46:45.060 --> 00:46:48.261
+of "Decoder" in 2026 look like to you?
+
+00:46:48.261 --> 00:46:50.100
+(both laughing)
+
+00:46:50.100 --> 00:46:52.830
+- Yeah, I don't disagree at all.
+
+00:46:52.830 --> 00:46:53.663
+Not one bit.
+
+00:46:53.663 --> 00:46:56.910
+I think the "Decoder"
+team shares that worldview
+
+00:46:56.910 --> 00:46:57.877
+in a very real way.
+
+00:46:57.877 --> 00:47:00.330
+"The Verge" is built on that worldview.
+
+00:47:00.330 --> 00:47:02.010
+When we started in 2011,
+
+00:47:02.010 --> 00:47:04.710
+the idea that technology
+would just change culture
+
+00:47:04.710 --> 00:47:06.990
+was not taken for granted.
+
+00:47:06.990 --> 00:47:09.150
+Like, this was our pitch.
+
+00:47:09.150 --> 00:47:10.080
+Like, we're starting a new website.
+
+00:47:10.080 --> 00:47:11.871
+It's about technology and
+culture being the same thing.
+
+00:47:11.871 --> 00:47:13.522
+And everyone was like,
+"What are you talking about?
+
+00:47:13.522 --> 00:47:14.355
+"It's cell phones, right?
+
+00:47:14.355 --> 00:47:15.900
+"You're doing cell phones."
+
+00:47:15.900 --> 00:47:18.630
+It turns out cell phones have
+changed the entire world.
+
+00:47:18.630 --> 00:47:19.800
+Like, we were correct.
+
+00:47:19.800 --> 00:47:20.940
+We bet correctly,
+
+00:47:20.940 --> 00:47:22.170
+but it was not obvious when we started,
+
+00:47:22.170 --> 00:47:23.490
+the way it is obvious now.
+
+00:47:23.490 --> 00:47:25.140
+That's still our foundation,
+that's still our thesis.
+
+00:47:25.140 --> 00:47:26.430
+We do a lot of that coverage.
+
+00:47:26.430 --> 00:47:29.100
+That's where a bunch of angry emails
+
+00:47:29.100 --> 00:47:30.600
+about covering Trump came from.
+
+00:47:30.600 --> 00:47:32.460
+Were committed to that coverage.
+
+00:47:32.460 --> 00:47:33.840
+You know, my thesis of the early part
+
+00:47:33.840 --> 00:47:35.550
+of the Trump administration and DOGE
+
+00:47:35.550 --> 00:47:38.040
+was a bunch of tech bros
+
+00:47:38.040 --> 00:47:40.230
+realized the government runs on databases
+
+00:47:40.230 --> 00:47:43.200
+and they could just take over
+the databases and delete them
+
+00:47:43.200 --> 00:47:44.880
+and that would change the government.
+
+00:47:44.880 --> 00:47:46.203
+And it kind of worked.
+
+00:47:47.670 --> 00:47:48.503
+That's weird.
+
+00:47:48.503 --> 00:47:49.950
+That's just a weird outcome that happened
+
+00:47:49.950 --> 00:47:52.500
+along the way of the Trump administration
+
+00:47:52.500 --> 00:47:55.590
+being a political force
+that started on cell phones.
+
+00:47:55.590 --> 00:47:58.140
+So there's some combination there.
+
+00:47:58.140 --> 00:48:00.390
+The thing I will caution you about,
+
+00:48:00.390 --> 00:48:02.220
+and I'll caution everybody about is
+
+00:48:02.220 --> 00:48:04.800
+if you make your focus relentlessly that,
+
+00:48:04.800 --> 00:48:06.540
+you will only attract an audience
+
+00:48:06.540 --> 00:48:08.040
+of people who care about that.
+
+00:48:08.880 --> 00:48:12.540
+You will narrow the amount
+of impact that you can have.
+
+00:48:12.540 --> 00:48:14.400
+And so we have a big audience of people
+
+00:48:14.400 --> 00:48:16.140
+who do like technology,
+
+00:48:16.140 --> 00:48:18.600
+who do think it should
+be used for good things.
+
+00:48:18.600 --> 00:48:21.840
+Who are excited about
+the craziest Wi-Fi router
+
+00:48:21.840 --> 00:48:23.640
+on display at CES.
+
+00:48:23.640 --> 00:48:25.530
+I'm one of those people.
+
+00:48:25.530 --> 00:48:27.090
+We should do a lot of "Decoder" episodes
+
+00:48:27.090 --> 00:48:28.890
+about the Raspberry Pi
+that runs my smart home.
+
+00:48:28.890 --> 00:48:31.080
+Like, I would love to do that.
+
+00:48:31.080 --> 00:48:33.630
+I think the trick is taking that audience
+
+00:48:33.630 --> 00:48:35.160
+that sees the benefit of technology,
+
+00:48:35.160 --> 00:48:36.720
+who loves it for its own sake,
+
+00:48:36.720 --> 00:48:39.090
+and saying these are the consequences.
+
+00:48:39.090 --> 00:48:40.830
+These are the implications
+
+00:48:40.830 --> 00:48:42.720
+of the choices that are
+being made by the companies
+
+00:48:42.720 --> 00:48:44.670
+that are developing the
+technologies that you love.
+
+00:48:44.670 --> 00:48:46.260
+And there's a lot there.
+
+00:48:46.260 --> 00:48:48.120
+I'll give a really dumb example.
+
+00:48:48.120 --> 00:48:50.220
+And this is the very small thing
+
+00:48:50.220 --> 00:48:52.140
+that was a genesis of all
+of our policy coverage
+
+00:48:52.140 --> 00:48:52.973
+here at "The Verge."
+
+00:48:52.973 --> 00:48:55.620
+Do you remember the, like, iPhone 3GS
+
+00:48:55.620 --> 00:48:57.150
+and the iPhone 4 had bad service,
+
+00:48:57.150 --> 00:48:58.230
+like, they dropped a lot of calls.
+
+00:48:58.230 --> 00:48:59.063
+- Yeah.
+
+00:48:59.063 --> 00:49:00.930
+- So we're like, we were
+running Engadget at the time,
+
+00:49:00.930 --> 00:49:03.330
+and you're like, well, how
+does the iPhone drop calls?
+
+00:49:03.330 --> 00:49:04.163
+There's an Antennagate.
+
+00:49:04.163 --> 00:49:06.840
+And you start with the iPhone drops calls
+
+00:49:06.840 --> 00:49:08.040
+and you're like, it's
+not really the iPhone,
+
+00:49:08.040 --> 00:49:08.873
+it's AT&amp;T.
+
+00:49:08.873 --> 00:49:10.140
+Why does AT&amp;T drop calls?
+
+00:49:10.140 --> 00:49:11.760
+It's 'cause our 3G network is overloaded.
+
+00:49:11.760 --> 00:49:13.050
+It's 'cause they don't
+have enough spectrum.
+
+00:49:13.050 --> 00:49:14.100
+And the government is actually
+
+00:49:14.100 --> 00:49:16.560
+gonna shut down the analog TV system
+
+00:49:16.560 --> 00:49:20.280
+to re-farm 700-megahertz spectrum for LTE
+
+00:49:20.280 --> 00:49:21.177
+and that will solve the iPhone.
+
+00:49:21.177 --> 00:49:24.120
+And you end up at, now we cover the FCC.
+
+00:49:24.120 --> 00:49:25.200
+Like, very quickly,
+
+00:49:25.200 --> 00:49:28.518
+you end up at here's
+how FCC auctions work.
+
+00:49:28.518 --> 00:49:29.730
+And that to me,
+
+00:49:29.730 --> 00:49:31.590
+that's the link I wanna make to people.
+
+00:49:31.590 --> 00:49:33.870
+Here's this experience
+you're having on your phone
+
+00:49:33.870 --> 00:49:36.780
+and here's this entire structure
+
+00:49:36.780 --> 00:49:38.100
+that explains that experience.
+
+00:49:38.100 --> 00:49:39.810
+That's why the show is called "Decoder."
+
+00:49:39.810 --> 00:49:41.670
+And a lot of that structure
+looks like capitalism.
+
+00:49:41.670 --> 00:49:42.690
+A lot of that structure looks like
+
+00:49:42.690 --> 00:49:44.070
+here's how org charts work.
+
+00:49:44.070 --> 00:49:46.920
+But even more of that structure is
+
+00:49:46.920 --> 00:49:48.780
+here's how it makes you feel
+
+00:49:48.780 --> 00:49:51.180
+and, like, here's how people
+are managing those feelings
+
+00:49:51.180 --> 00:49:52.110
+about the experience.
+
+00:49:52.110 --> 00:49:53.220
+You feel bad about DoorDash,
+
+00:49:53.220 --> 00:49:55.050
+you're still using DoorDash.
+
+00:49:55.050 --> 00:49:56.460
+That's The Verge," that's "Decoder."
+
+00:49:56.460 --> 00:49:57.760
+We're gonna keep doing it.
+
+00:49:58.950 --> 00:50:01.020
+Again, the caution is you don't
+wanna narrow your audience
+
+00:50:01.020 --> 00:50:02.820
+to people who wanna feel bad.
+
+00:50:02.820 --> 00:50:05.280
+You want to expand your audience
+to people who love things
+
+00:50:05.280 --> 00:50:09.337
+and say, "Actually your
+interest, your enthusiasm,
+
+00:50:09.337 --> 00:50:11.812
+"that can be the push to make
+some of this stuff better."
+
+00:50:11.812 --> 00:50:13.170
+(upbeat music)
+
+00:50:13.170 --> 00:50:15.420
+- [Nick] We'd like to thank
+Nilay for joining the show
+
+00:50:15.420 --> 00:50:16.470
+and thank you for tuning in,
+
+00:50:16.470 --> 00:50:19.230
+not just today, but all year long.
+
+00:50:19.230 --> 00:50:20.280
+We hope you've enjoyed it
+
+00:50:20.280 --> 00:50:22.170
+and we're really looking
+forward to another great year
+
+00:50:22.170 --> 00:50:23.880
+with all of you here on "Decoder."
+
+00:50:23.880 --> 00:50:25.987
+We also have some really exciting news,
+
+00:50:25.987 --> 00:50:30.270
+"Decoder" will be live at CES
+2026 on Wednesday, January 7th
+
+00:50:30.270 --> 00:50:31.860
+at the Brooklyn Bowl.
+
+00:50:31.860 --> 00:50:33.750
+We'd love for you to come hang
+out with us during the show
+
+00:50:33.750 --> 00:50:35.940
+and we have some very fun stuff planned.
+
+00:50:35.940 --> 00:50:38.010
+Stay tuned for more details on how to RSVP
+
+00:50:38.010 --> 00:50:39.420
+in the coming days.
+
+00:50:39.420 --> 00:50:40.350
+If you'd like to let us know
+
+00:50:40.350 --> 00:50:41.490
+what you thought about this show
+
+00:50:41.490 --> 00:50:43.110
+or what else you'd like us to cover,
+
+00:50:43.110 --> 00:50:44.250
+drop us a line.
+
+00:50:44.250 --> 00:50:46.770
+We're at decoder@theverge.com.
+
+00:50:46.770 --> 00:50:48.300
+And we hope this episode demonstrated
+
+00:50:48.300 --> 00:50:51.360
+that we really do read every email.
+
+00:50:51.360 --> 00:50:54.450
+You can also go hit up
+Nilay on Threads or Bluesky.
+
+00:50:54.450 --> 00:50:55.283
+If you like "Decoder,"
+
+00:50:55.283 --> 00:50:56.160
+please share it with your friends
+
+00:50:56.160 --> 00:50:58.807
+and subscribe wherever
+you get your podcasts.
+
+00:50:58.807 --> 00:51:00.390
+"Decoder" is a production of "The Verge"
+
+00:51:00.390 --> 00:51:02.970
+and is part of the Vox
+Media Podcast Network.
+
+00:51:02.970 --> 00:51:03.803
+See you next year.
+
+00:51:03.803 --> 00:51:04.636
+(upbeat music)
+

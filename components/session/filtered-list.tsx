@@ -95,7 +95,7 @@ const ALL_VERDICTS: Array<{ value: string; label: string }> = [
   { value: "misleading", label: "MISLEADING" },
   { value: "omission", label: "OMISSION" },
   { value: "false", label: "FALSE" },
-  { value: "unverifiable", label: "UNVERIFIABLE" },
+  { value: "unverifiable", label: "NO RELIABLE BACKING" },
   { value: "opinion", label: "OPINION" },
 ];
 
@@ -294,7 +294,7 @@ export function FilteredList() {
   }
 
   return (
-    <div className="px-6 md:px-8 pt-6 pb-12 max-w-[1200px] mx-auto w-full">
+    <div className="mx-auto w-full max-w-[1200px] px-4 pt-5 pb-12 sm:px-6 md:px-8 md:pt-6">
       {/* Header row */}
       <div className="flex items-center justify-between flex-wrap gap-3.5 pb-5 border-b border-line">
         <div>
@@ -310,7 +310,7 @@ export function FilteredList() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <FilterDropdown
             label={
               (isMarkersView
@@ -326,7 +326,7 @@ export function FilteredList() {
           />
           <button
             type="button"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-line bg-paper hover:border-ink-4 transition-colors"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-line bg-paper transition-colors hover:border-ink-4 sm:h-10 sm:w-10"
             aria-label="Download"
             title="Download"
           >

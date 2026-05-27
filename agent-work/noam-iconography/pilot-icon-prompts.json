@@ -1,0 +1,201 @@
+{
+  "project": "Yentl marker iconography static pilot",
+  "created": "2026-05-21",
+  "status": "review_direction_only",
+  "source_evidence_disclaimer": "These are not source evidence. They are educational marker visuals only.",
+  "style": {
+    "format": "1:1 square artboard, circular badge composition, white or near-white background",
+    "family": "premium editorial duotone illustration with consistent rounded stroke and controlled filled shapes",
+    "shared_ink": "#18222D",
+    "paper": "#FFFFFF",
+    "soft_rule": "#D7DEE7",
+    "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart"
+  },
+  "pilots": [
+    {
+      "marker_id": "loaded_language",
+      "display_name": "Loaded Language",
+      "type": "rhetoric",
+      "concept_metaphor": "A neutral speech bubble carrying a charged ink drop that weighs down the message.",
+      "composition_notes": "Place a rounded speech bubble inside a fine circular badge. Let one heavy accent droplet pull over the lower-right rim, with two small ink ripples inside the badge. No letters or word marks.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#17847D",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the bubble silhouette and single heavy droplet must still read. At 64px, the droplet weight and ripple detail can carry the concept.",
+      "animation_affordance": "Later loop can make the droplet gently settle and send a small ripple through the bubble."
+    },
+    {
+      "marker_id": "ad_hominem",
+      "display_name": "Ad Hominem",
+      "type": "fallacy",
+      "concept_metaphor": "An attack mark targets the speaker instead of the claim.",
+      "composition_notes": "Inside the circle, show a simple speaker profile or bust on one side and a small untouched claim card shape on the other. A cranberry accent slash or dart strikes the profile and breaks the upper-left rim. Keep the claim shape blank.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the profile and incoming strike must be distinguishable from the untouched claim shape. At 64px, the misdirected attack should be clear.",
+      "animation_affordance": "Later loop can pulse the incoming strike once while the claim shape remains still."
+    },
+    {
+      "marker_id": "confirmation_bias",
+      "display_name": "Confirmation Bias",
+      "type": "bias",
+      "concept_metaphor": "A lens magnifies only matching evidence while contrary evidence sits outside attention.",
+      "composition_notes": "Center a magnifying lens over two matching ocher tiles inside the badge. Place one contrasting gray tile partly outside the circle edge, cropped and ignored. Use no checkmarks or written symbols.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B8841F",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the lens circle and selected tiles must read as one idea. At 64px, the excluded tile should make the selective-attention metaphor apparent.",
+      "animation_affordance": "Later loop can nudge the lens over the matching tiles while the excluded tile remains stationary."
+    },
+    {
+      "marker_id": "straw_man",
+      "display_name": "Straw Man",
+      "type": "fallacy",
+      "concept_metaphor": "A fragile decoy stands in for the real argument and receives the attack.",
+      "composition_notes": "Build a thin decoy figure from simple bundled shapes inside the circle, with an exaggerated shadow shape behind it. Let the shadow cross the badge rim, implying distortion. Avoid literal straw texture or cartoon features.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the decoy silhouette should read as intentionally flimsy. At 64px, the enlarged shadow should signal distortion.",
+      "animation_affordance": "Later loop can have the shadow stretch slightly while the small decoy remains fixed."
+    },
+    {
+      "marker_id": "cherry_picking",
+      "display_name": "Cherry Picking",
+      "type": "fallacy",
+      "concept_metaphor": "One favorable data point is plucked from a larger ignored set.",
+      "composition_notes": "Draw a sparse data branch or scatter arc inside the badge. A tweezer selects one cranberry bead that breaks the top-right circle edge; several quiet gray beads remain unselected inside.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the selected bead plus tweezer must dominate. At 64px, the ignored data field should be visible but subdued.",
+      "animation_affordance": "Later loop can lift the selected bead a few pixels and let the remaining field stay calm."
+    },
+    {
+      "marker_id": "false_dilemma",
+      "display_name": "False Dilemma Fallacy",
+      "type": "fallacy",
+      "concept_metaphor": "A complex path is squeezed into two imposed options while another route exists.",
+      "composition_notes": "Inside the circle, show a path splitting into two heavy cranberry gates. Add a thinner third path escaping through a small break in the lower badge rim. No arrows with labels.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the two-gate squeeze must read. At 64px, the hidden third route should be clear.",
+      "animation_affordance": "Later loop can let the third path softly appear while the two gates hold steady."
+    },
+    {
+      "marker_id": "appeal_to_authority",
+      "display_name": "Appeal to Authority",
+      "type": "fallacy",
+      "concept_metaphor": "A large authority seal overshadows a smaller evidence shape.",
+      "composition_notes": "Center an oversized blank seal, lectern, or column top inside the circular badge. Place a small blank evidence sheet half-hidden behind it. Let the seal crest break the top edge of the circle. No letters, laurels with text, or institutional logos.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the oversized authority object should dominate the small evidence shape. At 64px, the imbalance should feel intentional.",
+      "animation_affordance": "Later loop can make the seal gently swell while the evidence sheet stays partially hidden."
+    },
+    {
+      "marker_id": "appeal_to_fear",
+      "display_name": "Appeal to Fear",
+      "type": "fallacy",
+      "concept_metaphor": "A small alarm source casts a much larger threat shadow.",
+      "composition_notes": "Use a compact siren-like flare or megaphone silhouette inside the badge, with an exaggerated cranberry shadow crossing the circle rim. Avoid skulls, monsters, flames, warning triangles, or disaster cliches.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the alarm source and oversized shadow should remain distinct. At 64px, the disproportional fear signal should be legible.",
+      "animation_affordance": "Later loop can softly pulse the shadow outward and back."
+    },
+    {
+      "marker_id": "gish_gallop",
+      "display_name": "Gish Gallop",
+      "type": "fallacy",
+      "concept_metaphor": "A flood of small claim tiles rushes too quickly to examine.",
+      "composition_notes": "Arrange many blank rounded tiles or speech pellets streaming diagonally through the circle. Let the front cluster spill over the right badge edge. One calm magnifier or pause dot can sit behind the flood, partly obscured.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the diagonal rush of many tiles must read as overload. At 64px, the obscured review element can add meaning.",
+      "animation_affordance": "Later loop can move the tile stream in a short seamless rush."
+    },
+    {
+      "marker_id": "weasel_words",
+      "display_name": "Weasel Words",
+      "type": "rhetoric",
+      "concept_metaphor": "Soft language dissolves into fog and hides who made the claim.",
+      "composition_notes": "Inside the circle, use blank quote-like capsules or soft speech wisps dissolving into teal fog. A small source peg or anchor shape should be partly hidden behind the haze. Let one wisp cross the badge edge.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#17847D",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the mist-covered source should still read as concealment. At 64px, the dissolved speech shapes can show vagueness.",
+      "animation_affordance": "Later loop can drift the fog slightly while the hidden source peg remains barely visible."
+    },
+    {
+      "marker_id": "dog_whistles",
+      "display_name": "Dog Whistles",
+      "type": "rhetoric",
+      "concept_metaphor": "A coded signal passes publicly but activates only a hidden audience.",
+      "composition_notes": "Draw a small whistle object inside the circular badge with two clean teal signal rings. Place a few tiny listener dots, only one or two highlighted, near the lower rim. Let the outer signal ring break the circle edge. No animal mascot.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#17847D",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the whistle and two signal rings must read. At 64px, the selective response dots should add the coded-audience meaning.",
+      "animation_affordance": "Later loop can send one quiet ring outward while selected dots brighten subtly."
+    },
+    {
+      "marker_id": "red_herring",
+      "display_name": "Red Herring",
+      "type": "fallacy",
+      "concept_metaphor": "A vivid diversion pulls attention away from the original question path.",
+      "composition_notes": "Use a straight ink path entering the circle, then a cranberry diversion shape cuts across and drags the path out through the side rim. Keep the diversion abstract enough to avoid cartoon illustration, but recognizable as a misdirection symbol.",
+      "duotone_palette": {
+        "ink": "#18222D",
+        "accent": "#B84C5A",
+        "paper": "#FFFFFF"
+      },
+      "negative_prompt": "no text, no childish doodles, no flat bare icon, no sketchbook scribbles, no mascot, no emoji, no clipart",
+      "readability_note": "At 24px, the straight path being pulled aside should read. At 64px, the interrupting diversion shape can be more expressive.",
+      "animation_affordance": "Later loop can tug the path sideways once, then reset cleanly."
+    }
+  ],
+  "recommended_first_generation_ids": [
+    "loaded_language",
+    "ad_hominem",
+    "confirmation_bias"
+  ]
+}

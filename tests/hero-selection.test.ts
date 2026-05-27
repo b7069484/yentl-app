@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ClaimCard, ReputationTier, Source, SourcePreview, Stance } from "@/lib/types";
+import { isValidatedSourceImage } from "@/lib/client/source-preview";
 
 // pickHero isn't exported — re-implement the same logic here to lock it as a contract.
 // If you'd rather, export pickHero from ClaimCard.tsx and import it here.
@@ -22,7 +23,7 @@ function pickHero(card: ClaimCard): SourcePreview | null {
     }
     return 0;
   });
-  for (const s of sorted) if (s.preview?.image_url) return s.preview;
+  for (const s of sorted) if (isValidatedSourceImage(s.preview)) return s.preview;
   return null;
 }
 
@@ -32,6 +33,21 @@ const preview = (url: string): SourcePreview => ({
   title: null,
   description: null,
   fetched_at: 0,
+  image_status: "validated",
+  image_source: "open_graph",
+});
+
+const invalidPreview = (url: string): SourcePreview => ({
+  ...preview(url),
+  image_url: null,
+  image_status: "invalid",
+  unavailable_reason: "Source image responded as text/html, not an image.",
+});
+
+const generatedPreview = (): SourcePreview => ({
+  ...preview("/visual-evidence/markers/loaded_language.svg"),
+  image_status: "validated",
+  image_source: "none",
 });
 
 const source = (over: Partial<Source>): Source => ({
@@ -68,35 +84,47 @@ describe("pickHero", () => {
     expect(pickHero(card("TRUE", [source({ preview: undefined })]))).toBe(null);
   });
 
+  it("does not use unvalidated source images as hero thumbnails", () => {
+    expect(pickHero(card("TRUE", [
+      source({ reputation_tier: "high", preview: invalidPreview("bad.png") }),
+    ]))).toBe(null);
+  });
+
+  it("does not use generated or local visual-evidence art as source thumbnails", () => {
+    expect(pickHero(card("TRUE", [
+      source({ reputation_tier: "high", preview: generatedPreview() }),
+    ]))).toBe(null);
+  });
+
   it("prefers high reputation over mid", () => {
     const result = pickHero(card("TRUE", [
-      source({ reputation_tier: "mid", preview: preview("mid.png") }),
-      source({ reputation_tier: "high", preview: preview("high.png") }),
+      source({ reputation_tier: "mid", preview: preview("https://cdn.example/mid.png") }),
+      source({ reputation_tier: "high", preview: preview("https://cdn.example/high.png") }),
     ]));
-    expect(result?.image_url).toBe("high.png");
+    expect(result?.image_url).toBe("https://cdn.example/high.png");
   });
 
   it("within tier, prefers supports for TRUE verdicts", () => {
     const result = pickHero(card("TRUE", [
-      source({ reputation_tier: "high", stance: "contradicts", preview: preview("contra.png") }),
-      source({ reputation_tier: "high", stance: "supports", preview: preview("supp.png") }),
+      source({ reputation_tier: "high", stance: "contradicts", preview: preview("https://cdn.example/contra.png") }),
+      source({ reputation_tier: "high", stance: "supports", preview: preview("https://cdn.example/supp.png") }),
     ]));
-    expect(result?.image_url).toBe("supp.png");
+    expect(result?.image_url).toBe("https://cdn.example/supp.png");
   });
 
   it("within tier, prefers contradicts for FALSE verdicts", () => {
     const result = pickHero(card("FALSE", [
-      source({ reputation_tier: "high", stance: "supports", preview: preview("supp.png") }),
-      source({ reputation_tier: "high", stance: "contradicts", preview: preview("contra.png") }),
+      source({ reputation_tier: "high", stance: "supports", preview: preview("https://cdn.example/supp.png") }),
+      source({ reputation_tier: "high", stance: "contradicts", preview: preview("https://cdn.example/contra.png") }),
     ]));
-    expect(result?.image_url).toBe("contra.png");
+    expect(result?.image_url).toBe("https://cdn.example/contra.png");
   });
 
   it("for UNVERIFIABLE verdict, just picks by tier", () => {
     const result = pickHero(card("UNVERIFIABLE", [
-      source({ reputation_tier: "high", preview: preview("high.png") }),
-      source({ reputation_tier: "low", preview: preview("low.png") }),
+      source({ reputation_tier: "high", preview: preview("https://cdn.example/high.png") }),
+      source({ reputation_tier: "low", preview: preview("https://cdn.example/low.png") }),
     ]));
-    expect(result?.image_url).toBe("high.png");
+    expect(result?.image_url).toBe("https://cdn.example/high.png");
   });
 });

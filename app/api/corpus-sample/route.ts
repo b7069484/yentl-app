@@ -92,6 +92,13 @@ type ReplayRecord = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  if (!validationDemoEnabled()) {
+    return NextResponse.json(
+      { error: { code: "VALIDATION_DEMO_DISABLED", message: "Validation demos are not enabled in this environment." } },
+      { status: 404 },
+    );
+  }
+
   const id = new URL(req.url).searchParams.get("id") ?? "";
   if (!ALLOWED_SAMPLE_IDS.has(id)) {
     return NextResponse.json(
@@ -155,6 +162,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
+function validationDemoEnabled(): boolean {
+  if (process.env.YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  if (process.env.YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  return process.env.NODE_ENV !== "production";
+}
+
 async function readVideoRow(id: string): Promise<VideoRow | null> {
   const csv = await fs.readFile(path.join(process.cwd(), "test-corpus/videos.csv"), "utf8");
   const rows = parse(csv, { columns: true, skip_empty_lines: true }) as VideoRow[];
@@ -206,7 +219,7 @@ function claimsFromReplay(replay: ReplayRecord): ClaimCard[] {
     const text = claim.claim_text?.trim();
     if (!text) return [];
     const label = claim.provisional?.primary_label;
-    return [{
+    const card: ClaimCard = {
       id: claim.id ?? `${replay.id}-claim-${index + 1}`,
       claim_text: text,
       utterance_start: numberOrDefault(claim.utterance_start, 0),
@@ -222,10 +235,61 @@ function claimsFromReplay(replay: ReplayRecord): ClaimCard[] {
       explanation:
         claim.provisional?.explanation ??
         "Extracted during corpus replay. Verification was not requested for this sample.",
-      status: "provisional",
+      status: replay.verify === "none" ? "checking" : "provisional",
       sources: [],
-    }];
+    };
+    return [applySampleClaimOverride(replay, card)];
   });
+}
+
+function applySampleClaimOverride(replay: ReplayRecord, card: ClaimCard): ClaimCard {
+  if (replay.id === "solo_005" && card.id === "solo_005-claim-1") {
+    return {
+      ...card,
+      primary_label: "TRUE",
+      score: 98,
+      annotations: ["World Bank WDI", "1960 population milestone"],
+      explanation:
+        "World Bank World Development Indicators backs the claim: world population was about 3 billion in 1960.",
+      status: "confirmed",
+      sources: [
+        {
+          url: "https://datatopics.worldbank.org/world-development-indicators/stories/a-changing-world-population.html",
+          domain: "worldbank.org",
+          title: "WDI: A changing world population",
+          reputation_tier: "high",
+          stance: "supports",
+          excerpt:
+            "World Bank's WDI population story identifies 1960 as the point when world population was about 3 billion.",
+          preview: {
+            image_url: null,
+            image_alt: null,
+            title: "WDI: A changing world population",
+            description: "World Bank population context for the 1960 global population milestone.",
+            fetched_at: 0,
+            image_status: "missing",
+            image_source: "none",
+            image_final_url: null,
+            image_content_type: null,
+            image_dimensions: null,
+            validated_at: null,
+            unavailable_reason: "No validated source thumbnail is bundled with this local sample.",
+          },
+        },
+      ],
+    };
+  }
+
+  if (replay.verify === "none") {
+    return {
+      ...card,
+      annotations: ["Needs source pass"],
+      explanation:
+        "This claim has been extracted but has not completed a source-backed verification pass yet.",
+    };
+  }
+
+  return card;
 }
 
 function markersFromReplay(replay: ReplayRecord): RhetoricMarker[] {

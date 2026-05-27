@@ -50,7 +50,7 @@ describe("ExtensionBridge", () => {
     window.removeEventListener("message", readySpy);
   });
 
-  it("includes the bridge token when mounted inside an extension panel URL", async () => {
+  it("does not echo the bridge token back to the host page", async () => {
     window.history.pushState({}, "", "/session?surface=extension-panel&bridge=test-token");
     const readySpy = vi.fn();
     window.addEventListener("message", readySpy);
@@ -62,11 +62,14 @@ describe("ExtensionBridge", () => {
           data: {
             source: APP_BRIDGE_SOURCE,
             type: "bridge-ready",
-            bridgeToken: "test-token",
           },
         }),
       );
     });
+    const postedMessages = readySpy.mock.calls.map(([event]) => event.data);
+    expect(postedMessages).not.toContainEqual(
+      expect.objectContaining({ bridgeToken: "test-token" }),
+    );
 
     window.removeEventListener("message", readySpy);
   });
@@ -251,6 +254,33 @@ describe("ExtensionBridge", () => {
     expect(state.browserTabStatus.title).toBe("Silent video");
     expect(state.browserTabStatus.url).toBe("https://example.com/silent");
     expect(state.browserTabStatus.message).toContain("no speech");
+  });
+
+  it("surfaces selected-tab-changed status from the extension", () => {
+    render(<ExtensionBridge />);
+
+    act(() => {
+      dispatchExtensionMessage({
+        source: EXTENSION_MESSAGE_SOURCE,
+        type: "capture-start",
+        payload: { title: "Original video", url: "https://example.com/original" },
+      });
+      dispatchExtensionMessage({
+        source: EXTENSION_MESSAGE_SOURCE,
+        type: "capture-status",
+        payload: {
+          running: true,
+          phase: "tab_changed",
+          message: "Yentl is still listening to \"Original video\". Return to that tab.",
+        },
+      });
+    });
+
+    const state = useSession.getState();
+    expect(state.browserTabStatus.phase).toBe("tab_changed");
+    expect(state.browserTabStatus.title).toBe("Original video");
+    expect(state.browserTabStatus.url).toBe("https://example.com/original");
+    expect(state.browserTabStatus.message).toContain("Return to that tab");
   });
 
   it("ends the session and runs final synthesis on capture-stop", () => {

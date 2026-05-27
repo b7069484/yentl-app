@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Subprocessors — Yentl",
@@ -31,7 +33,7 @@ export default function SubprocessorsPage() {
           <tbody className="text-muted-foreground">
             <tr className="border-b">
               <td className="py-3 pr-6 font-medium text-foreground">Deepgram</td>
-              <td className="py-3 pr-6">Audio transcription (real-time, in-memory)</td>
+              <td className="py-3 pr-6">Audio transcription for live, uploaded, or linked media</td>
               <td className="py-3 pr-6">
                 US (default); EU endpoint: api.eu.deepgram.com for EU/EEA traffic
               </td>
@@ -51,7 +53,7 @@ export default function SubprocessorsPage() {
               <td className="py-3 pr-6 font-medium text-foreground">Anthropic</td>
               <td className="py-3 pr-6">
                 AI fact-check, bias/fallacy analysis, source citation (transcript text,
-                in-memory)
+                request-scoped)
               </td>
               <td className="py-3 pr-6">US</td>
               <td className="py-3">
@@ -88,10 +90,17 @@ export default function SubprocessorsPage() {
 
       <p className="text-sm text-muted-foreground">
         For questions about this list or to request notification of subprocessor changes,
-        use the{" "}
-        <a href="/contact" className="underline">
+        email{" "}
+        <a
+          href={mailto(contactEmails.privacy, "Yentl subprocessor question")}
+          className="underline"
+        >
+          {contactEmails.privacy}
+        </a>{" "}
+        or use the{" "}
+        <Link href="/contact" className="underline">
           contact page
-        </a>
+        </Link>
         .
       </p>
     </main>

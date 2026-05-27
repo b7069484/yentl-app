@@ -1,0 +1,11 @@
+{
+  "id": "podcast_009",
+  "phase": "A",
+  "wer": 0.045933014354066985,
+  "substitutions": 64,
+  "deletions": 38,
+  "insertions": 42,
+  "hits": 3033,
+  "refLen": 3135,
+  "hypLen": 3139
+}

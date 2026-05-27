@@ -1,0 +1,11 @@
+{
+  "id": "c2_hist_01",
+  "phase": "A",
+  "wer": 0.08599033816425121,
+  "substitutions": 30,
+  "deletions": 10,
+  "insertions": 49,
+  "hits": 995,
+  "refLen": 1035,
+  "hypLen": 1074
+}

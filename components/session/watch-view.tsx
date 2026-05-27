@@ -20,11 +20,17 @@ import {
   Video,
 } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
+import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
 import type { MediaAdapter } from "@/lib/client/media-adapter";
 import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
 import { createAudioAdapter } from "@/lib/client/audio-adapter";
 import { VerdictChip } from "@/components/session/chips";
 import { MarkerChip } from "@/components/session/chips";
+import {
+  buildLiveSignalSummary,
+  WatchSignalBoard,
+  type SignalDatum,
+} from "@/components/session/live-signal";
 import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
 import { paletteFor } from "@/lib/client/speaker-palette";
 import { cn } from "@/lib/utils";
@@ -106,6 +112,10 @@ function MetricPill({
     </div>
   );
 }
+
+const EMPTY_PENDING_YOUTUBE_CAPTIONS: TranscriptSegment[] = [];
+const noopAppendFinal = () => {};
+const noopClearPendingYouTubeCaptions = () => {};
 
 function WatchSourceHeader({
   source,
@@ -210,7 +220,10 @@ function EvidenceQueue({
               data-testid={`queue-claim-${claim.id}`}
             >
               <div className="mb-2 flex items-center justify-between gap-2">
-                <VerdictChip verdict={claim.primary_label} score={claim.score} />
+                <VerdictChip
+                  verdict={claim.status === "checking" ? "CHECKING" : claim.primary_label}
+                  score={claim.status === "checking" ? undefined : claim.score}
+                />
                 <span className="font-mono text-[10px] text-ink-4">
                   {formatTime(claim.utterance_start)}
                 </span>
@@ -287,8 +300,8 @@ function AnnotationRow({
       >
         {annotation.kind === "claim" ? (
           <VerdictChip
-            verdict={annotation.item.primary_label}
-            score={annotation.item.score}
+            verdict={annotation.item.status === "checking" ? "CHECKING" : annotation.item.primary_label}
+            score={annotation.item.status === "checking" ? undefined : annotation.item.score}
           />
         ) : (
           <MarkerChip
@@ -423,6 +436,13 @@ export function WatchView() {
   const synthesis = useSession((s) => s.synthesis);
   const transcript = useSession((s) => s.transcript);
   const speakers = useSession((s) => s.speakers);
+  const pendingYouTubeCaptions = useSession(
+    (s) => s.pendingYouTubeCaptions ?? EMPTY_PENDING_YOUTUBE_CAPTIONS,
+  );
+  const appendFinal = useSession((s) => s.appendFinal ?? noopAppendFinal);
+  const clearPendingYouTubeCaptions = useSession(
+    (s) => s.clearPendingYouTubeCaptions ?? noopClearPendingYouTubeCaptions,
+  );
 
   // Show speaker badges + reassign affordance once there are ≥2 distinct speakers
   const showSpeakers = speakers.length >= 2;
@@ -430,11 +450,18 @@ export function WatchView() {
   const containerRef = useRef<HTMLDivElement>(null);
   const adapterRef = useRef<MediaAdapter | null>(null);
   const transcriptPanelRef = useRef<HTMLDivElement>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [ready, setReady] = useState(false);
+  const [playerState, setPlayerState] = useState({
+    sourceKey: "",
+    currentTime: 0,
+    ready: false,
+    playbackStarted: false,
+  });
 
   // Track current segment ref for auto-scroll
   const currentSegRef = useRef<HTMLButtonElement | null>(null);
+  const nextYouTubeCaptionIndexRef = useRef(0);
+  const releasedYouTubeCaptionKeysRef = useRef<Set<string>>(new Set());
+  const synthesisTimerRef = useRef<number | null>(null);
 
   // Derive the "source key" to re-mount the adapter only when the actual
   // media changes (not on every render).
@@ -444,6 +471,10 @@ export function WatchView() {
     if (source.kind === "media_url") return `media_url:${source.url}`;
     return source.kind;
   }, [source]);
+  const currentTime = playerState.sourceKey === sourceKey ? playerState.currentTime : 0;
+  const ready = playerState.sourceKey === sourceKey && playerState.ready;
+  const playbackStarted =
+    playerState.sourceKey === sourceKey && playerState.playbackStarted;
 
   // Set up the adapter on mount / when source changes.
   useEffect(() => {
@@ -460,10 +491,28 @@ export function WatchView() {
             container: el!,
             videoId: source.video_id,
             onTimeUpdate: (t) => {
-              if (!cancelled) setCurrentTime(t);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: t,
+                  ready: state.sourceKey === sourceKey ? state.ready : false,
+                  playbackStarted:
+                    state.sourceKey === sourceKey
+                      ? state.playbackStarted || t > 0.2
+                      : t > 0.2,
+                }));
+              }
             },
             onReady: () => {
-              if (!cancelled) setReady(true);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  ready: true,
+                  playbackStarted:
+                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                }));
+              }
             },
           });
         } else if (source.kind === "audio_file") {
@@ -471,10 +520,28 @@ export function WatchView() {
             container: el!,
             src: source.blob_url,
             onTimeUpdate: (t) => {
-              if (!cancelled) setCurrentTime(t);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: t,
+                  ready: state.sourceKey === sourceKey ? state.ready : false,
+                  playbackStarted:
+                    state.sourceKey === sourceKey
+                      ? state.playbackStarted || t > 0.2
+                      : t > 0.2,
+                }));
+              }
             },
             onReady: () => {
-              if (!cancelled) setReady(true);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  ready: true,
+                  playbackStarted:
+                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                }));
+              }
             },
           });
         } else if (source.kind === "media_url") {
@@ -482,10 +549,28 @@ export function WatchView() {
             container: el!,
             src: source.url,
             onTimeUpdate: (t) => {
-              if (!cancelled) setCurrentTime(t);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: t,
+                  ready: state.sourceKey === sourceKey ? state.ready : false,
+                  playbackStarted:
+                    state.sourceKey === sourceKey
+                      ? state.playbackStarted || t > 0.2
+                      : t > 0.2,
+                }));
+              }
             },
             onReady: () => {
-              if (!cancelled) setReady(true);
+              if (!cancelled) {
+                setPlayerState((state) => ({
+                  sourceKey,
+                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  ready: true,
+                  playbackStarted:
+                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                }));
+              }
             },
           });
         }
@@ -510,6 +595,69 @@ export function WatchView() {
     // sourceKey captures the identity of the media; re-run only when it changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceKey]);
+
+  useEffect(() => {
+    nextYouTubeCaptionIndexRef.current = 0;
+    releasedYouTubeCaptionKeysRef.current = new Set();
+    if (synthesisTimerRef.current !== null) {
+      window.clearTimeout(synthesisTimerRef.current);
+      synthesisTimerRef.current = null;
+    }
+  }, [sourceKey]);
+
+  useEffect(() => {
+    if (source.kind !== "youtube") return;
+    if (!playbackStarted) return;
+    if (pendingYouTubeCaptions.length === 0) return;
+
+    const RELEASE_LOOKAHEAD_SEC = 0.35;
+    const MAX_RELEASES_PER_TICK = 4;
+    let releasedThisTick = 0;
+
+    while (
+      nextYouTubeCaptionIndexRef.current < pendingYouTubeCaptions.length &&
+      releasedThisTick < MAX_RELEASES_PER_TICK
+    ) {
+      const segment = pendingYouTubeCaptions[nextYouTubeCaptionIndexRef.current];
+      if (segment.start > currentTime + RELEASE_LOOKAHEAD_SEC) break;
+
+      const key = `${segment.start}:${segment.end}:${segment.text}`;
+      if (!releasedYouTubeCaptionKeysRef.current.has(key)) {
+        releasedYouTubeCaptionKeysRef.current.add(key);
+        appendFinal(segment);
+        releasedThisTick += 1;
+        void onFinalUtterance(segment).catch((error) => {
+          console.warn("WatchView YouTube live analysis failed", error);
+        });
+      }
+
+      nextYouTubeCaptionIndexRef.current += 1;
+    }
+
+    if (releasedThisTick > 0 && synthesisTimerRef.current === null) {
+      synthesisTimerRef.current = window.setTimeout(() => {
+        synthesisTimerRef.current = null;
+        void runSynthesisNow();
+      }, 4000);
+    }
+
+    if (nextYouTubeCaptionIndexRef.current >= pendingYouTubeCaptions.length) {
+      clearPendingYouTubeCaptions();
+    }
+  }, [
+    appendFinal,
+    clearPendingYouTubeCaptions,
+    currentTime,
+    pendingYouTubeCaptions,
+    playbackStarted,
+    source.kind,
+  ]);
+
+  useEffect(() => () => {
+    if (synthesisTimerRef.current !== null) {
+      window.clearTimeout(synthesisTimerRef.current);
+    }
+  }, []);
 
   // Auto-scroll to current segment when it changes
   useEffect(() => {
@@ -587,6 +735,51 @@ export function WatchView() {
   }, [transcript, claims, markers]);
 
   const totalCount = claims.length + markers.length;
+  const liveState = useMemo<SignalDatum>(() => {
+    if (!ready) {
+      return {
+        label: "Live state",
+        value: "Loading",
+        detail: "Player is connecting to the source.",
+        tone: "amber",
+      };
+    }
+
+    if (transcript.length === 0) {
+      if (source.kind === "youtube" && pendingYouTubeCaptions.length > 0) {
+        return {
+          label: "Live state",
+          value: playbackStarted ? "Listening" : "Armed",
+          detail: playbackStarted
+            ? "Yentl is releasing captions against the playhead."
+            : "Press play to begin synced transcript and analysis.",
+          tone: "amber",
+        };
+      }
+
+      return {
+        label: "Live state",
+        value: "Ready",
+        detail: "Player is ready. Waiting for transcript lines.",
+        tone: "amber",
+      };
+    }
+
+    return {
+      label: "Live state",
+      value: currentTime > 0 ? "Synced" : "Ready",
+      detail: `${transcript.length} transcript line${transcript.length === 1 ? "" : "s"} linked to playback.`,
+      tone: "green",
+    };
+  }, [currentTime, pendingYouTubeCaptions.length, playbackStarted, ready, source.kind, transcript.length]);
+  const signalSummary = useMemo(
+    () => buildLiveSignalSummary({
+      claims,
+      markers,
+      liveState,
+    }),
+    [claims, markers, liveState],
+  );
 
   const handleSeek = useCallback((seconds: number) => {
     adapterRef.current?.seekTo(seconds);
@@ -613,6 +806,10 @@ export function WatchView() {
         claimsCount={claims.length}
         markersCount={markers.length}
       />
+
+      <div className="mb-5">
+        <WatchSignalBoard summary={signalSummary} />
+      </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,0.62fr)_minmax(360px,0.38fr)]">
 
@@ -705,7 +902,9 @@ export function WatchView() {
                 className="text-[12px] italic text-ink-4 py-4 text-center"
                 data-testid="transcript-loading"
               >
-                Loading transcript…
+                {source.kind === "youtube" && pendingYouTubeCaptions.length > 0
+                  ? "Press play to start live synced transcript..."
+                  : "Loading transcript..."}
               </div>
             )}
 

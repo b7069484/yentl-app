@@ -1,0 +1,11 @@
+{
+  "id": "c2_ident_10",
+  "phase": "A",
+  "wer": 0.029531568228105907,
+  "substitutions": 42,
+  "deletions": 15,
+  "insertions": 30,
+  "hits": 2889,
+  "refLen": 2946,
+  "hypLen": 2961
+}

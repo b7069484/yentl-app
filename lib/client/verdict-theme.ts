@@ -12,8 +12,8 @@ export type VerdictTheme = {
 
 export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
   TRUE: {
-    label: "True",
-    short: "True",
+    label: "Supported",
+    short: "Supported",
     blurb: "Matches authoritative sources.",
     pill: "bg-emerald-50 text-emerald-800 border-emerald-300",
     ring: "ring-emerald-200",
@@ -21,8 +21,8 @@ export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
     scoreText: "text-emerald-700",
   },
   MOSTLY_TRUE: {
-    label: "Mostly true",
-    short: "Mostly true",
+    label: "Supported",
+    short: "Supported",
     blurb: "Core claim holds; minor caveats apply.",
     pill: "bg-emerald-50 text-emerald-800 border-emerald-200",
     ring: "ring-emerald-200",
@@ -30,8 +30,8 @@ export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
     scoreText: "text-emerald-700",
   },
   PARTIAL: {
-    label: "Partially true",
-    short: "Partial",
+    label: "Mixed",
+    short: "Mixed",
     blurb: "Part of the claim is supported, part isn't.",
     pill: "bg-amber-50 text-amber-900 border-amber-300",
     ring: "ring-amber-200",
@@ -39,8 +39,8 @@ export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
     scoreText: "text-amber-800",
   },
   MISLEADING: {
-    label: "Misleading",
-    short: "Misleading",
+    label: "Mixed",
+    short: "Mixed",
     blurb: "Technically defensible but designed to mislead.",
     pill: "bg-amber-50 text-amber-900 border-amber-400",
     ring: "ring-amber-200",
@@ -48,8 +48,8 @@ export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
     scoreText: "text-amber-800",
   },
   OMISSION: {
-    label: "Missing context",
-    short: "Omission",
+    label: "Mixed",
+    short: "Mixed",
     blurb: "True on its face but key context is missing.",
     pill: "bg-orange-50 text-orange-900 border-orange-300",
     ring: "ring-orange-200",
@@ -66,9 +66,9 @@ export const VERDICT: Record<PrimaryLabel, VerdictTheme> = {
     scoreText: "text-rose-700",
   },
   UNVERIFIABLE: {
-    label: "Unverifiable",
-    short: "Unverifiable",
-    blurb: "Couldn't find authoritative evidence either way.",
+    label: "No reliable backing",
+    short: "No reliable backing",
+    blurb: "Yentl did not find reliable evidence to support or refute this claim.",
     pill: "bg-slate-50 text-slate-700 border-slate-300",
     ring: "ring-slate-200",
     dot: "bg-slate-500",

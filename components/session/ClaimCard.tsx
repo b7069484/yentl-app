@@ -4,6 +4,7 @@ import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
 import Image from "next/image";
 import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
+import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
 
 export function ClaimCard({
   card,
@@ -41,7 +42,7 @@ export function ClaimCard({
 
       {!compact && (() => {
         const hero = pickHero(card);
-        if (!hero?.image_url) return null;
+        if (!isValidatedSourceImage(hero)) return null;
         const heroSource = card.sources.find((s) => s.preview?.image_url === hero.image_url);
         const stanceLabel: Record<Stance, string> = {
           supports: "supports this claim",
@@ -67,6 +68,9 @@ export function ClaimCard({
                   Source: {heroSource.domain} · {stanceLabel[heroSource.stance]}
                 </p>
               )}
+              <p className="mt-0.5 text-[10px] text-white/75">
+                {sourceImageTrustLabel(hero)}
+              </p>
             </div>
           </div>
         );
@@ -246,6 +250,6 @@ function pickHero(card: ClaimCardT): SourcePreview | null {
     return 0;
   });
 
-  for (const s of sorted) if (s.preview?.image_url) return s.preview;
+  for (const s of sorted) if (isValidatedSourceImage(s.preview)) return s.preview;
   return null;
 }

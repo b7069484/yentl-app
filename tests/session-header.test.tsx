@@ -49,4 +49,12 @@ describe("SessionHeader — Pause > End hierarchy", () => {
     const endBtn = screen.getByRole("button", { name: /End session/i });
     expect(endBtn.className).toContain("session-header-end");
   });
+
+  it("header command buttons keep comfortable touch targets", () => {
+    render(<SessionHeader {...baseProps} />);
+    expect(screen.getByRole("button", { name: /Present mode/i }).className).toContain("h-11");
+    expect(screen.getByRole("button", { name: /Pause/i }).className).toContain("h-11");
+    expect(screen.getByRole("button", { name: /Export/i }).className).toContain("h-11");
+    expect(screen.getByRole("button", { name: /End session/i }).className).toContain("h-11");
+  });
 });

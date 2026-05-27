@@ -1,0 +1,16 @@
+{
+  "savedAt": "2026-05-21T22:02:15.289Z",
+  "comments": [
+    {
+      "id": "promo-1779400929000",
+      "nodeId": "promo",
+      "nodeTitle": "Promo / Product Page",
+      "screenshot": "/visual-evidence/flow-screenshots/current/promo-product-page.png",
+      "sourcePath": ".claude/worktrees/trusting-hermann-e23f4a/app/page.tsx",
+      "xPct": 84.63,
+      "yPct": 63.2,
+      "text": "very good but why dont we see the whole page? the full length",
+      "createdAt": "2026-05-21T22:02:09.000Z"
+    }
+  ]
+}

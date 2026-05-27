@@ -6,7 +6,7 @@ import { EventEmitter } from "node:events";
 // are immutable ESM namespaces. vi.hoisted() lets us reference the stubs
 // inside the factory closure even though vi.mock() is hoisted to the top.
 
-const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn, innertubeCreateFn } =
+const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn, innertubeCreateFn, youtubeTranscriptFetchFn } =
   vi.hoisted(() => ({
     spawnFn: vi.fn(),
     mkdtempFn: vi.fn(),
@@ -14,6 +14,7 @@ const { spawnFn, mkdtempFn, readFileFn, rmFn, tmpdirFn, innertubeCreateFn } =
     rmFn: vi.fn(),
     tmpdirFn: vi.fn(),
     innertubeCreateFn: vi.fn(),
+    youtubeTranscriptFetchFn: vi.fn(),
   }));
 
 vi.mock("@/lib/server/yt-dlp-runner", () => ({
@@ -33,9 +34,15 @@ vi.mock("youtubei.js", () => ({
   },
 }));
 
+vi.mock("youtube-transcript", () => ({
+  YoutubeTranscript: {
+    fetchTranscript: youtubeTranscriptFetchFn,
+  },
+}));
+
 // ─── Import under test (after mocks) ─────────────────────────────────────────
 
-import { fetchCaptions, parseSrt, CaptionError } from "@/lib/server/youtube-captions";
+import { fetchCaptions, parseSrt } from "@/lib/server/youtube-captions";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -111,10 +118,14 @@ beforeEach(() => {
   rmFn.mockReset();
   tmpdirFn.mockReset();
   innertubeCreateFn.mockReset();
+  youtubeTranscriptFetchFn.mockReset();
 
   // Default Innertube to fail with NETWORK_ERROR so existing yt-dlp tests
   // exercise the fallback path without needing per-test Innertube setup.
   innertubeCreateFn.mockRejectedValue(new Error("Innertube unavailable (test default)"));
+  youtubeTranscriptFetchFn.mockRejectedValue(
+    new Error("No transcripts are available (test default)"),
+  );
 
   // Sensible defaults
   tmpdirFn.mockReturnValue("/tmp");
@@ -574,6 +585,39 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
     expect(spawnFn).not.toHaveBeenCalled();
     expect(segments).toHaveLength(1);
     expect(segments[0].text).toBe("Hello from Innertube.");
+  });
+
+  it("falls back to youtube-transcript before yt-dlp when Innertube misses captions", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+    youtubeTranscriptFetchFn.mockResolvedValue([
+      {
+        text: "  Transcript scraper line.  ",
+        offset: 16260,
+        duration: 2000,
+        lang: "en",
+      },
+    ]);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+
+    expect(youtubeTranscriptFetchFn).toHaveBeenCalledWith("dQw4w9WgXcQ", {
+      lang: "en",
+    });
+    expect(spawnFn).not.toHaveBeenCalled();
+    expect(segments).toEqual([
+      {
+        text: "Transcript scraper line.",
+        start: 16.26,
+        end: 18.26,
+        is_final: true,
+        speaker_id: 0,
+      },
+    ]);
   });
 
   it("re-throws PRIVATE immediately without trying yt-dlp", async () => {

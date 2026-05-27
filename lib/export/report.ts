@@ -19,7 +19,7 @@ const VERDICT_TONE: Record<PrimaryLabel, { fg: string; bg: string; border: strin
   MISLEADING:   { fg: "#92400e", bg: "#fffbeb", border: "#fbbf24", label: "Misleading" },
   OMISSION:     { fg: "#9a3412", bg: "#fff7ed", border: "#fdba74", label: "Missing context" },
   FALSE:        { fg: "#9f1239", bg: "#fff1f2", border: "#fda4af", label: "False" },
-  UNVERIFIABLE: { fg: "#334155", bg: "#f8fafc", border: "#cbd5e1", label: "Unverifiable" },
+  UNVERIFIABLE: { fg: "#334155", bg: "#f8fafc", border: "#cbd5e1", label: "No reliable backing" },
   OPINION:      { fg: "#5b21b6", bg: "#f5f3ff", border: "#c4b5fd", label: "Opinion" },
 };
 

@@ -161,7 +161,10 @@ describe("ActivityFeed – quote rendering", () => {
         buildMarkerHref={buildMarkerHref}
       />,
     );
-    expect(screen.getByText(/Vaccines cause autism/)).toBeTruthy();
+    const quote = screen.getByText(/Vaccines cause autism/);
+    expect(quote).toBeTruthy();
+    expect(quote.className).toContain("line-clamp-3");
+    expect(quote.className).toContain("sm:whitespace-nowrap");
   });
 
   it("renders the marker quote text inside the row", () => {

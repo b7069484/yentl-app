@@ -1,6 +1,18 @@
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, act, waitFor, within } from "@testing-library/react";
+
+const {
+  mockAppendFinal,
+  mockClearPendingYouTubeCaptions,
+  mockOnFinalUtterance,
+  mockRunSynthesisNow,
+} = vi.hoisted(() => ({
+  mockAppendFinal: vi.fn(),
+  mockClearPendingYouTubeCaptions: vi.fn(),
+  mockOnFinalUtterance: vi.fn().mockResolvedValue(undefined),
+  mockRunSynthesisNow: vi.fn().mockResolvedValue(undefined),
+}));
 
 // ── Adapter stub storage ──────────────────────────────────────────────────────
 // These are module-level so vi.mock factories can access them.
@@ -36,6 +48,11 @@ vi.mock("@/lib/client/audio-adapter", () => ({
   }),
 }));
 
+vi.mock("@/lib/client/orchestrator", () => ({
+  onFinalUtterance: mockOnFinalUtterance,
+  runSynthesisNow: mockRunSynthesisNow,
+}));
+
 // ── Session store mock ────────────────────────────────────────────────────────
 
 type StoreState = {
@@ -45,6 +62,9 @@ type StoreState = {
   synthesis: import("@/lib/client/session-store").SynthesisState;
   speakers: import("@/lib/types").Speaker[];
   transcript: import("@/lib/types").TranscriptSegment[];
+  pendingYouTubeCaptions: import("@/lib/types").TranscriptSegment[];
+  appendFinal: (segment: import("@/lib/types").TranscriptSegment) => void;
+  clearPendingYouTubeCaptions: () => void;
 };
 
 let mockStoreState: StoreState = {
@@ -54,11 +74,19 @@ let mockStoreState: StoreState = {
   synthesis: null,
   speakers: [],
   transcript: [],
+  pendingYouTubeCaptions: [],
+  appendFinal: mockAppendFinal,
+  clearPendingYouTubeCaptions: mockClearPendingYouTubeCaptions,
 };
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: StoreState) => unknown) => {
-    return selector ? selector(mockStoreState) : mockStoreState;
+    const state = {
+      ...mockStoreState,
+      appendFinal: mockAppendFinal,
+      clearPendingYouTubeCaptions: mockClearPendingYouTubeCaptions,
+    };
+    return selector ? selector(state) : state;
   }),
 }));
 
@@ -127,6 +155,9 @@ beforeEach(() => {
     synthesis: null,
     speakers: [{ id: 0, label: "Speaker 1" }],
     transcript: [],
+    pendingYouTubeCaptions: [],
+    appendFinal: mockAppendFinal,
+    clearPendingYouTubeCaptions: mockClearPendingYouTubeCaptions,
   };
 
   // Mock scrollIntoView for auto-scroll tests
@@ -214,6 +245,46 @@ describe("WatchView — transcript panel", () => {
       expect(screen.getByTestId("transcript-panel")).toBeTruthy();
     });
   });
+
+  it("renders the live signal board with read, heat, evidence, and live state", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0)],
+      claims: [
+        {
+          ...makeClaim("claim-risk", 0),
+          primary_label: "FALSE",
+          sources: [],
+        },
+      ],
+      markers: [
+        {
+          ...makeMarker("marker-heat", 0),
+          severity: "blatant",
+        },
+      ],
+    };
+
+    render(<WatchView />);
+
+    const board = await screen.findByTestId("watch-signal-board");
+    expect(within(board).getByText("Current read")).toBeTruthy();
+    expect(within(board).getByText("False")).toBeTruthy();
+    expect(within(board).getByText("Rhetoric heat")).toBeTruthy();
+    expect(within(board).getByText("High")).toBeTruthy();
+    expect(within(board).getByText("Evidence state")).toBeTruthy();
+    expect(within(board).getByText("Needs backing")).toBeTruthy();
+
+    await waitFor(() => expect(ytCallbacks.onReady).toBeDefined());
+    act(() => {
+      ytCallbacks.onReady!();
+    });
+
+    await waitFor(() => {
+      expect(within(board).getByText("Live state")).toBeTruthy();
+      expect(within(board).getByText("Ready")).toBeTruthy();
+    });
+  });
 });
 
 describe("WatchView — evidence queue", () => {
@@ -235,6 +306,47 @@ describe("WatchView — evidence queue", () => {
 
     fireEvent.click(screen.getByTestId("queue-claim-claim-queue"));
     expect(mockSeekTo).toHaveBeenCalledWith(5);
+  });
+});
+
+describe("WatchView — YouTube live caption release", () => {
+  it("appends pending YouTube captions only as playback reaches them", async () => {
+    const first = makeSegment(0, "Opening line.");
+    const second = makeSegment(5, "Second line.");
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [],
+      pendingYouTubeCaptions: [first, second],
+    };
+
+    render(<WatchView />);
+
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(0.1);
+    });
+    expect(mockAppendFinal).not.toHaveBeenCalled();
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(0.5);
+    });
+
+    await waitFor(() => {
+      expect(mockAppendFinal).toHaveBeenCalledWith(first);
+      expect(mockOnFinalUtterance).toHaveBeenCalledWith(first);
+    });
+    expect(mockAppendFinal).not.toHaveBeenCalledWith(second);
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(5.4);
+    });
+
+    await waitFor(() => {
+      expect(mockAppendFinal).toHaveBeenCalledWith(second);
+      expect(mockOnFinalUtterance).toHaveBeenCalledWith(second);
+      expect(mockClearPendingYouTubeCaptions).toHaveBeenCalled();
+    });
   });
 });
 

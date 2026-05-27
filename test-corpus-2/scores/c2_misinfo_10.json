@@ -1,0 +1,11 @@
+{
+  "id": "c2_misinfo_10",
+  "phase": "A",
+  "wer": 0.23377818683847215,
+  "substitutions": 63,
+  "deletions": 431,
+  "insertions": 14,
+  "hits": 1679,
+  "refLen": 2173,
+  "hypLen": 1756
+}

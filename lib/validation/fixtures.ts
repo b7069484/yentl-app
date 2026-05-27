@@ -43,7 +43,7 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     category: "solo_monologue",
     purpose:
       "Clean single-speaker quantitative explainer: proves baseline transcript loading and claim extraction.",
-    sessionHref: "/session?sample=solo_005&view=watch",
+    sessionHref: "/session?demo=validation&sample=solo_005&view=watch",
     reportHref: "/corpus-report/index.html#solo_005",
     youtubeUrl: "https://www.youtube.com/watch?v=fTznEIZRkLg",
     claims: 2,
@@ -58,7 +58,7 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     category: "cable_news_debate",
     purpose:
       "Multi-speaker, high-rhetoric excerpt: proves marker density and speaker-stress handling.",
-    sessionHref: "/session?sample=cable_008&view=watch",
+    sessionHref: "/session?demo=validation&sample=cable_008&view=watch",
     reportHref: "/corpus-report/index.html#cable_008",
     youtubeUrl: "https://www.youtube.com/watch?v=0UYx55YNRv0",
     claims: 1,
@@ -73,7 +73,7 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     category: "israel_palestine",
     purpose:
       "Sensitive-topic review slice: proves claim volume, markers, and provisional verification wiring.",
-    sessionHref: "/session?sample=israel_010&view=watch",
+    sessionHref: "/session?demo=validation&sample=israel_010&view=watch",
     reportHref: "/corpus-report/index.html#israel_010",
     youtubeUrl: "https://www.youtube.com/watch?v=Ou-Bl8HSGsM",
     claims: 14,

@@ -59,8 +59,8 @@ export function EndSessionDialog({
           <DialogTitle>End this session?</DialogTitle>
           <DialogDescription>
             Recording stops. Your transcript, claims, and markers stay on screen
-            so you can review and export them — use the Export button when
-            you&apos;re ready.
+            so you can review, save a local snapshot, or export a portable
+            report when you&apos;re ready.
           </DialogDescription>
         </DialogHeader>
 

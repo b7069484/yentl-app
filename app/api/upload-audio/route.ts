@@ -1,5 +1,8 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
+import { requireSourceAnalysisConsent } from "@/lib/server/consent";
+import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { SOURCE_ANALYSIS_CONSENT_VALUE, hasSourceAnalysisConsent } from "@/lib/source-consent";
 
 /**
  * Client-direct upload route for Vercel Blob.
@@ -42,23 +45,47 @@ const ALLOWED_AUDIO_TYPES = [
   "audio/mp3",
 ];
 
+function clientPayloadFromBody(body: HandleUploadBody): string | null {
+  if (
+    body.type === "blob.generate-client-token" &&
+    typeof body.payload.clientPayload === "string"
+  ) {
+    return body.payload.clientPayload;
+  }
+  return null;
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.uploadToken);
+  if (limited) return limited;
+
   const body = (await request.json()) as HandleUploadBody;
+  const clientPayload = clientPayloadFromBody(body);
+
+  if (body.type === "blob.generate-client-token") {
+    const consentError = requireSourceAnalysisConsent(request, clientPayload);
+    if (consentError) return consentError;
+  }
 
   try {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname) => {
-        // No user auth layer in this app — all uploads are anonymous.
-        // Restrict to audio types and enforce the 500 MB cap.
+      onBeforeGenerateToken: async (pathname, payload) => {
+        if (!hasSourceAnalysisConsent(request, payload)) {
+          throw new Error("source analysis consent is required");
+        }
+
         return {
           allowedContentTypes: ALLOWED_AUDIO_TYPES,
           maximumSizeInBytes: MAX_SIZE_BYTES,
           addRandomSuffix: true,
           // Short cache — audio files are ephemeral (transcribed then deleted)
           cacheControlMaxAge: 3600,
-          tokenPayload: JSON.stringify({ pathname }),
+          tokenPayload: JSON.stringify({
+            pathname,
+            consent: SOURCE_ANALYSIS_CONSENT_VALUE,
+          }),
         };
       },
       onUploadCompleted: async ({ blob }) => {

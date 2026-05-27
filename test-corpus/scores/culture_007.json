@@ -1,0 +1,11 @@
+{
+  "id": "culture_007",
+  "phase": "A",
+  "wer": 0.08546595847416708,
+  "substitutions": 81,
+  "deletions": 26,
+  "insertions": 70,
+  "hits": 1964,
+  "refLen": 2071,
+  "hypLen": 2115
+}

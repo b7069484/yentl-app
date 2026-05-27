@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
   AlertCircle,
   ArrowRight,
@@ -14,12 +14,16 @@ import {
   Link as LinkIcon,
   Mic,
   MonitorPlay,
+  Network,
+  Palette,
   Play,
   Radio,
   Save,
   ShieldCheck,
   Smartphone,
 } from "lucide-react";
+import { AzFlowDashboard } from "./az-flow-dashboard";
+import { VisualEvidenceDashboard } from "./visual-evidence-dashboard";
 
 type Flow = {
   id: string;
@@ -77,6 +81,7 @@ type ScreenKind =
   | "mobile-library";
 
 type Viewport = "desktop" | "mobile";
+type DashboardTab = "atlas" | "az-flow" | "visual-evidence";
 
 const flows: Flow[] = [
   {
@@ -753,6 +758,8 @@ const screenCritiques: Record<ScreenKind, ScreenCritique> = {
 };
 
 export function UxFlowDashboard() {
+  const [activeTab, setActiveTab] = useState<DashboardTab>("az-flow");
+
   return (
     <div className="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-6 md:px-8">
       <section className="border-b border-line-soft pb-5">
@@ -765,28 +772,104 @@ export function UxFlowDashboard() {
               UX flow map
             </h1>
             <p className="mt-2 max-w-3xl text-[14px] leading-relaxed text-ink-3">
-              This tab is not a design approval. It is a full screen atlas for the
-              implemented and planned product: ingest paths, session workspace,
-              drill-downs, dialogs, extension capture, public/account surfaces, and
-              mobile app preparation.
+              This workspace starts with screenshot review so every captured page,
+              branch, and route can be opened and commented on directly. The screen
+              atlas and visual-evidence system remain available for critique and
+              production planning.
             </p>
           </div>
           <div className="rounded-lg border border-line bg-paper p-4 text-[12.5px] leading-relaxed text-ink-3">
-            <strong className="text-ink-2">Review rule:</strong> you should not have
-            to point out the same design problems twice. Each wireframe names the
-            failure mode and the target user experience across desktop and mobile.
+            <strong className="text-ink-2">Review rule:</strong> open a screenshot,
+            click the exact spot, and leave the comment there. Repeated design
+            problems should show up as reusable fixes, not scattered notes.
           </div>
         </div>
       </section>
 
-      <AtlasIndex />
+      <DashboardTabs activeTab={activeTab} onChange={setActiveTab} />
 
-      <div className="mt-6 grid gap-5">
-        {flows.map((flow) => (
-          <FlowSection key={flow.id} flow={flow} />
-        ))}
-      </div>
+      {activeTab === "atlas" && (
+        <>
+          <AtlasIndex />
+
+          <div className="mt-6 grid gap-5">
+            {flows.map((flow) => (
+              <FlowSection key={flow.id} flow={flow} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {activeTab === "az-flow" && <AzFlowDashboard />}
+      {activeTab === "visual-evidence" && <VisualEvidenceDashboard />}
     </div>
+  );
+}
+
+function DashboardTabs({
+  activeTab,
+  onChange,
+}: {
+  activeTab: DashboardTab;
+  onChange: (tab: DashboardTab) => void;
+}) {
+  const tabs: Array<{
+    id: DashboardTab;
+    label: string;
+    description: string;
+    Icon: ComponentType<{ className?: string }>;
+  }> = [
+    {
+      id: "atlas",
+      label: "Screen Atlas",
+      description: "Wireframes and critique",
+      Icon: LayoutDashboard,
+    },
+    {
+      id: "az-flow",
+      label: "A-to-Z Flow",
+      description: "Commentable screenshots",
+      Icon: Network,
+    },
+    {
+      id: "visual-evidence",
+      label: "Visual Evidence System",
+      description: "Sources, thumbnails, marker assets",
+      Icon: Palette,
+    },
+  ];
+
+  return (
+    <nav aria-label="Project flow workspace tabs" className="mt-5 grid gap-2 md:grid-cols-3">
+      {tabs.map((tab) => {
+        const Icon = tab.Icon;
+        const active = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={[
+              "flex items-center gap-3 rounded-lg border px-3 py-3 text-left transition",
+              active
+                ? "border-teal/40 bg-teal-soft text-ink shadow-sm"
+                : "border-line bg-paper text-ink-3 hover:border-teal/30 hover:bg-cream",
+            ].join(" ")}
+            aria-pressed={active}
+          >
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white text-teal">
+              <Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[13px] font-semibold text-ink-2">
+                {tab.label}
+              </span>
+              <span className="text-[11px] text-ink-4">{tab.description}</span>
+            </span>
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 

@@ -1,0 +1,2 @@
+agent_id,agent_name,slug,status,deliverable_folder,current_step,blocker,next_needed,last_updated
+12,Rivka,rivka-meta-review,waiting,/Users/israelbitton/Live FactCheck/agent-work/rivka-meta-review,Checked directive board and dependency state,Needs Yonah meaning-under-pressure evaluation pack before claim-semantics architecture begins,Unblock Rivka after Yonah pack and judgment sidecars are available,2026-05-21

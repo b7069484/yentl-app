@@ -4,10 +4,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const mockTranscribeUrl = vi.fn();
 const mockTranscribeFile = vi.fn();
+const mockTranscribeStream = vi.fn();
+const mockBlobGet = vi.fn();
+const mockBlobDel = vi.fn();
 
 vi.mock("@/lib/server/deepgram-batch", () => ({
   transcribeUrl: mockTranscribeUrl,
   transcribeFile: mockTranscribeFile,
+  transcribeStream: mockTranscribeStream,
+}));
+
+vi.mock("@vercel/blob", () => ({
+  get: mockBlobGet,
+  del: mockBlobDel,
 }));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -23,7 +32,10 @@ const VALID_SPEAKERS = [{ id: 0, label: "Speaker 1" }];
 function makeJsonRequest(body: unknown): Request {
   return new Request("http://localhost/api/transcribe-batch", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: JSON.stringify(body),
   });
 }
@@ -54,7 +66,10 @@ function makeMultipartRequest(fields: {
 
   const req = new Request("http://localhost/api/transcribe-batch", {
     method: "POST",
-    headers: { "Content-Type": "multipart/form-data; boundary=boundary" },
+    headers: {
+      "Content-Type": "multipart/form-data; boundary=boundary",
+      "x-yentl-source-consent": "source-analysis-v1",
+    },
     body: "placeholder",
   });
   // Override formData() to return our pre-built FormData synchronously
@@ -71,6 +86,12 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
       utterances: VALID_UTTERANCES,
       speakers: VALID_SPEAKERS,
     });
+    mockTranscribeStream.mockResolvedValue({
+      utterances: VALID_UTTERANCES,
+      speakers: VALID_SPEAKERS,
+    });
+    mockBlobGet.mockResolvedValue(null);
+    mockBlobDel.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -86,6 +107,23 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     const json = await res.json();
     expect(json.utterances).toEqual(VALID_UTTERANCES);
     expect(json.speakers).toEqual(VALID_SPEAKERS);
+  });
+
+  it("requires source analysis consent before transcription", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = new Request("http://localhost/api/transcribe-batch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        blob_url: "https://blob.vercel-storage.com/audio.mp3",
+        duration_sec: 120,
+      }),
+    });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(428);
+    expect(mockTranscribeUrl).not.toHaveBeenCalled();
+    expect(mockTranscribeStream).not.toHaveBeenCalled();
   });
 
   it("returns 400 when blob_url is missing", async () => {
@@ -169,7 +207,10 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     const { POST } = await import("@/app/api/transcribe-batch/route");
     const req = new Request("http://localhost/api/transcribe-batch", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-yentl-source-consent": "source-analysis-v1",
+      },
       body: "not json {{{",
     });
     const res = await POST(req as never);
@@ -186,6 +227,67 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     expect(res.status).toBe(500);
     const json = await res.json();
     expect(json.error).toMatch(/Deepgram quota exceeded/);
+  });
+
+  it("streams private Vercel Blob uploads to Deepgram and deletes the blob afterward", async () => {
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2, 3]));
+        controller.close();
+      },
+    });
+    mockBlobGet.mockResolvedValue({
+      statusCode: 200,
+      stream,
+      blob: { contentType: "audio/mpeg", size: 3 },
+    });
+    mockTranscribeStream.mockResolvedValue({
+      utterances: VALID_UTTERANCES,
+      speakers: VALID_SPEAKERS,
+    });
+
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const blobUrl = "https://abc.private.blob.vercel-storage.com/audio.mp3";
+    const req = makeJsonRequest({ blob_url: blobUrl, duration_sec: 120 });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(200);
+    expect(mockBlobGet).toHaveBeenCalledWith(blobUrl, {
+      access: "private",
+      useCache: false,
+    });
+    expect(mockTranscribeStream).toHaveBeenCalledOnce();
+    expect(mockBlobDel).toHaveBeenCalledWith(blobUrl);
+    expect(mockTranscribeUrl).not.toHaveBeenCalled();
+  });
+
+  it("logs but does not fail the transcription when private Blob deletion fails", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2, 3]));
+        controller.close();
+      },
+    });
+    mockBlobGet.mockResolvedValue({
+      statusCode: 200,
+      stream,
+      blob: { contentType: "audio/mpeg", size: 3 },
+    });
+    mockTranscribeStream.mockResolvedValue({
+      utterances: VALID_UTTERANCES,
+      speakers: VALID_SPEAKERS,
+    });
+    mockBlobDel.mockRejectedValue(new Error("delete denied"));
+
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const blobUrl = "https://abc.private.blob.vercel-storage.com/audio.mp3";
+    const req = makeJsonRequest({ blob_url: blobUrl, duration_sec: 120 });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(200);
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("blob_deletion_failed"));
+    errorSpy.mockRestore();
   });
 });
 
@@ -301,7 +403,10 @@ describe("POST /api/transcribe-batch — unsupported content type", () => {
     const { POST } = await import("@/app/api/transcribe-batch/route");
     const req = new Request("http://localhost/api/transcribe-batch", {
       method: "POST",
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "text/plain",
+        "x-yentl-source-consent": "source-analysis-v1",
+      },
       body: "hello",
     });
     const res = await POST(req as never);
@@ -312,6 +417,9 @@ describe("POST /api/transcribe-batch — unsupported content type", () => {
     const { POST } = await import("@/app/api/transcribe-batch/route");
     const req = new Request("http://localhost/api/transcribe-batch", {
       method: "POST",
+      headers: {
+        "x-yentl-source-consent": "source-analysis-v1",
+      },
       body: "hello",
     });
     const res = await POST(req as never);

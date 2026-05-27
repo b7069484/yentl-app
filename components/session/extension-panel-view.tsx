@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
   AlertTriangle,
@@ -18,11 +18,17 @@ import {
   checkBrowserTabCaptureStatus,
   stopBrowserTabCapture,
 } from "@/components/session/ExtensionBridge";
+import {
+  buildLiveSignalSummary,
+  ExtensionSignalStrip,
+  type SignalDatum,
+} from "@/components/session/live-signal";
 import { useSession, type BrowserTabCaptureStatus } from "@/lib/client/session-store";
 import type { DevilAdvocateBrief, DevilAdvocateState } from "@/lib/client/session-store";
 import { exportSession } from "@/lib/client/export-actions";
-import { saveSession } from "@/lib/client/session-storage";
-import type { ClaimCard, RhetoricMarker, SessionSource, TranscriptSegment } from "@/lib/types";
+import { loadSession, saveSession, type SavedSessionMeta } from "@/lib/client/session-storage";
+import { VERDICT } from "@/lib/client/verdict-theme";
+import type { ClaimCard, RhetoricMarker, Session, SessionSource, TranscriptSegment } from "@/lib/types";
 
 type Phase = BrowserTabCaptureStatus["phase"];
 
@@ -85,6 +91,14 @@ const PHASE_META: Record<
     shell: "border-amber/35 bg-amber-50 text-amber-900",
     dot: "bg-amber",
   },
+  tab_changed: {
+    label: "Return to source",
+    heading: "Return to the captured tab",
+    body: "Yentl is still tied to the original tab. Return there to keep the source page and analysis together, or choose another source path.",
+    icon: AlertTriangle,
+    shell: "border-amber/35 bg-amber-50 text-amber-900",
+    dot: "bg-amber",
+  },
   stopped: {
     label: "Stopped",
     heading: "Capture stopped",
@@ -132,7 +146,7 @@ function speakerName(segment: TranscriptSegment) {
 }
 
 function displayVerdict(label: ClaimCard["primary_label"]) {
-  return label.replaceAll("_", " ");
+  return VERDICT[label].short;
 }
 
 function verdictTone(label: ClaimCard["primary_label"]) {
@@ -216,17 +230,115 @@ function markerInsight(markers: RhetoricMarker[]) {
   };
 }
 
+function mirrorSessionToPopupStorage(
+  popup: Window,
+  meta: SavedSessionMeta,
+  session: Session,
+): Promise<void> {
+  let popupIndexedDb: IDBFactory | undefined;
+  try {
+    popupIndexedDb = popup.indexedDB;
+  } catch {
+    return Promise.resolve();
+  }
+  if (!popupIndexedDb) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const req = popupIndexedDb.open("yentl", 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains("sessions")) {
+        const store = db.createObjectStore("sessions", { keyPath: "id" });
+        store.createIndex("saved_at", "saved_at", { unique: false });
+      }
+    };
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      const tx = db.transaction("sessions", "readwrite");
+      tx.objectStore("sessions").put({ ...meta, session });
+      tx.oncomplete = () => {
+        db.close();
+        resolve();
+      };
+      tx.onerror = () => {
+        db.close();
+        reject(tx.error);
+      };
+    };
+  });
+}
+
+function phaseSignal(phase: Phase, transcriptCount: number): SignalDatum {
+  if (phase === "error") {
+    return {
+      label: "Live state",
+      value: "Needs attention",
+      detail: "Extension capture needs a retry.",
+      tone: "red",
+    };
+  }
+
+  if (phase === "no_audio_detected") {
+    return {
+      label: "Live state",
+      value: "No speech yet",
+      detail: "Connected, but no speech is arriving.",
+      tone: "amber",
+    };
+  }
+
+  if (phase === "idle" || phase === "waiting_for_extension") {
+    return {
+      label: "Live state",
+      value: "Waiting",
+      detail: "Waiting for same-page extension capture.",
+      tone: "amber",
+    };
+  }
+
+  if (phase === "stopped") {
+    return {
+      label: "Live state",
+      value: "Stopped",
+      detail: "Capture has ended.",
+      tone: "neutral",
+    };
+  }
+
+  if (phase === "transcribing") {
+    return {
+      label: "Live state",
+      value: "Transcribing",
+      detail: transcriptCount > 0
+        ? `${transcriptCount} transcript line${transcriptCount === 1 ? "" : "s"} captured.`
+        : "Speech is being converted into transcript lines.",
+      tone: "green",
+    };
+  }
+
+  return {
+    label: "Live state",
+    value: phase === "capturing" ? "Hearing" : "Connected",
+    detail: transcriptCount > 0
+      ? `${transcriptCount} transcript line${transcriptCount === 1 ? "" : "s"} captured.`
+      : "Extension capture is attached to this page.",
+    tone: "green",
+  };
+}
+
 function useValidationDemo() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("demo") !== "validation") return;
+    if (!validationDemoEnabled()) return;
 
     let state = useSession.getState();
     const source = {
       kind: "browser_tab" as const,
       title: params.get("title") ?? "Fixture video",
-      url: "http://localhost:3000/validation/extension-panel-preview.html",
+      url: `${window.location.origin}/validation/extension-panel-preview.html`,
     };
 
     state.setSource(source);
@@ -275,6 +387,12 @@ function useValidationDemo() {
 
     return () => window.clearTimeout(demoStatusTimer);
   }, []);
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  return process.env.NODE_ENV !== "production";
 }
 
 const VALIDATION_TRANSCRIPT: TranscriptSegment[] = [
@@ -379,6 +497,18 @@ export function ExtensionPanelView() {
   const markerSnapshot = markerInsight(markers);
   const transcriptTime = formatTime(transcriptDuration(transcript));
   const hasContent = transcript.length > 0 || claimRows.length > 0 || markerRows.length > 0;
+  const liveSignal = useMemo(
+    () => phaseSignal(phase, transcript.length),
+    [phase, transcript.length],
+  );
+  const signalSummary = useMemo(
+    () => buildLiveSignalSummary({
+      claims,
+      markers,
+      liveState: liveSignal,
+    }),
+    [claims, liveSignal, markers],
+  );
 
   async function openFullWorkspace() {
     const popup = window.open("about:blank", "_blank");
@@ -388,8 +518,10 @@ export function ExtensionPanelView() {
       const meta = await saveSession(session, {
         name: session.title || sourceTitle(source, status),
       });
+      await loadSession(meta.id);
       const href = `${window.location.origin}/session?restore=${encodeURIComponent(meta.id)}&view=overview`;
       if (popup) {
+        await mirrorSessionToPopupStorage(popup, meta, session);
         popup.location.href = href;
       } else {
         window.open(href, "_blank", "noopener,noreferrer");
@@ -466,6 +598,8 @@ export function ExtensionPanelView() {
               </div>
             </div>
           </section>
+
+          <ExtensionSignalStrip summary={signalSummary} />
 
           <div
             role="tablist"
@@ -597,7 +731,7 @@ export function ExtensionPanelView() {
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ExternalLink className="h-4 w-4" aria-hidden />
-                {workspaceState === "saving" ? "Opening..." : "Full workspace"}
+                {workspaceState === "saving" ? "Saving..." : "Open snapshot"}
               </button>
               <button
                 type="button"
@@ -634,9 +768,14 @@ export function ExtensionPanelView() {
                 </button>
               </div>
             </details>
+            <p className="mt-2 text-[11.5px] leading-relaxed text-ink-4">
+              Opening the workspace saves the current panel state as a local
+              snapshot. It is not live sync; keep this panel open for continuing
+              capture.
+            </p>
             {workspaceState === "error" && (
               <p className="mt-2 rounded-md border border-red-soft bg-red-soft/35 px-3 py-2 text-[12px] text-red">
-                Could not open the saved workspace. Try the report export instead.
+                Could not open the saved snapshot. Try the report export instead.
               </p>
             )}
           </section>

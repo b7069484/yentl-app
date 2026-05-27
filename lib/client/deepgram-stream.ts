@@ -1,4 +1,5 @@
 import type { TranscriptSegment } from "@/lib/types";
+import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 
 export type DGEvents = {
   onInterim: (text: string) => void;
@@ -65,7 +66,11 @@ type TokenResponse = { key: string; expires_at: string };
 type SpeakerCounters = { consecutive: number; warned: boolean };
 
 async function fetchToken(signal?: AbortSignal): Promise<{ key: string; expiresAtMs: number }> {
-  const res = await fetch("/api/deepgram/token", { method: "POST", signal });
+  const res = await fetch("/api/deepgram/token", {
+    method: "POST",
+    headers: sourceAnalysisConsentHeaders(),
+    signal,
+  });
   if (!res.ok) throw new Error(`token fetch failed (${res.status})`);
   const data = (await res.json()) as TokenResponse;
   const expiresAtMs = new Date(data.expires_at).getTime();

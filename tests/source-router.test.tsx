@@ -4,7 +4,8 @@ import { render, screen } from "@testing-library/react";
 // ─── Mock session store ───────────────────────────────────────────────────────
 
 let mockPrerecordStage: "picker" | "selected" = "picker";
-let mockSourceKind = "mic";
+let mockSource: { kind: string; intent?: string } = { kind: "mic" };
+let mockSearchParamsRaw = new URLSearchParams("");
 
 const mockSetPrerecordStage = vi.fn();
 const mockSetSource = vi.fn();
@@ -14,13 +15,17 @@ vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: unknown) => unknown) => {
     const state = {
       prerecordStage: mockPrerecordStage,
-      source: { kind: mockSourceKind },
+      source: mockSource,
       setPrerecordStage: mockSetPrerecordStage,
       setSource: mockSetSource,
       startSession: mockStartSession,
     };
     return selector ? selector(state) : state;
   }),
+}));
+
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => mockSearchParamsRaw,
 }));
 
 // ─── Mock SourcePicker ────────────────────────────────────────────────────────
@@ -43,6 +48,10 @@ vi.mock("@/components/session/ingest-panes/text-ingest-pane", () => ({
   TextIngestPane: () => <div data-testid="text-ingest-pane">TextIngestPane</div>,
 }));
 
+vi.mock("@/components/session/ingest-panes/claim-quick-check-pane", () => ({
+  ClaimQuickCheckPane: () => <div data-testid="claim-quick-check-pane">ClaimQuickCheckPane</div>,
+}));
+
 vi.mock("@/components/session/ingest-panes/browser-tab-ingest-pane", () => ({
   BrowserTabIngestPane: () => <div data-testid="browser-tab-ingest-pane">BrowserTabIngestPane</div>,
 }));
@@ -52,7 +61,11 @@ vi.mock("@/components/session/ingest-panes/audio-ingest-pane", () => ({
 }));
 
 vi.mock("@/components/session/ingest-panes/youtube-ingest-pane", () => ({
-  YoutubeIngestPane: () => <div data-testid="youtube-ingest-pane">YoutubeIngestPane</div>,
+  YoutubeIngestPane: ({ initialUrlOverride }: { initialUrlOverride?: string }) => (
+    <div data-testid="youtube-ingest-pane" data-initial-url={initialUrlOverride}>
+      YoutubeIngestPane
+    </div>
+  ),
 }));
 
 vi.mock("@/components/session/ingest-panes/media-url-ingest-pane", () => ({
@@ -66,7 +79,8 @@ import { SourceRouter } from "@/lib/client/source-router";
 beforeEach(() => {
   vi.clearAllMocks();
   mockPrerecordStage = "picker";
-  mockSourceKind = "mic";
+  mockSource = { kind: "mic" };
+  mockSearchParamsRaw = new URLSearchParams("");
 });
 
 // ─── 1. Stage: picker ─────────────────────────────────────────────────────────
@@ -87,6 +101,21 @@ describe("SourceRouter – picker stage", () => {
     expect(screen.queryByTestId("youtube-ingest-pane")).toBeNull();
     expect(screen.queryByTestId("media-url-ingest-pane")).toBeNull();
   });
+
+  it("renders the YouTube pane directly for source=youtube deep links", () => {
+    mockPrerecordStage = "picker";
+    mockSearchParamsRaw = new URLSearchParams(
+      "source=youtube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DIDC8PrZQHts",
+    );
+
+    render(<SourceRouter />);
+
+    expect(screen.queryByTestId("source-picker")).toBeNull();
+    expect(screen.getByTestId("youtube-ingest-pane")).toHaveAttribute(
+      "data-initial-url",
+      "https://www.youtube.com/watch?v=IDC8PrZQHts",
+    );
+  });
 });
 
 // ─── 2. Stage: selected + mic ─────────────────────────────────────────────────
@@ -94,14 +123,14 @@ describe("SourceRouter – picker stage", () => {
 describe("SourceRouter – selected stage + mic", () => {
   it("renders mic PreRecord button when source.kind is 'mic'", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "mic";
+    mockSource = { kind: "mic" };
     render(<SourceRouter />);
     expect(screen.getByRole("button", { name: /Start a session/i })).toBeTruthy();
   });
 
   it("does NOT render SourcePicker when prerecordStage is 'selected'", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "mic";
+    mockSource = { kind: "mic" };
     render(<SourceRouter />);
     expect(screen.queryByTestId("source-picker")).toBeNull();
   });
@@ -112,7 +141,7 @@ describe("SourceRouter – selected stage + mic", () => {
 describe("SourceRouter – selected + browser_tab", () => {
   it("renders BrowserTabIngestPane", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "browser_tab";
+    mockSource = { kind: "browser_tab" };
     render(<SourceRouter />);
     expect(screen.getByTestId("browser-tab-ingest-pane")).toBeTruthy();
   });
@@ -123,9 +152,17 @@ describe("SourceRouter – selected + browser_tab", () => {
 describe("SourceRouter – selected + text_doc", () => {
   it("renders TextIngestPane", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "text_doc";
+    mockSource = { kind: "text_doc" };
     render(<SourceRouter />);
     expect(screen.getByTestId("text-ingest-pane")).toBeTruthy();
+  });
+
+  it("renders ClaimQuickCheckPane for text_doc claim-only intent", () => {
+    mockPrerecordStage = "selected";
+    mockSource = { kind: "text_doc", intent: "claim_only" };
+    render(<SourceRouter />);
+    expect(screen.getByTestId("claim-quick-check-pane")).toBeTruthy();
+    expect(screen.queryByTestId("text-ingest-pane")).toBeNull();
   });
 });
 
@@ -134,7 +171,7 @@ describe("SourceRouter – selected + text_doc", () => {
 describe("SourceRouter – selected + audio_file", () => {
   it("renders AudioIngestPane", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "audio_file";
+    mockSource = { kind: "audio_file" };
     render(<SourceRouter />);
     expect(screen.getByTestId("audio-ingest-pane")).toBeTruthy();
   });
@@ -145,7 +182,7 @@ describe("SourceRouter – selected + audio_file", () => {
 describe("SourceRouter – selected + youtube", () => {
   it("renders YoutubeIngestPane", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "youtube";
+    mockSource = { kind: "youtube" };
     render(<SourceRouter />);
     expect(screen.getByTestId("youtube-ingest-pane")).toBeTruthy();
   });
@@ -156,7 +193,7 @@ describe("SourceRouter – selected + youtube", () => {
 describe("SourceRouter – selected + media_url", () => {
   it("renders MediaUrlIngestPane", () => {
     mockPrerecordStage = "selected";
-    mockSourceKind = "media_url";
+    mockSource = { kind: "media_url" };
     render(<SourceRouter />);
     expect(screen.getByTestId("media-url-ingest-pane")).toBeTruthy();
   });

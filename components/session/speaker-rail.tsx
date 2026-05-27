@@ -80,7 +80,7 @@ export function SpeakerRail({
   const isActive = meterActive ?? activeSpeakerId !== null;
 
   return (
-    <div className="flex items-center gap-1.5 px-4 py-2 bg-cream border-b border-line-soft overflow-x-auto">
+    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-line-soft bg-cream px-3 py-2 sm:px-4">
       {speakers.length === 0 ? (
         <span className="text-[11.5px] italic text-ink-4">
           {emptyLabel}

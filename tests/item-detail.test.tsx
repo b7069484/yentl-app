@@ -210,6 +210,13 @@ describe("ItemDetail – keyboard navigation", () => {
 // ─── ConfBar ─────────────────────────────────────────────────────────────────
 
 describe("ClaimDetail – ConfBar", () => {
+  it("uses locked user-facing verdict copy", () => {
+    const claim = makeClaim({ primary_label: "UNVERIFIABLE" });
+    mockStore({ claims: [claim] });
+    render(<ItemDetail type="claim" id="c-1" />);
+    expect(screen.getByText("No reliable backing")).toBeTruthy();
+  });
+
   it("fills proportionally to score", () => {
     const claim = makeClaim({ score: 75 });
     mockStore({ claims: [claim] });

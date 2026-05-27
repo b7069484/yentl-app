@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Accessibility Statement — Yentl",
@@ -117,12 +119,18 @@ export default function AccessibilityPage() {
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           If you encounter an accessibility barrier or have a specific accommodation request,
-          contact us via the{" "}
-          <a href="/contact" className="underline">
+          email{" "}
+          <a
+            href={mailto(contactEmails.accessibility, "Yentl accessibility issue")}
+            className="underline"
+          >
+            {contactEmails.accessibility}
+          </a>{" "}
+          or use the{" "}
+          <Link href="/contact" className="underline">
             contact page
-          </a>
-          . We aim to respond within 5 business days and to remediate critical barriers within
-          30 days.
+          </Link>
+          .
         </p>
       </section>
     </main>

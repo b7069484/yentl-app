@@ -37,10 +37,10 @@ describe("ProjectValidationPage", () => {
     render(<ProjectValidationPage />);
 
     expect(screen.getAllByRole("link", { name: /Open functional sample/i })[0])
-      .toHaveAttribute("href", "/session?sample=solo_005&view=watch");
+      .toHaveAttribute("href", "/session?demo=validation&sample=solo_005&view=watch");
     expect(screen.getAllByRole("link", { name: /Open functional sample/i })[1])
-      .toHaveAttribute("href", "/session?sample=cable_008&view=watch");
+      .toHaveAttribute("href", "/session?demo=validation&sample=cable_008&view=watch");
     expect(screen.getAllByRole("link", { name: /Open functional sample/i })[2])
-      .toHaveAttribute("href", "/session?sample=israel_010&view=watch");
+      .toHaveAttribute("href", "/session?demo=validation&sample=israel_010&view=watch");
   });
 });

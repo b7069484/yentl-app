@@ -1,7 +1,17 @@
 "use client";
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { ArrowLeft, Upload, FileAudio, Loader2, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Upload,
+  FileAudio,
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  ListChecks,
+  ShieldCheck,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
@@ -208,163 +218,230 @@ export function AudioIngestPane() {
     phase.kind === "probing";
 
   return (
-    <div className="max-w-[680px] mx-auto px-6 pt-8 pb-12">
+    <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 md:px-8">
       {/* Back link */}
       <button
         type="button"
         onClick={() => setPrerecordStage("picker")}
-        className="inline-flex items-center gap-1.5 text-[12px] text-ink-3 hover:text-ink-2 mb-6"
+        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
       </button>
 
-      <h1 className="font-serif text-[22px] text-ink mb-1">Drop an audio file</h1>
-      <p className="text-[13px] text-ink-3 mb-6">
-        .mp3, .wav, .m4a, .ogg, .webm — up to 500 MB / 4 hours
-      </p>
-
-      {/* Drop zone */}
-      {!staged && !isProcessing && phase.kind !== "done" && phase.kind !== "error" && (
-        <label
-          htmlFor="audio-file-input"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={[
-            "flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-xl px-8 py-12 cursor-pointer transition-colors",
-            isDragging
-              ? "border-accent bg-accent/5"
-              : "border-ink-6 hover:border-ink-4 hover:bg-ink-6/40",
-          ].join(" ")}
-          data-testid="drop-zone"
-        >
-          <Upload className="w-8 h-8 text-ink-4" />
-          <div className="text-center">
-            <div className="text-[14px] font-medium text-ink-2">
-              Drop your audio file here
-            </div>
-            <div className="text-[12px] text-ink-3 mt-0.5">
-              or click to browse
-            </div>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+        <section className="rounded-lg border border-line bg-paper p-5 shadow-sm sm:p-6">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-3 py-1 text-[11px] font-semibold text-teal">
+            <FileAudio className="h-3.5 w-3.5" aria-hidden />
+            Audio upload
           </div>
-          <input
-            id="audio-file-input"
-            ref={inputRef}
-            type="file"
-            accept={ACCEPT_ATTR}
-            className="sr-only"
-            onChange={handleInputChange}
-            aria-label="Select audio file"
-          />
-        </label>
-      )}
 
-      {/* Staged file preview card */}
-      {staged && !isProcessing && phase.kind !== "done" && (
-        <div className="border border-ink-6 rounded-xl p-5 bg-paper">
-          <div className="flex items-start gap-3">
-            <FileAudio className="w-5 h-5 text-ink-3 mt-0.5 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div
-                className="text-[14px] font-medium text-ink truncate"
-                title={staged.file.name}
-              >
-                {staged.file.name}
-              </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1 text-[12px] text-ink-3">
-                <span>{formatBytes(staged.file.size)}</span>
-                {staged.duration > 0 && (
-                  <span>{formatDuration(staged.duration)}</span>
-                )}
-                <span>
-                  Est. cost: {estimateDeepgramCost(staged.duration).display}
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="text-[11px] text-ink-3 hover:text-ink-2 shrink-0"
-              aria-label="Remove file"
+          <h1 className="font-serif text-[28px] font-medium leading-tight tracking-tight text-ink sm:text-[34px]">
+            Drop an audio or video file
+          </h1>
+          <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-3">
+            Upload a recording and Yentl will transcribe it, detect speakers,
+            then open the Watch view with transcript, claims, markers, and
+            source playback together.
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-2 text-[11.5px] text-ink-3">
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              MP3, WAV, M4A, OGG, WebM
+            </span>
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              Up to 500 MB
+            </span>
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              Up to 4 hours
+            </span>
+          </div>
+
+          {/* Drop zone */}
+          {!staged && !isProcessing && phase.kind !== "done" && phase.kind !== "error" && (
+            <label
+              htmlFor="audio-file-input"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className={[
+                "mt-6 flex min-h-56 cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-8 py-12 text-center transition-colors",
+                isDragging
+                  ? "border-teal bg-teal-soft"
+                  : "border-line-strong bg-cream hover:border-teal/50 hover:bg-teal-soft/50",
+              ].join(" ")}
+              data-testid="drop-zone"
             >
-              Remove
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Processing states */}
-      {isProcessing && (
-        <div className="border border-ink-6 rounded-xl p-5 bg-surface flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <Loader2 className="w-5 h-5 text-ink-3 animate-spin shrink-0" />
-            <div className="text-[13px] text-ink-2">
-              {phase.kind === "probing" && "Checking audio…"}
-              {phase.kind === "uploading" && `Uploading… ${phase.progress}%`}
-              {phase.kind === "processing" && "Transcribing…"}
-              {phase.kind === "ingesting" && "Feeding to fact-checker…"}
-            </div>
-          </div>
-          {phase.kind === "uploading" && (
-            <div className="h-1 rounded-full bg-ink-6 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-accent transition-all duration-150"
-                style={{ width: `${phase.progress}%` }}
+              <Upload className="h-8 w-8 text-ink-4" aria-hidden />
+              <div>
+                <div className="text-[15px] font-semibold text-ink-2">
+                  Drop your recording here
+                </div>
+                <div className="mt-1 text-[12.5px] text-ink-3">
+                  or click to browse from this device
+                </div>
+              </div>
+              <input
+                id="audio-file-input"
+                ref={inputRef}
+                type="file"
+                accept={ACCEPT_ATTR}
+                className="sr-only"
+                onChange={handleInputChange}
+                aria-label="Select audio file"
               />
+            </label>
+          )}
+
+          {/* Staged file preview card */}
+          {staged && !isProcessing && phase.kind !== "done" && (
+            <div className="mt-6 rounded-lg border border-green/25 bg-green-soft p-5">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-paper px-2.5 py-1 text-[11px] font-semibold text-green">
+                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+                Ready to process
+              </div>
+              <div className="flex items-start gap-3 rounded-lg border border-line bg-paper p-4">
+                <FileAudio className="mt-0.5 h-5 w-5 shrink-0 text-ink-3" />
+                <div className="min-w-0 flex-1">
+                  <div
+                    className="truncate text-[14px] font-semibold text-ink"
+                    title={staged.file.name}
+                  >
+                    {staged.file.name}
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-ink-3">
+                    <span>{formatBytes(staged.file.size)}</span>
+                    {staged.duration > 0 && (
+                      <span>{formatDuration(staged.duration)}</span>
+                    )}
+                    <span>
+                      Est. cost: {estimateDeepgramCost(staged.duration).display}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="shrink-0 text-[12px] font-medium text-ink-3 hover:text-ink-2"
+                  aria-label="Remove file"
+                >
+                  Remove
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleProcess}
+                disabled={!staged || isProcessing}
+                className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Process audio
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
             </div>
           )}
-        </div>
-      )}
 
-      {/* Done state */}
-      {phase.kind === "done" && (
-        <div className="border border-green-200 rounded-xl p-5 bg-green-50 text-[13px] text-green-800">
-          Transcription complete — session is live.
-        </div>
-      )}
+          {/* Processing states */}
+          {isProcessing && (
+            <div className="mt-6 flex flex-col gap-3 rounded-lg border border-line bg-cream p-5">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 shrink-0 animate-spin text-teal" />
+                <div>
+                  <div className="text-[13px] font-semibold text-ink-2">
+                    {phase.kind === "probing" && "Checking file details"}
+                    {phase.kind === "uploading" && `Uploading recording ${phase.progress}%`}
+                    {phase.kind === "processing" && "Transcribing recording"}
+                    {phase.kind === "ingesting" && "Building the analysis workspace"}
+                  </div>
+                  <div className="mt-0.5 text-[12px] text-ink-3">
+                    Keep this tab open. Yentl will move to Watch when the transcript is ready.
+                  </div>
+                </div>
+              </div>
+              {phase.kind === "uploading" && (
+                <div className="h-1.5 overflow-hidden rounded-full bg-line">
+                  <div
+                    className="h-full rounded-full bg-teal transition-all duration-150"
+                    style={{ width: `${phase.progress}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
-      {/* Error state */}
-      {phase.kind === "error" && (
-        <div className="mt-4 flex items-start gap-2 text-[13px] text-red-700 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>{phase.message}</span>
-        </div>
-      )}
+          {/* Done state */}
+          {phase.kind === "done" && (
+            <div className="mt-6 flex items-start gap-3 rounded-lg border border-green/25 bg-green-soft px-4 py-3 text-[13px] text-ink-2">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green" aria-hidden />
+              <div>
+                <div className="font-semibold text-ink">Transcription complete.</div>
+                <div className="mt-0.5 text-ink-3">Opening the synchronized Watch view now.</div>
+              </div>
+            </div>
+          )}
 
-      {/* Process button */}
-      {staged && !isProcessing && phase.kind !== "done" && (
-        <button
-          type="button"
-          onClick={handleProcess}
-          disabled={!staged || isProcessing}
-          className="mt-5 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-ink text-bg text-[14px] font-medium px-5 py-2.5 hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          Process audio →
-        </button>
-      )}
+          {/* Error state */}
+          {phase.kind === "error" && (
+            <div className="mt-5 flex items-start gap-2 rounded-lg border border-red/20 bg-red-soft px-4 py-3 text-[13px] text-red">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{phase.message}</span>
+            </div>
+          )}
 
-      {/* After error: re-show drop zone so user can try again */}
-      {phase.kind === "error" && !staged && (
-        <label
-          htmlFor="audio-file-input-retry"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className="mt-4 flex items-center justify-center gap-2 border-2 border-dashed border-ink-6 hover:border-ink-4 rounded-xl px-8 py-6 cursor-pointer transition-colors text-[13px] text-ink-3"
-          data-testid="drop-zone"
-        >
-          <Upload className="w-4 h-4" />
-          Try another file
-          <input
-            id="audio-file-input-retry"
-            type="file"
-            accept={ACCEPT_ATTR}
-            className="sr-only"
-            onChange={handleInputChange}
-            aria-label="Select audio file"
-          />
-        </label>
-      )}
+          {/* After error: re-show drop zone so user can try again */}
+          {phase.kind === "error" && !staged && (
+            <label
+              htmlFor="audio-file-input-retry"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              className="mt-4 flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-line-strong px-8 py-6 text-[13px] text-ink-3 transition-colors hover:border-teal/50 hover:bg-teal-soft/50"
+              data-testid="drop-zone"
+            >
+              <Upload className="h-4 w-4" aria-hidden />
+              Try another file
+              <input
+                id="audio-file-input-retry"
+                type="file"
+                accept={ACCEPT_ATTR}
+                className="sr-only"
+                onChange={handleInputChange}
+                aria-label="Select audio file"
+              />
+            </label>
+          )}
+        </section>
+
+        <aside className="grid gap-3">
+          <section className="rounded-lg border border-line bg-cream p-5">
+            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-4">
+              <ListChecks className="h-3.5 w-3.5" aria-hidden />
+              What happens next
+            </div>
+            <div className="grid gap-2">
+              <AudioStep label="Upload" body="Large files show upload progress before transcription." />
+              <AudioStep label="Transcribe" body="Deepgram turns the recording into timed speech segments." />
+              <AudioStep label="Review" body="Yentl opens Watch with playback, transcript, claims, and markers." />
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-teal/20 bg-teal-soft p-4 text-[12.5px] leading-relaxed text-ink-3">
+            <div className="mb-2 flex items-center gap-2 font-semibold text-teal">
+              <ShieldCheck className="h-4 w-4" aria-hidden />
+              Upload note
+            </div>
+            Audio is processed to create a transcript for this session. Use browser-tab capture instead
+            when you want to keep an online media page visible beside Yentl.
+          </section>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+function AudioStep({ label, body }: { label: string; body: string }) {
+  return (
+    <div className="rounded-md border border-line bg-paper px-3 py-3">
+      <div className="text-[12.5px] font-semibold text-ink-2">{label}</div>
+      <div className="mt-0.5 text-[12px] leading-snug text-ink-3">{body}</div>
     </div>
   );
 }

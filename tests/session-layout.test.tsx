@@ -82,11 +82,21 @@ type StoreState = {
   speakersMode: boolean;
   source: { kind: string };
   prerecordStage: "picker" | "selected";
+  micDeviceId: string | null;
+  micConsentAccepted: boolean;
+  transcript: unknown[];
+  claims: unknown[];
+  markers: unknown[];
   setInterim: (t: string) => void;
   appendFinal: (seg: unknown) => void;
   setRecording: (b: boolean) => void;
   setMicStream: (stream: MediaStream | null) => void;
+  setMicDeviceId: (deviceId: string | null) => void;
+  setMicConsentAccepted: (accepted: boolean) => void;
+  setSource: (source: unknown) => void;
+  setPrerecordStage: (stage: "picker" | "selected") => void;
   startSession: () => void;
+  reset: () => void;
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
@@ -97,11 +107,21 @@ function makeStore(overrides: Partial<StoreState> = {}): StoreState {
     speakersMode: false,
     source: { kind: "mic" },
     prerecordStage: "picker",
+    micDeviceId: null,
+    micConsentAccepted: false,
+    transcript: [],
+    claims: [],
+    markers: [],
     setInterim: vi.fn(),
     appendFinal: vi.fn(),
     setRecording: vi.fn(),
     setMicStream: vi.fn(),
+    setMicDeviceId: vi.fn(),
+    setMicConsentAccepted: vi.fn(),
+    setSource: vi.fn(),
+    setPrerecordStage: vi.fn(),
     startSession: vi.fn(),
+    reset: vi.fn(),
     ...overrides,
   };
 }
@@ -172,7 +192,8 @@ describe("SessionLayout – error banner", () => {
     // Arrange: mic throws a permission error
     mockStartMic = vi.fn().mockRejectedValue(new Error("NotAllowedError: permission denied"));
     const startedAt = new Date().toISOString();
-    mockStore(makeStore({ startedAt, isRecording: true }));
+    const store = makeStore({ startedAt, isRecording: true, micDeviceId: "usb-mic" });
+    mockStore(store);
 
     await act(async () => {
       render(
@@ -185,6 +206,59 @@ describe("SessionLayout – error banner", () => {
     const alert = screen.queryByRole("alert");
     expect(alert).toBeTruthy();
     expect(alert?.textContent).toContain("Microphone access was blocked");
+    expect(alert?.textContent).toContain("site settings");
+    expect(alert?.textContent).toContain("pick a different");
+    expect(store.reset).toHaveBeenCalled();
+    expect(store.setSource).toHaveBeenCalledWith({ kind: "mic" });
+    expect(store.setMicDeviceId).toHaveBeenCalledWith("usb-mic");
+    expect(store.setMicConsentAccepted).toHaveBeenCalledWith(false);
+    expect(store.setPrerecordStage).toHaveBeenCalledWith("selected");
+    expect(screen.getByRole("button", { name: /Try microphone again/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Upload recording/i })).toBeTruthy();
+  });
+
+  it("mic permission recovery can retry the microphone", async () => {
+    mockStartMic = vi.fn().mockRejectedValue(new Error("NotAllowedError: permission denied"));
+    const startedAt = new Date().toISOString();
+    const store = makeStore({ startedAt, isRecording: true });
+    mockStore(store);
+
+    await act(async () => {
+      render(
+        <SessionLayout>
+          <div>child</div>
+        </SessionLayout>,
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Try microphone again/i }));
+    expect(store.setRecording).toHaveBeenCalledWith(true);
+  });
+
+  it("mic permission recovery can switch to upload without leaving a dead end", async () => {
+    mockStartMic = vi.fn().mockRejectedValue(new Error("NotAllowedError: permission denied"));
+    const startedAt = new Date().toISOString();
+    const store = makeStore({ startedAt, isRecording: true });
+    mockStore(store);
+
+    await act(async () => {
+      render(
+        <SessionLayout>
+          <div>child</div>
+        </SessionLayout>,
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Upload recording/i }));
+    expect(store.reset).toHaveBeenCalled();
+    expect(store.setSource).toHaveBeenCalledWith({
+      kind: "audio_file",
+      blob_url: "",
+      duration_sec: 0,
+      filename: "",
+      mime: "",
+    });
+    expect(store.setPrerecordStage).toHaveBeenCalledWith("selected");
   });
 
   it("error banner appears when deepgram token fetch fails", async () => {
@@ -281,7 +355,7 @@ describe("SessionLayout – lifecycle: unmount teardown", () => {
 describe("SessionLayout – lifecycle: start on isRecording", () => {
   it("opens deepgram stream and mic when startedAt set + isRecording true", async () => {
     const startedAt = new Date().toISOString();
-    const store = makeStore({ startedAt, isRecording: true });
+    const store = makeStore({ startedAt, isRecording: true, micDeviceId: "usb-mic" });
     mockStore(store);
 
     await act(async () => {
@@ -294,6 +368,10 @@ describe("SessionLayout – lifecycle: start on isRecording", () => {
 
     expect(mockOpenDeepgramStream).toHaveBeenCalledOnce();
     expect(mockStartMic).toHaveBeenCalledOnce();
+    expect(mockStartMic).toHaveBeenCalledWith(expect.any(Function), {
+      speakersMode: false,
+      deviceId: "usb-mic",
+    });
     expect(store.setMicStream).toHaveBeenCalledWith(expect.any(Object));
   });
 });
@@ -366,11 +444,31 @@ describe("SessionLayout – Space shortcut: picker stage", () => {
 // ─── 8. Space shortcut: mic-selected stage → startSession called ──────────────
 
 describe("SessionLayout – Space shortcut: mic-selected stage", () => {
-  it("calls startSession when Space pressed in selected stage with mic source", () => {
+  it("does NOT call startSession when Space pressed before mic consent", () => {
     const store = makeStore({
       startedAt: null,
       prerecordStage: "selected",
       source: { kind: "mic" },
+      micConsentAccepted: false,
+    });
+    mockStore(store);
+
+    render(
+      <SessionLayout>
+        <div>child</div>
+      </SessionLayout>,
+    );
+
+    fireEvent.keyDown(window, { code: "Space" });
+    expect(store.startSession).not.toHaveBeenCalled();
+  });
+
+  it("calls startSession when Space pressed in selected stage with mic consent", () => {
+    const store = makeStore({
+      startedAt: null,
+      prerecordStage: "selected",
+      source: { kind: "mic" },
+      micConsentAccepted: true,
     });
     mockStore(store);
 

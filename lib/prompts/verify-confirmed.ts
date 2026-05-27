@@ -34,7 +34,9 @@ For each stance_ref, reference a URL you actually visited via web_search:
   source relates to the claim.
 - excerpt: 1–2 sentences quoted or paraphrased from the source.
 
-If web_search returns nothing reliable, label UNVERIFIABLE with score 50,
-explain why, and return an empty stance_refs array.
+If web_search returns nothing reliable, label with the backward-compatible enum
+value UNVERIFIABLE, score 50, explain that no valid backing was found, and
+return an empty stance_refs array. Do not call the fact itself impossible to
+verify; the result is about evidence quality.
 
 If the claim is opinion, label OPINION with score 0 and no stance_refs.`;

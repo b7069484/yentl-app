@@ -1,12 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { ExtensionPanelView } from "@/components/session/extension-panel-view";
 import { useSession } from "@/lib/client/session-store";
 import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 const mocks = vi.hoisted(() => ({
   exportSession: vi.fn(),
+  loadSession: vi.fn(),
   saveSession: vi.fn(),
 }));
 
@@ -15,6 +16,7 @@ vi.mock("@/lib/client/export-actions", () => ({
 }));
 
 vi.mock("@/lib/client/session-storage", () => ({
+  loadSession: (...args: unknown[]) => mocks.loadSession(...args),
   saveSession: (...args: unknown[]) => mocks.saveSession(...args),
 }));
 
@@ -86,8 +88,13 @@ describe("ExtensionPanelView", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mocks.exportSession.mockReset();
+    mocks.loadSession.mockReset();
     mocks.saveSession.mockReset();
     useSession.getState().reset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("renders a compact waiting state for the same-page Chrome extension panel", () => {
@@ -104,10 +111,15 @@ describe("ExtensionPanelView", () => {
 
     render(<ExtensionPanelView />);
 
-    expect(screen.getByText("Waiting")).toBeTruthy();
+    expect(screen.getAllByText("Waiting").length).toBeGreaterThan(0);
     expect(screen.getByText("Fixture video")).toBeTruthy();
     expect(screen.getByText("example.com")).toBeTruthy();
     expect(screen.getByText("Waiting for the extension")).toBeTruthy();
+    const strip = screen.getByTestId("extension-signal-strip");
+    expect(within(strip).getByText("Claim risk")).toBeTruthy();
+    expect(within(strip).getByText("Rhetoric heat")).toBeTruthy();
+    expect(within(strip).getByText("Evidence state")).toBeTruthy();
+    expect(within(strip).getByText("Pulse")).toBeTruthy();
     expect(screen.queryByText(/How would you like to fact-check/i)).toBeNull();
   });
 
@@ -165,6 +177,10 @@ describe("ExtensionPanelView", () => {
     expect(screen.getByText("Transcribing")).toBeTruthy();
     expect(screen.getByText("Council hearing")).toBeTruthy();
     expect(screen.getByText("Building the live transcript")).toBeTruthy();
+    const strip = screen.getByTestId("extension-signal-strip");
+    expect(within(strip).getByText("Claim risk")).toBeTruthy();
+    expect(within(strip).getByText("High")).toBeTruthy();
+    expect(within(strip).getByText("Evidence state")).toBeTruthy();
     expect(screen.getByText(/doubled the budget without showing/i)).toBeTruthy();
     expect(screen.getByRole("tab", { name: /Transcript/i })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: /Claims/i })).toBeTruthy();
@@ -174,7 +190,7 @@ describe("ExtensionPanelView", () => {
     fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
 
     expect(screen.getByText("3 claims · 2 false/misleading")).toBeTruthy();
-    expect(screen.getByText("FALSE")).toBeTruthy();
+    expect(screen.getAllByText("False").length).toBeGreaterThan(0);
     expect(screen.getByText("Devil's advocate")).toBeTruthy();
     expect(screen.getByText("Grok")).toBeTruthy();
     expect(screen.getByText(/audit claim outruns the visible evidence/i)).toBeTruthy();
@@ -202,6 +218,7 @@ describe("ExtensionPanelView", () => {
     mocks.saveSession.mockReturnValue(new Promise((resolve) => {
       resolveSave = resolve;
     }));
+    mocks.loadSession.mockResolvedValue({ session: {} });
 
     useSession.getState().setSource({
       kind: "browser_tab",
@@ -213,9 +230,9 @@ describe("ExtensionPanelView", () => {
 
     render(<ExtensionPanelView />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Full workspace/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Open snapshot/i }));
 
-    expect(await screen.findByText("Opening...")).toBeTruthy();
+    expect(await screen.findByText("Saving...")).toBeTruthy();
     resolveSave({ id: "saved-session-1" });
     await waitFor(() => {
       expect(mocks.saveSession).toHaveBeenCalledWith(
@@ -227,6 +244,7 @@ describe("ExtensionPanelView", () => {
         }),
         { name: "Browser tab: Panel video" },
       );
+      expect(mocks.loadSession).toHaveBeenCalledWith("saved-session-1");
       expect(openedWindow.location.href).toContain("/session?restore=saved-session-1&view=overview");
     });
   });
@@ -245,12 +263,27 @@ describe("ExtensionPanelView", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
 
-    expect(screen.getByText("UNVERIFIABLE")).toBeTruthy();
+    expect(screen.getAllByText("No reliable backing").length).toBeGreaterThan(0);
     expect(screen.getByText("Devil's advocate")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
 
-    expect(screen.getByText("Premature certainty")).toBeTruthy();
+    expect(screen.getAllByText("Premature certainty").length).toBeGreaterThan(0);
     expect(screen.queryByText("Overview")).toBeNull();
+  });
+
+  it("does not populate validation fixtures when the demo is disabled", () => {
+    vi.stubEnv("NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO", "1");
+    window.history.pushState(
+      {},
+      "",
+      "/session?surface=extension-panel&source=browser-tab&bridge=preview&title=Fixture%20video&demo=validation",
+    );
+
+    render(<ExtensionPanelView />);
+
+    expect(screen.getAllByText("Preparing").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/library budget increased by 12 percent/i)).toBeNull();
+    expect(screen.queryByText("Premature certainty")).toBeNull();
   });
 });

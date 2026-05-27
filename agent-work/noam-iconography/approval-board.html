@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Noam Marker Iconography Approval Board</title>
+    <style>
+      :root {
+        --paper: #ffffff;
+        --warm-paper: #fbfcf8;
+        --ink: #18222d;
+        --muted: #5d6876;
+        --rule: #d7dee7;
+        --soft: #eef2f5;
+        --bias: #b8841f;
+        --fallacy: #b84c5a;
+        --rhetoric: #17847d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--warm-paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+      }
+
+      main {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 32px;
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+        gap: 24px;
+        align-items: end;
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 34px;
+        line-height: 1.08;
+        font-weight: 780;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 15px;
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .stat {
+        min-height: 78px;
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        border-radius: 8px;
+        padding: 12px;
+      }
+
+      .stat b {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.25;
+      }
+
+      .notice {
+        margin: 20px 0;
+        border: 1px solid #c9d8d5;
+        background: #f4fbf9;
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: #255b56;
+        font-size: 14px;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 0 22px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 30px;
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        border-radius: 8px;
+        min-height: 520px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .preview {
+        height: 180px;
+        display: grid;
+        place-items: center;
+        background: #ffffff;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .preview svg {
+        width: 148px;
+        height: 148px;
+        overflow: visible;
+      }
+
+      .body {
+        padding: 14px;
+        display: grid;
+        gap: 11px;
+      }
+
+      .eyebrow {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.15;
+      }
+
+      .id {
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .section {
+        display: grid;
+        gap: 4px;
+      }
+
+      .section b {
+        font-size: 12px;
+      }
+
+      .section p {
+        font-size: 13px;
+        line-height: 1.42;
+      }
+
+      .mini {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .swatch {
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+      }
+
+      .color {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 1px solid rgba(24, 34, 45, 0.18);
+        flex: 0 0 auto;
+      }
+
+      .swatch span {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .footer {
+        margin-top: auto;
+        border-top: 1px solid var(--rule);
+        padding: 10px 14px 12px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .type-bias {
+        --accent: var(--bias);
+      }
+
+      .type-fallacy {
+        --accent: var(--fallacy);
+      }
+
+      .type-rhetoric {
+        --accent: var(--rhetoric);
+      }
+
+      @media (max-width: 1180px) {
+        .grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 900px) {
+        main {
+          padding: 22px;
+        }
+
+        header {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 620px) {
+        main {
+          padding: 16px;
+        }
+
+        h1 {
+          font-size: 27px;
+        }
+
+        .meta,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Noam Marker Iconography Approval Board</h1>
+          <p>Static art direction for the Yentl bias, fallacy, and rhetoric marker system. This board shows placeholder compositions for review before any generated masters or shipped marker assets are touched.</p>
+        </div>
+        <div class="meta" aria-label="Board summary">
+          <div class="stat"><b>12</b><span>Pilot marker directions</span></div>
+          <div class="stat"><b>3</b><span>Recommended first generation candidates</span></div>
+          <div class="stat"><b>0</b><span>Shipped marker assets changed</span></div>
+        </div>
+      </header>
+
+      <div class="notice">These images are not source evidence. They are educational marker visuals only.</div>
+
+      <div class="legend" aria-label="Palette legend">
+        <span class="pill"><span class="dot" style="--accent: var(--bias)"></span>Bias accent</span>
+        <span class="pill"><span class="dot" style="--accent: var(--fallacy)"></span>Fallacy accent</span>
+        <span class="pill"><span class="dot" style="--accent: var(--rhetoric)"></span>Rhetoric accent</span>
+        <span class="pill">White field, deep ink, one breakout detail</span>
+      </div>
+
+      <section class="grid" id="board" aria-label="Pilot marker cards"></section>
+    </main>
+
+    <script>
+      const markers = [
+        {
+          id: "loaded_language",
+          name: "Loaded Language",
+          type: "rhetoric",
+          concept: "Charged wording weighs down a neutral message.",
+          composition: "Speech bubble in a circle, with one heavy droplet breaking the lower rim.",
+          readability: "24px: bubble plus droplet. 64px: ripple and weight detail.",
+          motion: "Droplet settles; small ripple moves through the bubble.",
+          svg: "loaded"
+        },
+        {
+          id: "ad_hominem",
+          name: "Ad Hominem",
+          type: "fallacy",
+          concept: "The attack hits the person while the claim remains untouched.",
+          composition: "Speaker silhouette, blank claim card, accent strike breaking the upper rim.",
+          readability: "24px: profile and strike. 64px: untouched claim card adds meaning.",
+          motion: "Strike pulses once; claim stays still.",
+          svg: "ad"
+        },
+        {
+          id: "confirmation_bias",
+          name: "Confirmation Bias",
+          type: "bias",
+          concept: "A lens enlarges matching evidence and ignores the contrary piece.",
+          composition: "Magnifier over matching tiles, with one gray tile outside the badge.",
+          readability: "24px: lens and selected tiles. 64px: excluded tile becomes clear.",
+          motion: "Lens nudges over matching tiles; excluded tile remains fixed.",
+          svg: "confirmation"
+        },
+        {
+          id: "straw_man",
+          name: "Straw Man",
+          type: "fallacy",
+          concept: "A flimsy decoy receives the attack instead of the real argument.",
+          composition: "Thin decoy figure and a larger distorted shadow crossing the rim.",
+          readability: "24px: flimsy silhouette. 64px: distortion shadow.",
+          motion: "Shadow stretches subtly while the decoy stays fixed.",
+          svg: "straw"
+        },
+        {
+          id: "cherry_picking",
+          name: "Cherry Picking",
+          type: "fallacy",
+          concept: "One favorable point is plucked from a larger ignored field.",
+          composition: "Tweezer lifts one accent bead from quiet data points.",
+          readability: "24px: selected bead and tweezer. 64px: ignored field.",
+          motion: "Selected bead lifts; background points remain calm.",
+          svg: "cherry"
+        },
+        {
+          id: "false_dilemma",
+          name: "False Dilemma Fallacy",
+          type: "fallacy",
+          concept: "Two imposed gates hide a third path.",
+          composition: "Path squeezed through two heavy gates; thin third route escapes the rim.",
+          readability: "24px: two-gate squeeze. 64px: hidden third route.",
+          motion: "Third path appears softly while gates hold.",
+          svg: "dilemma"
+        },
+        {
+          id: "appeal_to_authority",
+          name: "Appeal to Authority",
+          type: "fallacy",
+          concept: "A large authority seal overshadows smaller evidence.",
+          composition: "Oversized blank seal or lectern eclipses a small evidence shape.",
+          readability: "24px: big seal versus small sheet. 64px: imbalance.",
+          motion: "Seal swells gently; evidence remains tucked behind.",
+          svg: "authority"
+        },
+        {
+          id: "appeal_to_fear",
+          name: "Appeal to Fear",
+          type: "fallacy",
+          concept: "A small alarm throws an exaggerated threat shadow.",
+          composition: "Compact alarm source with a large accent shadow breaking the rim.",
+          readability: "24px: alarm plus oversized shadow. 64px: disproportionality.",
+          motion: "Shadow pulses outward and returns.",
+          svg: "fear"
+        },
+        {
+          id: "gish_gallop",
+          name: "Gish Gallop",
+          type: "fallacy",
+          concept: "Too many claim tiles rush past before review can catch them.",
+          composition: "Diagonal stream of blank tiles spills over the circle edge.",
+          readability: "24px: diagonal overload. 64px: review element partly obscured.",
+          motion: "Tile stream loops in a short rush.",
+          svg: "gish"
+        },
+        {
+          id: "weasel_words",
+          name: "Weasel Words",
+          type: "rhetoric",
+          concept: "Soft phrasing dissolves into fog and hides the source.",
+          composition: "Blank quote capsules become haze over a hidden source peg.",
+          readability: "24px: mist over source. 64px: dissolved speech shapes.",
+          motion: "Fog drifts slightly; hidden peg stays barely visible.",
+          svg: "weasel"
+        },
+        {
+          id: "dog_whistles",
+          name: "Dog Whistles",
+          type: "rhetoric",
+          concept: "A coded public signal activates only a hidden audience.",
+          composition: "Whistle object, selective signal rings, a few highlighted listener dots.",
+          readability: "24px: whistle and rings. 64px: selective response dots.",
+          motion: "Quiet signal ring expands; selected dots brighten.",
+          svg: "whistle"
+        },
+        {
+          id: "red_herring",
+          name: "Red Herring",
+          type: "fallacy",
+          concept: "A vivid diversion pulls the original path sideways.",
+          composition: "Straight path interrupted by an accent diversion shape exiting the rim.",
+          readability: "24px: path pulled aside. 64px: interrupting diversion shape.",
+          motion: "Path tugs sideways once, then resets.",
+          svg: "red"
+        }
+      ];
+
+      const accentFor = { bias: "#B8841F", fallacy: "#B84C5A", rhetoric: "#17847D" };
+      const ink = "#18222D";
+      const rule = "#D7DEE7";
+      const soft = "#E9EDF2";
+
+      function badge(inner) {
+        return `
+          <svg viewBox="0 0 160 160" role="img" aria-hidden="true">
+            <circle cx="80" cy="80" r="58" fill="#fff" stroke="${rule}" stroke-width="3"/>
+            ${inner}
+          </svg>`;
+      }
+
+      function art(kind, accent) {
+        const common = {
+          loaded: `<path d="M48 61c0-13 11-22 32-22s32 9 32 22-11 22-32 22H68l-15 14 4-18c-6-4-9-10-9-18Z" fill="${soft}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M102 82c10 15 17 24 17 34 0 11-8 18-18 18s-18-7-18-18c0-10 8-19 19-34Z" fill="${accent}"/><path d="M63 60c10-6 25-6 35 0" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`,
+          ad: `<path d="M70 54c0 10-7 17-16 17S38 64 38 54s7-17 16-17 16 7 16 17Z" fill="${soft}" stroke="${ink}" stroke-width="4"/><path d="M36 105c3-18 13-27 30-27s27 9 30 27" fill="none" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><rect x="92" y="67" width="30" height="40" rx="5" fill="#fff" stroke="${ink}" stroke-width="4"/><path d="M29 34 79 75" stroke="${accent}" stroke-width="10" stroke-linecap="round"/><path d="M73 61 83 79 62 75" fill="${accent}"/>`,
+          confirmation: `<rect x="54" y="66" width="23" height="23" rx="5" fill="${accent}"/><rect x="81" y="66" width="23" height="23" rx="5" fill="${accent}" opacity="0.75"/><rect x="118" y="105" width="24" height="24" rx="5" fill="${soft}" stroke="${rule}" stroke-width="3"/><circle cx="78" cy="74" r="40" fill="none" stroke="${ink}" stroke-width="6"/><path d="M105 101 126 122" stroke="${ink}" stroke-width="7" stroke-linecap="round"/>`,
+          straw: `<path d="M79 37v72M55 63l49 2M62 111l17-35 19 35" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><path d="M92 52c25 20 39 42 40 72-22-8-43-22-63-43 7-13 15-23 23-29Z" fill="${accent}" opacity="0.42"/><path d="M43 115h71" stroke="${ink}" stroke-width="5" stroke-linecap="round"/>`,
+          cherry: `<path d="M45 105c24-24 48-38 80-43" fill="none" stroke="${ink}" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="95" r="5" fill="${soft}" stroke="${ink}" stroke-width="2"/><circle cx="78" cy="82" r="5" fill="${soft}" stroke="${ink}" stroke-width="2"/><circle cx="101" cy="71" r="5" fill="${soft}" stroke="${ink}" stroke-width="2"/><circle cx="124" cy="58" r="9" fill="${accent}"/><path d="M114 31 139 54M132 29l-20 24" stroke="${ink}" stroke-width="5" stroke-linecap="round"/>`,
+          dilemma: `<path d="M44 116c9-26 23-43 36-58 14 15 28 32 36 58" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M66 66h-24M94 66h24" stroke="${accent}" stroke-width="9" stroke-linecap="round"/><path d="M78 116c-1-24-12-37-31-42" fill="none" stroke="${accent}" stroke-width="5" stroke-linecap="round"/><path d="M80 58v-18" stroke="${ink}" stroke-width="6" stroke-linecap="round"/>`,
+          authority: `<path d="M80 31 120 54v45H40V54L80 31Z" fill="${soft}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><circle cx="80" cy="64" r="20" fill="#fff" stroke="${accent}" stroke-width="7"/><rect x="55" y="96" width="50" height="24" rx="5" fill="${ink}"/><rect x="98" y="85" width="26" height="36" rx="5" fill="#fff" stroke="${ink}" stroke-width="4"/>`,
+          fear: `<path d="M58 103h44l-6-32c-2-11-9-18-16-18s-14 7-16 18l-6 32Z" fill="${soft}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><path d="M70 103h20" stroke="${ink}" stroke-width="8" stroke-linecap="round"/><path d="M94 44c30 20 43 46 38 79-19-7-36-23-51-48l13-31Z" fill="${accent}" opacity="0.58"/><path d="M63 48 51 35M97 48l12-13" stroke="${accent}" stroke-width="6" stroke-linecap="round"/>`,
+          gish: `<circle cx="54" cy="99" r="22" fill="none" stroke="${ink}" stroke-width="5"/><path d="M71 116 55 100" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><g transform="rotate(-18 80 80)"><rect x="53" y="42" width="22" height="16" rx="5" fill="${accent}"/><rect x="80" y="45" width="22" height="16" rx="5" fill="${accent}" opacity="0.85"/><rect x="106" y="48" width="22" height="16" rx="5" fill="${accent}" opacity="0.7"/><rect x="63" y="68" width="22" height="16" rx="5" fill="${accent}" opacity="0.78"/><rect x="91" y="71" width="22" height="16" rx="5" fill="${accent}"/><rect x="119" y="74" width="22" height="16" rx="5" fill="${accent}" opacity="0.9"/></g>`,
+          weasel: `<rect x="50" y="54" width="50" height="20" rx="10" fill="${soft}" stroke="${ink}" stroke-width="4"/><rect x="62" y="82" width="55" height="18" rx="9" fill="${soft}" stroke="${ink}" stroke-width="4"/><path d="M47 105c25-13 57-13 86 2" fill="none" stroke="${accent}" stroke-width="12" stroke-linecap="round" opacity="0.55"/><path d="M68 118c17-7 36-7 55 1" fill="none" stroke="${accent}" stroke-width="8" stroke-linecap="round" opacity="0.42"/><circle cx="99" cy="109" r="7" fill="${ink}" opacity="0.45"/>`,
+          whistle: `<path d="M53 82h45c9 0 16 7 16 16s-7 16-16 16H69c-10 0-18-8-18-18V82Z" fill="${soft}" stroke="${ink}" stroke-width="4" stroke-linejoin="round"/><circle cx="96" cy="98" r="8" fill="#fff" stroke="${ink}" stroke-width="4"/><path d="M104 76c11-9 22-11 33-6M110 61c16-12 32-15 48-8" fill="none" stroke="${accent}" stroke-width="6" stroke-linecap="round"/><circle cx="62" cy="126" r="5" fill="${accent}"/><circle cx="80" cy="130" r="4" fill="${ink}" opacity="0.35"/><circle cx="96" cy="126" r="5" fill="${accent}"/>`,
+          red: `<path d="M35 76c26 0 44 8 58 24" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M82 97c18 21 37 28 64 21" fill="none" stroke="${ink}" stroke-width="6" stroke-linecap="round"/><path d="M68 56c21-14 46-9 62 16-18 11-43 12-62-16Z" fill="${accent}"/><circle cx="116" cy="71" r="3" fill="#fff"/><path d="M70 57 55 49" stroke="${accent}" stroke-width="7" stroke-linecap="round"/>`
+        };
+        return badge(common[kind]);
+      }
+
+      function card(marker) {
+        const accent = accentFor[marker.type];
+        return `
+          <article class="card type-${marker.type}">
+            <div class="preview">${art(marker.svg, accent)}</div>
+            <div class="body">
+              <div class="eyebrow"><span>${marker.type}</span><span>placeholder</span></div>
+              <div>
+                <h2>${marker.name}</h2>
+                <div class="id">${marker.id}</div>
+              </div>
+              <div class="section"><b>Concept</b><p>${marker.concept}</p></div>
+              <div class="section"><b>Composition</b><p>${marker.composition}</p></div>
+              <div class="mini">
+                <div class="swatch"><span class="color"></span><span>Deep ink plus ${marker.type} accent</span></div>
+                <div class="swatch"><span class="color" style="background:#18222D"></span><span>White field, circle badge</span></div>
+              </div>
+              <div class="section"><b>Scale</b><p>${marker.readability}</p></div>
+            </div>
+            <div class="footer">Later motion affordance: ${marker.motion}</div>
+          </article>`;
+      }
+
+      document.getElementById("board").innerHTML = markers.map(card).join("");
+    </script>
+  </body>
+</html>

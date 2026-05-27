@@ -57,7 +57,7 @@ describe("extension content script panel", () => {
     const iframe = host?.shadowRoot?.querySelector("iframe");
     expect(iframe?.getAttribute("src")).toContain("http://localhost:3000/session");
     expect(iframe?.getAttribute("src")).toContain("surface=extension-panel");
-    expect(iframe?.getAttribute("src")).toContain("bridge=bridge-123");
+    expect(iframe?.getAttribute("src")).not.toContain("bridge=bridge-123");
     expect(sendResponse).toHaveBeenCalledWith({ ok: true });
   });
 
@@ -111,7 +111,6 @@ describe("extension content script panel", () => {
         data: {
           source: "yentl-web-app",
           type: "bridge-ready",
-          bridgeToken: "bridge-article",
         },
         origin: "http://localhost:3000",
         source: panelWindow,
@@ -200,7 +199,6 @@ describe("extension content script panel", () => {
         data: {
           source: "yentl-web-app",
           type: "bridge-ready",
-          bridgeToken: "bridge-wiki",
         },
         origin: "http://localhost:3000",
         source: panelWindow,

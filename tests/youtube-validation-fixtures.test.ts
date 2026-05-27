@@ -1,10 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   loadYouTubeValidationFixture,
   parseVtt,
 } from "@/lib/server/youtube-validation-fixtures";
 
 describe("youtube validation fixtures", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("parses WebVTT cues into transcript segments", () => {
     const segments = parseVtt(`WEBVTT
 
@@ -52,5 +56,11 @@ Second caption.
 
   it("returns null for unregistered video IDs", async () => {
     await expect(loadYouTubeValidationFixture("dQw4w9WgXcQ")).resolves.toBeNull();
+  });
+
+  it("does not load curated validation fixtures in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+
+    await expect(loadYouTubeValidationFixture("fTznEIZRkLg")).resolves.toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import { SourcePicker } from "@/components/session/source-picker";
 import { MicPreRecordPane } from "@/components/session/ingest-panes/mic-prerecord-pane";
 import { TextIngestPane } from "@/components/session/ingest-panes/text-ingest-pane";
@@ -6,6 +7,7 @@ import { AudioIngestPane } from "@/components/session/ingest-panes/audio-ingest-
 import { YoutubeIngestPane } from "@/components/session/ingest-panes/youtube-ingest-pane";
 import { MediaUrlIngestPane } from "@/components/session/ingest-panes/media-url-ingest-pane";
 import { BrowserTabIngestPane } from "@/components/session/ingest-panes/browser-tab-ingest-pane";
+import { ClaimQuickCheckPane } from "@/components/session/ingest-panes/claim-quick-check-pane";
 import { useSession } from "@/lib/client/session-store";
 
 /**
@@ -14,10 +16,17 @@ import { useSession } from "@/lib/client/session-store";
  * - "selected" → dispatch to per-source pane
  */
 export function SourceRouter() {
+  const searchParams = useSearchParams();
   const prerecordStage = useSession((s) => s.prerecordStage);
-  const sourceKind = useSession((s) => s.source.kind);
+  const source = useSession((s) => s.source);
+  const sourceKind = source.kind;
+  const directYouTubeUrl =
+    searchParams.get("source") === "youtube" ? searchParams.get("url") : null;
 
   if (prerecordStage === "picker") {
+    if (directYouTubeUrl) {
+      return <YoutubeIngestPane initialUrlOverride={directYouTubeUrl} />;
+    }
     return <SourcePicker />;
   }
 
@@ -28,6 +37,7 @@ export function SourceRouter() {
     case "browser_tab":
       return <BrowserTabIngestPane />;
     case "text_doc":
+      if (source.intent === "claim_only") return <ClaimQuickCheckPane />;
       return <TextIngestPane />;
     case "audio_file":
       return <AudioIngestPane />;

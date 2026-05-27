@@ -147,8 +147,19 @@ beforeEach(() => {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("Save button — SessionShell", () => {
-  it("Save button is visible when startedAt is set", () => {
-    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+  it("Save button is visible when startedAt is set and the session has captured content", () => {
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
+    }));
     render(<SessionShell>body</SessionShell>);
     expect(screen.getByRole("button", { name: /Save/ })).toBeTruthy();
   });
@@ -159,8 +170,30 @@ describe("Save button — SessionShell", () => {
     expect(screen.queryByRole("button", { name: /Save/ })).toBeNull();
   });
 
+  it("Save button is not visible when a session has started but has no durable content", () => {
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [],
+      claims: [],
+      markers: [],
+    }));
+    render(<SessionShell>body</SessionShell>);
+    expect(screen.queryByRole("button", { name: /Save/ })).toBeNull();
+  });
+
   it("clicking Save button opens SaveSessionDialog", () => {
-    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
+    }));
     render(<SessionShell>body</SessionShell>);
     expect(screen.queryByRole("dialog")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /Save/ }));
@@ -171,6 +204,15 @@ describe("Save button — SessionShell", () => {
     mockStore(makeDefaultStoreState({
       startedAt: new Date().toISOString(),
       title: "My session title",
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
     }));
     render(<SessionShell>body</SessionShell>);
     fireEvent.click(screen.getByRole("button", { name: /Save/ }));
@@ -180,7 +222,18 @@ describe("Save button — SessionShell", () => {
   });
 
   it("clicking Save in dialog calls saveSession with the typed name", async () => {
-    const state = makeDefaultStoreState({ startedAt: new Date().toISOString() });
+    const state = makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
+    });
     mockStore(state);
     render(<SessionShell>body</SessionShell>);
     fireEvent.click(screen.getByRole("button", { name: /Save/ }));
@@ -199,8 +252,42 @@ describe("Save button — SessionShell", () => {
     );
   });
 
+  it("shows a visible retry error when local save fails", async () => {
+    mockSaveSession.mockRejectedValueOnce(new Error("IndexedDB is blocked"));
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
+    }));
+    render(<SessionShell>body</SessionShell>);
+    fireEvent.click(screen.getByRole("button", { name: /Save/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("alert").textContent).toContain("IndexedDB is blocked"),
+    );
+  });
+
   it("clicking Cancel in dialog closes it without calling saveSession", () => {
-    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+    mockStore(makeDefaultStoreState({
+      startedAt: new Date().toISOString(),
+      transcript: [
+        {
+          text: "Captured line.",
+          start: 0,
+          end: 2,
+          is_final: true,
+          speaker_id: null,
+        },
+      ],
+    }));
     render(<SessionShell>body</SessionShell>);
     fireEvent.click(screen.getByRole("button", { name: /Save/ }));
     fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));

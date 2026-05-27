@@ -1,0 +1,2 @@
+"agent","slug","lane","status","latest_update","roadblock_dependency","next_checkpoint","last_updated"
+"Noam","noam-iconography","Marker iconography image direction","ready_for_review","Static style bible, 12-pilot prompt manifest, local approval board, and production checklist are prepared. No shipped marker assets were touched.","Israel approval required before generation or integration","Review approval-board.html and approve first three generation ids: loaded_language, ad_hominem, confirmation_bias","2026-05-21"

@@ -32,8 +32,8 @@ export function SessionHeader({
     : 0;
 
   return (
-    <header className="flex items-center justify-between gap-4 border-b border-border/60 bg-card/60 px-5 py-3 backdrop-blur">
-      <div className="flex items-center gap-3">
+    <header className="flex flex-col gap-3 border-b border-border/60 bg-card/60 px-4 py-3 backdrop-blur lg:flex-row lg:items-center lg:justify-between lg:px-5">
+      <div className="flex min-w-0 items-center gap-3">
         <div className="flex items-center gap-2 rounded-full border border-border/60 bg-background px-2.5 py-1">
           <span
             aria-hidden
@@ -58,11 +58,12 @@ export function SessionHeader({
         </div>
       </div>
       <SpeakerChipRow />
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
         <SpeakersModeToggle />
         <Button
           variant="outline"
           size="sm"
+          className="h-11 px-3 sm:h-10"
           onClick={toggleMode}
           aria-pressed={mode === "D"}
         >
@@ -78,13 +79,14 @@ export function SessionHeader({
             Pause
           </Button>
         ) : (
-          <Button size="sm" onClick={onStart}>
+          <Button size="sm" className="h-11 px-3 sm:h-10" onClick={onStart}>
             {startedAt ? "Resume" : "Record"}
           </Button>
         )}
         <Button
           variant="outline"
           size="sm"
+          className="h-11 px-3 sm:h-10"
           onClick={onExport}
           disabled={!hasContent}
           title={hasContent ? "Export this session" : "Capture content first"}
@@ -94,7 +96,7 @@ export function SessionHeader({
         <Button
           variant="outline"
           size="sm"
-          className="session-header-end border-destructive text-destructive hover:bg-destructive/10"
+          className="session-header-end h-11 border-destructive px-3 text-destructive hover:bg-destructive/10 sm:h-10"
           onClick={onEnd}
         >
           End session
@@ -118,7 +120,7 @@ function SpeakersModeToggle() {
           ? "Speakers mode ON — capturing audio played through this device. Click to disable."
           : "Speakers mode OFF — your voice only. Click to also capture audio played through this device's speakers."
       }
-      className="gap-1.5"
+      className="h-11 gap-1.5 px-3 sm:h-10"
     >
       <Volume2 className="h-3.5 w-3.5" />
       <span className="hidden sm:inline">Speakers</span>

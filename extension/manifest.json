@@ -6,7 +6,6 @@
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "offscreen", "scripting", "storage", "tabCapture", "tabs"],
   "host_permissions": [
-    "http://localhost:3000/*",
     "https://yentl.it/*",
     "https://factify-rose.vercel.app/*",
     "https://api.deepgram.com/*"
@@ -18,11 +17,19 @@
   "action": {
     "default_title": "Listen with Yentl"
   },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+Y",
+        "mac": "Alt+Shift+Y"
+      },
+      "description": "Listen with Yentl"
+    }
+  },
   "options_page": "options.html",
   "content_scripts": [
     {
       "matches": [
-        "http://localhost:3000/*",
         "https://yentl.it/*",
         "https://factify-rose.vercel.app/*"
       ],
@@ -31,6 +38,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:3000 https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
   }
 }

@@ -18,6 +18,8 @@ const CHUNK_MS = 250;
 const NO_TRANSCRIPT_NOTICE_MS = 5000;
 const MAX_BUFFERED_CHUNKS = 120;
 const MAX_BUFFERED_BYTES = 4_000_000;
+const SOURCE_CONSENT_HEADER = "x-yentl-source-consent";
+const SOURCE_CONSENT_VALUE = "source-analysis-v1";
 
 let currentCapture = null;
 
@@ -181,6 +183,9 @@ async function fetchTokenWithRetry(appOrigin, signal) {
 async function fetchToken(appOrigin, signal) {
   const response = await fetch(`${appOrigin}/api/deepgram/token`, {
     method: "POST",
+    headers: {
+      [SOURCE_CONSENT_HEADER]: SOURCE_CONSENT_VALUE,
+    },
     signal,
   });
   if (!response.ok) throw new Error(`Token request failed (${response.status}).`);

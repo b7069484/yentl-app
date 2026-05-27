@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
@@ -108,6 +108,7 @@ type StoreState = {
   setSource: (source: unknown) => void;
   setPrerecordStage: (stage: "picker" | "selected") => void;
   setBrowserTabStatus: (status: unknown) => void;
+  reset: () => void;
 };
 
 function makeStore(overrides: Partial<StoreState> = {}): StoreState {
@@ -121,6 +122,7 @@ function makeStore(overrides: Partial<StoreState> = {}): StoreState {
     setSource: vi.fn(),
     setPrerecordStage: vi.fn(),
     setBrowserTabStatus: vi.fn(),
+    reset: vi.fn(),
     ...overrides,
   };
 }
@@ -151,6 +153,11 @@ beforeEach(() => {
   mockStore(makeStore());
 });
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
+
 // ─── 1. SourceRouter renders when startedAt === null ─────────────────────────
 
 describe("SessionPage – SourceRouter state (pre-record)", () => {
@@ -168,12 +175,33 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     expect(screen.queryByTestId("filtered-list")).toBeNull();
   });
 
-  it("moves the project UX flow atlas out of the user session before start", () => {
+  it("does not redirect legacy flow-atlas queries into the project workspace", () => {
     mockSearchParamsRaw = new URLSearchParams("view=flows");
     mockStore(makeStore({ startedAt: null }));
     render(<SessionPage />);
-    expect(mockReplace).toHaveBeenCalledWith("/project/flows");
-    expect(screen.queryByTestId("source-router")).toBeNull();
+    expect(mockReplace).not.toHaveBeenCalledWith("/project/flows");
+    expect(screen.getByTestId("source-router")).toBeTruthy();
+  });
+
+  it("ignores corpus sample queries unless the validation demo flag is present", () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    mockSearchParamsRaw = new URLSearchParams("sample=solo_005&view=watch");
+    mockStore(makeStore({ startedAt: null }));
+    render(<SessionPage />);
+    expect(screen.queryByText("Loading corpus sample")).toBeNull();
+    expect(screen.getByTestId("source-router")).toBeTruthy();
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("ignores validation demo samples when local demo loading is disabled", () => {
+    vi.stubEnv("NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO", "1");
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    mockSearchParamsRaw = new URLSearchParams("demo=validation&sample=solo_005&view=watch");
+    mockStore(makeStore({ startedAt: null }));
+    render(<SessionPage />);
+    expect(screen.queryByText("Loading validation demo")).toBeNull();
+    expect(screen.getByTestId("source-router")).toBeTruthy();
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it("renders the compact extension panel surface before capture starts", () => {
@@ -182,6 +210,75 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     render(<SessionPage />);
     expect(screen.getByTestId("extension-panel-view")).toBeTruthy();
     expect(screen.queryByTestId("source-router")).toBeNull();
+  });
+
+  it("routes a mobile share target YouTube URL into the YouTube pane", async () => {
+    const setSource = vi.fn();
+    const setPrerecordStage = vi.fn();
+    const reset = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams(
+      "title=Shared%20video&url=https%3A%2F%2Fyoutu.be%2FdQw4w9WgXcQ",
+    );
+    mockStore(makeStore({ startedAt: null, reset, setSource, setPrerecordStage }));
+
+    render(<SessionPage />);
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledOnce();
+      expect(setSource).toHaveBeenCalledWith({
+        kind: "youtube",
+        video_id: "",
+        url: "https://youtu.be/dQw4w9WgXcQ",
+        title: "Shared video",
+      });
+      expect(setPrerecordStage).toHaveBeenCalledWith("selected");
+      expect(mockReplace).toHaveBeenCalledWith("/session");
+    });
+  });
+
+  it("routes an explicit source=youtube URL into the YouTube pane", async () => {
+    const setSource = vi.fn();
+    const setPrerecordStage = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams(
+      "source=youtube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DIDC8PrZQHts",
+    );
+    mockStore(makeStore({
+      startedAt: null,
+      source: { kind: "mic" },
+      setSource,
+      setPrerecordStage,
+    }));
+
+    render(<SessionPage />);
+
+    await waitFor(() => {
+      expect(setSource).toHaveBeenCalledWith({
+        kind: "youtube",
+        video_id: "",
+        url: "https://www.youtube.com/watch?v=IDC8PrZQHts",
+      });
+      expect(setPrerecordStage).toHaveBeenCalledWith("selected");
+    });
+  });
+
+  it("routes shared text into a prefilled text document pane", async () => {
+    const setSource = vi.fn();
+    const setPrerecordStage = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams("title=Shared%20note&text=The%20claim%20is%20specific.");
+    mockStore(makeStore({ startedAt: null, setSource, setPrerecordStage }));
+
+    render(<SessionPage />);
+
+    await waitFor(() => {
+      expect(setSource).toHaveBeenCalledWith({
+        kind: "text_doc",
+        filename: "Shared text",
+        mime: "text/plain",
+        byte_count: "Shared note\n\nThe claim is specific.".length,
+        initial_text: "Shared note\n\nThe claim is specific.",
+      });
+      expect(setPrerecordStage).toHaveBeenCalledWith("selected");
+    });
   });
 
   it("restores a saved extension workspace from ?restore=", async () => {
@@ -199,6 +296,24 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
       );
       expect(mockReplace).toHaveBeenCalledWith("/session?view=overview");
     });
+  });
+
+  it("shows an explanatory empty state when a restore id is missing", async () => {
+    mockLoadSession.mockRejectedValue(new Error("Session not found: missing-id"));
+    const restoreSession = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams("restore=missing-id");
+    mockStore(makeStore({ startedAt: null, restoreSession }));
+
+    render(<SessionPage />);
+
+    expect(screen.getByText("Opening workspace")).toBeTruthy();
+    await waitFor(() =>
+      expect(screen.getByText("Saved snapshot not found")).toBeTruthy(),
+    );
+    expect(screen.getByText(/could not find that browser-local saved session/i)).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Open local saves" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Start a new analysis" })).toBeTruthy();
+    expect(restoreSession).not.toHaveBeenCalled();
   });
 });
 
@@ -245,11 +360,12 @@ describe("SessionPage – view dispatch (startedAt set)", () => {
     expect(screen.getByTestId("filtered-list")).toBeTruthy();
   });
 
-  it("view=flows redirects to the separate project workspace", () => {
+  it("view=flows falls back to the product overview", () => {
     mockSearchParamsRaw = new URLSearchParams("view=flows");
     mockStore(makeStore({ startedAt }));
     render(<SessionPage />);
-    expect(mockReplace).toHaveBeenCalledWith("/project/flows");
+    expect(mockReplace).not.toHaveBeenCalledWith("/project/flows");
+    expect(screen.getByTestId("home-overview")).toBeTruthy();
   });
 
   it("unknown view falls back to HomeOverview", () => {

@@ -1,0 +1,11 @@
+{
+  "id": "c2_platform_01",
+  "phase": "A",
+  "wer": 0.05117669032499066,
+  "substitutions": 41,
+  "deletions": 89,
+  "insertions": 7,
+  "hits": 2547,
+  "refLen": 2677,
+  "hypLen": 2595
+}

@@ -23,7 +23,6 @@ import type { ClaimCard, RhetoricMarker, SessionSource, Speaker, TranscriptSegme
 export default function SessionPage() {
   return (
     <div id="main-content" className="flex flex-1 flex-col">
-      <ConsentGate />
       <RecordingBeacon />
       <SessionTimer />
       <Suspense>
@@ -70,6 +69,7 @@ function SessionPageInner() {
   const shouldShowRecordingDisclosure =
     prerecordStage === "selected" &&
     (sourceKind === "mic" || sourceKind === "browser_tab");
+  const shouldShowConsentGate = !restoreParam && !sampleParam && !isExtensionPanel;
 
   useEffect(() => {
     if (shouldRedirect) {
@@ -321,6 +321,7 @@ function SessionPageInner() {
   if (!startedAt) {
     return (
       <>
+        {shouldShowConsentGate && <ConsentGate />}
         {shouldShowRecordingDisclosure && <TwoPartyDisclosure />}
         <SourceRouter />
       </>
@@ -351,6 +352,7 @@ function SessionPageInner() {
 
   return (
     <>
+      {shouldShowConsentGate && <ConsentGate />}
       {content}
       <AIDisclosureFooter />
     </>

@@ -9,21 +9,23 @@ import type { TranscriptSegment, Speaker } from "@/lib/types";
 /**
  * Shared Deepgram transcription options for both URL and file paths.
  *
- * Diarization quality notes (v5 SDK, nova-3):
- *   diarize:true   — speaker segmentation; each word gets a speaker index 0…N.
+ * IMPORTANT: speaker segmentation is DISABLED in v1 — see the comment block
+ * in `lib/client/deepgram-stream.ts` for the full BIPA / voiceprint
+ * rationale. Same default applies on the prerecorded path: every recording
+ * routed through Yentl, live or batch, runs without per-speaker tagging
+ * until the BIPA-consent gate ships.
+ *
  *   utterances:true — groups words into utterance objects with per-utterance
- *                     speaker, start, end. Required for our TranscriptSegment
- *                     mapping; without it we only get channel-level transcripts.
- *   numerals:true  — converts spoken numbers ("forty-seven") to digits ("47"),
- *                    which reduces mis-transcription of numerical claims (vote
- *                    counts, statistics, dates) that are common in debate audio.
- *   smart_format:true — applies Deepgram's post-processing rules (dates, times,
- *                    phone numbers, currency). Pair with numerals for best
- *                    factual accuracy. Note: smart_format is compatible with
- *                    diarize in nova-3; earlier models had edge cases.
+ *                     start/end. Required for our TranscriptSegment mapping;
+ *                     without it we only get channel-level transcripts.
+ *                     (Without speaker tags, all utterances will carry
+ *                     speaker_id 0 in the parser below — by design.)
+ *   numerals:true  — converts spoken numbers ("forty-seven") → digits ("47"),
+ *                    which reduces mis-transcription of numerical claims.
+ *   smart_format:true — applies Deepgram's post-processing rules (dates,
+ *                    phone numbers, currency).
  *
  * Params NOT set (and why):
- *   diarize_version — not a field in the v5 SDK type; omitted.
  *   vad_events      — WebSocket-only feature; irrelevant for prerecorded path.
  *   paragraphs      — conflicts with utterances grouping; keep utterances.
  */
@@ -31,7 +33,7 @@ const TRANSCRIBE_OPTIONS = {
   model: "nova-3" as const,
   punctuate: true,
   smart_format: true,
-  diarize: true,
+  diarize: false,
   utterances: true,
   numerals: true,
   language: "en",
@@ -58,7 +60,7 @@ export interface TranscribeResult {
 }
 
 /**
- * Transcribes a remote audio URL using Deepgram nova-3 with diarization.
+ * Transcribes a remote audio URL using Deepgram nova-3 (no speaker tagging in v1).
  *
  * Uses client.listen.v1.media.transcribeUrl (v5 SDK path).
  * Maps Deepgram utterances → TranscriptSegment[] and builds a Speaker[] list.
@@ -119,7 +121,7 @@ function parseDeepgramResponse(
 }
 
 /**
- * Transcribes an in-memory audio buffer using Deepgram nova-3 with diarization.
+ * Transcribes an in-memory audio buffer using Deepgram nova-3 (no speaker tagging in v1).
  *
  * Uses client.listen.v1.media.transcribeFile (v5 SDK path).
  * The buffer is passed directly — no external storage required.
@@ -146,8 +148,8 @@ export async function transcribeFile(
 
 /**
  * Transcribes a large audio file via a Node.js Readable stream using Deepgram
- * nova-3 with diarization. Use this for files >50MB to avoid allocating a
- * large Buffer in the serverless function's memory.
+ * nova-3 (no speaker tagging in v1). Use this for files >50MB to avoid
+ * allocating a large Buffer in the serverless function's memory.
  *
  * The Deepgram v5 SDK accepts a Node Readable directly as the uploadable
  * argument — no tempfile required. The stream is converted from the Web

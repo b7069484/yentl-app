@@ -15,12 +15,15 @@ import { AIDisclosureFooter } from "@/components/session/AIDisclosureFooter";
 import { SessionTimer } from "@/components/session/SessionTimer";
 import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
 import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
+import { ConsentGate } from "@/components/session/ConsentGate";
+import { RecordingBeacon } from "@/components/session/RecordingBeacon";
 import { loadSession } from "@/lib/client/session-storage";
 import type { ClaimCard, RhetoricMarker, SessionSource, Speaker, TranscriptSegment } from "@/lib/types";
 
 export default function SessionPage() {
   return (
     <div id="main-content" className="flex flex-1 flex-col">
+      <RecordingBeacon />
       <SessionTimer />
       <Suspense>
         <SessionPageInner />
@@ -66,6 +69,7 @@ function SessionPageInner() {
   const shouldShowRecordingDisclosure =
     prerecordStage === "selected" &&
     (sourceKind === "mic" || sourceKind === "browser_tab");
+  const shouldShowConsentGate = !restoreParam && !sampleParam && !isExtensionPanel;
 
   useEffect(() => {
     if (shouldRedirect) {
@@ -317,6 +321,7 @@ function SessionPageInner() {
   if (!startedAt) {
     return (
       <>
+        {shouldShowConsentGate && <ConsentGate />}
         {shouldShowRecordingDisclosure && <TwoPartyDisclosure />}
         <SourceRouter />
       </>
@@ -347,6 +352,7 @@ function SessionPageInner() {
 
   return (
     <>
+      {shouldShowConsentGate && <ConsentGate />}
       {content}
       <AIDisclosureFooter />
     </>

@@ -25,8 +25,8 @@ export default function MethodologyPage() {
         <ol className="space-y-3 text-muted-foreground list-decimal list-inside">
           <li>
             <strong>Transcription</strong> — Yentl converts audio or media into
-            transcript text with timestamps and, where available, speaker
-            separation.
+            transcript text with timestamps. Biometric speaker tagging is
+            disabled by default in v1 for privacy compliance.
           </li>
           <li>
             <strong>Claim extraction</strong> — Yentl identifies discrete

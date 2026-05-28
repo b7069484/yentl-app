@@ -399,7 +399,7 @@ function TranscriptLine({
         </span>
       </button>
 
-      {/* Speaker reassign badge — only visible when diarization is active and
+      {/* Speaker reassign badge — only visible when speaker tagging is active and
           the segment is past or current so future lines don't get spoilers. */}
       {showSpeakers && state !== "future" && segment.speaker_id !== null && (
         <div className="ml-10 mb-0.5" onClick={(e) => e.stopPropagation()}>

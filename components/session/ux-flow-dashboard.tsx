@@ -168,7 +168,7 @@ const flows: Flow[] = [
       },
       {
         label: "Process",
-        action: "Yentl transcribes and diarizes the file.",
+        action: "Yentl transcribes the file with timestamps.",
         outcome: "The same Watch and Transcript surfaces become available.",
         screen: "audio-processing",
       },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { Square } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 
@@ -31,26 +31,13 @@ export function RecordingBeacon() {
   const startedAt = useSession((s) => s.startedAt);
   const endSession = useSession((s) => s.endSession);
 
-  const [now, setNow] = useState<number>(() => Date.now());
-  const [announcement, setAnnouncement] = useState<string>("");
-  const prevRecordingRef = useRef<boolean>(isRecording);
-
-  // Tick the visible clock once per second while recording.
-  useEffect(() => {
-    if (!isRecording) return;
-    setNow(Date.now());
-    const t = setInterval(() => setNow(Date.now()), 1000);
+  const subscribeNow = useCallback((onStoreChange: () => void) => {
+    if (!isRecording) return () => {};
+    const t = setInterval(onStoreChange, 1000);
     return () => clearInterval(t);
   }, [isRecording]);
-
-  // Announce recording-state transitions to assistive tech.
-  useEffect(() => {
-    const prev = prevRecordingRef.current;
-    if (prev !== isRecording) {
-      setAnnouncement(isRecording ? "Recording started" : "Recording stopped");
-      prevRecordingRef.current = isRecording;
-    }
-  }, [isRecording]);
+  const now = useSyncExternalStore(subscribeNow, Date.now, Date.now);
+  const announcement = isRecording ? "Live capture started" : "Live capture stopped";
 
   const startedAtMs = startedAt ? Date.parse(startedAt) : null;
   const elapsedMs =

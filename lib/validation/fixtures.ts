@@ -151,7 +151,7 @@ export const validationFixtures: ValidationFixture[] = [
     sourceType: "Audio file",
     title: "Synthetic spoken WAV",
     purpose:
-      "Exercises upload, duration probing, Deepgram batch transcription, diarized transcript ingestion, and Watch redirect.",
+      "Exercises upload, duration probing, Deepgram batch transcription, transcript ingestion, and Watch redirect.",
     primaryTarget: "Drop into Audio file ingest",
     expectedResult: "Yentl transcribes the known speech and opens Watch.",
     url: "http://localhost:3000/validation/yentl-synthetic-panel.wav",

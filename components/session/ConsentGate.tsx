@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { ulid } from "ulid";
 import {
   Dialog,
@@ -60,6 +60,20 @@ export function hasValidConsent(): boolean {
   return readStoredConsent() !== null;
 }
 
+function subscribeToConsentStorage(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function getConsentSnapshot() {
+  return hasValidConsent();
+}
+
+function getServerConsentSnapshot() {
+  return true;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────
 
 const initialChoices: ConsentChoices = {
@@ -78,18 +92,14 @@ export type ConsentGateProps = {
 };
 
 export function ConsentGate({ onGrant, onDecline }: ConsentGateProps) {
-  const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(true);
+  const hasConsent = useSyncExternalStore(
+    subscribeToConsentStorage,
+    getConsentSnapshot,
+    getServerConsentSnapshot,
+  );
+  const [dismissed, setDismissed] = useState(false);
   const [choices, setChoices] = useState<ConsentChoices>(initialChoices);
-
-  // Run after mount so SSR + first paint don't flash the modal for users
-  // who already have valid consent.
-  useEffect(() => {
-    setMounted(true);
-    if (hasValidConsent()) {
-      setOpen(false);
-    }
-  }, []);
+  const open = !hasConsent && !dismissed;
 
   const allRequiredChecked = useMemo(
     () => REQUIRED_KEYS.every((k) => choices[k]),
@@ -117,16 +127,16 @@ export function ConsentGate({ onGrant, onDecline }: ConsentGateProps) {
     } catch {
       /* localStorage unavailable — proceed in-memory only */
     }
-    setOpen(false);
+    setDismissed(true);
     onGrant?.(record);
   }, [allRequiredChecked, choices, onGrant]);
 
   const decline = useCallback(() => {
-    setOpen(false);
+    setDismissed(true);
     onDecline?.();
   }, [onDecline]);
 
-  if (!mounted) return null;
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && decline()}>

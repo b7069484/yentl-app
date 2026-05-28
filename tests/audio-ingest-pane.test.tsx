@@ -136,10 +136,10 @@ describe("AudioIngestPane — renders", () => {
 });
 
 describe("AudioIngestPane — file validation", () => {
-  it("non-audio file shows inline error", async () => {
+  it("unsupported non-media file shows inline error", async () => {
     render(<AudioIngestPane />);
     const input = screen.getByLabelText(/Select audio file/i);
-    const file = new File(["data"], "video.mp4", { type: "video/mp4" });
+    const file = new File(["data"], "image.png", { type: "image/png" });
 
     await act(async () => {
       fireEvent.change(input, { target: { files: [file] } });
@@ -147,6 +147,21 @@ describe("AudioIngestPane — file validation", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Unsupported file type/i)).toBeTruthy();
+    });
+  });
+
+  it("accepts video files for transcription", async () => {
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio file/i);
+    const file = makeAudioFile("clip.mp4", "video/mp4", 2 * 1024 * 1024);
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/clip\.mp4/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process audio/i })).not.toBeDisabled();
     });
   });
 

@@ -72,6 +72,10 @@ vi.mock("@/components/session/ingest-panes/media-url-ingest-pane", () => ({
   MediaUrlIngestPane: () => <div data-testid="media-url-ingest-pane">MediaUrlIngestPane</div>,
 }));
 
+vi.mock("@/components/session/ingest-panes/web-url-ingest-pane", () => ({
+  WebUrlIngestPane: () => <div data-testid="web-url-ingest-pane">WebUrlIngestPane</div>,
+}));
+
 import { SourceRouter } from "@/lib/client/source-router";
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
@@ -162,6 +166,14 @@ describe("SourceRouter – selected + text_doc", () => {
     mockSource = { kind: "text_doc", intent: "claim_only" };
     render(<SourceRouter />);
     expect(screen.getByTestId("claim-quick-check-pane")).toBeTruthy();
+    expect(screen.queryByTestId("text-ingest-pane")).toBeNull();
+  });
+
+  it("renders WebUrlIngestPane for text_doc web-url intent", () => {
+    mockPrerecordStage = "selected";
+    mockSource = { kind: "text_doc", intent: "web_url" };
+    render(<SourceRouter />);
+    expect(screen.getByTestId("web-url-ingest-pane")).toBeTruthy();
     expect(screen.queryByTestId("text-ingest-pane")).toBeNull();
   });
 });

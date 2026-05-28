@@ -17,10 +17,11 @@
     "type": "module"
   },
   "action": {
-    "default_title": "Listen with Yentl"
+    "default_title": "Listen with Yentl",
+    "default_popup": "popup.html"
   },
   "commands": {
-    "_execute_action": {
+    "start-yentl-capture": {
       "suggested_key": {
         "default": "Alt+Shift+Y",
         "mac": "Alt+Shift+Y"

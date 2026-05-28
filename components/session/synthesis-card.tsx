@@ -161,7 +161,7 @@ function WarmingSkeleton() {
       {/* Heading row */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-wide text-amber-2">
-          Yentl is listening…
+          Yentl is building the read…
         </span>
       </div>
 

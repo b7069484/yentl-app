@@ -112,14 +112,14 @@ describe("ExtensionPanelView", () => {
     render(<ExtensionPanelView />);
 
     expect(screen.getAllByText("Waiting").length).toBeGreaterThan(0);
-    expect(screen.getByText("Fixture video")).toBeTruthy();
-    expect(screen.getByText("example.com")).toBeTruthy();
     expect(screen.getByText("Waiting for the extension")).toBeTruthy();
-    const strip = screen.getByTestId("extension-signal-strip");
-    expect(within(strip).getByText("Claim risk")).toBeTruthy();
-    expect(within(strip).getByText("Rhetoric heat")).toBeTruthy();
-    expect(within(strip).getByText("Evidence state")).toBeTruthy();
-    expect(within(strip).getByText("Pulse")).toBeTruthy();
+    const read = screen.getByTestId("extension-yentl-read");
+    expect(within(read).getByText("Yentl's Read")).toBeTruthy();
+    const metrics = screen.getByTestId("extension-metric-expander");
+    expect(within(metrics).getByText("Claims")).toBeTruthy();
+    expect(within(metrics).getByText("Heat")).toBeTruthy();
+    expect(within(metrics).getByText("Evidence")).toBeTruthy();
+    expect(within(metrics).getByText("Pulse")).toBeTruthy();
     expect(screen.queryByText(/How would you like to fact-check/i)).toBeNull();
   });
 
@@ -175,19 +175,19 @@ describe("ExtensionPanelView", () => {
     render(<ExtensionPanelView />);
 
     expect(screen.getByText("Transcribing")).toBeTruthy();
-    expect(screen.getByText("Council hearing")).toBeTruthy();
-    expect(screen.getByText("Building the live transcript")).toBeTruthy();
-    const strip = screen.getByTestId("extension-signal-strip");
-    expect(within(strip).getByText("Claim risk")).toBeTruthy();
-    expect(within(strip).getByText("High")).toBeTruthy();
-    expect(within(strip).getByText("Evidence state")).toBeTruthy();
+    const read = screen.getByTestId("extension-yentl-read");
+    expect(read.textContent).toContain("Council hearing");
+    expect(read.textContent).toContain("A high-risk claim needs the foreground.");
+    const metrics = screen.getByTestId("extension-metric-expander");
+    expect(within(metrics).getByText("Claims")).toBeTruthy();
+    expect(within(metrics).getByText("High")).toBeTruthy();
+    expect(within(metrics).getByText("Evidence")).toBeTruthy();
     expect(screen.getByText(/doubled the budget without showing/i)).toBeTruthy();
     expect(screen.getByRole("tab", { name: /Transcript/i })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: /Claims/i })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: /Markers/i })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: /Findings/i })).toBeTruthy();
     expect(screen.queryByText("Devil's advocate")).toBeNull();
 
-    fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /Findings/i }));
 
     expect(screen.getByText("3 claims · 2 false/misleading")).toBeTruthy();
     expect(screen.getAllByText("False").length).toBeGreaterThan(0);
@@ -200,8 +200,6 @@ describe("ExtensionPanelView", () => {
       expect.objectContaining({ title: "Browser tab: Council hearing" }),
       "report",
     );
-
-    fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
 
     expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
     expect(screen.getByText("Loaded language")).toBeTruthy();
@@ -261,12 +259,10 @@ describe("ExtensionPanelView", () => {
     expect(await screen.findByText("Transcribing")).toBeTruthy();
     expect(screen.getAllByText(/library budget increased by 12 percent/i).length).toBeGreaterThanOrEqual(1);
 
-    fireEvent.click(screen.getByRole("tab", { name: /Claims/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /Findings/i }));
 
     expect(screen.getAllByText("No reliable backing").length).toBeGreaterThan(0);
     expect(screen.getByText("Devil's advocate")).toBeTruthy();
-
-    fireEvent.click(screen.getByRole("tab", { name: /Markers/i }));
 
     expect(screen.getAllByText("Premature certainty").length).toBeGreaterThan(0);
     expect(screen.queryByText("Overview")).toBeNull();

@@ -42,9 +42,9 @@ describe("SynthesisCard – warming state", () => {
     expect(pulseEls.length).toBeGreaterThan(0);
   });
 
-  it('heading reads "Yentl is listening…"', () => {
+  it('heading reads "Yentl is building the read…"', () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
-    expect(screen.getByText("Yentl is listening…")).toBeTruthy();
+    expect(screen.getByText("Yentl is building the read…")).toBeTruthy();
   });
 
   it("does NOT render a refresh button", () => {

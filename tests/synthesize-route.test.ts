@@ -267,6 +267,56 @@ describe("POST /api/synthesize route", () => {
     expect(json.error).toBe("synthesis failed");
   });
 
+  it("returns a local synthesis fallback when the AI gateway has no credits", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    mockGenerateText.mockRejectedValue(
+      Object.assign(new Error("A positive credit balance is required"), {
+        statusCode: 402,
+        cause: {
+          responseBody: JSON.stringify({ error: { type: "insufficient_funds" } }),
+        },
+      }),
+    );
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toContain("No rhetoric, bias, or fallacy markers");
+    expect(json.headlines).toHaveLength(3);
+    expect(json.per_speaker_verdicts[0].one_liner).toContain("Local fallback");
+  });
+
+  it("recovers valid synthesis JSON from AI SDK wrapper parse failures", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const wrappedJson = JSON.stringify({
+      '{"text":"Recovered read.","headlines":["H1","H2","H3"],"per_speaker_verdicts":[{"speaker_id":0,"label":"Alice","factual_grade":"insufficient","faith_grade":"insufficient","one_liner":"No verdict yet."}]}</parameter>\\n</invoke>': "",
+    });
+    mockGenerateText.mockRejectedValue(Object.assign(new Error("No object generated"), { text: wrappedJson }));
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toBe("Recovered read.");
+    expect(json.headlines).toEqual(["H1", "H2", "H3"]);
+    expect(json.per_speaker_verdicts[0].label).toBe("Alice");
+  });
+
   it("calls generateText with top-level system param (not messages[])", async () => {
     const { generateText } = await import("ai");
     const mockGenerateText = generateText as ReturnType<typeof vi.fn>;

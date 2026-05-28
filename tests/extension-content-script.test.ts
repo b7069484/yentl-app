@@ -212,4 +212,57 @@ describe("extension content script panel", () => {
     expect(pageTextMessage.payload.text).not.toContain("Text of the note");
     expect(pageTextMessage.payload.text).not.toContain("Gadget-ImageAnnotator");
   });
+
+  it("does not treat YouTube recommendation text as transcript on media-first watch pages", () => {
+    document.title = "Tucker Debates Kevin O'Leary - YouTube";
+    document.body.innerHTML = `
+      <main>
+        <video src="https://cdn.example.test/video.webm"></video>
+        <h1>Tucker Debates Kevin O'Leary</h1>
+        <p>Watch next: Ben Shapiro reacts to political news with several recommended videos.</p>
+        <p>More recommendations and comments fill the sidebar, but they are not the live speech.</p>
+      </main>
+    `;
+    const { listeners } = loadContentScript();
+    const sendResponse = vi.fn();
+
+    listeners[0](
+      {
+        target: "yentl-content-script",
+        type: "open-panel",
+        appOrigin: "http://localhost:3000",
+        bridgeToken: "bridge-youtube",
+        tab: {
+          title: "Tucker Debates Kevin O'Leary - YouTube",
+          url: "https://www.youtube.com/watch?v=IDC8PrZQHts",
+        },
+      },
+      {},
+      sendResponse,
+    );
+
+    const iframe = document
+      .getElementById("yentl-extension-panel-host")
+      ?.shadowRoot?.querySelector("iframe") as HTMLIFrameElement | null;
+    const postMessage = vi.fn();
+    const panelWindow = { postMessage } as unknown as Window;
+    Object.defineProperty(iframe!, "contentWindow", {
+      configurable: true,
+      value: panelWindow,
+    });
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: {
+          source: "yentl-web-app",
+          type: "bridge-ready",
+        },
+        origin: "http://localhost:3000",
+        source: panelWindow,
+      }),
+    );
+
+    expect(postMessage.mock.calls.some(([message]) => message.type === "page-context")).toBe(true);
+    expect(postMessage.mock.calls.some(([message]) => message.type === "page-text")).toBe(false);
+  });
 });

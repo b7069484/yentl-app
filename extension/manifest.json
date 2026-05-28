@@ -10,15 +10,20 @@
     "https://factify-rose.vercel.app/*",
     "https://api.deepgram.com/*"
   ],
+  "optional_host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "action": {
-    "default_title": "Listen with Yentl"
+    "default_title": "Listen with Yentl",
+    "default_popup": "popup.html"
   },
   "commands": {
-    "_execute_action": {
+    "start-yentl-capture": {
       "suggested_key": {
         "default": "Alt+Shift+Y",
         "mac": "Alt+Shift+Y"
@@ -38,6 +43,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:3000 http://127.0.0.1:3000 https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
   }
 }

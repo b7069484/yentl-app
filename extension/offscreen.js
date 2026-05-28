@@ -181,13 +181,21 @@ async function fetchTokenWithRetry(appOrigin, signal) {
 }
 
 async function fetchToken(appOrigin, signal) {
-  const response = await fetch(`${appOrigin}/api/deepgram/token`, {
-    method: "POST",
-    headers: {
-      [SOURCE_CONSENT_HEADER]: SOURCE_CONSENT_VALUE,
-    },
-    signal,
-  });
+  let response;
+  try {
+    response = await fetch(`${appOrigin}/api/deepgram/token`, {
+      method: "POST",
+      headers: {
+        [SOURCE_CONSENT_HEADER]: SOURCE_CONSENT_VALUE,
+      },
+      signal,
+    });
+  } catch (error) {
+    const cause = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `Could not reach the Yentl app at ${appOrigin}. Confirm the extension origin and Chrome site permission, then try again. (${cause})`,
+    );
+  }
   if (!response.ok) throw new Error(`Token request failed (${response.status}).`);
   const data = await response.json();
   const expiresAtMs = new Date(data.expires_at).getTime();

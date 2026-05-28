@@ -66,7 +66,6 @@ describe("SourcePicker – card rendering", () => {
     expect(screen.getByText("Microphone")).toBeTruthy();
     expect(screen.getByText("YouTube")).toBeTruthy();
     expect(screen.getByText("Web page")).toBeTruthy();
-    expect(screen.getByText("Planned")).toBeTruthy();
     expect(screen.getByText("Direct media")).toBeTruthy();
     expect(screen.getByText("Audio/video")).toBeTruthy();
     expect(screen.getByText("Text/document")).toBeTruthy();
@@ -272,14 +271,20 @@ describe("SourcePicker – click handlers: setSource", () => {
     });
   });
 
-  it("does not select the planned general web-page URL branch yet", async () => {
+  it("Web page card calls setSource with web_url text_doc intent", async () => {
     render(<SourcePicker />);
     await screen.findByText("Current tab");
     const webUrlButton = screen.getByText("Web page").closest("button") as HTMLButtonElement;
-    expect(webUrlButton.disabled).toBe(true);
+    expect(webUrlButton.disabled).toBe(false);
     fireEvent.click(webUrlButton);
-    expect(mockSetSource).not.toHaveBeenCalled();
-    expect(mockSetPrerecordStage).not.toHaveBeenCalled();
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "text_doc",
+      filename: "",
+      mime: "text/html",
+      byte_count: 0,
+      intent: "web_url",
+      source_url: "",
+    });
   });
 });
 
@@ -293,6 +298,7 @@ describe("SourcePicker – click handlers: setPrerecordStage", () => {
     "Text/document",
     "One claim",
     "YouTube",
+    "Web page",
     "Direct media",
   ];
 

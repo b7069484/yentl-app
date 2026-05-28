@@ -1,0 +1,16 @@
+{
+  "capturedAt": "2026-05-28T19:09:56.409Z",
+  "iframeSrc": "https://www.youtube.com/embed/IDC8PrZQHts?origin=http%3A%2F%2Flocalhost%3A3000&playsinline=1&modestbranding=1&rel=0&widget_referrer=http%3A%2F%2Flocalhost%3A3000%2Fsession%3Fsource%3Dyoutube%26url%3Dhttps%253A%252F%252Fwww.youtube.com%252Fwatch%253Fv%253DIDC8PrZQHts&enablejsapi=1&widgetid=1&forigin=http%3A%2F%2Flocalhost%3A3000%2Fsession%3Fsource%3Dyoutube%26url%3Dhttps%253A%252F%252Fwww.youtube.com%252Fwatch%253Fv%253DIDC8PrZQHts&aoriginsup=1&vf=5",
+  "text": "Skip to main content\nSources\nYouTube URL\nRunning\nSave snapshot\nWatch + live analysis\nLive with Yentl\nTucker Debates Kevin O’Leary in Heated Exchange\n\nThe video stays left. Yentl reads, transcribes, and flags moments on the right.\n\nTucker Debates Kevin O’Leary in Heated Exchange\nTucker Carlson Network · live transcript and analysis stay synced to playback\n00:04\nPlaying\nYENTL'S READ\nLive synced\n\nYentl is reading with the video.\n\n3 timed caption lines have landed against the current playhead. Claims and rhetoric markers update as the video keeps moving.\n\nPULSE\nHearing\npace + overlap\nCLAIMS\n0 open\nnone yet\nHEAT\nRising\ncontention\nEVIDENCE\nQueued\nsource trail\nTranscript\nFindings\nLIVE TRANSCRIPT\n00:04\nTUCKER CARLSON\n00:00\n\nLet me ask though about why taxpayers should have to pay for this if it's a private business and your tenants are\n\nLIVE LINE\nMore lines below · auto-scroll follows playback\nShare tab audio with Yentl\nOpen on YouTube\nUse Chrome extension instead",
+  "textMatches": [
+    "Live with Yentl",
+    "00:04",
+    "Playing",
+    "Live synced",
+    "00:04",
+    "TUCKER CARLSON",
+    "00:00",
+    "Let me ask"
+  ],
+  "url": "http://localhost:3000/session?source=youtube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DIDC8PrZQHts"
+}

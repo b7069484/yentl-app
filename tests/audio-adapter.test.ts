@@ -69,7 +69,7 @@ describe("createAudioAdapter — element creation", () => {
     adapter.destroy();
   });
 
-  it("sets crossOrigin='anonymous'", async () => {
+  it("does not force CORS mode for public media playback", async () => {
     const adapter = await createAudioAdapter({
       container,
       src: "https://example.com/audio.mp3",
@@ -78,7 +78,7 @@ describe("createAudioAdapter — element creation", () => {
     });
 
     const audio = getAudioElement(container);
-    expect(audio.crossOrigin).toBe("anonymous");
+    expect(audio.crossOrigin).toBeNull();
 
     adapter.destroy();
   });
@@ -117,6 +117,23 @@ describe("createAudioAdapter — timeupdate fires onTimeUpdate", () => {
 
     const audio = getAudioElement(container);
     audio.dispatchEvent(new Event("canplay"));
+
+    expect(onReady).toHaveBeenCalled();
+
+    adapter.destroy();
+  });
+
+  it("calls onReady when metadata loads", async () => {
+    const onReady = vi.fn();
+    const adapter = await createAudioAdapter({
+      container,
+      src: "https://example.com/audio.mp3",
+      onTimeUpdate: vi.fn(),
+      onReady,
+    });
+
+    const audio = getAudioElement(container);
+    audio.dispatchEvent(new Event("loadedmetadata"));
 
     expect(onReady).toHaveBeenCalled();
 

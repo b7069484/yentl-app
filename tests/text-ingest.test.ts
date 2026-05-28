@@ -13,7 +13,7 @@ vi.mock("mammoth", () => {
   };
 });
 
-import { parsePlainText, parseDocx } from "@/lib/client/text-ingest";
+import { parsePlainText, parseArticleText, parseDocx, parseTimedText } from "@/lib/client/text-ingest";
 
 // ─── parsePlainText ──────────────────────────────────────────────────────────
 
@@ -152,6 +152,21 @@ describe("parsePlainText — timestamps", () => {
   });
 });
 
+describe("parseArticleText — bounded readable chunks", () => {
+  it("chunks long article text into paragraph-sized segments instead of sentence fragments", () => {
+    const paragraph = "Fact checking helps readers compare a claim with reliable evidence. ".repeat(45);
+    const raw = [paragraph, paragraph, paragraph, paragraph].join("\n\n");
+
+    const segs = parseArticleText(raw, { chunkWords: 90, maxWords: 220 });
+
+    expect(segs.length).toBeGreaterThan(1);
+    expect(segs.length).toBeLessThan(8);
+    expect(segs.every((s) => s.speaker_id === 0)).toBe(true);
+    expect(segs.every((s) => s.is_final)).toBe(true);
+    expect(segs.map((s) => s.text.split(/\s+/).length).reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(220);
+  });
+});
+
 // ─── parseDocx ───────────────────────────────────────────────────────────────
 
 describe("parseDocx — mammoth integration (mocked)", () => {
@@ -191,5 +206,36 @@ describe("parseDocx — mammoth integration (mocked)", () => {
 
     // Verify the extracted text is returned
     expect(result).toBe("Extracted text");
+  });
+});
+
+describe("parseTimedText — SRT and VTT", () => {
+  it("parses SRT cues into timed transcript segments", () => {
+    const srt = `1
+00:00:01,000 --> 00:00:03,500
+First caption line.
+
+2
+00:00:04,000 --> 00:00:05,000
+Second caption line.`;
+
+    const segments = parseTimedText(srt, "srt");
+    expect(segments).toEqual([
+      expect.objectContaining({ text: "First caption line.", start: 1, end: 3.5, is_final: true }),
+      expect.objectContaining({ text: "Second caption line.", start: 4, end: 5, is_final: true }),
+    ]);
+  });
+
+  it("parses VTT cues into timed transcript segments", () => {
+    const vtt = `WEBVTT
+
+00:00:01.000 --> 00:00:02.000
+Hello <b>there</b>.
+`;
+
+    const segments = parseTimedText(vtt, "vtt");
+    expect(segments).toEqual([
+      expect.objectContaining({ text: "Hello there.", start: 1, end: 2, is_final: true }),
+    ]);
   });
 });

@@ -159,6 +159,14 @@ export type SessionSource =
   | { kind: "mic" }
   | { kind: "browser_tab"; tab_id?: number; title?: string; url?: string; context?: BrowserTabContext }
   | { kind: "audio_file"; blob_url: string; duration_sec: number; filename: string; mime: string }
-  | { kind: "text_doc"; filename: string; mime: string; byte_count: number; intent?: "document" | "claim_only"; initial_text?: string }
+  | {
+      kind: "text_doc";
+      filename: string;
+      mime: string;
+      byte_count: number;
+      intent?: "document" | "claim_only" | "web_url";
+      initial_text?: string;
+      source_url?: string;
+    }
   | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }
   | { kind: "media_url"; url: string };

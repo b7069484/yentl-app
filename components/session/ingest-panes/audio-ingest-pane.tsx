@@ -31,10 +31,13 @@ const ACCEPTED_TYPES = new Set([
   "audio/mp4",
   "audio/ogg",
   "audio/webm",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
 ]);
 
 const ACCEPT_ATTR =
-  "audio/mpeg, audio/wav, audio/x-m4a, audio/mp4, audio/ogg, audio/webm, .mp3, .wav, .m4a, .ogg, .webm";
+  "audio/mpeg, audio/wav, audio/x-m4a, audio/mp4, audio/ogg, audio/webm, video/mp4, video/quicktime, video/webm, .mp3, .wav, .m4a, .ogg, .webm, .mp4, .mov";
 
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
@@ -53,7 +56,7 @@ interface StagedFile {
   duration: number;
 }
 
-function isAudioMime(type: string): boolean {
+function isSupportedMediaMime(type: string): boolean {
   // Check exact match or .m4a which often comes as audio/x-m4a or audio/mp4
   return ACCEPTED_TYPES.has(type);
 }
@@ -77,10 +80,10 @@ export function AudioIngestPane() {
 
   const handleFile = useCallback(async (file: File) => {
     // Validate type
-    if (!isAudioMime(file.type) && !isAudioMime(guessTypeFromName(file.name))) {
+    if (!isSupportedMediaMime(file.type) && !isSupportedMediaMime(guessTypeFromName(file.name))) {
       setPhase({
         kind: "error",
-        message: `Unsupported file type: "${file.type || file.name}". Please upload .mp3, .wav, .m4a, .ogg, or .webm.`,
+        message: `Unsupported file type: "${file.type || file.name}". Please upload .mp3, .wav, .m4a, .ogg, .webm, .mp4, or .mov.`,
       });
       return;
     }
@@ -246,7 +249,7 @@ export function AudioIngestPane() {
 
           <div className="mt-5 flex flex-wrap gap-2 text-[11.5px] text-ink-3">
             <span className="rounded-full border border-line bg-cream px-2.5 py-1">
-              MP3, WAV, M4A, OGG, WebM
+              MP3, WAV, M4A, OGG, WebM, MP4, MOV
             </span>
             <span className="rounded-full border border-line bg-cream px-2.5 py-1">
               Up to 500 MB
@@ -333,7 +336,7 @@ export function AudioIngestPane() {
                 disabled={!staged || isProcessing}
                 className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Process audio
+                Process audio/video
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </button>
             </div>
@@ -453,6 +456,8 @@ function guessTypeFromName(name: string): string {
     mp3: "audio/mpeg",
     wav: "audio/wav",
     m4a: "audio/x-m4a",
+    mp4: "video/mp4",
+    mov: "video/quicktime",
     ogg: "audio/ogg",
     webm: "audio/webm",
   };

@@ -24,7 +24,6 @@ export async function createAudioAdapter(
 
   const audio = document.createElement("audio");
   audio.controls = true;
-  audio.crossOrigin = "anonymous";
   audio.preload = "metadata";
   audio.style.width = "100%";
   audio.src = src;
@@ -45,6 +44,7 @@ export async function createAudioAdapter(
   }
 
   audio.addEventListener("timeupdate", handleTimeUpdate);
+  audio.addEventListener("loadedmetadata", handleCanPlay);
   audio.addEventListener("canplay", handleCanPlay);
   audio.addEventListener("error", handleError);
 
@@ -61,6 +61,7 @@ export async function createAudioAdapter(
     },
     destroy() {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleCanPlay);
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("error", handleError);
       audio.pause();

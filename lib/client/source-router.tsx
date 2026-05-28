@@ -8,6 +8,7 @@ import { YoutubeIngestPane } from "@/components/session/ingest-panes/youtube-ing
 import { MediaUrlIngestPane } from "@/components/session/ingest-panes/media-url-ingest-pane";
 import { BrowserTabIngestPane } from "@/components/session/ingest-panes/browser-tab-ingest-pane";
 import { ClaimQuickCheckPane } from "@/components/session/ingest-panes/claim-quick-check-pane";
+import { WebUrlIngestPane } from "@/components/session/ingest-panes/web-url-ingest-pane";
 import { useSession } from "@/lib/client/session-store";
 
 /**
@@ -38,6 +39,7 @@ export function SourceRouter() {
       return <BrowserTabIngestPane />;
     case "text_doc":
       if (source.intent === "claim_only") return <ClaimQuickCheckPane />;
+      if (source.intent === "web_url") return <WebUrlIngestPane />;
       return <TextIngestPane />;
     case "audio_file":
       return <AudioIngestPane />;

@@ -12,16 +12,21 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
-import { parsePlainText, parseDocx } from "@/lib/client/text-ingest";
+import { parsePlainText, parseDocx, parsePdf, parseTimedText } from "@/lib/client/text-ingest";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
+import type { TranscriptSegment } from "@/lib/types";
 
-const MAX_BYTES = 1_048_576; // 1 MB
+const MAX_TEXT_BYTES = 1_048_576; // 1 MB of extracted text
+const MAX_FILE_BYTES = 25 * 1024 * 1024; // PDF/text container cap
 
-const ACCEPTED_EXTENSIONS = [".txt", ".md", ".docx"];
+const ACCEPTED_EXTENSIONS = [".txt", ".md", ".docx", ".pdf", ".srt", ".vtt"];
 const ACCEPTED_MIME = [
   "text/plain",
   "text/markdown",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/pdf",
+  "text/vtt",
+  "application/x-subrip",
 ];
 
 const FILE_INPUT_ID = "text-ingest-file-input";
@@ -54,11 +59,14 @@ function textStructure(text: string) {
 export function TextIngestPane() {
   const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
+  const setSource = useSession((s) => s.setSource);
   const initialText = useSession((s) =>
     s.source.kind === "text_doc" ? s.source.initial_text ?? "" : "",
   );
 
   const [text, setText] = useState(initialText);
+  const [loadedFile, setLoadedFile] = useState<{ name: string; mime: string; size: number } | null>(null);
+  const [timedSegments, setTimedSegments] = useState<TranscriptSegment[] | null>(null);
   const [withSpeakers, setWithSpeakers] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,13 +91,15 @@ export function TextIngestPane() {
   // ── text change ─────────────────────────────────────────────────────────────
   const handleTextChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
-    if (val.length > MAX_BYTES) {
+    if (val.length > MAX_TEXT_BYTES) {
       setError("Transcript is too large (max 1 MB). Please trim it and try again.");
       // Still allow the user to see the text, but show the error
       setText(val);
       return;
     }
     setError(null);
+    setLoadedFile(null);
+    setTimedSegments(null);
     setText(val);
   }, []);
 
@@ -98,22 +108,43 @@ export function TextIngestPane() {
     setError(null);
 
     if (!isSupportedFile(file)) {
-      setError("Only .txt, .md, and .docx files are supported.");
+      setError("Only .txt, .md, .docx, .pdf, .srt, and .vtt files are supported.");
       return;
     }
 
-    if (file.size > MAX_BYTES) {
-      setError("Transcript is too large (max 1 MB). Please trim it and try again.");
+    if (file.size > MAX_FILE_BYTES) {
+      setError("File is too large (max 25 MB). Please trim it and try again.");
       return;
     }
 
     try {
       let content: string;
-      if (file.name.toLowerCase().endsWith(".docx")) {
+      const lowerName = file.name.toLowerCase();
+      if (lowerName.endsWith(".docx")) {
         content = await parseDocx(file);
+        setTimedSegments(null);
+      } else if (lowerName.endsWith(".pdf")) {
+        content = await parsePdf(file);
+        setTimedSegments(null);
+      } else if (lowerName.endsWith(".srt") || lowerName.endsWith(".vtt")) {
+        const raw = await file.text();
+        const segments = parseTimedText(raw, lowerName.endsWith(".srt") ? "srt" : "vtt");
+        if (segments.length === 0) {
+          throw new Error("No timed caption cues were found.");
+        }
+        setTimedSegments(segments);
+        content = segments
+          .map((segment) => `${formatClock(segment.start)} ${segment.text}`)
+          .join("\n");
       } else {
         content = await file.text();
+        setTimedSegments(null);
       }
+      if (content.length > MAX_TEXT_BYTES) {
+        setError("Transcript is too large (max 1 MB). Please trim it and try again.");
+        return;
+      }
+      setLoadedFile({ name: file.name, mime: file.type || guessMimeFromName(file.name), size: file.size });
       setText(content);
     } catch (e) {
       setError(`Failed to read file: ${String(e)}`);
@@ -170,7 +201,14 @@ export function TextIngestPane() {
     setIsProcessing(true);
     setError(null);
     try {
-      const segments = parsePlainText(text, { withSpeakers });
+      const segments = timedSegments ?? parsePlainText(text, { withSpeakers });
+      setSource({
+        kind: "text_doc",
+        filename: loadedFile?.name || "Pasted transcript",
+        mime: loadedFile?.mime || "text/plain",
+        byte_count: loadedFile?.size ?? text.length,
+        initial_text: text,
+      });
       handoffRef.current = true;
       await bulkIngest(segments, { signal: controller.signal });
       if (!controller.signal.aborted) {
@@ -182,7 +220,7 @@ export function TextIngestPane() {
     } finally {
       setIsProcessing(false);
     }
-  }, [text, withSpeakers, isProcessing, router]);
+  }, [loadedFile, setSource, text, timedSegments, withSpeakers, isProcessing, router]);
 
   // ── back navigation ────────────────────────────────────────────────────────
   const handleBack = useCallback(() => {
@@ -215,7 +253,7 @@ export function TextIngestPane() {
             Paste or drop a transcript
           </h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-3">
-            Accepts plain text, Markdown, or a Word document (.docx). Speaker labels like{" "}
+            Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like{" "}
             <span className="font-mono">David:</span> are auto-detected before Yentl builds
             claims and markers from the text.
           </p>
@@ -272,6 +310,12 @@ export function TextIngestPane() {
             <span>~{tokenEst.toLocaleString()} tokens</span>
             <span className="opacity-40">·</span>
             <span>{structure.lines.toLocaleString()} non-empty lines</span>
+            {timedSegments && (
+              <>
+                <span className="opacity-40">·</span>
+                <span>{timedSegments.length.toLocaleString()} timed cues</span>
+              </>
+            )}
           </div>
 
           {/* Error message */}
@@ -380,4 +424,23 @@ function TextStep({ label, body }: { label: string; body: string }) {
       <div className="mt-0.5 text-[12px] leading-snug text-ink-3">{body}</div>
     </div>
   );
+}
+
+function formatClock(seconds: number) {
+  const safe = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(safe / 3600);
+  const m = Math.floor((safe % 3600) / 60);
+  const s = safe % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function guessMimeFromName(name: string) {
+  const lower = name.toLowerCase();
+  if (lower.endsWith(".md")) return "text/markdown";
+  if (lower.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (lower.endsWith(".pdf")) return "application/pdf";
+  if (lower.endsWith(".srt")) return "application/x-subrip";
+  if (lower.endsWith(".vtt")) return "text/vtt";
+  return "text/plain";
 }

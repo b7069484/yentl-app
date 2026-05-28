@@ -345,6 +345,8 @@ function enqueuePageTextSnapshot(tab) {
     });
   }
 
+  if (shouldDeferReadableTextToAudio(tab)) return;
+
   const snapshot = collectPageTextSnapshot(tab);
   if (!snapshot) return;
 
@@ -353,6 +355,27 @@ function enqueuePageTextSnapshot(tab) {
     type: "page-text",
     payload: snapshot,
   });
+}
+
+function shouldDeferReadableTextToAudio(tab) {
+  const url = tab?.url || window.location.href;
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    if (
+      (host === "youtube.com" || host === "m.youtube.com") &&
+      parsed.pathname === "/watch"
+    ) {
+      return true;
+    }
+    if (host === "youtu.be") return true;
+  } catch {
+    // Fall through to DOM checks.
+  }
+
+  const hasPrimaryPlayer = Boolean(document.querySelector("ytd-watch-flexy video, video[src], audio[src]"));
+  const hasArticleRoot = Boolean(document.querySelector("article, .mw-parser-output, #mw-content-text"));
+  return hasPrimaryPlayer && !hasArticleRoot;
 }
 
 function collectPageContextSnapshot(tab) {

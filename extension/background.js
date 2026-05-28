@@ -12,12 +12,33 @@ chrome.action.onClicked.addListener((tab) => {
   void handleActionClick(tab);
 });
 
+chrome.commands.onCommand.addListener((command, tab) => {
+  if (command !== "start-yentl-capture") return;
+
+  void (async () => {
+    if (tab?.id) {
+      await handleActionClick(tab);
+      return;
+    }
+
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    await handleActionClick(activeTab);
+  })();
+});
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (!message || message.target !== "background") return false;
 
   void (async () => {
     if (message.type === "status-request") {
       sendResponse(await buildCaptureStatus());
+      return;
+    }
+
+    if (message.type === "popup-start-active-tab") {
+      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      await handleActionClick(activeTab);
+      sendResponse({ ok: true });
       return;
     }
 
@@ -83,12 +104,14 @@ async function handleActionClick(tab) {
     return;
   }
 
+  await setBadge("...", "#F59E0B");
   await startCapture(tab);
 }
 
 async function startCapture(tab) {
   try {
     const appOrigin = await getAppOrigin();
+    await ensureAppOriginPermission(appOrigin);
     const bridgeToken = crypto.randomUUID();
     const sessionId = crypto.randomUUID();
     const tabInfo = {
@@ -238,6 +261,31 @@ async function getAppOrigin() {
   return typeof value === "string" && value.startsWith("http")
     ? value.replace(/\/+$/, "")
     : DEFAULT_APP_ORIGIN;
+}
+
+async function ensureAppOriginPermission(appOrigin) {
+  const originPattern = originPermissionPattern(appOrigin);
+  if (!originPattern || !chrome.permissions) return;
+
+  const hasPermission = await chrome.permissions.contains({ origins: [originPattern] });
+  if (hasPermission) return;
+
+  if (!chrome.permissions.request) {
+    throw new Error(`Yentl needs Chrome permission to reach ${new URL(appOrigin).origin}.`);
+  }
+
+  const granted = await chrome.permissions.request({ origins: [originPattern] });
+  if (!granted) {
+    throw new Error(`Yentl needs permission to reach ${new URL(appOrigin).origin}.`);
+  }
+}
+
+function originPermissionPattern(appOrigin) {
+  try {
+    return `${new URL(appOrigin).origin}/*`;
+  } catch {
+    return null;
+  }
 }
 
 async function getCaptureState() {

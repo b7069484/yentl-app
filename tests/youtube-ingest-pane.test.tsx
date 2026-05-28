@@ -109,9 +109,6 @@ vi.mock("@/lib/client/orchestrator", () => ({
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
-const mockOpen = vi.fn();
-vi.stubGlobal("open", mockOpen);
-
 const VALID_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 const INVALID_URL = "https://vimeo.com/123456";
 const VIDEO_ID = "dQw4w9WgXcQ";
@@ -310,7 +307,7 @@ describe("YoutubeIngestPane - synced caption handoff", () => {
       );
       expect(mockStartSession).not.toHaveBeenCalled();
       expect(mockSetRecording).toHaveBeenCalledWith(false);
-      expect(screen.getByText(/Press play\. Yentl will release 2 timed caption lines/i)).toBeTruthy();
+      expect(screen.getByText(/Press play if the YouTube controls are visible/i)).toBeTruthy();
     });
 
     expect(mockSetPendingYouTubeCaptions).not.toHaveBeenCalled();
@@ -403,6 +400,16 @@ describe("YoutubeIngestPane - caption failure recovery", () => {
   });
 
   it("starts in-page tab-audio capture and routes live transcript into analysis", async () => {
+    const earlyAudioChunk = new Blob(["webm-header-and-audio"]);
+    mockStartDisplayAudioCapture.mockImplementationOnce(async (onChunk: (chunk: Blob) => void) => {
+      onChunk(earlyAudioChunk);
+      return {
+        stream: {},
+        audioStream: {},
+        recorder: {},
+        stop: mockDisplayCaptureStop,
+      };
+    });
     mockFetchByRoute("no-captions");
     render(<YoutubeIngestPane />);
     fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), {
@@ -414,16 +421,17 @@ describe("YoutubeIngestPane - caption failure recovery", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Share tab audio with Yentl/i })).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Share tab audio/i })).toBeTruthy();
     });
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /Share tab audio with Yentl/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Share tab audio/i }));
     });
 
     await waitFor(() => {
       expect(mockStartDisplayAudioCapture).toHaveBeenCalled();
       expect(mockOpenDeepgramStream).toHaveBeenCalled();
+      expect(mockDeepgramSend).toHaveBeenCalledWith(earlyAudioChunk);
       expect(screen.getByRole("button", { name: /Stop tab audio/i })).toBeTruthy();
     });
 
@@ -464,7 +472,7 @@ describe("YoutubeIngestPane - caption failure recovery", () => {
       expect(screen.getByText(/This video needs live tab capture/i)).toBeTruthy();
     });
 
-    const browserButtons = screen.getAllByRole("button", { name: /Browser tab/i });
+    const browserButtons = screen.getAllByRole("button", { name: /Use extension/i });
     fireEvent.click(browserButtons[browserButtons.length - 1]);
 
     expect(mockSetSource).toHaveBeenCalledWith(
@@ -473,18 +481,15 @@ describe("YoutubeIngestPane - caption failure recovery", () => {
     expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
   });
 
-  it("can open the original video on YouTube for extension capture", async () => {
+  it("does not reserve analysis rail space for YouTube escape actions", async () => {
     render(<YoutubeIngestPane />);
     fireEvent.change(screen.getByPlaceholderText(/youtube\.com\/watch/i), {
       target: { value: VALID_URL },
     });
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Open on YouTube/i })).toBeTruthy();
+      expect(screen.queryByRole("button", { name: /Open on YouTube/i })).toBeNull();
     });
-
-    fireEvent.click(screen.getByRole("button", { name: /Open on YouTube/i }));
-    expect(mockOpen).toHaveBeenCalledWith(VALID_URL, "_blank", "noopener,noreferrer");
   });
 
   it("shows URL guidance on INVALID_URL from the server", async () => {

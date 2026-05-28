@@ -399,7 +399,19 @@ function sourceFromSharedTargetParams({
       };
     }
 
-    return { kind: "media_url", url: sharedUrl };
+    if (isDirectMediaUrl(sharedUrl)) {
+      return { kind: "media_url", url: sharedUrl };
+    }
+
+    return {
+      kind: "text_doc",
+      filename: "",
+      mime: "text/html",
+      byte_count: 0,
+      intent: "web_url",
+      source_url: sharedUrl,
+      ...(title?.trim() ? { initial_text: title.trim().slice(0, 160) } : {}),
+    };
   }
 
   const initialText = [title, text]
@@ -446,6 +458,15 @@ function isYouTubeUrl(value: string): boolean {
     if (host !== "youtube.com") return false;
     if (pathname === "/watch") return searchParams.has("v");
     return /^\/(embed|shorts)\/[^/?#]+/.test(pathname);
+  } catch {
+    return false;
+  }
+}
+
+function isDirectMediaUrl(value: string): boolean {
+  try {
+    const { pathname } = new URL(value);
+    return /\.(mp3|wav|m4a|mp4|mov|ogg|webm|opus|flac)(?:$|\?)/i.test(pathname);
   } catch {
     return false;
   }

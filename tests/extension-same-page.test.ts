@@ -14,7 +14,7 @@ describe("Chrome extension same-page panel wiring", () => {
     expect(manifest.permissions).toContain("activeTab");
     expect(manifest.permissions).toContain("scripting");
     expect(manifest.permissions).toContain("tabCapture");
-    expect(manifest.commands?._execute_action?.suggested_key?.mac).toBe("Alt+Shift+Y");
+    expect(manifest.commands?.["start-yentl-capture"]?.suggested_key?.mac).toBe("Alt+Shift+Y");
   });
 
   it("uses the production Yentl origin as the extension default", () => {
@@ -26,16 +26,38 @@ describe("Chrome extension same-page panel wiring", () => {
     expect(optionsHtml).toContain('placeholder="https://yentl.it"');
   });
 
-  it("keeps localhost out of the launch manifest while retaining a local validation manifest", () => {
-    const manifest = read("extension/manifest.json");
+  it("keeps localhost optional in the launch manifest while retaining a local validation manifest", () => {
+    const manifest = JSON.parse(read("extension/manifest.json"));
     const localManifest = read("extension/manifest.local.json");
-    expect(manifest).not.toContain("localhost");
+    expect(manifest.host_permissions).not.toContain("http://localhost:3000/*");
+    expect(manifest.host_permissions).not.toContain("http://127.0.0.1:3000/*");
+    expect(manifest.optional_host_permissions).toContain("http://localhost:3000/*");
+    expect(manifest.optional_host_permissions).toContain("http://127.0.0.1:3000/*");
+    expect(manifest.content_security_policy.extension_pages).toContain("http://localhost:3000");
+    expect(manifest.content_security_policy.extension_pages).toContain("http://127.0.0.1:3000");
     expect(localManifest).toContain("http://localhost:3000");
     expect(localManifest).toContain("http://127.0.0.1:3000");
   });
 
+  it("checks app-origin permission before attempting tab-audio token fetch", () => {
+    const background = read("extension/background.js");
+    const offscreen = read("extension/offscreen.js");
+    expect(background).toContain("ensureAppOriginPermission(appOrigin)");
+    expect(background).toContain("chrome.permissions.contains");
+    expect(background).toContain("chrome.permissions.request");
+    expect(offscreen).toContain("Could not reach the Yentl app at");
+  });
+
   it("injects the content script and opens an in-page panel instead of creating a separate session tab", () => {
     const background = read("extension/background.js");
+    const manifest = JSON.parse(read("extension/manifest.json"));
+    const popup = read("extension/popup.js");
+    expect(manifest.action.default_popup).toBe("popup.html");
+    expect(popup).toContain('type: "popup-start-active-tab"');
+    expect(manifest.commands?.["start-yentl-capture"]?.description).toBe("Listen with Yentl");
+    expect(background).toContain('command !== "start-yentl-capture"');
+    expect(background).toContain('message.type === "popup-start-active-tab"');
+    expect(background).toContain("chrome.tabs.query({ active: true, currentWindow: true })");
     expect(background).toContain("injectYentlPanel");
     expect(background).toContain("chrome.scripting.executeScript");
     expect(background).toContain('type: "open-panel"');

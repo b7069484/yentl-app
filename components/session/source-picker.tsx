@@ -105,10 +105,16 @@ const sourceCards = {
   webUrl: {
     id: "web-url",
     title: "Web page",
-    desc: "Article, embedded video, Vimeo-style page, or mixed media page.",
+    desc: "Article, readable page, or mixed page with text Yentl can pull in.",
     Icon: Globe2,
-    disabled: true,
-    status: "Planned",
+    source: {
+      kind: "text_doc",
+      filename: "",
+      mime: "text/html",
+      byte_count: 0,
+      intent: "web_url",
+      source_url: "",
+    },
   },
   media: {
     id: "media",
@@ -127,7 +133,7 @@ const sourceCards = {
   text: {
     id: "text",
     title: "Text/document",
-    desc: "Paste text or import TXT, Markdown, or DOCX.",
+    desc: "Paste text or import TXT, Markdown, DOCX, PDF, SRT, or VTT.",
     Icon: FileText,
     source: { kind: "text_doc", filename: "", mime: "", byte_count: 0 },
   },

@@ -6,16 +6,21 @@ import type { TranscriptSegment } from "@/lib/types";
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 // Use vi.hoisted() so mock fns are available inside vi.mock() factories.
 
-const { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx, mockPush } =
+const { mockSetPrerecordStage, mockSetSource, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdf, mockParseTimedText, mockPush } =
   vi.hoisted(() => {
     const mockSetPrerecordStage = vi.fn();
+    const mockSetSource = vi.fn();
     const mockParsePlainText = vi.fn((): TranscriptSegment[] => [
       { text: "Hello.", start: 0, end: 400, is_final: true, speaker_id: 0 },
     ]);
     const mockBulkIngest = vi.fn().mockResolvedValue(undefined);
     const mockParseDocx = vi.fn().mockResolvedValue("Extracted docx text");
+    const mockParsePdf = vi.fn().mockResolvedValue("Extracted pdf text");
+    const mockParseTimedText = vi.fn((): TranscriptSegment[] => [
+      { text: "Caption line.", start: 1, end: 3, is_final: true, speaker_id: null },
+    ]);
     const mockPush = vi.fn();
-    return { mockSetPrerecordStage, mockParsePlainText, mockBulkIngest, mockParseDocx, mockPush };
+    return { mockSetPrerecordStage, mockSetSource, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdf, mockParseTimedText, mockPush };
   });
 let mockSource: {
   kind: string;
@@ -33,6 +38,7 @@ vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector?: (s: unknown) => unknown) => {
     const state = {
       setPrerecordStage: mockSetPrerecordStage,
+      setSource: mockSetSource,
       source: mockSource,
     };
     return selector ? selector(state) : state;
@@ -42,6 +48,8 @@ vi.mock("@/lib/client/session-store", () => ({
 vi.mock("@/lib/client/text-ingest", () => ({
   parsePlainText: mockParsePlainText,
   parseDocx: mockParseDocx,
+  parsePdf: mockParsePdf,
+  parseTimedText: mockParseTimedText,
 }));
 
 vi.mock("@/lib/client/ingest-orchestrator", () => ({
@@ -60,6 +68,10 @@ beforeEach(() => {
   ]);
   mockBulkIngest.mockResolvedValue(undefined);
   mockParseDocx.mockResolvedValue("Extracted docx text");
+  mockParsePdf.mockResolvedValue("Extracted pdf text");
+  mockParseTimedText.mockReturnValue([
+    { text: "Caption line.", start: 1, end: 3, is_final: true, speaker_id: null },
+  ]);
   mockPush.mockReset();
   mockSource = { kind: "text_doc", filename: "", mime: "", byte_count: 0 };
 });
@@ -208,6 +220,61 @@ describe("TextIngestPane — file drop", () => {
     });
   });
 
+  it("file drop with .pdf: calls parsePdf and populates textarea", async () => {
+    render(<TextIngestPane />);
+    const file = new File(["fake pdf bytes"], "paper.pdf", {
+      type: "application/pdf",
+    });
+
+    const dropTarget = screen.getByTestId("drop-zone");
+
+    await act(async () => {
+      fireEvent.drop(dropTarget, {
+        dataTransfer: { files: [file], types: ["Files"] },
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockParsePdf).toHaveBeenCalledWith(file);
+      const updatedTa = screen.getByPlaceholderText(
+        /Paste your transcript here/i,
+      ) as HTMLTextAreaElement;
+      expect(updatedTa.value).toBe("Extracted pdf text");
+    });
+  });
+
+  it("file drop with .srt: parses timed cues and uses them during ingest", async () => {
+    render(<TextIngestPane />);
+    const file = new File(["1\n00:00:01,000 --> 00:00:03,000\nCaption line."], "captions.srt", {
+      type: "application/x-subrip",
+    });
+
+    const dropTarget = screen.getByTestId("drop-zone");
+
+    await act(async () => {
+      fireEvent.drop(dropTarget, {
+        dataTransfer: { files: [file], types: ["Files"] },
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockParseTimedText).toHaveBeenCalledWith(expect.stringContaining("Caption line"), "srt");
+      expect(screen.getByDisplayValue(/0:01 Caption line/i)).toBeTruthy();
+      expect(screen.getByText(/1 timed cues/i)).toBeTruthy();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Process transcript/i }));
+    });
+
+    await waitFor(() => {
+      expect(mockBulkIngest).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.objectContaining({ text: "Caption line." })]),
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      );
+    });
+  });
+
   it("file drop with unsupported type: shows inline error", async () => {
     render(<TextIngestPane />);
     const file = new File(["data"], "video.mp4", { type: "video/mp4" });
@@ -222,7 +289,7 @@ describe("TextIngestPane — file drop", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Only .txt, .md, and .docx files are supported/i),
+        screen.getByText(/Only .txt, .md, .docx, .pdf, .srt, and .vtt files are supported/i),
       ).toBeTruthy();
     });
   });

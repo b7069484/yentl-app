@@ -20,9 +20,14 @@ import {
 } from "@/components/session/ExtensionBridge";
 import {
   buildLiveSignalSummary,
-  ExtensionSignalStrip,
   type SignalDatum,
 } from "@/components/session/live-signal";
+import {
+  LiveMetricExpander,
+  YentlLiveReadCard,
+  type LiveReadSignal,
+  type LiveSignalMetric,
+} from "@/components/session/live-analysis-rail";
 import { useSession, type BrowserTabCaptureStatus } from "@/lib/client/session-store";
 import type { DevilAdvocateBrief, DevilAdvocateState } from "@/lib/client/session-store";
 import { exportSession } from "@/lib/client/export-actions";
@@ -31,6 +36,7 @@ import { VERDICT } from "@/lib/client/verdict-theme";
 import type { ClaimCard, RhetoricMarker, Session, SessionSource, TranscriptSegment } from "@/lib/types";
 
 type Phase = BrowserTabCaptureStatus["phase"];
+type PanelMetricKey = "pulse" | "claims" | "heat" | "evidence";
 
 const PHASE_META: Record<
   Phase,
@@ -121,16 +127,6 @@ function sourceTitle(source: SessionSource, status: BrowserTabCaptureStatus) {
   if (source.kind === "browser_tab" && source.title) return source.title;
   if (status.title) return status.title;
   return "This browser tab";
-}
-
-function sourceHost(source: SessionSource, status: BrowserTabCaptureStatus) {
-  const url = source.kind === "browser_tab" ? source.url : status.url;
-  if (!url) return null;
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
 }
 
 function formatTime(seconds: number) {
@@ -228,6 +224,172 @@ function markerInsight(markers: RhetoricMarker[]) {
       ? "border-amber/35 bg-amber-50 text-amber-900"
       : "border-line bg-cream text-ink-3",
   };
+}
+
+type ExtensionReadSignal = LiveReadSignal;
+
+const EXTENSION_READ_VISUALS: Record<
+  ExtensionReadSignal["tone"],
+  Pick<ExtensionReadSignal, "colorStops" | "background" | "overlay" | "amplitude" | "blend" | "speed">
+> = {
+  calm: {
+    colorStops: ["#0f4c81", "#38bdf8", "#13315c"],
+    background: "radial-gradient(circle at 12% 14%, rgba(56, 189, 248, 0.72), transparent 34%), linear-gradient(135deg, #07172d, #0f4c81 54%, #13294b)",
+    overlay: "linear-gradient(135deg, rgba(10,20,45,.58), rgba(15,76,129,.18))",
+    amplitude: 0.45,
+    blend: 0.78,
+    speed: 0.55,
+  },
+  productive: {
+    colorStops: ["#14532d", "#22c55e", "#0f766e"],
+    background: "radial-gradient(circle at 16% 16%, rgba(34,197,94,.78), transparent 34%), linear-gradient(135deg, #052e1a, #14532d 52%, #0f766e)",
+    overlay: "linear-gradient(135deg, rgba(6,41,29,.52), rgba(21,128,61,.18))",
+    amplitude: 0.66,
+    blend: 0.66,
+    speed: 0.72,
+  },
+  contentious: {
+    colorStops: ["#7c2d12", "#f59e0b", "#ea580c"],
+    background: "radial-gradient(circle at 18% 12%, rgba(245,158,11,.86), transparent 34%), radial-gradient(circle at 86% 20%, rgba(234,88,12,.72), transparent 38%), linear-gradient(135deg, #431407, #7c2d12 48%, #b45309)",
+    overlay: "linear-gradient(135deg, rgba(67,30,12,.52), rgba(180,83,9,.2))",
+    amplitude: 0.94,
+    blend: 0.52,
+    speed: 0.95,
+  },
+  misleading: {
+    colorStops: ["#713f12", "#facc15", "#f97316"],
+    background: "radial-gradient(circle at 14% 14%, rgba(250,204,21,.78), transparent 34%), radial-gradient(circle at 88% 22%, rgba(249,115,22,.58), transparent 38%), linear-gradient(135deg, #422006, #713f12 52%, #9a3412)",
+    overlay: "linear-gradient(135deg, rgba(66,32,6,.56), rgba(234,179,8,.18))",
+    amplitude: 0.88,
+    blend: 0.54,
+    speed: 0.9,
+  },
+  heated: {
+    colorStops: ["#7f1d1d", "#ef4444", "#be123c"],
+    background: "radial-gradient(circle at 18% 12%, rgba(239,68,68,.9), transparent 34%), radial-gradient(circle at 86% 18%, rgba(190,18,60,.78), transparent 38%), linear-gradient(135deg, #450a0a, #7f1d1d 50%, #9f1239)",
+    overlay: "linear-gradient(135deg, rgba(55,7,21,.54), rgba(185,28,28,.22))",
+    amplitude: 1.18,
+    blend: 0.42,
+    speed: 1.18,
+  },
+  mixed: {
+    colorStops: ["#7f1d1d", "#f59e0b", "#2563eb"],
+    background: "radial-gradient(circle at 16% 14%, rgba(239,68,68,.72), transparent 33%), radial-gradient(circle at 72% 12%, rgba(245,158,11,.66), transparent 33%), radial-gradient(circle at 88% 72%, rgba(37,99,235,.58), transparent 36%), linear-gradient(135deg, #2e1065, #7f1d1d 46%, #1e3a8a)",
+    overlay: "linear-gradient(135deg, rgba(34,20,49,.56), rgba(127,29,29,.2))",
+    amplitude: 1.04,
+    blend: 0.48,
+    speed: 1.05,
+  },
+};
+
+function extensionReadSignal({
+  meta,
+  phase,
+  sourceName,
+  transcriptCount,
+  claims,
+  markers,
+  message,
+}: {
+  meta: typeof PHASE_META[Phase];
+  phase: Phase;
+  sourceName: string;
+  transcriptCount: number;
+  claims: ClaimCard[];
+  markers: RhetoricMarker[];
+  message?: string;
+}): ExtensionReadSignal {
+  const visibleClaims = claims.filter((claim) => claim.status !== "checking");
+  const riskyClaims = visibleClaims.filter((claim) =>
+    claim.primary_label === "FALSE" ||
+    claim.primary_label === "MISLEADING" ||
+    claim.primary_label === "OMISSION",
+  );
+  const strongMarkers = markers.filter((marker) => marker.severity === "clear" || marker.severity === "blatant");
+
+  if (phase === "error") {
+    return { tone: "heated", label: meta.label, headline: meta.heading, body: message ?? meta.body, ...EXTENSION_READ_VISUALS.heated };
+  }
+  if (riskyClaims.length > 0) {
+    return {
+      tone: "heated",
+      label: "Claim surfaced",
+      headline: "A high-risk claim needs the foreground.",
+      body: `${riskyClaims.length} false, misleading, or omitted-context claim${riskyClaims.length === 1 ? "" : "s"} surfaced while ${sourceName} played.`,
+      ...EXTENSION_READ_VISUALS.heated,
+    };
+  }
+  if (strongMarkers.length > 0) {
+    return {
+      tone: "misleading",
+      label: "Yellow flag",
+      headline: "Yentl hears tricky framing.",
+      body: `${strongMarkers.length} clear rhetoric marker${strongMarkers.length === 1 ? "" : "s"} detected. Watch for loaded phrasing before it becomes a factual shortcut.`,
+      ...EXTENSION_READ_VISUALS.misleading,
+    };
+  }
+  if (phase === "transcribing" || phase === "capturing") {
+    return {
+      tone: transcriptCount > 0 ? "mixed" : "productive",
+      label: meta.label,
+      headline: transcriptCount > 0 ? "Yentl is reading this page live." : meta.heading,
+      body: transcriptCount > 0
+        ? `${transcriptCount} transcript line${transcriptCount === 1 ? "" : "s"} captured. Claims, markers, and evidence checks will keep updating here.`
+        : message ?? meta.body,
+      ...(transcriptCount > 0 ? EXTENSION_READ_VISUALS.mixed : EXTENSION_READ_VISUALS.productive),
+    };
+  }
+  if (phase === "extension_connected") {
+    return { tone: "productive", label: meta.label, headline: meta.heading, body: message ?? meta.body, ...EXTENSION_READ_VISUALS.productive };
+  }
+  return { tone: "calm", label: meta.label, headline: meta.heading, body: message ?? meta.body, ...EXTENSION_READ_VISUALS.calm };
+}
+
+type PanelMetric = LiveSignalMetric<PanelMetricKey>;
+
+function panelMetrics(summary: ReturnType<typeof buildLiveSignalSummary>): PanelMetric[] {
+  return [
+    {
+      key: "pulse",
+      label: "Pulse",
+      value: summary.liveState.value,
+      caption: summary.liveState.detail,
+      detailTitle: `Pulse: ${summary.liveState.value}`,
+      detailBody: "Pulse tracks the live capture state, speech arrival, pacing, and whether Yentl is actively hearing the source.",
+      tooltip: "Live rhythm, capture state, and speech arrival.",
+      tone: summary.liveState.tone,
+    },
+    {
+      key: "claims",
+      label: "Claims",
+      value: summary.claimRisk.value,
+      caption: summary.claimRisk.detail,
+      detailTitle: `Claims: ${summary.claimRisk.value}`,
+      detailBody: "Claims counts checkable assertions and whether any have become high-risk, incomplete, or source-backed.",
+      tooltip: "Checkable assertions and factual risk.",
+      tone: summary.claimRisk.tone,
+    },
+    {
+      key: "heat",
+      label: "Heat",
+      value: summary.rhetoricHeat.value,
+      caption: summary.rhetoricHeat.detail,
+      detailTitle: `Heat: ${summary.rhetoricHeat.value}`,
+      detailBody: "Heat tracks loaded phrasing, escalation, evasiveness, and misleading speech patterns.",
+      tooltip: "Rhetorical pressure and misleading speech.",
+      tone: summary.rhetoricHeat.tone,
+    },
+    {
+      key: "evidence",
+      label: "Evidence",
+      value: summary.evidenceState.value,
+      caption: summary.evidenceState.detail,
+      detailTitle: `Evidence: ${summary.evidenceState.value}`,
+      detailBody: "Evidence shows whether Yentl has source support or still needs a baseline, citation, date range, or document trail.",
+      tooltip: "Source support and unresolved evidence needs.",
+      tone: summary.evidenceState.tone,
+    },
+  ];
 }
 
 function mirrorSessionToPopupStorage(
@@ -475,6 +637,7 @@ export function ExtensionPanelView() {
   useValidationDemo();
 
   const [activeTab, setActiveTab] = useState<PanelTab>("transcript");
+  const [expandedMetric, setExpandedMetric] = useState<PanelMetricKey | null>(null);
   const [workspaceState, setWorkspaceState] = useState<"idle" | "saving" | "error">("idle");
   const source = useSession((s) => s.source);
   const status = useSession((s) => s.browserTabStatus);
@@ -488,14 +651,11 @@ export function ExtensionPanelView() {
 
   const phase: Phase = endedAt ? "stopped" : status.phase;
   const meta = PHASE_META[phase] ?? PHASE_META.idle;
-  const Icon = meta.icon;
   const transcriptRows = transcript.slice(-20).reverse();
   const claimRows = claims.filter((claim) => claim.status !== "checking").slice().reverse();
   const markerRows = markers.slice().reverse();
-  const host = sourceHost(source, status);
   const claimSnapshot = claimInsight(claims);
   const markerSnapshot = markerInsight(markers);
-  const transcriptTime = formatTime(transcriptDuration(transcript));
   const hasContent = transcript.length > 0 || claimRows.length > 0 || markerRows.length > 0;
   const liveSignal = useMemo(
     () => phaseSignal(phase, transcript.length),
@@ -509,6 +669,19 @@ export function ExtensionPanelView() {
     }),
     [claims, liveSignal, markers],
   );
+  const readSignal = useMemo(
+    () => extensionReadSignal({
+      meta,
+      phase,
+      sourceName: sourceTitle(source, status),
+      transcriptCount: transcript.length,
+      claims,
+      markers,
+      message: status.message,
+    }),
+    [claims, markers, meta, phase, source, status, transcript.length],
+  );
+  const metrics = useMemo(() => panelMetrics(signalSummary), [signalSummary]);
 
   async function openFullWorkspace() {
     const popup = window.open("about:blank", "_blank");
@@ -540,89 +713,32 @@ export function ExtensionPanelView() {
 
   return (
     <section className="flex h-dvh min-h-screen flex-col overflow-hidden bg-cream text-ink">
-      <header className="border-b border-line bg-paper/95 px-4 py-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div
-              className={`mb-2 inline-flex max-w-full items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${meta.shell}`}
-            >
-              <span className={`h-2 w-2 rounded-full ${meta.dot}`} />
-              <span className="truncate">{meta.label}</span>
-            </div>
-            <h1 className="truncate text-[15px] font-semibold leading-tight text-ink">
-              {sourceTitle(source, status)}
-            </h1>
-            {host && (
-              <p className="mt-0.5 truncate font-mono text-[11px] text-ink-4">
-                {host}
-              </p>
-            )}
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            <button
-              type="button"
-              onClick={checkBrowserTabCaptureStatus}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-cream text-ink-2 hover:bg-cream-2"
-              aria-label="Check extension status"
-              title="Check extension status"
-            >
-              <RefreshCw className="h-4 w-4" aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={stopBrowserTabCapture}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-soft bg-red-soft/35 text-red hover:bg-red-soft/55"
-              aria-label="Stop tab capture"
-              title="Stop tab capture"
-            >
-              <Square className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-        </div>
-      </header>
-
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         <div className="space-y-3">
-          <section className="rounded-lg border border-line bg-paper p-3 shadow-sm">
-            <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-soft text-teal">
-                <Icon className="h-4 w-4" aria-hidden />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-serif text-[22px] leading-tight text-ink">
-                  {meta.heading}
-                </h2>
-                <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-3">
-                  {status.message ?? meta.body}
-                </p>
-              </div>
-            </div>
-          </section>
+          <ExtensionReadCard signal={readSignal} />
 
-          <ExtensionSignalStrip summary={signalSummary} />
+          <ExtensionMetricExpander
+            metrics={metrics}
+            expandedMetric={expandedMetric}
+            onToggleMetric={(metric) => {
+              setExpandedMetric((current) => (current === metric ? null : metric));
+            }}
+          />
 
           <div
             role="tablist"
             aria-label="Yentl panel views"
-            className="grid grid-cols-3 gap-1 rounded-lg border border-line bg-paper p-1 shadow-sm"
+            className="grid grid-cols-2 gap-1.5 rounded-lg border border-line bg-paper p-1.5 shadow-sm"
           >
             <PanelTabButton
               active={activeTab === "transcript"}
               label="Transcript"
-              value={transcriptTime}
               onClick={() => setActiveTab("transcript")}
             />
             <PanelTabButton
-              active={activeTab === "claims"}
-              label="Claims"
-              value={String(claimRows.length)}
-              onClick={() => setActiveTab("claims")}
-            />
-            <PanelTabButton
-              active={activeTab === "markers"}
-              label="Markers"
-              value={String(markerRows.length)}
-              onClick={() => setActiveTab("markers")}
+              active={activeTab === "findings"}
+              label="Findings"
+              onClick={() => setActiveTab("findings")}
             />
           </div>
 
@@ -666,18 +782,31 @@ export function ExtensionPanelView() {
             </section>
           )}
 
-          {activeTab === "claims" && (
-            <section role="tabpanel" aria-label="Claims" className="space-y-3">
-              <InsightPill
-                label="Claim status"
-                headline={claimSnapshot.headline}
-                detail={claimSnapshot.detail}
-                tone={claimSnapshot.tone}
-              />
+          {activeTab === "findings" && (
+            <section role="tabpanel" aria-label="Findings" className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <InsightPill
+                  label="Claim status"
+                  headline={claimSnapshot.headline}
+                  detail={claimSnapshot.detail}
+                  tone={claimSnapshot.tone}
+                />
+                <InsightPill
+                  label="Marker status"
+                  headline={markerSnapshot.headline}
+                  detail={markerSnapshot.detail}
+                  tone={markerSnapshot.tone}
+                />
+              </div>
 
               <div className="rounded-lg border border-line bg-paper shadow-sm">
-                <div className="border-b border-line px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                  Claim checks
+                <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
+                    Claim checks
+                  </div>
+                  <span className="rounded-full border border-line bg-cream px-2 py-0.5 text-[10px] font-bold text-ink-3">
+                    {claimRows.length}
+                  </span>
                 </div>
                 <div className="space-y-3 px-4 pb-4 pt-3">
                   {claimRows.length === 0 && (
@@ -691,22 +820,14 @@ export function ExtensionPanelView() {
                 </div>
               </div>
 
-              <DevilAdvocatePanel state={devilAdvocate} />
-            </section>
-          )}
-
-          {activeTab === "markers" && (
-            <section role="tabpanel" aria-label="Markers" className="space-y-3">
-              <InsightPill
-                label="Marker status"
-                headline={markerSnapshot.headline}
-                detail={markerSnapshot.detail}
-                tone={markerSnapshot.tone}
-              />
-
               <div className="rounded-lg border border-line bg-paper shadow-sm">
-                <div className="border-b border-line px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
-                  Markers
+                <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-4">
+                    Markers
+                  </div>
+                  <span className="rounded-full border border-line bg-cream px-2 py-0.5 text-[10px] font-bold text-ink-3">
+                    {markerRows.length}
+                  </span>
                 </div>
                 <div className="space-y-3 px-4 pb-4 pt-3">
                   {markerRows.length === 0 && (
@@ -719,83 +840,128 @@ export function ExtensionPanelView() {
                   ))}
                 </div>
               </div>
+
+              <DevilAdvocatePanel state={devilAdvocate} />
             </section>
           )}
 
-          <section className="rounded-lg border border-line bg-paper p-3 shadow-sm">
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={openFullWorkspace}
-                disabled={!hasContent || workspaceState === "saving"}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <ExternalLink className="h-4 w-4" aria-hidden />
-                {workspaceState === "saving" ? "Saving..." : "Open snapshot"}
-              </button>
-              <button
-                type="button"
-                onClick={() => exportCurrent("report")}
-                disabled={!hasContent}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <FileText className="h-4 w-4" aria-hidden />
-                Report
-              </button>
-            </div>
-            <details className="mt-2 rounded-lg border border-line bg-cream">
-              <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
-                Export files
-              </summary>
-              <div className="grid grid-cols-2 gap-2 border-t border-line p-2">
-                <button
-                  type="button"
-                  onClick={() => exportCurrent("markdown")}
-                  disabled={!hasContent}
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Download className="h-3.5 w-3.5" aria-hidden />
-                  Markdown
-                </button>
-                <button
-                  type="button"
-                  onClick={() => exportCurrent("json")}
-                  disabled={!hasContent}
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Download className="h-3.5 w-3.5" aria-hidden />
-                  JSON
-                </button>
-              </div>
-            </details>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-ink-4">
-              Opening the workspace saves the current panel state as a local
-              snapshot. It is not live sync; keep this panel open for continuing
-              capture.
-            </p>
-            {workspaceState === "error" && (
-              <p className="mt-2 rounded-md border border-red-soft bg-red-soft/35 px-3 py-2 text-[12px] text-red">
-                Could not open the saved snapshot. Try the report export instead.
-              </p>
-            )}
-          </section>
         </div>
       </div>
+
+      <section className="border-t border-line bg-paper/95 p-3 shadow-[0_-10px_30px_rgba(20,18,16,0.06)]">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={checkBrowserTabCaptureStatus}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-cream px-3 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.99]"
+          >
+            <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+            Check
+          </button>
+          <button
+            type="button"
+            onClick={stopBrowserTabCapture}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-red-soft bg-red-soft/35 px-3 text-[12px] font-semibold text-red transition-all hover:-translate-y-0.5 hover:bg-red-soft/55 active:translate-y-0 active:scale-[0.99]"
+          >
+            <Square className="h-3.5 w-3.5" aria-hidden />
+            Stop
+          </button>
+        </div>
+
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={openFullWorkspace}
+            disabled={!hasContent || workspaceState === "saving"}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-cream px-3 py-2 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+            {workspaceState === "saving" ? "Saving..." : "Open snapshot"}
+          </button>
+          <button
+            type="button"
+            onClick={() => exportCurrent("report")}
+            disabled={!hasContent}
+            className="yentl-action-button inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-line bg-cream px-3 py-2 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <FileText className="h-3.5 w-3.5" aria-hidden />
+            Report
+          </button>
+        </div>
+
+        <details className="mt-2 rounded-md border border-line bg-cream">
+          <summary className="cursor-pointer px-3 py-2 text-[12px] font-semibold text-ink-2">
+            Export files
+          </summary>
+          <div className="grid grid-cols-2 gap-2 border-t border-line p-2">
+            <button
+              type="button"
+              onClick={() => exportCurrent("markdown")}
+              disabled={!hasContent}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream-2 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden />
+              Markdown
+            </button>
+            <button
+              type="button"
+              onClick={() => exportCurrent("json")}
+              disabled={!hasContent}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream-2 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden />
+              JSON
+            </button>
+          </div>
+        </details>
+        {workspaceState === "error" && (
+          <p className="mt-2 rounded-md border border-red-soft bg-red-soft/35 px-3 py-2 text-[12px] text-red">
+            Could not open the saved snapshot. Try the report export instead.
+          </p>
+        )}
+      </section>
     </section>
   );
 }
 
-type PanelTab = "transcript" | "claims" | "markers";
+type PanelTab = "transcript" | "findings";
+
+function ExtensionReadCard({ signal }: { signal: ExtensionReadSignal }) {
+  return (
+    <YentlLiveReadCard
+      signal={signal}
+      testId="extension-yentl-read"
+    />
+  );
+}
+
+function ExtensionMetricExpander({
+  metrics,
+  expandedMetric,
+  onToggleMetric,
+}: {
+  metrics: PanelMetric[];
+  expandedMetric: PanelMetricKey | null;
+  onToggleMetric: (metric: PanelMetricKey) => void;
+}) {
+  return (
+    <LiveMetricExpander
+      metrics={metrics}
+      expandedMetric={expandedMetric}
+      onToggleMetric={onToggleMetric}
+      testId="extension-metric-expander"
+      className="mt-3"
+    />
+  );
+}
 
 function PanelTabButton({
   active,
   label,
-  value,
   onClick,
 }: {
   active: boolean;
   label: string;
-  value: string;
   onClick: () => void;
 }) {
   return (
@@ -804,24 +970,15 @@ function PanelTabButton({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`min-w-0 rounded-md px-2 py-2 text-left transition ${
+      className={`yentl-action-button min-h-9 min-w-0 rounded-md px-3 text-center text-[12px] font-bold transition-all ${
         active
-          ? "bg-ink text-paper shadow-sm"
-          : "bg-transparent text-ink-3 hover:bg-cream-2 hover:text-ink"
+          ? "bg-ink text-white shadow-sm"
+          : "bg-cream text-ink-3 hover:bg-teal-soft hover:text-teal"
       }`}
     >
-      <span className="block truncate text-[10px] font-bold uppercase tracking-[0.08em]">
-        {label}
-      </span>
-      <span className="mt-0.5 block truncate font-mono text-[17px] leading-none">
-        {value}
-      </span>
+      {label}
     </button>
   );
-}
-
-function transcriptDuration(transcript: TranscriptSegment[]) {
-  return transcript.reduce((max, segment) => Math.max(max, segment.end), 0);
 }
 
 function overlapsSegment(segment: TranscriptSegment, start: number, end: number) {

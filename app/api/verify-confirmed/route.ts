@@ -61,6 +61,10 @@ export async function POST(req: NextRequest) {
       tools: {
         web_search: anthropic.tools.webSearch_20260209({ maxUses: 5 }),
       },
+      // Phase 1d Task 4 — deterministic verdicts. Same evidence → same
+      // label. Web-search tool results still vary with the live web, but
+      // the synthesis-of-evidence step is deterministic.
+      temperature: 0,
     });
 
     const sources = mergeStanceWithCitations(

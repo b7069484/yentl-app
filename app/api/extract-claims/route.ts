@@ -44,11 +44,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Phase 1d Task 4 — determinism. Trimodal eval found cross-mode claim
+    // Jaccard as low as 0% (hitchens_mcgrath SRT vs audio). Temperature
+    // defaults to 1.0 across the Anthropic SDK; setting it to 0 makes the
+    // same {utterance, context} input produce the same claim set across
+    // modes + across re-runs. The cost: less varied wording on edge cases,
+    // which is an acceptable trade for a fact-check product where the same
+    // content has to produce the same fact-check.
     const { output } = await generateText({
       model: opus,
       output: Output.object({ schema: EXTRACT_CLAIMS_SCHEMA }),
       system: SYSTEM,
       prompt: userPrompt(parsed.data),
+      temperature: 0,
     });
     return NextResponse.json(output);
   } catch (e) {

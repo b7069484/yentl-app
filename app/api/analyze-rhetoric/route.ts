@@ -60,6 +60,10 @@ export async function POST(req: NextRequest) {
       providerOptions: {
         anthropic: { cacheControl: { type: "persistent" } },
       },
+      // Phase 1d Task 4 — deterministic marker extraction. Same utterance →
+      // same markers across modes + re-runs. Closes part of the trimodal
+      // markerNameOverlap gap (~25-60% across candidates pre-fix).
+      temperature: 0,
     });
     return NextResponse.json(output);
   } catch (e) {

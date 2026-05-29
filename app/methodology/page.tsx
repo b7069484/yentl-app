@@ -143,6 +143,42 @@ export default function MethodologyPage() {
         </dl>
       </section>
 
+      <section aria-labelledby="not-fact-checked">
+        <h2 id="not-fact-checked" className="text-xl font-semibold mb-3">
+          What Yentl doesn&apos;t fact-check
+        </h2>
+        <p className="text-muted-foreground mb-3">
+          Some things sound like factual claims but aren&apos;t, and we
+          deliberately skip them:
+        </p>
+        <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <li>
+            <span className="font-semibold text-foreground">Satire and jokes</span>
+            {" — if it’s obviously not meant literally, we let it pass."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Predictions about the future</span>
+            {" — there’s no source of truth to check against."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Opinions and value judgments</span>
+            {" — “this is bad” isn’t a claim about reality."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Hypotheticals</span>
+            {" — “if X then Y” doesn’t claim X happened."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Personal experience reports</span>
+            {" — we can’t verify what someone says happened to them."}
+          </li>
+        </ul>
+        <p className="text-muted-foreground mt-3 text-sm">
+          If you think we miscategorized something, flag it via the
+          verdict&apos;s dispute link.
+        </p>
+      </section>
+
       <section aria-labelledby="prompt-version-log">
         <h2 id="prompt-version-log" className="text-xl font-semibold mb-3">
           Prompt-version log

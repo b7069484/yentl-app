@@ -149,6 +149,15 @@ export function ClaimCard({
           </p>
         )}
 
+        {/* Phase 1c Task 2 — boundary defense: "why THIS label, not the
+            adjacent one." PolitiFact + Anthropic ask. Suppressed in compact
+            and pending states. */}
+        {!isPending && !compact && card.label_rationale && (
+          <p className="border-l-2 border-border/60 pl-3 text-xs italic leading-relaxed text-foreground/65">
+            {card.label_rationale}
+          </p>
+        )}
+
         {!isPending && !compact && card.annotations.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {card.annotations.map((a, i) => (

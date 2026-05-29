@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
       score: result.output.score,
       annotations: result.output.annotations,
       explanation: result.output.explanation,
+      label_rationale: result.output.label_rationale,
       sources,
     });
   } catch (e) {

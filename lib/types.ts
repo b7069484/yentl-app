@@ -40,6 +40,13 @@ export type ClaimCard = {
   sources: Source[];
   /** How the speaker held the claim — extracted by analyze-rhetoric/extract-claims. */
   stance?: ClaimStance;
+  /**
+   * Phase 1c Task 2 — one-sentence defense of the label boundary call.
+   * Returned by verify-provisional + verify-confirmed. Names the rejected
+   * adjacent label explicitly so users see WHY this label, not the
+   * neighboring one. PolitiFact/Anthropic ask.
+   */
+  label_rationale?: string;
 };
 
 export type MarkerType = "fallacy" | "bias" | "rhetoric";

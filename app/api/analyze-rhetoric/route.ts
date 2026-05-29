@@ -58,7 +58,15 @@ export async function POST(req: NextRequest) {
       system: SYSTEM_PREFIX,
       prompt: userPrompt(parsed.data),
       providerOptions: {
-        anthropic: { cacheControl: { type: "persistent" } },
+        // Phase 1e — Anthropic rejects `cacheControl.type: "persistent"`
+        // with "does not match any of the expected tags: 'ephemeral'".
+        // Phase 1a Task 7 (ad7af89) attempted to switch from ephemeral
+        // → persistent for a token-cost reduction, but the API has never
+        // accepted "persistent" as a valid type — silently 500ing every
+        // analyze-rhetoric call since. The trimodal eval surfaced it:
+        // 0 markers across 8/8 candidates / 24 modes, every one a HTTP
+        // 500 from Anthropic. Reverted to "ephemeral".
+        anthropic: { cacheControl: { type: "ephemeral" } },
       },
       // Phase 1d Task 4 — deterministic marker extraction. Same utterance →
       // same markers across modes + re-runs. Closes part of the trimodal

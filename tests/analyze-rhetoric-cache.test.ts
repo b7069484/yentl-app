@@ -20,12 +20,19 @@ vi.mock("ai", async (importOriginal) => {
   };
 });
 
-describe("analyze-rhetoric cache control (Phase 1a)", () => {
+describe("analyze-rhetoric cache control (Phase 1e revert of Phase 1a Task 7)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("uses cacheControl.type='persistent' on the rhetoric system message", async () => {
+  it("uses cacheControl.type='ephemeral' on the rhetoric system message", async () => {
+    // Phase 1e — Phase 1a Task 7 (ad7af89) attempted to use "persistent"
+    // for a token-cost win, but Anthropic only accepts "ephemeral":
+    //   "system.0.cache_control: Input tag 'persistent' found using 'type'
+    //    does not match any of the expected tags: 'ephemeral'"
+    // Every analyze-rhetoric call was returning HTTP 500 silently — surfaced
+    // by the trimodal eval (0 markers across 8/8 candidates / 24 modes).
+    // Reverted to "ephemeral" (the only Anthropic-accepted value).
     const { generateText } = await import("ai");
     const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
 
@@ -46,7 +53,6 @@ describe("analyze-rhetoric cache control (Phase 1a)", () => {
     });
 
     const res = await POST(req as never);
-    // Should reach generateText (not short-circuit via rate limit / bad body)
     expect(res.status).toBe(200);
     expect(mockGenerateText).toHaveBeenCalledOnce();
 
@@ -54,6 +60,6 @@ describe("analyze-rhetoric cache control (Phase 1a)", () => {
     const anthropicOpts = (callArg?.providerOptions as Record<string, unknown>)?.anthropic as Record<string, unknown>;
     const cacheType = (anthropicOpts?.cacheControl as Record<string, unknown>)?.type;
 
-    expect(cacheType).toBe("persistent");
+    expect(cacheType).toBe("ephemeral");
   });
 });

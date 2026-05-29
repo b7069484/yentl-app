@@ -1,6 +1,29 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Phase 1c Task 1 — security headers attached to every response. Defense in
+// depth on top of Vercel's defaults; matches what we need for HSTS preload
+// list eligibility and AI Act / privacy review readiness.
+const SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "X-Content-Type-Options": "nosniff",
+  // Defense in depth: even with CSP frame-ancestors, X-Frame-Options is
+  // honored by older browsers and some proxies.
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  // Yentl needs mic for live session — allow same-origin only. Camera +
+  // geolocation deny — we don't use them.
+  "Permissions-Policy": "camera=(), geolocation=(), microphone=(self)",
+  "X-DNS-Prefetch-Control": "on",
+};
+
+function applySecurityHeaders<T extends Response>(res: T): T {
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    res.headers.set(name, value);
+  }
+  return res;
+}
+
 const isAlwaysProtectedRoute = createRouteMatcher([
   "/project(.*)",
   "/account(.*)",
@@ -51,8 +74,8 @@ const proxy = !clerkConfigured
           (productAuthRequired && (isSessionRoute(req) || isCostBearingApiRoute(req)))
         );
 
-      if (protectedWithoutClerk) return notFound(req);
-      return NextResponse.next();
+      if (protectedWithoutClerk) return applySecurityHeaders(notFound(req));
+      return applySecurityHeaders(NextResponse.next());
     }
   : clerkMiddleware(async (auth, req) => {
       const isProtectedCostBearingApi = productAuthRequired && isProduction && isCostBearingApiRoute(req);
@@ -67,6 +90,8 @@ const proxy = !clerkConfigured
       ) {
         await auth.protect();
       }
+      // Phase 1c Task 1 — security headers on every response in the Clerk path.
+      return applySecurityHeaders(NextResponse.next());
     });
 
 export default proxy;

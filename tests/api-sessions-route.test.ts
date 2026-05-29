@@ -22,11 +22,17 @@ vi.mock("@/lib/db/client", async () => {
   // get fed to drizzle's eq()/etc — the mocked db methods ignore the predicate
   // and return whatever the test arranges.
   const realSchema = await import("@/lib/db/schema");
+  // Two insert chains are exercised by save-session:
+  //  1. db.insert(sessions).values(...).returning(...) — captured via the
+  //     `returning` mock so we can assert the inserted row id
+  //  2. db.insert(subscriptions).values(...).onConflictDoUpdate(...) — fire
+  //     and forget; resolves to undefined so save-session continues
   return {
     db: {
       insert: () => ({
         values: () => ({
           returning: mockDbInsertValuesReturning,
+          onConflictDoUpdate: vi.fn().mockResolvedValue(undefined),
         }),
       }),
       query: {

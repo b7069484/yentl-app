@@ -3,6 +3,7 @@ import { VERDICT } from "@/lib/client/verdict-theme";
 import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
 import { ClaimStanceBadge } from "./ClaimStanceBadge";
+import { ConfidenceTierBadge } from "./ConfidenceTierBadge";
 import Image from "next/image";
 import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
 import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
@@ -90,6 +91,9 @@ export function ClaimCard({
             status={card.status}
             sourceCount={card.sources.length}
           />
+          {!isPending && !compact && (
+            <ConfidenceTierBadge score={card.score} />
+          )}
           {card.topic && card.topic !== "Other" && (
             <span className="inline-flex items-center rounded-full border border-border/50 bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground/60">
               {card.topic}

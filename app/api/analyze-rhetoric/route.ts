@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       system: SYSTEM_PREFIX,
       prompt: userPrompt(parsed.data),
       providerOptions: {
-        anthropic: { cacheControl: { type: "ephemeral" } },
+        anthropic: { cacheControl: { type: "persistent" } },
       },
     });
     return NextResponse.json(output);

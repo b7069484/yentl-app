@@ -64,9 +64,17 @@ export function VerdictView({
         )}
       </section>
 
-      <p className="text-xs text-muted-foreground" data-testid="verdict-session-id">
-        Session id: {sessionId}
-      </p>
+      <div className="flex flex-col gap-2 border-t border-border/60 pt-4 text-sm">
+        <a
+          href={`/verdict/${sessionId}/dispute`}
+          className="inline-flex items-center gap-1 text-muted-foreground underline-offset-4 hover:underline"
+        >
+          Flag this verdict for review
+        </a>
+        <p className="text-xs text-muted-foreground" data-testid="verdict-session-id">
+          Session id: {sessionId}
+        </p>
+      </div>
 
       <AIDisclosureFooter />
     </article>

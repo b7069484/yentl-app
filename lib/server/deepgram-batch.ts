@@ -145,7 +145,10 @@ function parseDeepgramResponse(
         const wStart = w.start ?? 0;
         const wEnd = w.end ?? wStart;
         const mid = (wStart + wEnd) / 2;
-        return mid >= uStart && mid <= uEnd;
+        // Half-open [uStart, uEnd): a midpoint exactly on the boundary belongs
+        // to the later utterance, not both. Prevents word double-assignment
+        // under diarize:true when adjacent utterances share a timestamp.
+        return mid >= uStart && mid < uEnd;
       })
       .map((w) => ({
         text: w.word ?? "",

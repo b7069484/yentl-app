@@ -40,6 +40,16 @@ export type TrimodalCandidateResult = {
     provisionalDisagreements?: unknown[];
     explicitRevisionEvents?: number;
   };
+  /**
+   * Per-mode analysis blobs — used to detect vacuous-baseline cases where
+   * both compared sides had empty claim/marker sets (Jaccard defaults to 1.0
+   * on empty/empty in the eval, but that's not a real signal).
+   */
+  analysis?: {
+    srt?: { claims?: unknown[]; markers?: unknown[] };
+    youtube_url?: { claims?: unknown[]; markers?: unknown[] };
+    audio_production?: { claims?: unknown[]; markers?: unknown[] };
+  };
 };
 
 /**
@@ -119,13 +129,48 @@ function checkWer(
   else if (delta < -tolerance / 2) out.improvements.push(entry);
 }
 
+/**
+ * Heuristic: was the baseline's Jaccard 1.0 because both compared modes had
+ * zero claims/markers? In the eval, empty-set vs empty-set defaults to 1.0
+ * which is mathematically defensible (vacuous truth) but produces a false
+ * "regression" the moment the new run extracts ANY data. This detector
+ * downgrades such cases from regressions to warnings.
+ */
+function isVacuousJaccardBaseline(
+  baselineCandidate: TrimodalCandidateResult | undefined,
+  metric: string,
+): boolean {
+  if (!baselineCandidate?.analysis) return false;
+  const a = baselineCandidate.analysis;
+  const isClaim = metric.startsWith("claimJaccard.");
+  const counts = (mode: keyof typeof a) => {
+    const arr = isClaim ? a[mode]?.claims : a[mode]?.markers;
+    return Array.isArray(arr) ? arr.length : 0;
+  };
+  if (metric.endsWith(".srt_vs_youtube_url")) {
+    return counts("srt") === 0 && counts("youtube_url") === 0;
+  }
+  if (metric.endsWith(".srt_vs_audio_production")) {
+    return counts("srt") === 0 && counts("audio_production") === 0;
+  }
+  if (metric.endsWith(".youtube_url_vs_audio_production")) {
+    return counts("youtube_url") === 0 && counts("audio_production") === 0;
+  }
+  return false;
+}
+
 function checkDrop(
   candidateId: string,
   metric: string,
   baseline: number | undefined,
   current: number | undefined,
   tolerance: number,
-  out: { regressions: Regression[]; improvements: Regression[] },
+  out: {
+    regressions: Regression[];
+    improvements: Regression[];
+    warnings: string[];
+  },
+  baselineCandidate?: TrimodalCandidateResult,
 ) {
   if (baseline === undefined || current === undefined) return;
   const delta = current - baseline; // negative delta = drop
@@ -137,6 +182,20 @@ function checkDrop(
     delta,
     reason: `${metric} changed by ${(delta * 100).toFixed(1)} pp (tolerance −${(tolerance * 100).toFixed(1)} pp)`,
   };
+  // Vacuous-baseline downgrade: if the baseline's Jaccard came from both
+  // modes having empty extraction (Jaccard defaults to 1.0 on empty/empty),
+  // a "regression" toward 0 just means the new run actually extracted data.
+  // Surface as a warning, not a regression — the right thing happened.
+  if (
+    -delta > tolerance &&
+    metric.startsWith("claimJaccard.") &&
+    isVacuousJaccardBaseline(baselineCandidate, metric)
+  ) {
+    out.warnings.push(
+      `[${candidateId}] ${metric}: baseline was vacuous (both modes had 0 extracted claims); current run extracted data — not a real regression`,
+    );
+    return;
+  }
   if (-delta > tolerance) out.regressions.push(entry);
   else if (delta > tolerance / 2) out.improvements.push(entry);
 }
@@ -257,6 +316,7 @@ export function compareSummaries(
       cur.crossMode?.claimJaccard?.srt_vs_youtube_url,
       tolerances.claimJaccardDrop,
       report,
+      base,
     );
     checkDrop(
       id,
@@ -265,6 +325,7 @@ export function compareSummaries(
       cur.crossMode?.claimJaccard?.srt_vs_audio_production,
       tolerances.claimJaccardDrop,
       report,
+      base,
     );
     checkDrop(
       id,
@@ -273,6 +334,7 @@ export function compareSummaries(
       cur.crossMode?.markerNameOverlap?.srt_vs_youtube_url,
       tolerances.markerOverlapDrop,
       report,
+      base,
     );
     checkDrop(
       id,
@@ -281,6 +343,7 @@ export function compareSummaries(
       cur.crossMode?.markerNameOverlap?.srt_vs_audio_production,
       tolerances.markerOverlapDrop,
       report,
+      base,
     );
     checkRevisionEvents(
       id,

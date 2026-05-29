@@ -127,6 +127,80 @@ describe("compareSummaries (Phase 1d Task 3)", () => {
     expect(r.warnings.some((w) => w.includes("beta"))).toBe(true);
   });
 
+  it("downgrades vacuous-baseline claim Jaccard drops to warnings (Phase 1e)", () => {
+    // When baseline had 0 claims in both compared modes, the eval reports
+    // claimJaccard=1.0 (vacuous truth on empty/empty). The moment the new
+    // run actually extracts ANY claims, that's a 0% Jaccard — looks like a
+    // 100pp drop, but it's actually the system finding things the baseline
+    // missed. Downgrade to a warning instead of failing the gate.
+    const baseline: TrimodalSummary = {
+      results: [
+        {
+          candidate: { id: "alpha" },
+          crossMode: {
+            claimJaccard: {
+              srt_vs_youtube_url: 1.0,
+              srt_vs_audio_production: 1.0,
+            },
+          },
+          analysis: {
+            srt: { claims: [], markers: [] },
+            youtube_url: { claims: [], markers: [] },
+            audio_production: { claims: [], markers: [] },
+          },
+        },
+      ],
+    };
+    const current: TrimodalSummary = {
+      results: [
+        {
+          candidate: { id: "alpha" },
+          crossMode: {
+            claimJaccard: {
+              srt_vs_youtube_url: 0.0,
+              srt_vs_audio_production: 0.0,
+            },
+          },
+          analysis: {
+            srt: { claims: [{ text: "now-extracted claim" }] },
+            youtube_url: { claims: [{ text: "different claim" }] },
+            audio_production: { claims: [] },
+          },
+        },
+      ],
+    };
+    const r = compareSummaries(baseline, current);
+    expect(r.regressions).toEqual([]);
+    expect(
+      r.warnings.some((w) => w.includes("vacuous") && w.includes("claimJaccard.srt_vs_youtube_url")),
+    ).toBe(true);
+  });
+
+  it("STILL flags real claim-Jaccard regressions when baseline had real data", () => {
+    const baseline: TrimodalSummary = {
+      results: [
+        {
+          candidate: { id: "alpha" },
+          crossMode: { claimJaccard: { srt_vs_youtube_url: 0.8 } },
+          analysis: {
+            srt: { claims: [{ text: "c1" }, { text: "c2" }] },
+            youtube_url: { claims: [{ text: "c1" }, { text: "c3" }] },
+          },
+        },
+      ],
+    };
+    const current: TrimodalSummary = {
+      results: [
+        {
+          candidate: { id: "alpha" },
+          crossMode: { claimJaccard: { srt_vs_youtube_url: 0.3 } },
+        },
+      ],
+    };
+    const r = compareSummaries(baseline, current);
+    expect(r.regressions.some((x) => x.metric === "claimJaccard.srt_vs_youtube_url")).toBe(true);
+  });
+
   it("formatReport reflects PASS vs FAIL state in the first line", () => {
     const baseline = makeSummary([{ id: "alpha", urlWer: 0.1 }]);
     const ok = compareSummaries(baseline, makeSummary([{ id: "alpha", urlWer: 0.1 }]));

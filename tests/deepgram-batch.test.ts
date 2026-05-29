@@ -29,12 +29,22 @@ import { transcribeUrl, transcribeFile } from "@/lib/server/deepgram-batch";
  * Builds a mock Deepgram response in the shape the SDK actually resolves to:
  * ListenV1Response = { metadata: {...}, results: { channels, utterances? } }
  * (HttpResponsePromise<T> extends Promise<T>, so awaiting it gives T directly)
+ *
+ * The optional `words` array is placed under results.channels[0].alternatives[0].words,
+ * matching the real Deepgram API structure.
  */
 function makeDeepgramResponse(utterances: Array<{
   transcript?: string;
   start?: number;
   end?: number;
   speaker?: number;
+}>, words?: Array<{
+  word?: string;
+  start?: number;
+  end?: number;
+  confidence?: number;
+  speaker?: number;
+  speaker_confidence?: number;
 }>) {
   return {
     metadata: {
@@ -43,7 +53,9 @@ function makeDeepgramResponse(utterances: Array<{
       model_uuid: "test-uuid",
     },
     results: {
-      channels: [],
+      channels: words
+        ? [{ alternatives: [{ words }] }]
+        : [],
       utterances,
     },
   };
@@ -73,20 +85,22 @@ describe("transcribeUrl — result mapping", () => {
 
     expect(utterances).toHaveLength(2);
 
-    expect(utterances[0]).toEqual({
+    expect(utterances[0]).toMatchObject({
       text: "Hello world.",
       start: 0.0,
       end: 1.5,
       is_final: true,
       speaker_id: 0,
+      provider: "deepgram",
     });
 
-    expect(utterances[1]).toEqual({
+    expect(utterances[1]).toMatchObject({
       text: "This is a test.",
       start: 1.8,
       end: 3.2,
       is_final: true,
       speaker_id: 1,
+      provider: "deepgram",
     });
   });
 
@@ -102,15 +116,48 @@ describe("transcribeUrl — result mapping", () => {
     expect(utterances.every((u) => u.is_final === true)).toBe(true);
   });
 
-  it("uses speaker_id: 0 when speaker field is absent", async () => {
+  it("returns speaker_id null + attribution_status not_available when Deepgram omits speaker", async () => {
     mockTranscribeUrl.mockResolvedValue(
       makeDeepgramResponse([
-        { transcript: "No speaker field.", start: 0, end: 1 },
+        { transcript: "No speaker field.", start: 0, end: 1 /* no .speaker */ },
       ]),
     );
 
     const { utterances } = await transcribeUrl("https://example.com/audio.mp3");
-    expect(utterances[0].speaker_id).toBe(0);
+    expect(utterances).toHaveLength(1);
+    expect(utterances[0].speaker_id).toBeNull();
+    expect(utterances[0].attribution_status).toBe("not_available");
+  });
+
+  it("preserves words[] from results.channels[0].alternatives[0].words when present", async () => {
+    mockTranscribeUrl.mockResolvedValue(
+      makeDeepgramResponse(
+        [{ transcript: "Hello world", start: 0, end: 1 }],
+        [
+          { word: "Hello", start: 0, end: 0.5, confidence: 0.95 },
+          { word: "world", start: 0.5, end: 1, confidence: 0.91 },
+        ],
+      ),
+    );
+
+    const { utterances } = await transcribeUrl("https://example.com/audio.mp3");
+    expect(utterances[0].words).toHaveLength(2);
+    expect(utterances[0].words?.[0]).toMatchObject({
+      text: "Hello",
+      start: 0,
+      end: 0.5,
+      confidence: 0.95,
+    });
+  });
+
+  it("sets provider: 'deepgram' and source_audio_kind: 'audio_file' on every segment", async () => {
+    mockTranscribeUrl.mockResolvedValue(
+      makeDeepgramResponse([{ transcript: "x", start: 0, end: 1 }]),
+    );
+
+    const { utterances } = await transcribeUrl("https://example.com/audio.mp3");
+    expect(utterances[0].provider).toBe("deepgram");
+    expect(utterances[0].source_audio_kind).toBe("audio_file");
   });
 });
 
@@ -235,19 +282,21 @@ describe("transcribeFile — result mapping", () => {
     const { utterances } = await transcribeFile(buffer, "audio/mpeg");
 
     expect(utterances).toHaveLength(2);
-    expect(utterances[0]).toEqual({
+    expect(utterances[0]).toMatchObject({
       text: "Hello world.",
       start: 0.0,
       end: 1.5,
       is_final: true,
       speaker_id: 0,
+      provider: "deepgram",
     });
-    expect(utterances[1]).toEqual({
+    expect(utterances[1]).toMatchObject({
       text: "This is a test.",
       start: 1.8,
       end: 3.2,
       is_final: true,
       speaker_id: 1,
+      provider: "deepgram",
     });
   });
 

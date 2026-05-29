@@ -4,7 +4,13 @@ import type {
   ListenV1Response,
   ListenV1AcceptedResponse,
 } from "@deepgram/sdk";
-import type { TranscriptSegment, Speaker } from "@/lib/types";
+import type {
+  TranscriptSegment,
+  Speaker,
+  SpeakerId,
+  ASRWord,
+  SourceAudioKind,
+} from "@/lib/types";
 
 /**
  * Shared Deepgram transcription options for both URL and file paths.
@@ -18,8 +24,8 @@ import type { TranscriptSegment, Speaker } from "@/lib/types";
  *   utterances:true — groups words into utterance objects with per-utterance
  *                     start/end. Required for our TranscriptSegment mapping;
  *                     without it we only get channel-level transcripts.
- *                     (Without speaker tags, all utterances will carry
- *                     speaker_id 0 in the parser below — by design.)
+ *                     (Without speaker tags, utterances carry speaker_id null
+ *                     and attribution_status "not_available" — by design.)
  *   numerals:true  — converts spoken numbers ("forty-seven") → digits ("47"),
  *                    which reduces mis-transcription of numerical claims.
  *   smart_format:true — applies Deepgram's post-processing rules (dates,
@@ -77,16 +83,29 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
       ...TRANSCRIBE_OPTIONS,
     });
 
-  return parseDeepgramResponse(response, url);
+  return parseDeepgramResponse(response, url, { source_audio_kind: "audio_file" });
 }
 
 /**
  * Parses a Deepgram synchronous response into TranscriptSegment[] + Speaker[].
- * Shared by both transcribeUrl and transcribeFile.
+ * Shared by transcribeUrl, transcribeFile, and transcribeStream.
+ *
+ * Speaker honesty: speaker_id is null (not 0) when Deepgram omits the speaker
+ * field. Defaulting to 0 was a lie — it falsely claimed every utterance belongs
+ * to speaker 0 even on mono recordings with no diarization. We emit null +
+ * attribution_status: "not_available" instead.
+ *
+ * Words: the per-word array lives under results.channels[0].alternatives[0].words
+ * in Deepgram's batch response. We preserve them per-utterance by time-overlap
+ * (midpoint of each word must fall within [utterance.start, utterance.end]).
+ * With diarize=false, words carry confidence; with diarize=true they additionally
+ * carry speaker and speaker_confidence. This is the foundation for
+ * confidence-weighted attribution (Task 5).
  */
 function parseDeepgramResponse(
   response: ListenV1Response | ListenV1AcceptedResponse,
   source: string,
+  options: { source_audio_kind?: SourceAudioKind } = {},
 ): TranscribeResult {
   if (!("results" in response) || !response.results) {
     throw new Error(
@@ -97,16 +116,58 @@ function parseDeepgramResponse(
 
   const rawUtterances = response.results.utterances ?? [];
 
+  // Words live under results.channels[0].alternatives[0].words in Deepgram's
+  // batch response. We preserve them per-utterance by time-overlap. With
+  // diarize=false they carry confidence; with diarize=true they additionally
+  // carry per-word speaker and speaker_confidence.
+  const allWords: unknown[] =
+    (response.results.channels as Array<{ alternatives?: Array<{ words?: unknown[] }> }> | undefined)?.[0]?.alternatives?.[0]?.words ?? [];
+
   const speakerSet = new Set<number>();
-  const utterances: TranscriptSegment[] = rawUtterances.map((u) => {
-    const speakerId = typeof u.speaker === "number" ? u.speaker : 0;
-    speakerSet.add(speakerId);
+  const utterances: TranscriptSegment[] = rawUtterances.map((u, idx) => {
+    // Speaker honesty: null when omitted. Do NOT default to 0.
+    const speakerId: SpeakerId | null =
+      typeof u.speaker === "number" ? u.speaker : null;
+    if (speakerId !== null) speakerSet.add(speakerId);
+
+    // Capture words whose midpoint falls inside this utterance's [start, end].
+    const uStart = u.start ?? 0;
+    const uEnd = u.end ?? 0;
+    const words: ASRWord[] = (allWords as Array<{
+      word?: string;
+      start?: number;
+      end?: number;
+      confidence?: number;
+      speaker?: number;
+      speaker_confidence?: number;
+    }>)
+      .filter((w) => {
+        const wStart = w.start ?? 0;
+        const wEnd = w.end ?? wStart;
+        const mid = (wStart + wEnd) / 2;
+        return mid >= uStart && mid <= uEnd;
+      })
+      .map((w) => ({
+        text: w.word ?? "",
+        start: w.start ?? 0,
+        end: w.end ?? 0,
+        confidence: w.confidence ?? 0,
+        speaker: typeof w.speaker === "number" ? w.speaker : null,
+        speaker_confidence: w.speaker_confidence,
+      }));
+
     return {
+      id: `dg-${idx}`,
+      provider: "deepgram",
       text: u.transcript ?? "",
-      start: u.start ?? 0,
-      end: u.end ?? 0,
+      start: uStart,
+      end: uEnd,
       is_final: true,
       speaker_id: speakerId,
+      words: words.length > 0 ? words : undefined,
+      attribution_status:
+        speakerId === null ? ("not_available" as const) : undefined,
+      source_audio_kind: options.source_audio_kind,
     };
   });
 
@@ -143,7 +204,7 @@ export async function transcribeFile(
       TRANSCRIBE_OPTIONS,
     );
 
-  return parseDeepgramResponse(response, `[buffer:${mime}]`);
+  return parseDeepgramResponse(response, `[buffer:${mime}]`, { source_audio_kind: "audio_file" });
 }
 
 /**
@@ -169,5 +230,5 @@ export async function transcribeStream(
       TRANSCRIBE_OPTIONS,
     );
 
-  return parseDeepgramResponse(response, `[stream:${mime}]`);
+  return parseDeepgramResponse(response, `[stream:${mime}]`, { source_audio_kind: "audio_file" });
 }

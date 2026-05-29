@@ -1,4 +1,5 @@
-import { generateText, Output } from "ai";
+import { Output } from "ai";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
 import {
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       system: SYSTEM_PREFIX,
       prompt: userPrompt(parsed.data),
       providerOptions: {
-        anthropic: { cacheControl: { type: "ephemeral" } },
+        anthropic: { cacheControl: { type: "persistent" } },
       },
     });
     return NextResponse.json(output);

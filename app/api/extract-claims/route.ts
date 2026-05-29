@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText, Output } from "ai";
+import { Output } from "ai";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
-import { ExtractClaimsResponse, SYSTEM, userPrompt } from "@/lib/prompts/extract-claims";
+import { EXTRACT_CLAIMS_SCHEMA, SYSTEM, userPrompt } from "@/lib/prompts/extract-claims";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
   try {
     const { output } = await generateText({
       model: opus,
-      output: Output.object({ schema: ExtractClaimsResponse }),
+      output: Output.object({ schema: EXTRACT_CLAIMS_SCHEMA }),
       system: SYSTEM,
       prompt: userPrompt(parsed.data),
     });

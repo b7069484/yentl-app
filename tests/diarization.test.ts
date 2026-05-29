@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { dominantSpeaker } from "@/lib/client/deepgram-stream";
 import { attributeMarker } from "@/lib/client/orchestrator";
-import type { TranscriptSegment } from "@/lib/types";
+import type { ASRWord, TranscriptSegment } from "@/lib/types";
 
-type W = { word: string; start: number; end: number; speaker?: number };
+// W is a convenience alias for ASRWord — updated when dominantSpeaker
+// switched from word-count majority to confidence-weighted duration (Task 5).
+type W = ASRWord;
+const w = (text: string, start: number, end: number, speaker?: number): W => ({
+  text, start, end, confidence: 1, speaker,
+});
 
 describe("dominantSpeaker", () => {
   it("returns null for empty input", () => {
@@ -11,33 +16,33 @@ describe("dominantSpeaker", () => {
   });
 
   it("returns null when no word has a speaker tag", () => {
-    const words: W[] = [{ word: "a", start: 0, end: 1 }];
+    const words: W[] = [w("a", 0, 1)];
     expect(dominantSpeaker(words)).toBe(null);
   });
 
   it("returns the only speaker when all words share one tag", () => {
     const words: W[] = [
-      { word: "a", start: 0, end: 1, speaker: 0 },
-      { word: "b", start: 1, end: 2, speaker: 0 },
+      w("a", 0, 1, 0),
+      w("b", 1, 2, 0),
     ];
     expect(dominantSpeaker(words)).toBe(0);
   });
 
-  it("returns the mode speaker when mixed", () => {
+  it("returns the dominant speaker when mixed (3:1 duration ratio → clear winner)", () => {
     const words: W[] = [
-      { word: "a", start: 0, end: 1, speaker: 0 },
-      { word: "b", start: 1, end: 2, speaker: 1 },
-      { word: "c", start: 2, end: 3, speaker: 0 },
-      { word: "d", start: 3, end: 4, speaker: 0 },
+      w("a", 0, 1, 0),
+      w("b", 1, 2, 1),
+      w("c", 2, 3, 0),
+      w("d", 3, 4, 0),
     ];
     expect(dominantSpeaker(words)).toBe(0);
   });
 
   it("ignores words missing the speaker field", () => {
     const words: W[] = [
-      { word: "a", start: 0, end: 1 },
-      { word: "b", start: 1, end: 2, speaker: 1 },
-      { word: "c", start: 2, end: 3 },
+      w("a", 0, 1),
+      w("b", 1, 2, 1),
+      w("c", 2, 3),
     ];
     expect(dominantSpeaker(words)).toBe(1);
   });

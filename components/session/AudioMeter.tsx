@@ -19,7 +19,13 @@ export function rmsFromTimeDomain(buf: Uint8Array): number {
   return Math.sqrt(sum / buf.length);
 }
 
-export function AudioMeter({ stream }: { stream: MediaStream | null }) {
+export function AudioMeter({
+  stream,
+  onRmsSample,
+}: {
+  stream: MediaStream | null;
+  onRmsSample?: (rms: number) => void;
+}) {
   const barsRef = useRef<Array<HTMLSpanElement | null>>([]);
   const rafRef = useRef<number | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
@@ -59,6 +65,8 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
         const active = level >= THRESHOLDS[i];
         el.style.background = active ? "rgb(16 185 129)" : "rgb(148 163 184 / 0.4)";
       });
+      // Emit RMS sample to the orchestrator for prosody persistence (Phase 1a)
+      onRmsSample?.(level);
       // Throttled accessible announcement — at most once per second, state-change only
       const now = performance.now();
       if (now - lastAnnounceMs >= 1000) {
@@ -78,7 +86,7 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
       void ctx.close();
       ctxRef.current = null;
     };
-  }, [stream]);
+  }, [stream, onRmsSample]);
 
   // Committee amendment (Accessibility — WCAG 1.1.1 / 1.3.3): the 5 visual bars
   // are decorative (aria-hidden). A visually-hidden, polite live region carries

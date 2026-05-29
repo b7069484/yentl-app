@@ -219,7 +219,7 @@ function rhetoricHeatSignal(markers: RhetoricMarker[]): SignalDatum {
 
   if (blatant > 0 || clear >= 3) {
     return {
-      label: "Rhetoric heat",
+      label: "Language heat",
       value: "High",
       detail: blatant > 0
         ? `${plural(blatant, "severe marker")} detected.`
@@ -230,7 +230,7 @@ function rhetoricHeatSignal(markers: RhetoricMarker[]): SignalDatum {
 
   if (clear > 0) {
     return {
-      label: "Rhetoric heat",
+      label: "Language heat",
       value: "Rising",
       detail: `${plural(clear, "clear marker")} detected.`,
       tone: "amber",
@@ -239,7 +239,7 @@ function rhetoricHeatSignal(markers: RhetoricMarker[]): SignalDatum {
 
   if (markers.length > 0) {
     return {
-      label: "Rhetoric heat",
+      label: "Language heat",
       value: "Low",
       detail: `${plural(markers.length, "subtle marker")} detected.`,
       tone: "green",
@@ -247,7 +247,7 @@ function rhetoricHeatSignal(markers: RhetoricMarker[]): SignalDatum {
   }
 
   return {
-    label: "Rhetoric heat",
+    label: "Language heat",
     value: "Calm",
     detail: "No rhetoric marker yet.",
     tone: "green",

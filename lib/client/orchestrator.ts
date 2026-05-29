@@ -19,6 +19,21 @@ const recentMarkerHashes = new RecentSet(40);
 let utteranceCounter = 0;
 let lastRhetoricRunAt = 0;
 
+// Rolling RMS state — populated by AudioMeter via onRmsSample callback (Phase 1a).
+let latestRms = 0;
+let peakRmsSinceLastSegment = 0;
+
+/**
+ * Called each animation frame by AudioMeter with the current RMS amplitude.
+ * The orchestrator accumulates a peak window and attaches it to the next
+ * finalized TranscriptSegment as audio_features. This makes Phase E prosody
+ * a prompt change rather than a schema change.
+ */
+export function recordRmsSample(rms: number) {
+  latestRms = rms;
+  if (rms > peakRmsSinceLastSegment) peakRmsSinceLastSegment = rms;
+}
+
 let synthesisUtteranceCounter = 0;
 let lastSynthesisRunAt = 0;
 let synthesisAbortController: AbortController | null = null;
@@ -33,6 +48,7 @@ type ExtractedClaim = {
   utterance_end: number;
   topic: string;
   topic_secondary: string | null;
+  stance?: import("@/lib/types").ClaimStance;
 };
 
 function compactContextPairs(pairs: Array<[string, string | string[] | number | undefined | null]>) {
@@ -112,6 +128,14 @@ export function attributeMarker(
 }
 
 export async function onFinalUtterance(segment: TranscriptSegment) {
+  // Attach RMS snapshot captured since the prior segment (Phase 1a prosody groundwork).
+  // Only mic sources have meaningful RMS; for non-mic sources latestRms stays 0.
+  segment.audio_features = {
+    rms: latestRms,
+    peak_rms: peakRmsSinceLastSegment,
+  };
+  peakRmsSinceLastSegment = 0;
+
   maybeRunRhetoric();
   maybeRunSynthesis();
   maybeRunDevilAdvocate();
@@ -171,6 +195,7 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
       explanation: "",
       status: "checking",
       sources: [],
+      stance: c.stance ?? "asserted",
     };
     useSession.getState().addClaim(card);
 

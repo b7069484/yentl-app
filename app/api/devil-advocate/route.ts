@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "ai";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { grok } from "@/lib/server/grok";
 import {
   DevilAdvocateRequest,

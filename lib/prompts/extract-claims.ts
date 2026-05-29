@@ -1,4 +1,17 @@
 import { z } from "zod";
+import type { ClaimStance } from "@/lib/types";
+
+export const STANCE_VALUES = [
+  "asserted",
+  "denied",
+  "quoted",
+  "reported",
+  "mocked",
+  "questioned",
+  "corrected",
+  "hedged",
+  "unclear",
+] as const satisfies readonly ClaimStance[];
 
 export const TOPIC = z.enum([
   "Politics",
@@ -29,7 +42,20 @@ export const ExtractClaimsResponse = z.object({
   claims: z.array(ExtractedClaim),
 });
 
-export const SYSTEM = `You extract checkable factual claims from a live transcript.
+export const EXTRACT_CLAIMS_SCHEMA = z.object({
+  claims: z.array(
+    z.object({
+      claim_text: z.string().min(3),
+      utterance_start: z.number(),
+      utterance_end: z.number(),
+      topic: TOPIC,
+      topic_secondary: TOPIC.nullable(),
+      stance: z.enum(STANCE_VALUES).default("asserted"),
+    }),
+  ),
+});
+
+export const EXTRACT_CLAIMS_SYSTEM = `You extract checkable factual claims from a live transcript.
 
 Output JSON: { "claims": [{ "claim_text", "utterance_start", "utterance_end", "topic", "topic_secondary" }] }.
 
@@ -52,7 +78,24 @@ REPORTED SPEECH / EVALUATIVE FRAMES:
 
 TOPIC TAGGING:
 - topic (required): the PRIMARY domain. One of: Politics, Defense, Economy, Society, Immigration, Healthcare, Climate, Science, Law, History, Culture, Other. Use "Other" when none fit.
-- topic_secondary (nullable): a SECOND domain when the claim cross-cuts. Must differ from topic. Set to null when one tag suffices. Example: a claim about a counterterrorism official's resignation indexes Politics + Defense.`;
+- topic_secondary (nullable): a SECOND domain when the claim cross-cuts. Must differ from topic. Set to null when one tag suffices. Example: a claim about a counterterrorism official's resignation indexes Politics + Defense.
+
+STANCE:
+For every claim you extract, you MUST also assign a stance — how the speaker held the claim:
+  - "asserted": the speaker is making this claim as their own truth
+  - "denied": the speaker is denying this claim (e.g., "X is not true")
+  - "quoted": the speaker is repeating someone else's claim verbatim, attributed
+  - "reported": the speaker is paraphrasing what someone else said
+  - "mocked": the speaker is repeating the claim sarcastically or to ridicule it
+  - "questioned": the speaker is raising the claim as a question, not a statement
+  - "corrected": the speaker is correcting a prior false claim
+  - "hedged": the speaker is making the claim with explicit uncertainty ("I think...", "maybe...")
+  - "unclear": you cannot determine the stance from context
+
+When stance is "quoted", "reported", "mocked", or "questioned", the claim should still be extracted, but the fact-checker downstream will weight the verdict against the original speaker (when known), not the current speaker.`;
+
+/** Back-compat alias — the route currently imports this name. */
+export const SYSTEM = EXTRACT_CLAIMS_SYSTEM;
 
 export function userPrompt(args: {
   utterance: string;

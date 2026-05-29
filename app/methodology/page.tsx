@@ -111,7 +111,36 @@ export default function MethodologyPage() {
           </Link>{" "}
           (CC-BY-4.0). Primary source:{" "}
           <em>Cognitive Biases &amp; Logical Fallacies Used by Antisemites</em> by Israel B.
-          Bitton (2024).
+          Bitton (2024). The original 55 cognitive-bias entries are catalogued in that book; the
+          fallacy and rhetorical-pattern entries draw on the broader logic and discourse-studies
+          literature.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">Scope.</strong> Markers are detected from the
+          linguistic content of an utterance only. Yentl does not currently use prosodic features
+          (volume, pitch, pace, pauses) for marker detection — the AudioMeter captures level data
+          for capture-health, not analysis. Speaker attribution is enabled only when the user
+          consents to biometric voiceprint processing (see{" "}
+          <a href="#voiceprint-consent" className="underline">voiceprint consent</a>); without
+          that, markers are attached to the utterance, not to a named speaker.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">Limits.</strong> A marker call is a model judgment
+          on a single utterance window with surrounding transcript context, not a clinical
+          diagnosis. False positives are likeliest in (a) intentional satire and parody,
+          (b) Socratic teaching where the speaker articulates a position to challenge it, and
+          (c) reported speech where the speaker quotes someone else&apos;s rhetoric. The
+          Phase 1a <code>stance</code> field (asserted / denied / quoted / mocked / hedged /
+          reported / questioned / corrected / unclear) is the structural defense — a quoted
+          fallacy is still a fallacy in the source, but it isn&apos;t the speaker&apos;s position.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">How to contest a marker call.</strong> Every
+          verdict surface has a{" "}
+          <em>Flag this verdict for review</em> link that opens the dispute form. Include the
+          marker name, the excerpt, and why you think the call is wrong. We log every dispute and
+          review them on a rolling basis. Confirmed corrections appear on{" "}
+          <Link href="/corrections" className="underline">/corrections</Link>.
         </p>
       </section>
 

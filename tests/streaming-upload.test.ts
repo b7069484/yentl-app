@@ -167,6 +167,9 @@ describe("POST /api/transcribe-batch — large file (>50MB) uses stream path", (
     expect(mockTranscribeStream).toHaveBeenCalledWith(
       expect.anything(),
       "audio/ogg",
+      // Phase 1e — third arg is the per-call BIPA opts; default false
+      // when the client doesn't append bipa_consented to the form.
+      expect.objectContaining({ bipaConsented: false }),
     );
   });
 

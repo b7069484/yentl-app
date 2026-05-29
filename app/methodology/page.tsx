@@ -143,6 +143,32 @@ export default function MethodologyPage() {
         </dl>
       </section>
 
+      <section aria-labelledby="voiceprint-consent">
+        <h2 id="voiceprint-consent" className="text-xl font-semibold mb-3">
+          Voiceprint consent for speaker labeling
+        </h2>
+        <p className="text-muted-foreground mb-3">
+          When you upload your own audio, Yentl can ask Deepgram to label
+          speakers — that step uses temporary biometric voiceprints. Under the
+          Illinois Biometric Information Privacy Act (BIPA) and similar laws
+          in Texas and Washington, that requires consent from every person
+          whose voice is in the recording.
+        </p>
+        <p className="text-muted-foreground mb-3">
+          The checkbox on the upload screen is your assertion that you have
+          that consent. Leave it unchecked when you&apos;re uploading a clip of
+          public figures, a podcast, a YouTube rip, or any audio where you
+          can&apos;t actually consent on behalf of the speakers. We&apos;ll
+          still transcribe; we just won&apos;t run speaker labeling.
+        </p>
+        <p className="text-muted-foreground">
+          Deepgram&apos;s data policy says voiceprints aren&apos;t retained
+          beyond the request. We don&apos;t store them either. The consent
+          checkbox protects every speaker in your recording — including ones
+          you may not have thought about.
+        </p>
+      </section>
+
       <section aria-labelledby="not-fact-checked">
         <h2 id="not-fact-checked" className="text-xl font-semibold mb-3">
           What Yentl doesn&apos;t fact-check

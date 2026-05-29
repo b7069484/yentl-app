@@ -100,16 +100,26 @@ export function formatBytes(bytes: number): string {
  * @param onUploadProgress  Optional callback receiving 0-100 progress during
  *                          the Blob upload phase (large files only).
  */
+/**
+ * Phase 1e — per-call BIPA consent. The caller (audio-ingest-pane) sets
+ * this to the user-ticked checkbox state. URL/YouTube ingest never sets it
+ * (the user can't consent for third-party speakers in a public video).
+ */
+export type TranscribeAudioOpts = {
+  bipaConsented?: boolean;
+};
+
 export async function transcribeAudioFile(
   file: File,
   durationSec: number,
   signal?: AbortSignal,
   onUploadProgress?: (pct: number) => void,
+  opts?: TranscribeAudioOpts,
 ): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
   if (file.size >= BLOB_UPLOAD_THRESHOLD_BYTES) {
-    return transcribeViaBlob(file, durationSec, signal, onUploadProgress);
+    return transcribeViaBlob(file, durationSec, signal, onUploadProgress, opts);
   }
-  return transcribeViaMultipart(file, durationSec, signal);
+  return transcribeViaMultipart(file, durationSec, signal, opts);
 }
 
 // ─── Internal: multipart path (small files) ───────────────────────────────────
@@ -118,10 +128,12 @@ async function transcribeViaMultipart(
   file: File,
   durationSec: number,
   signal?: AbortSignal,
+  opts?: TranscribeAudioOpts,
 ): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("duration_sec", String(durationSec));
+  if (opts?.bipaConsented) formData.append("bipa_consented", "true");
 
   const res = await fetch("/api/transcribe-batch", {
     method: "POST",
@@ -140,6 +152,7 @@ async function transcribeViaBlob(
   durationSec: number,
   signal?: AbortSignal,
   onUploadProgress?: (pct: number) => void,
+  opts?: TranscribeAudioOpts,
 ): Promise<{ utterances: TranscriptSegment[]; speakers: Speaker[] }> {
   // 1 — Upload directly to Vercel Blob (no function body limit)
   const blobResult = await upload(file.name, file, {
@@ -169,7 +182,11 @@ async function transcribeViaBlob(
       "Content-Type": "application/json",
       ...sourceAnalysisConsentHeaders(),
     },
-    body: JSON.stringify({ blob_url: blobResult.url, duration_sec: durationSec }),
+    body: JSON.stringify({
+      blob_url: blobResult.url,
+      duration_sec: durationSec,
+      ...(opts?.bipaConsented ? { bipa_consented: true } : {}),
+    }),
     signal,
   });
 

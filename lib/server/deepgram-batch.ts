@@ -59,8 +59,24 @@ function bipaDiarizeEnabled(): boolean {
   return process.env.YENTL_ENABLE_BIPA_DIARIZE === "1";
 }
 
-function transcribeOptions() {
-  const diarize = bipaDiarizeEnabled();
+type TranscribeOpts = {
+  /**
+   * Phase 1e — per-call BIPA consent. Even when YENTL_ENABLE_BIPA_DIARIZE
+   * is "1" at the env level, diarize:true only fires when the CALLER
+   * explicitly passes bipaConsented:true. URL/YouTube ingest paths leave
+   * this false — the user can't consent on behalf of third-party speakers
+   * in a public video. Only the user's own audio upload, with their
+   * explicit checkbox tick, sets it to true.
+   */
+  bipaConsented?: boolean;
+};
+
+function diarizeShouldFire(opts?: TranscribeOpts): boolean {
+  return Boolean(opts?.bipaConsented) && bipaDiarizeEnabled();
+}
+
+function transcribeOptions(opts?: TranscribeOpts) {
+  const diarize = diarizeShouldFire(opts);
   return {
     model: "nova-3" as const,
     punctuate: true,
@@ -114,13 +130,16 @@ export interface TranscribeResult {
  * The SDK returns MediaTranscribeResponse = ListenV1Response | ListenV1AcceptedResponse.
  * ListenV1AcceptedResponse only has request_id (async path); ListenV1Response has .results.
  */
-export async function transcribeUrl(url: string): Promise<TranscribeResult> {
+export async function transcribeUrl(
+  url: string,
+  opts?: TranscribeOpts,
+): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeUrl({
       url,
-      ...transcribeOptions(),
+      ...transcribeOptions(opts),
     });
 
   return parseDeepgramResponse(response, url, { source_audio_kind: "audio_file" });
@@ -238,13 +257,14 @@ function parseDeepgramResponse(
 export async function transcribeFile(
   buffer: Buffer | Uint8Array,
   mime: string,
+  opts?: TranscribeOpts,
 ): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: buffer, contentType: mime },
-      transcribeOptions(),
+      transcribeOptions(opts),
     );
 
   return parseDeepgramResponse(response, `[buffer:${mime}]`, { source_audio_kind: "audio_file" });
@@ -264,13 +284,14 @@ export async function transcribeFile(
 export async function transcribeStream(
   stream: Readable,
   mime: string,
+  opts?: TranscribeOpts,
 ): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: stream, contentType: mime },
-      transcribeOptions(),
+      transcribeOptions(opts),
     );
 
   return parseDeepgramResponse(response, `[stream:${mime}]`, { source_audio_kind: "audio_file" });

@@ -248,12 +248,15 @@ describe("AudioIngestPane — Process flow", () => {
   it("calls transcribeAudioFile with the staged file and duration", async () => {
     await stageAndProcess();
     await waitFor(() => {
-      // Small file (1 MB default) → 4th arg (onUploadProgress) is undefined
+      // Small file (1 MB default) → 4th arg (onUploadProgress) is undefined,
+      // 5th arg is BIPA opts (Phase 1e); default state has the checkbox
+      // unchecked so bipaConsented is false.
       expect(mockTranscribeAudioFile).toHaveBeenCalledWith(
         expect.objectContaining({ name: "audio.mp3" }),
         120, // duration from mockProbeAudioDuration
         expect.any(AbortSignal),
         undefined,
+        expect.objectContaining({ bipaConsented: false }),
       );
     });
   });

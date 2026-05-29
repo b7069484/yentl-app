@@ -35,6 +35,46 @@ import type {
  *   vad_events      — WebSocket-only feature; irrelevant for prerecorded path.
  *   paragraphs      — conflicts with utterances grouping; keep utterances.
  */
+// Phase 1d Task 5 — BIPA-gated diarization. The trimodal eval found
+// production audio collapses to a single speaker on every multi-speaker
+// source because `diarize: false` is hardcoded. Lifting that requires a
+// BIPA-compliant voiceprint consent (Illinois biometric-info law) — copy +
+// legal review owned by the user. Until that ships, the env flag gates the
+// behavior so the code path is tested + ready, but production stays on the
+// safe default.
+//
+//   YENTL_ENABLE_BIPA_DIARIZE !== "1"  →  diarize: false (default; current
+//                                          behavior, no behavior change)
+//   YENTL_ENABLE_BIPA_DIARIZE === "1"  →  diarize: true, diarize_model:"latest"
+//                                          (consented batch path; Phase 1d-future
+//                                          ConsentGate will require user opt-in
+//                                          before the upload route sets this)
+//
+// Live streaming (lib/client/deepgram-stream.ts) intentionally stays
+// `diarize: false` regardless — Soniox + Deepgram both confirm live
+// diarization quality is weaker than batch and BIPA exposure is higher in
+// real-time. The batch-only gate keeps the lower-risk path moving while
+// legal review continues.
+function bipaDiarizeEnabled(): boolean {
+  return process.env.YENTL_ENABLE_BIPA_DIARIZE === "1";
+}
+
+function transcribeOptions() {
+  const diarize = bipaDiarizeEnabled();
+  return {
+    model: "nova-3" as const,
+    punctuate: true,
+    smart_format: true,
+    diarize,
+    ...(diarize ? { diarize_model: "latest" as const } : {}),
+    utterances: true,
+    numerals: true,
+    language: "en",
+  };
+}
+
+// Back-compat export — some legacy tests import TRANSCRIBE_OPTIONS directly.
+// They get the no-diarize default; the env-gated path uses transcribeOptions().
 const TRANSCRIBE_OPTIONS = {
   model: "nova-3" as const,
   punctuate: true,
@@ -80,7 +120,7 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeUrl({
       url,
-      ...TRANSCRIBE_OPTIONS,
+      ...transcribeOptions(),
     });
 
   return parseDeepgramResponse(response, url, { source_audio_kind: "audio_file" });
@@ -204,7 +244,7 @@ export async function transcribeFile(
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: buffer, contentType: mime },
-      TRANSCRIBE_OPTIONS,
+      transcribeOptions(),
     );
 
   return parseDeepgramResponse(response, `[buffer:${mime}]`, { source_audio_kind: "audio_file" });
@@ -230,7 +270,7 @@ export async function transcribeStream(
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: stream, contentType: mime },
-      TRANSCRIBE_OPTIONS,
+      transcribeOptions(),
     );
 
   return parseDeepgramResponse(response, `[stream:${mime}]`, { source_audio_kind: "audio_file" });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText, Output } from "ai";
+import { Output } from "ai";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
 import { EXTRACT_CLAIMS_SCHEMA, SYSTEM, userPrompt } from "@/lib/prompts/extract-claims";

@@ -1,4 +1,5 @@
-import { generateText, Output } from "ai";
+import { Output } from "ai";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import type { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
 import {

@@ -270,7 +270,7 @@ describe("WatchView — transcript panel", () => {
     const board = await screen.findByTestId("watch-signal-board");
     expect(within(board).getByText("Current read")).toBeTruthy();
     expect(within(board).getByText("False")).toBeTruthy();
-    expect(within(board).getByText("Rhetoric heat")).toBeTruthy();
+    expect(within(board).getByText("Language heat")).toBeTruthy();
     expect(within(board).getByText("High")).toBeTruthy();
     expect(within(board).getByText("Evidence state")).toBeTruthy();
     expect(within(board).getByText("Needs backing")).toBeTruthy();

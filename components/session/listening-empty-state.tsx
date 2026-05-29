@@ -1,6 +1,7 @@
 "use client";
 
 import { AudioMeter } from "./AudioMeter";
+import { recordRmsSample } from "@/lib/client/orchestrator";
 
 interface Props {
   micStream: MediaStream | null;
@@ -27,7 +28,7 @@ export function ListeningEmptyState({ micStream }: Props) {
         </p>
 
         {/* Live mic-level meter */}
-        <AudioMeter stream={micStream} />
+        <AudioMeter stream={micStream} onRmsSample={recordRmsSample} />
 
         {/* Skeleton hint rows */}
         <div className="w-full flex flex-col gap-2.5 mt-2">

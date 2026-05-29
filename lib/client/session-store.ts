@@ -197,10 +197,26 @@ export const useSession = create<State>((set, get) => ({
         : initialState.browserTabStatus,
   })),
 
-  endSession: () => set({
-    endedAt: new Date().toISOString(),
-    isRecording: false,
-  }),
+  endSession: () => {
+    set({
+      endedAt: new Date().toISOString(),
+      isRecording: false,
+    });
+    // Fire-and-forget persistence to Neon (Phase 1b Task 1). Unauthed users
+    // get 401 and the save is silently skipped — this is the desired behavior
+    // for now; the verdict URL only matters once auth lands a real user.
+    if (typeof window !== "undefined") {
+      const payload = get().toSession();
+      void fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session: payload }),
+        keepalive: true,
+      }).catch((err) => {
+        console.warn("[session save] failed", err);
+      });
+    }
+  },
 
   setInterim: (text) => set({ interim: text }),
 

@@ -148,7 +148,13 @@ export function parseCaptionsXml(xml: string): TranscriptSegment[] {
       start,
       end: start + dur,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e mirror of Phase 1a Task 3 — YouTube caption paths have no
+      // speaker info, so defaulting to 0 was a lie (same bug Phase 1a fixed
+      // for deepgram-batch). Emit null + attribution_status: "not_available"
+      // so the trimodal cross-mode comparison is honest at the schema level.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-captions",
     });
   }
 
@@ -221,7 +227,10 @@ export function parseSrt(srt: string): TranscriptSegment[] {
       start,
       end,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e — SRT captions have no speaker info; honest schema.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-srt",
     });
   }
 
@@ -416,7 +425,10 @@ export async function fetchViaInnertube(videoId: string): Promise<TranscriptSegm
       start: startMs / 1000,
       end: endMs / 1000,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e — Innertube captions have no speaker info; honest schema.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-innertube",
     });
   }
 
@@ -470,25 +482,34 @@ function transcriptItemsToSegments(
     const text = item.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
 
-    const start = normalizeTranscriptTime(item.offset);
-    const duration = normalizeTranscriptTime(item.duration);
-    if (!Number.isFinite(start) || !Number.isFinite(duration)) continue;
+    // youtube-transcript returns `offset` and `duration` in MILLISECONDS
+    // unconditionally. The earlier heuristic "divide only when > 1000"
+    // silently expanded sub-second timestamps by 1000× — the root cause of
+    // the trimodal eval's 467.6s caption drift on long videos. Phase 1d
+    // Task 1 fix: always treat as ms.
+    const startMs = item.offset;
+    const durationMs = item.duration;
+    if (!Number.isFinite(startMs) || !Number.isFinite(durationMs)) continue;
+
+    const start = startMs / 1000;
+    const duration = durationMs / 1000;
 
     segments.push({
       text,
       start,
       end: start + Math.max(duration, 0.1),
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e mirror of Phase 1a Task 3 — YouTube caption paths have no
+      // speaker info, so defaulting to 0 was a lie (same bug Phase 1a fixed
+      // for deepgram-batch). Emit null + attribution_status: "not_available"
+      // so the trimodal cross-mode comparison is honest at the schema level.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-captions",
     });
   }
 
   return segments;
-}
-
-function normalizeTranscriptTime(value: number): number {
-  if (!Number.isFinite(value)) return NaN;
-  return value > 1000 ? value / 1000 : value;
 }
 
 function mapYoutubeTranscriptError(error: unknown): CaptionError {

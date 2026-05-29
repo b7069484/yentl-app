@@ -23,6 +23,7 @@ const {
   mockDisplayCaptureStop,
   mockOnFinalUtterance,
   mockRunSynthesisNow,
+  mockAttachAudioFeatures,
 } = vi.hoisted(() => ({
   mockReset: vi.fn(),
   mockSetPrerecordStage: vi.fn(),
@@ -53,6 +54,7 @@ const {
   mockDisplayCaptureStop: vi.fn(),
   mockOnFinalUtterance: vi.fn(),
   mockRunSynthesisNow: vi.fn(),
+  mockAttachAudioFeatures: vi.fn(),
 }));
 
 let mockSource: { kind: string; video_id: string; url: string } = {
@@ -104,6 +106,7 @@ vi.mock("@/lib/client/display-audio-capture", async (importOriginal) => {
 vi.mock("@/lib/client/orchestrator", () => ({
   onFinalUtterance: (...args: unknown[]) => mockOnFinalUtterance(...args),
   runSynthesisNow: (...args: unknown[]) => mockRunSynthesisNow(...args),
+  attachAudioFeatures: (...args: unknown[]) => mockAttachAudioFeatures(...args),
 }));
 
 const mockFetch = vi.fn();

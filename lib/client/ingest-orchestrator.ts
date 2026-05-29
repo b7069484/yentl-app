@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "@/lib/client/session-store";
-import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { attachAudioFeatures, onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
 import { mergeIntoUtterances } from "@/lib/client/utterance-merge";
 import type { TranscriptSegment } from "@/lib/types";
 
@@ -40,6 +40,7 @@ export async function bulkIngest(
   //    the full timeline immediately.
   for (const seg of segments) {
     if (opts?.signal?.aborted) return;
+    attachAudioFeatures(seg);
     useSession.getState().appendFinal(seg);
   }
 

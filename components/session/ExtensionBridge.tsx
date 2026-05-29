@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { onFinalUtterance, runFinalSynthesis } from "@/lib/client/orchestrator";
+import { attachAudioFeatures, onFinalUtterance, runFinalSynthesis } from "@/lib/client/orchestrator";
 import { useSession } from "@/lib/client/session-store";
 import type { BrowserTabContext, TranscriptSegment } from "@/lib/types";
 
@@ -333,6 +333,7 @@ function appendPageText(payload: Extract<ExtensionMessage, { type: "page-text" }
 
   for (const segment of segments) {
     if (existingText.has(segment.text)) continue;
+    attachAudioFeatures(segment);
     useSession.getState().appendFinal(segment);
     existingText.add(segment.text);
     appended.push(segment);
@@ -463,6 +464,7 @@ export function ExtensionBridge() {
           message: "Transcribing browser audio.",
           updatedAt: Date.now(),
         });
+        attachAudioFeatures(segment);
         useSession.getState().appendFinal(segment);
         void onFinalUtterance(segment);
         return;

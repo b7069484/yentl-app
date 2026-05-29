@@ -183,6 +183,15 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     expect(screen.getByTestId("source-router")).toBeTruthy();
   });
 
+  // PaywallGate (Phase 1c Task 4) fires /api/subscriptions/me on mount, so we
+  // can't assert fetch was called zero times; scope to the corpus-sample
+  // surface the test cares about.
+  const corpusSampleCalled = (spy: ReturnType<typeof vi.spyOn>) =>
+    spy.mock.calls.some((call: unknown[]) => {
+      const url = call[0];
+      return typeof url === "string" && url.includes("/api/corpus-sample");
+    });
+
   it("ignores corpus sample queries unless the validation demo flag is present", () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
     mockSearchParamsRaw = new URLSearchParams("sample=solo_005&view=watch");
@@ -190,7 +199,7 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     render(<SessionPage />);
     expect(screen.queryByText("Loading corpus sample")).toBeNull();
     expect(screen.getByTestId("source-router")).toBeTruthy();
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(corpusSampleCalled(fetchSpy)).toBe(false);
   });
 
   it("ignores validation demo samples when local demo loading is disabled", () => {
@@ -201,7 +210,7 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     render(<SessionPage />);
     expect(screen.queryByText("Loading validation demo")).toBeNull();
     expect(screen.getByTestId("source-router")).toBeTruthy();
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(corpusSampleCalled(fetchSpy)).toBe(false);
   });
 
   it("renders the compact extension panel surface before capture starts", () => {

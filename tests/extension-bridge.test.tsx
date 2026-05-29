@@ -10,11 +10,13 @@ import { useSession } from "@/lib/client/session-store";
 const mocks = vi.hoisted(() => ({
   onFinalUtterance: vi.fn(),
   runFinalSynthesis: vi.fn(),
+  attachAudioFeatures: vi.fn(),
 }));
 
 vi.mock("@/lib/client/orchestrator", () => ({
   onFinalUtterance: (...args: unknown[]) => mocks.onFinalUtterance(...args),
   runFinalSynthesis: (...args: unknown[]) => mocks.runFinalSynthesis(...args),
+  attachAudioFeatures: (...args: unknown[]) => mocks.attachAudioFeatures(...args),
 }));
 
 function dispatchExtensionMessage(data: unknown) {

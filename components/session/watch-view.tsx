@@ -20,7 +20,7 @@ import {
   Video,
 } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
-import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { attachAudioFeatures, onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
 import type { MediaAdapter } from "@/lib/client/media-adapter";
 import { createYouTubeAdapter } from "@/lib/client/youtube-adapter";
 import { createAudioAdapter } from "@/lib/client/audio-adapter";
@@ -624,6 +624,7 @@ export function WatchView() {
       const key = `${segment.start}:${segment.end}:${segment.text}`;
       if (!releasedYouTubeCaptionKeysRef.current.has(key)) {
         releasedYouTubeCaptionKeysRef.current.add(key);
+        attachAudioFeatures(segment);
         appendFinal(segment);
         releasedThisTick += 1;
         void onFinalUtterance(segment).catch((error) => {

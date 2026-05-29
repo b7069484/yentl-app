@@ -40,6 +40,21 @@ export type ClaimCard = {
   sources: Source[];
   /** How the speaker held the claim — extracted by analyze-rhetoric/extract-claims. */
   stance?: ClaimStance;
+  /**
+   * Phase 1c Task 2 — one-sentence defense of the label boundary call.
+   * Returned by verify-provisional + verify-confirmed. Names the rejected
+   * adjacent label explicitly so users see WHY this label, not the
+   * neighboring one. PolitiFact/Anthropic ask.
+   */
+  label_rationale?: string;
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets a later-context update
+   * explicitly mark a claim as reopened, superseded, or merged instead of
+   * silently overwriting the prior version. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 export type MarkerType = "fallacy" | "bias" | "rhetoric";
@@ -56,6 +71,14 @@ export type RhetoricMarker = {
   end_time: number;
   severity: MarkerSeverity;
   explanation: string;
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets a later-context update
+   * explicitly mark a marker as reopened, superseded, or merged instead of
+   * silently overwriting the prior version. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 export type TranscriptSegment = {
@@ -98,6 +121,15 @@ export type TranscriptSegment = {
 
   /** Prosodic features captured at the segment level (Phase 1a: RMS only). */
   audio_features?: AudioFeatures;
+
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets later-context updates
+   * carry an explicit reopen/supersede/merge marker instead of silently
+   * mutating prior records. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 /**

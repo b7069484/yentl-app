@@ -17,6 +17,7 @@ import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
 import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
 import { ConsentGate } from "@/components/session/ConsentGate";
 import { RecordingBeacon } from "@/components/session/RecordingBeacon";
+import { PaywallGate } from "@/components/paywall/PaywallGate";
 import { loadSession } from "@/lib/client/session-storage";
 import type { ClaimCard, RhetoricMarker, SessionSource, Speaker, TranscriptSegment } from "@/lib/types";
 
@@ -25,6 +26,7 @@ export default function SessionPage() {
     <div id="main-content" className="flex flex-1 flex-col">
       <RecordingBeacon />
       <SessionTimer />
+      <PaywallGate />
       <Suspense>
         <SessionPageInner />
       </Suspense>

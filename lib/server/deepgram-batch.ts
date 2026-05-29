@@ -35,6 +35,62 @@ import type {
  *   vad_events      — WebSocket-only feature; irrelevant for prerecorded path.
  *   paragraphs      — conflicts with utterances grouping; keep utterances.
  */
+// Phase 1d Task 5 — BIPA-gated diarization. The trimodal eval found
+// production audio collapses to a single speaker on every multi-speaker
+// source because `diarize: false` is hardcoded. Lifting that requires a
+// BIPA-compliant voiceprint consent (Illinois biometric-info law) — copy +
+// legal review owned by the user. Until that ships, the env flag gates the
+// behavior so the code path is tested + ready, but production stays on the
+// safe default.
+//
+//   YENTL_ENABLE_BIPA_DIARIZE !== "1"  →  diarize: false (default; current
+//                                          behavior, no behavior change)
+//   YENTL_ENABLE_BIPA_DIARIZE === "1"  →  diarize: true, diarize_model:"latest"
+//                                          (consented batch path; Phase 1d-future
+//                                          ConsentGate will require user opt-in
+//                                          before the upload route sets this)
+//
+// Live streaming (lib/client/deepgram-stream.ts) intentionally stays
+// `diarize: false` regardless — Soniox + Deepgram both confirm live
+// diarization quality is weaker than batch and BIPA exposure is higher in
+// real-time. The batch-only gate keeps the lower-risk path moving while
+// legal review continues.
+function bipaDiarizeEnabled(): boolean {
+  return process.env.YENTL_ENABLE_BIPA_DIARIZE === "1";
+}
+
+type TranscribeOpts = {
+  /**
+   * Phase 1e — per-call BIPA consent. Even when YENTL_ENABLE_BIPA_DIARIZE
+   * is "1" at the env level, diarize:true only fires when the CALLER
+   * explicitly passes bipaConsented:true. URL/YouTube ingest paths leave
+   * this false — the user can't consent on behalf of third-party speakers
+   * in a public video. Only the user's own audio upload, with their
+   * explicit checkbox tick, sets it to true.
+   */
+  bipaConsented?: boolean;
+};
+
+function diarizeShouldFire(opts?: TranscribeOpts): boolean {
+  return Boolean(opts?.bipaConsented) && bipaDiarizeEnabled();
+}
+
+function transcribeOptions(opts?: TranscribeOpts) {
+  const diarize = diarizeShouldFire(opts);
+  return {
+    model: "nova-3" as const,
+    punctuate: true,
+    smart_format: true,
+    diarize,
+    ...(diarize ? { diarize_model: "latest" as const } : {}),
+    utterances: true,
+    numerals: true,
+    language: "en",
+  };
+}
+
+// Back-compat export — some legacy tests import TRANSCRIBE_OPTIONS directly.
+// They get the no-diarize default; the env-gated path uses transcribeOptions().
 const TRANSCRIBE_OPTIONS = {
   model: "nova-3" as const,
   punctuate: true,
@@ -74,13 +130,16 @@ export interface TranscribeResult {
  * The SDK returns MediaTranscribeResponse = ListenV1Response | ListenV1AcceptedResponse.
  * ListenV1AcceptedResponse only has request_id (async path); ListenV1Response has .results.
  */
-export async function transcribeUrl(url: string): Promise<TranscribeResult> {
+export async function transcribeUrl(
+  url: string,
+  opts?: TranscribeOpts,
+): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeUrl({
       url,
-      ...TRANSCRIBE_OPTIONS,
+      ...transcribeOptions(opts),
     });
 
   return parseDeepgramResponse(response, url, { source_audio_kind: "audio_file" });
@@ -145,7 +204,10 @@ function parseDeepgramResponse(
         const wStart = w.start ?? 0;
         const wEnd = w.end ?? wStart;
         const mid = (wStart + wEnd) / 2;
-        return mid >= uStart && mid <= uEnd;
+        // Half-open [uStart, uEnd): a midpoint exactly on the boundary belongs
+        // to the later utterance, not both. Prevents word double-assignment
+        // under diarize:true when adjacent utterances share a timestamp.
+        return mid >= uStart && mid < uEnd;
       })
       .map((w) => ({
         text: w.word ?? "",
@@ -195,13 +257,14 @@ function parseDeepgramResponse(
 export async function transcribeFile(
   buffer: Buffer | Uint8Array,
   mime: string,
+  opts?: TranscribeOpts,
 ): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: buffer, contentType: mime },
-      TRANSCRIBE_OPTIONS,
+      transcribeOptions(opts),
     );
 
   return parseDeepgramResponse(response, `[buffer:${mime}]`, { source_audio_kind: "audio_file" });
@@ -221,13 +284,14 @@ export async function transcribeFile(
 export async function transcribeStream(
   stream: Readable,
   mime: string,
+  opts?: TranscribeOpts,
 ): Promise<TranscribeResult> {
   const client = getClient();
 
   const response: ListenV1Response | ListenV1AcceptedResponse =
     await client.listen.v1.media.transcribeFile(
       { data: stream, contentType: mime },
-      TRANSCRIBE_OPTIONS,
+      transcribeOptions(opts),
     );
 
   return parseDeepgramResponse(response, `[stream:${mime}]`, { source_audio_kind: "audio_file" });

@@ -38,9 +38,29 @@ export const subscriptions = pgTable("subscriptions", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Phase 1c Task 3 — disputes scaffold. Committee #20 + audit Phase B editorial
+// integrity ask: every verdict needs a recourse path or Yentl's editorial
+// posture is weaker than required for AI Act Art 50 + defamation defense.
+// Submission lands here; review/auto-flag UX is Phase 1d.
+export const disputes = pgTable("disputes", {
+  id: text("id").primaryKey(),                                                        // dispute_<ulid>
+  sessionId: text("session_id")
+    .notNull()
+    .references(() => sessions.id, { onDelete: "cascade" }),
+  claimId: text("claim_id"),                                                          // optional — session-wide vs claim-specific
+  disputerClerkUserId: text("disputer_clerk_user_id"),                                // nullable — supports anonymous disputes
+  disputerEmail: text("disputer_email"),
+  evidenceUrl: text("evidence_url"),
+  correctionRequested: text("correction_requested").notNull(),
+  status: text("status").notNull().default("pending"),                                // pending | reviewing | resolved | rejected
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type NewSubscription = typeof subscriptions.$inferInsert;
+export type Dispute = typeof disputes.$inferSelect;
+export type NewDispute = typeof disputes.$inferInsert;

@@ -69,6 +69,10 @@ export function AudioIngestPane() {
   const [staged, setStaged] = useState<StagedFile | null>(null);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const [isDragging, setIsDragging] = useState(false);
+  // Phase 1e — user-asserted BIPA consent for biometric voiceprint analysis
+  // (Deepgram speaker diarization). Required before diarize:true fires, even
+  // when the YENTL_ENABLE_BIPA_DIARIZE env flag is set. Default false.
+  const [bipaConsented, setBipaConsented] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const handoffRef = useRef(false);
@@ -174,6 +178,7 @@ export function AudioIngestPane() {
               }
             }
           : undefined,
+        { bipaConsented },
       );
 
       if (ac.signal.aborted) {
@@ -330,11 +335,44 @@ export function AudioIngestPane() {
                   Remove
                 </button>
               </div>
+              {/* Phase 1e — BIPA consent for speaker diarization. The
+                  checkbox grants Yentl permission to extract voiceprints
+                  for the purpose of distinguishing speakers. Required
+                  before diarize:true fires on the batch path (defense in
+                  depth alongside the YENTL_ENABLE_BIPA_DIARIZE env flag). */}
+              <label
+                className="mt-4 flex cursor-pointer items-start gap-2 text-[12px] text-ink-3"
+                htmlFor="audio-bipa-consent"
+              >
+                <input
+                  id="audio-bipa-consent"
+                  type="checkbox"
+                  checked={bipaConsented}
+                  onChange={(e) => setBipaConsented(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-line"
+                  data-testid="audio-bipa-consent-checkbox"
+                />
+                <span>
+                  I have explicit consent from every person audible in this
+                  recording for biometric voiceprint analysis (used to label
+                  speakers). Leave unchecked for clips of public figures or
+                  third-party audio.{" "}
+                  <a
+                    href="/methodology#voiceprint-consent"
+                    className="underline underline-offset-2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Why
+                  </a>
+                </span>
+              </label>
+
               <button
                 type="button"
                 onClick={handleProcess}
                 disabled={!staged || isProcessing}
-                className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
+                className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2.5 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Process audio/video
                 <ArrowRight className="h-4 w-4" aria-hidden />

@@ -55,6 +55,9 @@ export async function POST(req: NextRequest) {
       output: Output.object({ schema: VerifyProvisionalResponse }),
       system: SYSTEM,
       prompt: `${context}CLAIM:\n${claim_text}`,
+      // Phase 1d Task 4 — deterministic verdicts. Same claim → same label
+      // across re-runs and modes.
+      temperature: 0,
     });
     return NextResponse.json(output);
   } catch (e) {

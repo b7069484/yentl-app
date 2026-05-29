@@ -2,6 +2,8 @@ import type { ClaimCard as ClaimCardT } from "@/lib/types";
 import { VERDICT } from "@/lib/client/verdict-theme";
 import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
+import { ClaimStanceBadge } from "./ClaimStanceBadge";
+import { ConfidenceTierBadge } from "./ConfidenceTierBadge";
 import Image from "next/image";
 import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
 import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
@@ -32,13 +34,28 @@ export function ClaimCard({
           : "border-border/70 hover:border-foreground/30 hover:shadow-md"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {/* Status stripe — color-coded vertical bar to give a glanceable verdict cue */}
-      <span
-        aria-hidden
-        className={`absolute inset-y-0 left-0 w-1 ${verdict.dot} ${
-          isPending ? "opacity-40" : "opacity-100"
-        }`}
-      />
+      {/* Phase 1b Task 6: OPINION uses a diamond glyph at the top-left
+          instead of the full-height colored stripe, so it's distinguishable
+          from verdict-bearing labels by SHAPE not just color (PolitiFact #23:
+          "OPINION is a classification, not a verdict"). Helps colorblind users
+          and survives black-and-white screenshots. */}
+      {card.primary_label === "OPINION" ? (
+        <span
+          aria-hidden
+          data-verdict-shape="diamond"
+          className={`absolute left-1 top-2 size-2.5 rotate-45 ${verdict.dot} ${
+            isPending ? "opacity-40" : "opacity-100"
+          }`}
+        />
+      ) : (
+        <span
+          aria-hidden
+          data-verdict-shape="stripe"
+          className={`absolute inset-y-0 left-0 w-1 ${verdict.dot} ${
+            isPending ? "opacity-40" : "opacity-100"
+          }`}
+        />
+      )}
 
       {!compact && (() => {
         const hero = pickHero(card);
@@ -89,6 +106,9 @@ export function ClaimCard({
             status={card.status}
             sourceCount={card.sources.length}
           />
+          {!isPending && !compact && (
+            <ConfidenceTierBadge score={card.score} />
+          )}
           {card.topic && card.topic !== "Other" && (
             <span className="inline-flex items-center rounded-full border border-border/50 bg-background px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground/60">
               {card.topic}
@@ -104,6 +124,11 @@ export function ClaimCard({
           compact ? "space-y-1.5 pb-3 pt-2.5" : "space-y-3 pb-4 pt-3"
         }`}
       >
+        {/* Phase 1b: surface the speaker's stance toward the claim
+            (denied / quoted / mocked / hedged / …). Asserted renders null. */}
+        {card.stance && card.stance !== "asserted" && (
+          <ClaimStanceBadge stance={card.stance} className="mb-1" />
+        )}
         <p
           className={`font-medium leading-snug text-foreground ${
             compact ? "line-clamp-3 text-[13px]" : "text-[15px]"
@@ -121,6 +146,15 @@ export function ClaimCard({
             }`}
           >
             {card.explanation}
+          </p>
+        )}
+
+        {/* Phase 1c Task 2 — boundary defense: "why THIS label, not the
+            adjacent one." PolitiFact + Anthropic ask. Suppressed in compact
+            and pending states. */}
+        {!isPending && !compact && card.label_rationale && (
+          <p className="border-l-2 border-border/60 pl-3 text-xs italic leading-relaxed text-foreground/65">
+            {card.label_rationale}
           </p>
         )}
 

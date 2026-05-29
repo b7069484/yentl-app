@@ -8,6 +8,58 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Phase 1a — Foundation (2026-05-28)
+- **Honest speaker attribution** — `TranscriptSegment` schema gains `words[]`, `attribution_status`, `audio_features`, `stance`. Deepgram batch path stops defaulting `speaker_id` to 0 (a lie); emits `null + attribution_status: "not_available"` when no per-word speaker is available.
+- **Confidence-weighted dominantSpeaker** + `latent_boundary` flag in deepgram-stream
+- **AudioMeter RMS persistence** onto `segment.audio_features`; UI label "Rhetoric heat" → "Language heat"
+- **Persistent prompt cache** on analyze-rhetoric (40-60% token cost reduction)
+- **Shared `aiGenerateText` wrapper** with retries (3) + 30s timeout
+- **Package rename** factify-scaffold → yentl-app; `factify-rose.vercel.app` swept from manifests
+
+### Phase 1a follow-ups (2026-05-29)
+- **`deepgram-batch.ts` half-open midpoint filter** — prevents word double-assignment at exact utterance boundaries when diarize:true is enabled in future phases
+- **`attachAudioFeatures` helper** — split from `onFinalUtterance`; callers now attach BEFORE `appendFinal` so Zustand subscribers see audio_features on the first render
+
+### Phase 1b — Persistence + uncertainty UI (2026-05-29)
+- **Session persistence to Neon** — `POST /api/sessions` (Clerk-authed write) + `GET /api/sessions/[id]` (public read); `endSession()` fires fire-and-forget save with `keepalive: true`
+- **`/verdict/[id]` route** — shareable verdict URL with VerdictView + AIGeneratedBadge + AIDisclosureFooter
+- **AttributionBadge** in `TranscriptView` — surfaces Phase 1a's `attribution_status` with worst-case-wins aggregation across speaker blocks
+- **ClaimStanceBadge** on `ClaimCard` — surfaces Phase 1a's `stance` (denied/quoted/mocked/hedged/…)
+- **ConfidenceTierBadge** — 3-tier display derived from existing `score` (high ≥ 85, medium ≥ 65, low otherwise)
+- **OPINION renders as diamond glyph** instead of full-height stripe (colorblind-safe + screenshot-safe)
+- **`/methodology` adds "What Yentl doesn't fact-check" section** — satire, predictions, opinions, hypotheticals, personal experience reports
+- **CapReachedSheet paywall scaffold** — V3.11 sheet + `isOverCap` gate (Stripe Checkout deferred to Phase 1d)
+
+### Phase 1c — Editorial integrity + paywall wire (2026-05-29)
+- **Security headers on every response** — HSTS preload + X-Content-Type-Options + X-Frame-Options DENY + Referrer-Policy + Permissions-Policy + X-DNS-Prefetch-Control
+- **`label_rationale` field** on verify-provisional + verify-confirmed schemas — single sentence defending the boundary call ("Picked MIXED over FALSE because…"); rendered on ClaimCard
+- **Disputes scaffold** — `disputes` table + `POST /api/disputes` + `/verdict/[id]/dispute` form + `/corrections` empty-state launch + dispute link on VerdictView
+- **Paywall fully wired** — `GET /api/subscriptions/me` + `PaywallGate` client component + mount in session page + `save-session` upserts `audioSecondsUsed` on each save
+
+### Phase 1d — Trimodal integrity (2026-05-29)
+- **YouTube URL caption drift fix** — `normalizeTranscriptTime` heuristic was wrong by design; always treat youtube-transcript times as ms. Closes the 467.6-second drift the eval found on da_race_kcra.
+- **Revision-event schema** — `RevisionStatus = "initial" | "reopened" | "superseded" | "merged"` on TranscriptSegment + ClaimCard + RhetoricMarker
+- **Trimodal eval regression gate** — `compareSummaries()` + `scripts/eval/check-baseline.ts` CLI + saved baseline + 10 unit tests
+- **`YENTL_ENABLE_BIPA_DIARIZE` env flag** — env-level kill switch for batch-path diarization
+- **`temperature: 0`** on every integrity-critical AI route (extract-claims, verify-provisional, verify-confirmed, analyze-rhetoric) — closes the 0% claim Jaccard the eval found on hitchens_mcgrath SRT-vs-audio
+
+### Phase 1e — BIPA consent + AI Act sweep (2026-05-29)
+- **Per-call BIPA consent checkbox** on audio upload pane — dual gate with the env flag; URL/YouTube ingest never sets consent (user can't consent for third-party speakers)
+- **Methodology gains "Voiceprint consent for speaker labeling" section** — explains BIPA, the checkbox, Deepgram's no-retention posture
+- **YouTube caption paths stop defaulting `speaker_id` to 0** — all 4 paths (parseSrt, Innertube, youtube-transcript items, scraper) now emit `null + attribution_status: "not_available" + provider: "youtube-*"`
+- **OpenGraph + Twitter cards** on `/verdict/[id]` — shared verdict URLs render preview cards
+- **AIGeneratedBadge** added to dispute + corrections pages (AI Act Art 50 disclosure coverage)
+
+### Verification
+- **1489/1489 tests passing** (1374 baseline + 115 new across all phases)
+- **`npx tsc --noEmit`** clean
+- **Trimodal eval regression gate**: PASS with 4 measured improvements on vance_walz_debate spot-check (claim Jaccard +60pp on SRT/YT, +14pp on SRT/Audio; marker overlap +55pp SRT/YT, +50pp SRT/Audio)
+
+### Deploy notes
+- ⚠ `npx drizzle-kit push --force` to materialize the new `disputes` table on preview + prod
+- `YENTL_ENABLE_BIPA_DIARIZE` defaults to off — flip to `"1"` only after BIPA disclosure copy ships
+- `proxy.ts` now returns `NextResponse.next()` explicitly to carry security headers
+
 ---
 
 ## [0.2.0] — 2026-05-18

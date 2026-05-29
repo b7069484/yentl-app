@@ -173,7 +173,11 @@ describe("fetchCaptions — happy path", () => {
     }
   });
 
-  it("sets speaker_id: 0 on all segments", async () => {
+  // Phase 1e — captions carry no speaker info, so speaker_id is null +
+  // attribution_status: "not_available" (mirroring Phase 1a Task 3's
+  // deepgram-batch honesty fix). Previously this asserted speaker_id: 0,
+  // which was the lie the trimodal eval surfaced.
+  it("sets speaker_id: null + attribution_status: 'not_available' on all segments", async () => {
     const { proc, emitClose } = makeFakeProc();
     spawnFn.mockReturnValue(proc);
     readFileFn.mockResolvedValue(VALID_SRT);
@@ -184,7 +188,8 @@ describe("fetchCaptions — happy path", () => {
 
     const segments = await promise;
     for (const seg of segments) {
-      expect(seg.speaker_id).toBe(0);
+      expect(seg.speaker_id).toBeNull();
+      expect(seg.attribution_status).toBe("not_available");
     }
   });
 
@@ -615,7 +620,9 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
         start: 16.26,
         end: 18.26,
         is_final: true,
-        speaker_id: 0,
+        speaker_id: null,
+        attribution_status: "not_available",
+        provider: "youtube-captions",
       },
     ]);
   });
@@ -682,5 +689,66 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
     emitClose(2);
 
     await expect(promise).rejects.toMatchObject({ code: "NETWORK_ERROR" });
+  });
+});
+
+// Phase 1d Task 1 — the trimodal eval found URL caption timing drift up to
+// 467.6 seconds. Root cause: `normalizeTranscriptTime` heuristic only divided
+// values > 1000 by 1000, treating sub-second offsets (< 1000ms, < 1s into the
+// video) as seconds — a 1000× timeline expansion for early captions. The
+// youtube-transcript package returns ms unconditionally, so the heuristic is
+// wrong by design. These tests pin down the correct behavior.
+describe("fetchCaptions — youtube-transcript timing (Phase 1d Task 1)", () => {
+  it("treats offset and duration as milliseconds for sub-second values", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+    youtubeTranscriptFetchFn.mockResolvedValue([
+      {
+        text: "Hello.",
+        offset: 500,      // 0.5 seconds in
+        duration: 800,    // 0.8 seconds long
+        lang: "en",
+      },
+    ]);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toEqual([
+      {
+        text: "Hello.",
+        start: 0.5,
+        end: 1.3,
+        is_final: true,
+        speaker_id: null,
+        attribution_status: "not_available",
+        provider: "youtube-captions",
+      },
+    ]);
+  });
+
+  it("handles a mixed timeline — early caption + later caption — without expanding either", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+    youtubeTranscriptFetchFn.mockResolvedValue([
+      { text: "Cold open.", offset: 0, duration: 900, lang: "en" },         // 0 → 0.9s
+      { text: "Greeting.", offset: 900, duration: 1100, lang: "en" },       // 0.9 → 2.0s
+      { text: "Later.", offset: 60000, duration: 2500, lang: "en" },        // 60 → 62.5s
+    ]);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(3);
+    expect(segments[0].start).toBe(0);
+    expect(segments[0].end).toBeCloseTo(0.9, 3);
+    expect(segments[1].start).toBeCloseTo(0.9, 3);
+    expect(segments[1].end).toBeCloseTo(2.0, 3);
+    expect(segments[2].start).toBe(60);
+    expect(segments[2].end).toBeCloseTo(62.5, 3);
   });
 });

@@ -4,6 +4,10 @@ import { useSession } from "@/lib/client/session-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { VERDICT } from "@/lib/client/verdict-theme";
 import { ReassignSpeakerMenu } from "@/components/session/reassign-speaker-menu";
+import {
+  AttributionBadge,
+  worstAttributionStatus,
+} from "@/components/session/AttributionBadge";
 import type { ClaimCard, SpeakerId, TranscriptSegment } from "@/lib/types";
 export { paletteFor } from "@/lib/client/speaker-palette";
 import { paletteFor } from "@/lib/client/speaker-palette";
@@ -119,6 +123,14 @@ export function TranscriptView({
                     transcriptIndex={block.firstIndex}
                     speakerId={block.speakerId}
                     className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${palette.label} border-0 bg-transparent px-0 hover:bg-transparent`}
+                  />
+                  {/* Phase 1b: surface attribution uncertainty (worst case wins
+                      across the block's segments). Confident + manual_corrected
+                      render no badge. */}
+                  <AttributionBadge
+                    status={worstAttributionStatus(
+                      block.segments.map((s) => s.attribution_status),
+                    )}
                   />
                 </div>
               )}

@@ -7,11 +7,13 @@ const {
   mockClearPendingYouTubeCaptions,
   mockOnFinalUtterance,
   mockRunSynthesisNow,
+  mockAttachAudioFeatures,
 } = vi.hoisted(() => ({
   mockAppendFinal: vi.fn(),
   mockClearPendingYouTubeCaptions: vi.fn(),
   mockOnFinalUtterance: vi.fn().mockResolvedValue(undefined),
   mockRunSynthesisNow: vi.fn().mockResolvedValue(undefined),
+  mockAttachAudioFeatures: vi.fn(),
 }));
 
 // ── Adapter stub storage ──────────────────────────────────────────────────────
@@ -51,6 +53,7 @@ vi.mock("@/lib/client/audio-adapter", () => ({
 vi.mock("@/lib/client/orchestrator", () => ({
   onFinalUtterance: mockOnFinalUtterance,
   runSynthesisNow: mockRunSynthesisNow,
+  attachAudioFeatures: mockAttachAudioFeatures,
 }));
 
 // ── Session store mock ────────────────────────────────────────────────────────

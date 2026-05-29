@@ -150,6 +150,33 @@ describe("transcribeUrl — result mapping", () => {
     });
   });
 
+  // Half-open midpoint filter regression — adjacent utterances must not double-count
+  // a word whose midpoint lands exactly on their shared boundary. The interval is
+  // [start, end), so the boundary word belongs to the later utterance. Without this
+  // guarantee, BIPA-gated diarize:true would silently duplicate words across two
+  // segments and inflate confidence-weighted speaker aggregation.
+  it("does not double-assign a word whose midpoint falls exactly on an utterance boundary", async () => {
+    mockTranscribeUrl.mockResolvedValue(
+      makeDeepgramResponse(
+        [
+          { transcript: "First half.", start: 0, end: 1.0 },
+          { transcript: "Second half.", start: 1.0, end: 2.0 },
+        ],
+        [
+          { word: "edge", start: 0.8, end: 1.2, confidence: 0.9 }, // midpoint = 1.0
+        ],
+      ),
+    );
+
+    const { utterances } = await transcribeUrl("https://example.com/audio.mp3");
+    const firstWords = utterances[0].words ?? [];
+    const secondWords = utterances[1].words ?? [];
+
+    expect(firstWords).toHaveLength(0);
+    expect(secondWords).toHaveLength(1);
+    expect(secondWords[0]?.text).toBe("edge");
+  });
+
   it("sets provider: 'deepgram' and source_audio_kind: 'audio_file' on every segment", async () => {
     mockTranscribeUrl.mockResolvedValue(
       makeDeepgramResponse([{ transcript: "x", start: 0, end: 1 }]),

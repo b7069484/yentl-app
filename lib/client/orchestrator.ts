@@ -34,6 +34,26 @@ export function recordRmsSample(rms: number) {
   if (rms > peakRmsSinceLastSegment) peakRmsSinceLastSegment = rms;
 }
 
+/**
+ * Attaches the rolling RMS snapshot onto a TranscriptSegment as audio_features.
+ *
+ * Callers MUST invoke this BEFORE `useSession.getState().appendFinal(segment)`.
+ * Zustand subscribers fire on `set()`, not on post-commit mutations of the
+ * stored object — landing the mutation before the commit guarantees the first
+ * render sees the populated audio_features. Phase E prosody surfacing depends
+ * on this ordering.
+ *
+ * Also resets the per-segment peak window so the next segment accumulates
+ * fresh peaks from the AudioMeter loop.
+ */
+export function attachAudioFeatures(segment: TranscriptSegment): void {
+  segment.audio_features = {
+    rms: latestRms,
+    peak_rms: peakRmsSinceLastSegment,
+  };
+  peakRmsSinceLastSegment = 0;
+}
+
 let synthesisUtteranceCounter = 0;
 let lastSynthesisRunAt = 0;
 let synthesisAbortController: AbortController | null = null;
@@ -128,13 +148,10 @@ export function attributeMarker(
 }
 
 export async function onFinalUtterance(segment: TranscriptSegment) {
-  // Attach RMS snapshot captured since the prior segment (Phase 1a prosody groundwork).
-  // Only mic sources have meaningful RMS; for non-mic sources latestRms stays 0.
-  segment.audio_features = {
-    rms: latestRms,
-    peak_rms: peakRmsSinceLastSegment,
-  };
-  peakRmsSinceLastSegment = 0;
+  // NOTE: callers MUST call `attachAudioFeatures(segment)` before
+  // `useSession.getState().appendFinal(segment)` — see attachAudioFeatures
+  // for the rationale (Zustand subscriber-staleness). Doing the mutation
+  // here would re-introduce the bug for callers that commit first.
 
   maybeRunRhetoric();
   maybeRunSynthesis();

@@ -111,7 +111,36 @@ export default function MethodologyPage() {
           </Link>{" "}
           (CC-BY-4.0). Primary source:{" "}
           <em>Cognitive Biases &amp; Logical Fallacies Used by Antisemites</em> by Israel B.
-          Bitton (2024).
+          Bitton (2024). The original 55 cognitive-bias entries are catalogued in that book; the
+          fallacy and rhetorical-pattern entries draw on the broader logic and discourse-studies
+          literature.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">Scope.</strong> Markers are detected from the
+          linguistic content of an utterance only. Yentl does not currently use prosodic features
+          (volume, pitch, pace, pauses) for marker detection — the AudioMeter captures level data
+          for capture-health, not analysis. Speaker attribution is enabled only when the user
+          consents to biometric voiceprint processing (see{" "}
+          <a href="#voiceprint-consent" className="underline">voiceprint consent</a>); without
+          that, markers are attached to the utterance, not to a named speaker.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">Limits.</strong> A marker call is a model judgment
+          on a single utterance window with surrounding transcript context, not a clinical
+          diagnosis. False positives are likeliest in (a) intentional satire and parody,
+          (b) Socratic teaching where the speaker articulates a position to challenge it, and
+          (c) reported speech where the speaker quotes someone else&apos;s rhetoric. The
+          Phase 1a <code>stance</code> field (asserted / denied / quoted / mocked / hedged /
+          reported / questioned / corrected / unclear) is the structural defense — a quoted
+          fallacy is still a fallacy in the source, but it isn&apos;t the speaker&apos;s position.
+        </p>
+        <p className="text-muted-foreground leading-relaxed mt-3">
+          <strong className="text-foreground">How to contest a marker call.</strong> Every
+          verdict surface has a{" "}
+          <em>Flag this verdict for review</em> link that opens the dispute form. Include the
+          marker name, the excerpt, and why you think the call is wrong. We log every dispute and
+          review them on a rolling basis. Confirmed corrections appear on{" "}
+          <Link href="/corrections" className="underline">/corrections</Link>.
         </p>
       </section>
 
@@ -141,6 +170,68 @@ export default function MethodologyPage() {
             <dd>Private-individual harassment vectors, doxxing, hate speech, extremist or threatening content, CSAM, defamation-trap setups. Yentl avoids turning these into verdict-like output.</dd>
           </div>
         </dl>
+      </section>
+
+      <section aria-labelledby="voiceprint-consent">
+        <h2 id="voiceprint-consent" className="text-xl font-semibold mb-3">
+          Voiceprint consent for speaker labeling
+        </h2>
+        <p className="text-muted-foreground mb-3">
+          When you upload your own audio, Yentl can ask Deepgram to label
+          speakers — that step uses temporary biometric voiceprints. Under the
+          Illinois Biometric Information Privacy Act (BIPA) and similar laws
+          in Texas and Washington, that requires consent from every person
+          whose voice is in the recording.
+        </p>
+        <p className="text-muted-foreground mb-3">
+          The checkbox on the upload screen is your assertion that you have
+          that consent. Leave it unchecked when you&apos;re uploading a clip of
+          public figures, a podcast, a YouTube rip, or any audio where you
+          can&apos;t actually consent on behalf of the speakers. We&apos;ll
+          still transcribe; we just won&apos;t run speaker labeling.
+        </p>
+        <p className="text-muted-foreground">
+          Deepgram&apos;s data policy says voiceprints aren&apos;t retained
+          beyond the request. We don&apos;t store them either. The consent
+          checkbox protects every speaker in your recording — including ones
+          you may not have thought about.
+        </p>
+      </section>
+
+      <section aria-labelledby="not-fact-checked">
+        <h2 id="not-fact-checked" className="text-xl font-semibold mb-3">
+          What Yentl doesn&apos;t fact-check
+        </h2>
+        <p className="text-muted-foreground mb-3">
+          Some things sound like factual claims but aren&apos;t, and we
+          deliberately skip them:
+        </p>
+        <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <li>
+            <span className="font-semibold text-foreground">Satire and jokes</span>
+            {" — if it’s obviously not meant literally, we let it pass."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Predictions about the future</span>
+            {" — there’s no source of truth to check against."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Opinions and value judgments</span>
+            {" — “this is bad” isn’t a claim about reality."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Hypotheticals</span>
+            {" — “if X then Y” doesn’t claim X happened."}
+          </li>
+          <li>
+            <span className="font-semibold text-foreground">Personal experience reports</span>
+            {" — we can’t verify what someone says happened to them."}
+          </li>
+        </ul>
+        <p className="text-muted-foreground mt-3 text-sm">
+          If you think we miscategorized something, flag it via the
+          verdict&apos;s dispute link.
+        </p>
       </section>
 
       <section aria-labelledby="prompt-version-log">

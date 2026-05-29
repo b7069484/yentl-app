@@ -168,7 +168,10 @@ describe("fetchViaInnertube — happy path", () => {
     }
   });
 
-  it("sets speaker_id: 0 on all segments", async () => {
+  // Phase 1e — Innertube captions carry no speaker info; honest schema is
+  // speaker_id: null + attribution_status: "not_available" (mirroring the
+  // Phase 1a Task 3 deepgram-batch fix).
+  it("sets speaker_id: null + attribution_status: 'not_available' on all segments", async () => {
     const { innertube } = makeFakeInnertube({
       initialSegments: [makeSegment("Hello.", 0, 2000)],
     });
@@ -176,7 +179,8 @@ describe("fetchViaInnertube — happy path", () => {
 
     const segments = await fetchViaInnertube("dQw4w9WgXcQ");
     for (const seg of segments) {
-      expect(seg.speaker_id).toBe(0);
+      expect(seg.speaker_id).toBeNull();
+      expect(seg.attribution_status).toBe("not_available");
     }
   });
 

@@ -54,7 +54,10 @@ async function deleteUploadedBlob(url: string): Promise<void> {
   }
 }
 
-async function transcribePrivateBlobUrl(url: string) {
+async function transcribePrivateBlobUrl(
+  url: string,
+  opts?: { bipaConsented?: boolean },
+) {
   const blob = await get(url, { access: blobAccessForUrl(url), useCache: false });
   if (!blob || blob.statusCode !== 200 || !blob.stream) {
     throw new Error("uploaded audio was unavailable");
@@ -64,7 +67,7 @@ async function transcribePrivateBlobUrl(url: string) {
   const nodeStream = Readable.fromWeb(
     blob.stream as import("stream/web").ReadableStream<Uint8Array>,
   );
-  return transcribeStream(nodeStream, mime);
+  return transcribeStream(nodeStream, mime, opts);
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
@@ -87,6 +90,11 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     const file = formData.get("file");
     const durationSecRaw = formData.get("duration_sec");
+    // Phase 1e — per-call BIPA consent. The client appends "bipa_consented"
+    // to the form when the user has explicitly ticked the consent box.
+    // Default: false (no consent). Diarize only fires when consent AND the
+    // YENTL_ENABLE_BIPA_DIARIZE env flag are both set.
+    const bipaConsented = formData.get("bipa_consented") === "true";
 
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "file is required" }, { status: 400 });
@@ -132,7 +140,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         file.stream() as import("stream/web").ReadableStream,
       );
       try {
-        const result = await transcribeStream(nodeStream, mime);
+        const result = await transcribeStream(nodeStream, mime, { bipaConsented });
         return NextResponse.json(result);
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
@@ -148,7 +156,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     try {
-      const result = await transcribeFile(buffer, mime);
+      const result = await transcribeFile(buffer, mime, { bipaConsented });
       return NextResponse.json(result);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -169,8 +177,12 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const { blob_url, url, duration_sec: dur } = body as Record<string, unknown>;
+    const { blob_url, url, duration_sec: dur, bipa_consented: bipaRaw } =
+      body as Record<string, unknown>;
     const targetUrl = blob_url ?? url;
+    // Phase 1e — per-call BIPA consent (JSON branch). Only true when the
+    // client explicitly sets it; defaults to false.
+    const bipaConsented = bipaRaw === true || bipaRaw === "true";
 
     if (!targetUrl || typeof targetUrl !== "string") {
       return NextResponse.json(
@@ -195,8 +207,8 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     try {
       const result = isVercelBlobUrl(targetUrl)
-        ? await transcribePrivateBlobUrl(targetUrl)
-        : await transcribeUrl(targetUrl);
+        ? await transcribePrivateBlobUrl(targetUrl, { bipaConsented })
+        : await transcribeUrl(targetUrl, { bipaConsented });
       return NextResponse.json(result);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);

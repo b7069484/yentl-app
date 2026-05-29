@@ -1,3 +1,5 @@
+import { AIGeneratedBadge } from "@/components/ui/ai-generated-badge";
+
 export const metadata = {
   title: "Corrections — Yentl",
   description: "Verdicts Yentl has revised after community-flagged disputes.",
@@ -7,6 +9,13 @@ export default function CorrectionsPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2 border-b border-border/60 pb-4">
+        {/* Phase 1e — AI Act Art 50 disclosure on every AI-content surface. */}
+        <div className="flex items-center gap-2">
+          <AIGeneratedBadge />
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+            Corrections to AI-generated verdicts
+          </span>
+        </div>
         <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
           Corrections
         </h1>

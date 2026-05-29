@@ -1,4 +1,5 @@
 import { DisputeForm } from "@/components/disputes/DisputeForm";
+import { AIGeneratedBadge } from "@/components/ui/ai-generated-badge";
 
 export const runtime = "nodejs";
 
@@ -22,6 +23,14 @@ export default async function DisputePage({
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-2">
+        {/* Phase 1e — AI Act Art 50: every surface that handles AI-generated
+            content needs visible AI disclosure, including dispute pages. */}
+        <div className="flex items-center gap-2">
+          <AIGeneratedBadge />
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+            Disputing an AI-generated verdict
+          </span>
+        </div>
         <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
           Flag this verdict for review
         </h1>

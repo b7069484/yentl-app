@@ -1,6 +1,7 @@
 import { describe, it, expectTypeOf } from "vitest";
 import type {
   TranscriptSegment,
+  ClaimCard,
   ASRWord,
   SpeakerDistribution,
   AttributionStatus,
@@ -88,9 +89,26 @@ describe("TranscriptSegment extended schema (Phase 1a)", () => {
     expectTypeOf(dist).toEqualTypeOf<SpeakerDistribution>();
   });
 
-  it("AttributionReason type is exported", () => {
-    // Verify a value typed as AttributionReason is assignable to AttributionReason
-    const reason: AttributionReason = "single_speaker_high_confidence";
-    expectTypeOf(reason).toMatchTypeOf<AttributionReason>();
+  it("AttributionReason type is exported with the full member union", () => {
+    expectTypeOf<AttributionReason>().toEqualTypeOf<
+      | "single_speaker_high_confidence"
+      | "dominant_speaker_low_margin"
+      | "speaker_change_mid_segment"
+      | "short_backchannel"
+      | "competitive_interruption"
+      | "parallel_claim"
+      | "crowd_or_bleed"
+      | "quoted_or_reported_speech"
+      | "provider_missing_speaker"
+      | "manual_user_action"
+    >();
+  });
+
+  it("ClaimCard accepts optional stance: ClaimStance", () => {
+    // Verify the field exists on ClaimCard and is typed as ClaimStance | undefined.
+    // Use Pick to isolate the field — index access on optional properties trips
+    // vitest's expectTypeOf in some versions.
+    const cardStance: Pick<ClaimCard, "stance"> = { stance: "quoted" };
+    expectTypeOf(cardStance.stance).toEqualTypeOf<ClaimStance | undefined>();
   });
 });

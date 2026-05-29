@@ -59,11 +59,6 @@ export type RhetoricMarker = {
 };
 
 export type TranscriptSegment = {
-  /** Stable segment identity for cross-references. Optional for back-compat. */
-  id?: string;
-  /** ASR provider that emitted this segment, e.g. "deepgram". */
-  provider?: string;
-
   text: string;
   start: number;
   end: number;
@@ -74,6 +69,11 @@ export type TranscriptSegment = {
    * did not return a speaker for this utterance. Do NOT default to 0.
    */
   speaker_id: SpeakerId | null;
+
+  /** Stable segment identity for cross-references. Optional for back-compat. */
+  id?: string;
+  /** ASR provider that emitted this segment, e.g. "deepgram". */
+  provider?: string;
 
   /** Word-level ASR evidence — preserved from provider response when present. */
   words?: ASRWord[];
@@ -182,7 +182,7 @@ export type ASRWord = {
 export type SpeakerDistribution = {
   speaker_id: number;
   word_count: number;
-  duration: number;
+  duration: number;         // seconds — total duration this speaker held within the segment
   mean_confidence: number;
 };
 

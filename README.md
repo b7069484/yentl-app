@@ -89,3 +89,75 @@ fetches. See [`docs/browser-tab-capture.md`](docs/browser-tab-capture.md).
 - **Incorrect verdicts**: Use the Report button on any verdict card (stored locally in `yentl.reports`)
 - **Security vulnerabilities**: See [`SECURITY.md`](SECURITY.md) if present, or use the contact page
 - **General feedback**: [GitHub Issues](https://github.com/project-witness/yentl-app/issues)
+
+---
+
+## Security
+
+### Edge-level posture
+
+Every response from Yentl carries the following security headers (applied in [`proxy.ts`](proxy.ts)):
+
+| Header | Value | Why |
+|---|---|---|
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | 2-year HSTS — HSTS preload list eligibility |
+| `X-Content-Type-Options` | `nosniff` | Prevents MIME sniffing |
+| `X-Frame-Options` | `DENY` | Defense in depth alongside CSP frame-ancestors |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Limits referrer leakage to cross-origin requests |
+| `Permissions-Policy` | `camera=(), geolocation=(), microphone=(self)` | Mic same-origin only (Yentl needs it); camera + geo denied |
+| `X-DNS-Prefetch-Control` | `on` | Speed without exposing additional data |
+
+### Authentication + authorization
+
+- **Clerk** handles all user authentication. Public-facing routes (verdict, methodology, corrections) require no auth. Protected routes (`/session*`, `/sessions*`, `/api/sessions*`, `/account*`, `/project*`) call `auth.protect()` in [`proxy.ts`](proxy.ts).
+- **Cost-bearing AI routes** (`/api/extract-claims`, `/api/verify-*`, `/api/analyze-rhetoric`, `/api/synthesize`, `/api/devil-advocate`, `/api/transcribe-batch`, `/api/upload-audio`, `/api/youtube-ingest`, `/api/media-ingest`, `/api/source-preview`, `/api/deepgram/token`) are auth-gated in production when `YENTL_REQUIRE_AUTH=1` is set.
+- **Internal API routes** (`/api/corpus-sample`, `/api/project-flow-comments`) are production-only locked.
+
+### Rate limiting
+
+Per-route rate limits live in [`lib/server/rate-limit.ts`](lib/server/rate-limit.ts) and are applied inside each API route handler:
+
+| Bucket | Limit | Window |
+|---|---|---|
+| `deepgram-token` | 30 | 60s |
+| `upload-token` | 40 | 60s |
+| `transcription` | 240 | 60s |
+| `source-ingest` | 120 | 60s |
+| `model` | 240 | 60s |
+| `source-preview` | 240 | 60s |
+
+Production must set `YENTL_RATE_LIMIT_BACKEND=redis` with either Upstash Redis REST or Vercel KV REST credentials. Without those env vars, the rate limiter falls back to per-process in-memory state, which is single-instance only and resets on every cold start.
+
+### Biometric privacy (BIPA / CUBI / Washington)
+
+Speaker diarization uses temporary voiceprints, which fall under the Illinois Biometric Information Privacy Act and similar Texas/Washington laws.
+
+Yentl uses a **dual gate** to ensure diarization only fires with explicit user consent:
+
+1. **Env-level kill switch** — `YENTL_ENABLE_BIPA_DIARIZE=1` must be set on the deployment (default: unset → diarize stays off)
+2. **Per-upload consent** — the audio upload pane includes a checkbox: *"I have explicit consent from every person audible in this recording for biometric voiceprint analysis."* The checkbox state is forwarded as `bipa_consented=true` to `/api/transcribe-batch`.
+
+Both must be true for `diarize: true` to fire on the batch path. URL/YouTube ingest **never** sets consent (the user can't legitimately consent on behalf of third-party speakers in public video). Live streaming **always** stays `diarize: false` regardless — Soniox + Deepgram both warn real-time diarization quality is weaker and BIPA exposure is higher.
+
+See [/methodology#voiceprint-consent](/methodology#voiceprint-consent) for the user-facing explanation.
+
+### Data flow
+
+| Surface | Where it goes | Persisted? |
+|---|---|---|
+| Audio (live mic) | Browser → Deepgram WebSocket (region-selectable) | No — streamed only |
+| Audio (file upload) | Browser → Vercel Blob (private) → Deepgram batch → Vercel function | Deleted after transcription |
+| Transcript | Zustand client store → (optional) Neon `sessions.data` jsonb blob | Yes, when session is ended by an authed user |
+| Voiceprints | Deepgram internal (diarize:true only with dual consent) | No — Deepgram policy is no retention beyond request |
+| Claims/verdicts | Anthropic via Vercel AI Gateway | No — request-scoped only |
+| Dispute submissions | Neon `disputes` table | Yes — for editorial review |
+
+### How to report a vulnerability
+
+Email the privacy contact listed in [/contact](/contact). Include:
+
+- Affected URL or component
+- Reproduction steps
+- Impact assessment from your perspective
+
+We respond within 72 hours and aim to ship fixes within 30 days for high-severity, 90 days for medium. Critical issues are addressed immediately with an out-of-band release if needed.

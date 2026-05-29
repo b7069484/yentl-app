@@ -684,3 +684,62 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
     await expect(promise).rejects.toMatchObject({ code: "NETWORK_ERROR" });
   });
 });
+
+// Phase 1d Task 1 — the trimodal eval found URL caption timing drift up to
+// 467.6 seconds. Root cause: `normalizeTranscriptTime` heuristic only divided
+// values > 1000 by 1000, treating sub-second offsets (< 1000ms, < 1s into the
+// video) as seconds — a 1000× timeline expansion for early captions. The
+// youtube-transcript package returns ms unconditionally, so the heuristic is
+// wrong by design. These tests pin down the correct behavior.
+describe("fetchCaptions — youtube-transcript timing (Phase 1d Task 1)", () => {
+  it("treats offset and duration as milliseconds for sub-second values", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+    youtubeTranscriptFetchFn.mockResolvedValue([
+      {
+        text: "Hello.",
+        offset: 500,      // 0.5 seconds in
+        duration: 800,    // 0.8 seconds long
+        lang: "en",
+      },
+    ]);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toEqual([
+      {
+        text: "Hello.",
+        start: 0.5,
+        end: 1.3,
+        is_final: true,
+        speaker_id: 0,
+      },
+    ]);
+  });
+
+  it("handles a mixed timeline — early caption + later caption — without expanding either", async () => {
+    const innertubeInstance = {
+      getInfo: vi.fn().mockRejectedValue(
+        new Error("Transcript panel not found. Video likely has no transcript."),
+      ),
+    };
+    innertubeCreateFn.mockResolvedValue(innertubeInstance);
+    youtubeTranscriptFetchFn.mockResolvedValue([
+      { text: "Cold open.", offset: 0, duration: 900, lang: "en" },         // 0 → 0.9s
+      { text: "Greeting.", offset: 900, duration: 1100, lang: "en" },       // 0.9 → 2.0s
+      { text: "Later.", offset: 60000, duration: 2500, lang: "en" },        // 60 → 62.5s
+    ]);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(3);
+    expect(segments[0].start).toBe(0);
+    expect(segments[0].end).toBeCloseTo(0.9, 3);
+    expect(segments[1].start).toBeCloseTo(0.9, 3);
+    expect(segments[1].end).toBeCloseTo(2.0, 3);
+    expect(segments[2].start).toBe(60);
+    expect(segments[2].end).toBeCloseTo(62.5, 3);
+  });
+});

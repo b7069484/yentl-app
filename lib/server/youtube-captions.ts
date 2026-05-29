@@ -470,9 +470,17 @@ function transcriptItemsToSegments(
     const text = item.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
 
-    const start = normalizeTranscriptTime(item.offset);
-    const duration = normalizeTranscriptTime(item.duration);
-    if (!Number.isFinite(start) || !Number.isFinite(duration)) continue;
+    // youtube-transcript returns `offset` and `duration` in MILLISECONDS
+    // unconditionally. The earlier heuristic "divide only when > 1000"
+    // silently expanded sub-second timestamps by 1000× — the root cause of
+    // the trimodal eval's 467.6s caption drift on long videos. Phase 1d
+    // Task 1 fix: always treat as ms.
+    const startMs = item.offset;
+    const durationMs = item.duration;
+    if (!Number.isFinite(startMs) || !Number.isFinite(durationMs)) continue;
+
+    const start = startMs / 1000;
+    const duration = durationMs / 1000;
 
     segments.push({
       text,
@@ -484,11 +492,6 @@ function transcriptItemsToSegments(
   }
 
   return segments;
-}
-
-function normalizeTranscriptTime(value: number): number {
-  if (!Number.isFinite(value)) return NaN;
-  return value > 1000 ? value / 1000 : value;
 }
 
 function mapYoutubeTranscriptError(error: unknown): CaptionError {

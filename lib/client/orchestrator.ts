@@ -33,6 +33,7 @@ type ExtractedClaim = {
   utterance_end: number;
   topic: string;
   topic_secondary: string | null;
+  stance?: import("@/lib/types").ClaimStance;
 };
 
 function compactContextPairs(pairs: Array<[string, string | string[] | number | undefined | null]>) {
@@ -171,6 +172,7 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
       explanation: "",
       status: "checking",
       sources: [],
+      stance: c.stance ?? "asserted",
     };
     useSession.getState().addClaim(card);
 

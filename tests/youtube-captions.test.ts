@@ -173,7 +173,11 @@ describe("fetchCaptions — happy path", () => {
     }
   });
 
-  it("sets speaker_id: 0 on all segments", async () => {
+  // Phase 1e — captions carry no speaker info, so speaker_id is null +
+  // attribution_status: "not_available" (mirroring Phase 1a Task 3's
+  // deepgram-batch honesty fix). Previously this asserted speaker_id: 0,
+  // which was the lie the trimodal eval surfaced.
+  it("sets speaker_id: null + attribution_status: 'not_available' on all segments", async () => {
     const { proc, emitClose } = makeFakeProc();
     spawnFn.mockReturnValue(proc);
     readFileFn.mockResolvedValue(VALID_SRT);
@@ -184,7 +188,8 @@ describe("fetchCaptions — happy path", () => {
 
     const segments = await promise;
     for (const seg of segments) {
-      expect(seg.speaker_id).toBe(0);
+      expect(seg.speaker_id).toBeNull();
+      expect(seg.attribution_status).toBe("not_available");
     }
   });
 
@@ -615,7 +620,9 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
         start: 16.26,
         end: 18.26,
         is_final: true,
-        speaker_id: 0,
+        speaker_id: null,
+        attribution_status: "not_available",
+        provider: "youtube-captions",
       },
     ]);
   });
@@ -715,7 +722,9 @@ describe("fetchCaptions — youtube-transcript timing (Phase 1d Task 1)", () => 
         start: 0.5,
         end: 1.3,
         is_final: true,
-        speaker_id: 0,
+        speaker_id: null,
+        attribution_status: "not_available",
+        provider: "youtube-captions",
       },
     ]);
   });

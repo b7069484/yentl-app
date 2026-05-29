@@ -148,7 +148,13 @@ export function parseCaptionsXml(xml: string): TranscriptSegment[] {
       start,
       end: start + dur,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e mirror of Phase 1a Task 3 — YouTube caption paths have no
+      // speaker info, so defaulting to 0 was a lie (same bug Phase 1a fixed
+      // for deepgram-batch). Emit null + attribution_status: "not_available"
+      // so the trimodal cross-mode comparison is honest at the schema level.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-captions",
     });
   }
 
@@ -221,7 +227,10 @@ export function parseSrt(srt: string): TranscriptSegment[] {
       start,
       end,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e — SRT captions have no speaker info; honest schema.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-srt",
     });
   }
 
@@ -416,7 +425,10 @@ export async function fetchViaInnertube(videoId: string): Promise<TranscriptSegm
       start: startMs / 1000,
       end: endMs / 1000,
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e — Innertube captions have no speaker info; honest schema.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-innertube",
     });
   }
 
@@ -487,7 +499,13 @@ function transcriptItemsToSegments(
       start,
       end: start + Math.max(duration, 0.1),
       is_final: true,
-      speaker_id: 0,
+      // Phase 1e mirror of Phase 1a Task 3 — YouTube caption paths have no
+      // speaker info, so defaulting to 0 was a lie (same bug Phase 1a fixed
+      // for deepgram-batch). Emit null + attribution_status: "not_available"
+      // so the trimodal cross-mode comparison is honest at the schema level.
+      speaker_id: null,
+      attribution_status: "not_available" as const,
+      provider: "youtube-captions",
     });
   }
 

@@ -2,6 +2,7 @@ import type { ClaimCard as ClaimCardT } from "@/lib/types";
 import { VERDICT } from "@/lib/client/verdict-theme";
 import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
+import { ClaimStanceBadge } from "./ClaimStanceBadge";
 import Image from "next/image";
 import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
 import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
@@ -104,6 +105,11 @@ export function ClaimCard({
           compact ? "space-y-1.5 pb-3 pt-2.5" : "space-y-3 pb-4 pt-3"
         }`}
       >
+        {/* Phase 1b: surface the speaker's stance toward the claim
+            (denied / quoted / mocked / hedged / …). Asserted renders null. */}
+        {card.stance && card.stance !== "asserted" && (
+          <ClaimStanceBadge stance={card.stance} className="mb-1" />
+        )}
         <p
           className={`font-medium leading-snug text-foreground ${
             compact ? "line-clamp-3 text-[13px]" : "text-[15px]"

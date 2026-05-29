@@ -47,6 +47,14 @@ export type ClaimCard = {
    * neighboring one. PolitiFact/Anthropic ask.
    */
   label_rationale?: string;
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets a later-context update
+   * explicitly mark a claim as reopened, superseded, or merged instead of
+   * silently overwriting the prior version. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 export type MarkerType = "fallacy" | "bias" | "rhetoric";
@@ -63,6 +71,14 @@ export type RhetoricMarker = {
   end_time: number;
   severity: MarkerSeverity;
   explanation: string;
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets a later-context update
+   * explicitly mark a marker as reopened, superseded, or merged instead of
+   * silently overwriting the prior version. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 export type TranscriptSegment = {
@@ -105,6 +121,15 @@ export type TranscriptSegment = {
 
   /** Prosodic features captured at the segment level (Phase 1a: RMS only). */
   audio_features?: AudioFeatures;
+
+  /**
+   * Phase 1d Task 2 — revision-event metadata. Lets later-context updates
+   * carry an explicit reopen/supersede/merge marker instead of silently
+   * mutating prior records. See `lib/revision-events.ts`.
+   */
+  revision_status?: import("./revision-events").RevisionStatus;
+  revision_target_id?: string;
+  revision_reason?: string;
 };
 
 /**

@@ -34,13 +34,28 @@ export function ClaimCard({
           : "border-border/70 hover:border-foreground/30 hover:shadow-md"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {/* Status stripe — color-coded vertical bar to give a glanceable verdict cue */}
-      <span
-        aria-hidden
-        className={`absolute inset-y-0 left-0 w-1 ${verdict.dot} ${
-          isPending ? "opacity-40" : "opacity-100"
-        }`}
-      />
+      {/* Phase 1b Task 6: OPINION uses a diamond glyph at the top-left
+          instead of the full-height colored stripe, so it's distinguishable
+          from verdict-bearing labels by SHAPE not just color (PolitiFact #23:
+          "OPINION is a classification, not a verdict"). Helps colorblind users
+          and survives black-and-white screenshots. */}
+      {card.primary_label === "OPINION" ? (
+        <span
+          aria-hidden
+          data-verdict-shape="diamond"
+          className={`absolute left-1 top-2 size-2.5 rotate-45 ${verdict.dot} ${
+            isPending ? "opacity-40" : "opacity-100"
+          }`}
+        />
+      ) : (
+        <span
+          aria-hidden
+          data-verdict-shape="stripe"
+          className={`absolute inset-y-0 left-0 w-1 ${verdict.dot} ${
+            isPending ? "opacity-40" : "opacity-100"
+          }`}
+        />
+      )}
 
       {!compact && (() => {
         const hero = pickHero(card);

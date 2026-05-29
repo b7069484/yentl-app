@@ -9,12 +9,14 @@ const {
   mockAppendFinal,
   mockOnFinalUtterance,
   mockRunSynthesisNow,
+  mockAttachAudioFeatures,
   sessionState,
 } = vi.hoisted(() => {
   const mockStartSession = vi.fn();
   const mockAppendFinal = vi.fn();
   const mockOnFinalUtterance = vi.fn().mockResolvedValue(undefined);
   const mockRunSynthesisNow = vi.fn().mockResolvedValue(undefined);
+  const mockAttachAudioFeatures = vi.fn();
 
   const sessionState = {
     startedAt: null as string | null,
@@ -22,7 +24,14 @@ const {
     appendFinal: mockAppendFinal,
   };
 
-  return { mockStartSession, mockAppendFinal, mockOnFinalUtterance, mockRunSynthesisNow, sessionState };
+  return {
+    mockStartSession,
+    mockAppendFinal,
+    mockOnFinalUtterance,
+    mockRunSynthesisNow,
+    mockAttachAudioFeatures,
+    sessionState,
+  };
 });
 
 vi.mock("@/lib/client/session-store", () => ({
@@ -32,6 +41,7 @@ vi.mock("@/lib/client/session-store", () => ({
 }));
 
 vi.mock("@/lib/client/orchestrator", () => ({
+  attachAudioFeatures: mockAttachAudioFeatures,
   onFinalUtterance: mockOnFinalUtterance,
   runSynthesisNow: mockRunSynthesisNow,
 }));
@@ -159,6 +169,21 @@ describe("bulkIngest — ordering", () => {
     await vi.waitFor(() => {
       expect(mockOnFinalUtterance).toHaveBeenCalledTimes(2);
     });
+  });
+
+  // Phase 1a PR #8 follow-up #2 — attachAudioFeatures(seg) MUST run before
+  // appendFinal(seg) in the bulk loop. If the order ever inverts, Phase E
+  // RMS surfacing goes silently stale on the first render.
+  it("attachAudioFeatures runs before appendFinal for each segment", async () => {
+    const calls: string[] = [];
+    mockAttachAudioFeatures.mockImplementation(() => calls.push("attach"));
+    mockAppendFinal.mockImplementation(() => calls.push("append"));
+
+    sessionState.startedAt = "2026-05-29T00:00:00.000Z";
+    await bulkIngest([makeSeg("Seg 1.", 0), makeSeg("Seg 2.", 1)]);
+
+    // Two segments → two attach/append pairs, each in the correct order.
+    expect(calls.slice(0, 4)).toEqual(["attach", "append", "attach", "append"]);
   });
 });
 

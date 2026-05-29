@@ -37,7 +37,7 @@ import {
   startDisplayAudioCapture,
   type DisplayAudioCaptureHandle,
 } from "@/lib/client/display-audio-capture";
-import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { attachAudioFeatures, onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
 import { friendlyApiErrorMessage } from "@/lib/client/api-errors";
 import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 import type { TranscriptSegment } from "@/lib/types";
@@ -709,6 +709,7 @@ export function YoutubeIngestPane({
 
     setCaptionTranscript((items) => [...items, ...releasable]);
     for (const segment of releasable) {
+      attachAudioFeatures(segment);
       appendFinal(segment);
       void onFinalUtterance(segment).catch((error) => {
         console.warn("YouTube caption analysis failed", error);
@@ -995,6 +996,7 @@ export function YoutubeIngestPane({
           };
           setTabAudioInterim("");
           setTabAudioTranscript((items) => [...items, aligned]);
+          attachAudioFeatures(aligned);
           appendFinal(aligned);
           void onFinalUtterance(aligned).catch((error) => {
             console.warn("YouTube tab-audio analysis failed", error);

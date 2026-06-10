@@ -10,6 +10,7 @@ import {
   formatDuration,
   topicSegments,
   recentActivityEvents,
+  sourceHealthSummary,
 } from "@/lib/client/overview-selectors";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -563,5 +564,91 @@ describe("recentActivityEvents – score rounding", () => {
       expect(Number.isInteger(ev.score)).toBe(true);
       expect(ev.score).toBe(74);
     }
+  });
+});
+
+// ─── sourceHealthSummary ─────────────────────────────────────────────────────
+
+describe("sourceHealthSummary", () => {
+  const transcript: TranscriptSegment[] = [
+    { text: "A claim.", start: 0, end: 2, is_final: true, speaker_id: 0 },
+  ];
+
+  it("reports waiting state before transcript lands", () => {
+    const health = sourceHealthSummary({
+      source: { kind: "mic" },
+      transcript: [],
+      claims: [],
+    });
+
+    expect(health.sourceType).toBe("Microphone");
+    expect(health.title).toBe("Live microphone");
+    expect(health.statusLabel).toBe("Waiting for transcript");
+    expect(health.tone).toBe("idle");
+  });
+
+  it("prioritizes checking claims over terminal source counts", () => {
+    const health = sourceHealthSummary({
+      source: { kind: "youtube", video_id: "abc", url: "https://youtu.be/abc", title: "Debate" },
+      transcript,
+      claims: [
+        makeClaim({ primary_label: "TRUE", status: "confirmed", sources: [{
+          url: "https://nasa.gov/fact",
+          domain: "nasa.gov",
+          title: "Fact",
+          reputation_tier: "high",
+          stance: "supports",
+        }] }),
+        makeClaim({ primary_label: "FALSE", status: "checking" }),
+      ],
+    });
+
+    expect(health.sourceType).toBe("YouTube");
+    expect(health.title).toBe("Debate");
+    expect(health.statusLabel).toBe("Checking sources");
+    expect(health.tone).toBe("active");
+    expect(health.checkingClaimCount).toBe(1);
+    expect(health.sourceBackedClaimCount).toBe(1);
+    expect(health.uniqueSourceCount).toBe(1);
+    expect(health.highReputationSourceCount).toBe(1);
+  });
+
+  it("marks terminal claims without citations as needing a source pass", () => {
+    const health = sourceHealthSummary({
+      source: { kind: "text_doc", filename: "article.txt", mime: "text/plain", byte_count: 42 },
+      transcript,
+      claims: [makeClaim({ primary_label: "UNVERIFIABLE", status: "provisional", sources: [] })],
+    });
+
+    expect(health.sourceType).toBe("Document");
+    expect(health.title).toBe("article.txt");
+    expect(health.statusLabel).toBe("Needs source pass");
+    expect(health.tone).toBe("warning");
+  });
+
+  it("dedupes source URLs for source-backed health", () => {
+    const sharedSource = {
+      url: "https://example.org/report",
+      domain: "example.org",
+      title: "Report",
+      reputation_tier: "high" as const,
+      stance: "supports" as const,
+    };
+    const health = sourceHealthSummary({
+      source: { kind: "browser_tab", title: "Panel", url: "https://news.example/live" },
+      transcript,
+      claims: [
+        makeClaim({ primary_label: "TRUE", status: "confirmed", sources: [sharedSource] }),
+        makeClaim({ primary_label: "MOSTLY_TRUE", status: "confirmed", sources: [sharedSource] }),
+      ],
+    });
+
+    expect(health.sourceType).toBe("Browser tab");
+    expect(health.subtitle).toBe("news.example");
+    expect(health.statusLabel).toBe("Source-backed");
+    expect(health.tone).toBe("good");
+    expect(health.sourceBackedClaimCount).toBe(2);
+    expect(health.uniqueSourceCount).toBe(1);
+    expect(health.highReputationSourceCount).toBe(1);
   });
 });

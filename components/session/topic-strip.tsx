@@ -26,13 +26,13 @@ export function TopicStrip({
       {segments.length === 0 ? (
         <span className="text-[11px] italic text-ink-4">No topics yet</span>
       ) : (
-        <div className="flex items-center gap-2 h-6">
+        <div className="flex min-h-11 items-stretch gap-2">
           {segments.map((seg) => (
             <Link
               key={seg.topic}
               href={buildHref(seg.topic)}
               className={[
-                "h-full",
+                "min-h-11",
                 seg.colorClass,
                 "border",
                 seg.borderColorClass,

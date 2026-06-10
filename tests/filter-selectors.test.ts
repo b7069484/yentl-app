@@ -71,10 +71,17 @@ describe("parseClaimFilters", () => {
     expect(f.topic).toBe("climate");
   });
 
+  it("parses status=checking,provisional", () => {
+    const params = new URLSearchParams("status=checking,provisional");
+    const f = parseClaimFilters(params);
+    expect(f.status).toEqual(["checking", "provisional"]);
+  });
+
   it("returns empty object when no params present", () => {
     const params = new URLSearchParams();
     const f = parseClaimFilters(params);
     expect(f.verdict).toBeUndefined();
+    expect(f.status).toBeUndefined();
     expect(f.speaker).toBeUndefined();
     expect(f.topic).toBeUndefined();
   });
@@ -89,6 +96,12 @@ describe("parseClaimFilters", () => {
     const params = new URLSearchParams("verdict=FALSE");
     const f = parseClaimFilters(params);
     expect(f.verdict).toEqual(["FALSE"]);
+  });
+
+  it("ignores unknown status values", () => {
+    const params = new URLSearchParams("status=checking,done");
+    const f = parseClaimFilters(params);
+    expect(f.status).toEqual(["checking"]);
   });
 });
 
@@ -174,6 +187,26 @@ describe("applyClaimFilters", () => {
     const result = applyClaimFilters(claims, {});
     expect(result).toHaveLength(1);
     expect(result[0].primary_label).toBe("TRUE");
+  });
+
+  it("includes checking claims when status=checking is explicit", () => {
+    const claims = [
+      makeClaim({ primary_label: "FALSE", status: "checking" }),
+      makeClaim({ primary_label: "TRUE", status: "confirmed" }),
+    ];
+    const result = applyClaimFilters(claims, { status: ["checking"] });
+    expect(result).toHaveLength(1);
+    expect(result[0].status).toBe("checking");
+  });
+
+  it("filters by status=provisional", () => {
+    const claims = [
+      makeClaim({ primary_label: "FALSE", status: "provisional" }),
+      makeClaim({ primary_label: "TRUE", status: "confirmed" }),
+    ];
+    const result = applyClaimFilters(claims, { status: ["provisional"] });
+    expect(result).toHaveLength(1);
+    expect(result[0].status).toBe("provisional");
   });
 
   it("filters by verdict=FALSE", () => {
@@ -405,6 +438,12 @@ describe("describeClaimFilters", () => {
     ).toBe("Claims · FALSE, PARTIAL");
   });
 
+  it("status only → 'Provisional claims'", () => {
+    expect(describeClaimFilters({ status: ["provisional"] }, labels)).toBe(
+      "Provisional claims",
+    );
+  });
+
   it("speaker only → 'All claims by Alice'", () => {
     expect(describeClaimFilters({ speaker: [0] }, labels)).toBe(
       "All claims by Alice",
@@ -415,6 +454,12 @@ describe("describeClaimFilters", () => {
     expect(
       describeClaimFilters({ verdict: ["FALSE"], speaker: [0] }, labels),
     ).toBe("FALSE claims by Alice");
+  });
+
+  it("status + verdict → 'Confirmed FALSE claims'", () => {
+    expect(
+      describeClaimFilters({ status: ["confirmed"], verdict: ["FALSE"] }, labels),
+    ).toBe("Confirmed FALSE claims");
   });
 
   it("topic only → 'All claims about Climate'", () => {

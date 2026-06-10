@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "window_id": "solo_001_clean_control",
+  "corpus_id": "test-corpus",
+  "source_id": "solo_001",
+  "start_s": 60,
+  "end_s": 90,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "It's true. Things in Venezuela have been extremely grim. So fair warning here, this is not going to be one of those feel good Last Week Tonight stories like slippers or everything looks okay at the pudding factory or a genocide, but it's only happening to balloon animals. Animals. And and it has been hard to keep up with events in Venezuela due to the hurricane of shit that we've all been dealing with here. Although, if you follow conservative media at all, you may have seen it frequently painted as the inevitable dire consequences of a socialist government. For a case in point,",
+    "turns": [
+      {
+        "id": "solo-001-turn-1",
+        "start_s": 60,
+        "end_s": 90,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "solo-001-claim-1",
+        "start_s": 60,
+        "end_s": 90,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

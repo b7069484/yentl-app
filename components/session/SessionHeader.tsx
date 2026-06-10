@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Volume2 } from "lucide-react";
 import { AudioMeter } from "@/components/session/AudioMeter";
 import { Button } from "@/components/ui/button";
+import { recordRmsSample } from "@/lib/client/orchestrator";
 import { useSession } from "@/lib/client/session-store";
 import { paletteFor } from "@/lib/client/speaker-palette";
 
@@ -46,7 +47,7 @@ export function SessionHeader({
           <span className="font-mono text-xs tabular-nums text-foreground/80">
             {formatTime(elapsed)}
           </span>
-          <AudioMeter stream={isRecording ? audioStream : null} />
+          <AudioMeter stream={isRecording ? audioStream : null} onRmsSample={recordRmsSample} />
         </div>
         <div className="flex flex-col leading-tight">
           <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">

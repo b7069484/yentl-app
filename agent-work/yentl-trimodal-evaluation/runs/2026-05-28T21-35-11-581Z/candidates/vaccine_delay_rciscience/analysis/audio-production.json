@@ -1,0 +1,150 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 27,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Canada decided to delay the second dose of COVID-19 vaccines up to 4 months after the first dose.",
+      "utterance_start": 0,
+      "utterance_end": 9.2,
+      "topic": "Healthcare",
+      "topic_secondary": "Politics",
+      "id": "vaccine_delay_rciscience-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 92,
+        "annotations": [
+          "public health policy",
+          "2021 NACI guidance"
+        ],
+        "explanation": "In March 2021, Canada's National Advisory Committee on Immunization (NACI) recommended extending the interval between first and second COVID-19 vaccine doses to up to four months to maximize the number of people receiving a first dose amid supply constraints. Provinces adopted this guidance."
+      }
+    },
+    {
+      "claim_text": "NACI (National Advisory Committee on Immunization) is independent and not part of Health Canada",
+      "utterance_start": 31.449999,
+      "utterance_end": 48.025,
+      "topic": "Healthcare",
+      "topic_secondary": "Politics",
+      "id": "vaccine_delay_rciscience-audio_production-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 80,
+        "annotations": [
+          "technically accurate",
+          "needs nuance"
+        ],
+        "explanation": "NACI is an external advisory body composed of independent volunteer experts that provides recommendations to the Public Health Agency of Canada. It is not part of Health Canada (the regulator), though it is secretariat-supported by PHAC, so calling it fully 'independent' is broadly correct but glosses over its governmental affiliation."
+      }
+    },
+    {
+      "claim_text": "Health Canada's product monograph specifies a 21-day interval between doses for the Pfizer COVID-19 vaccine",
+      "utterance_start": 31.449999,
+      "utterance_end": 48.025,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-audio_production-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Health Canada's product monograph specifies a 28-day interval between doses for the Moderna COVID-19 vaccine",
+      "utterance_start": 31.449999,
+      "utterance_end": 48.025,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-audio_production-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "At the time NACI made its recommendation, there was substantial data on an 8-week interval between first and second doses of the mRNA COVID-19 vaccines.",
+      "utterance_start": 70.035,
+      "utterance_end": 82.5,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-audio_production-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The AstraZeneca COVID-19 vaccine clinical trials used a longer dosing interval between the first and second doses.",
+      "utterance_start": 70.035,
+      "utterance_end": 82.5,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-audio_production-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Canada's National Advisory Committee on Immunization (NACI) recommended that the interval between first and second COVID-19 vaccine doses could be extended up to 4 months without compromising the immune response.",
+      "utterance_start": 138.35,
+      "utterance_end": 154.695,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-audio_production-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Operation Remote Immunity involved teams flying into remote First Nations in Northern Ontario to deliver COVID-19 vaccines.",
+      "utterance_start": 309.2,
+      "utterance_end": 330.00497,
+      "topic": "Healthcare",
+      "topic_secondary": "Society",
+      "id": "vaccine_delay_rciscience-audio_production-claim-8",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "hedge_words",
+      "display": "Hedge Words",
+      "excerpt": "we don't know how long they last. We are getting more information on how sustained that immune response is",
+      "start_time": 96,
+      "end_time": 105,
+      "severity": "subtle",
+      "explanation": "The speaker uses hedging language to acknowledge uncertainty about the duration of immune response, which is appropriate in scientific communication but qualifies as hedge words."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "their recommendation was that you could go up to, and I'll just say that again, up to 4 months",
+      "start_time": 138,
+      "end_time": 146,
+      "severity": "clear",
+      "explanation": "The speaker explicitly repeats 'up to 4 months' for emphasis, signaling the audience to note that this is a maximum, not a requirement."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "It was an unbelievable operation",
+      "start_time": 315,
+      "end_time": 325,
+      "severity": "subtle",
+      "explanation": "The speaker uses emotionally charged superlatives ('unbelievable,' 'incredibly well') to frame the operation positively, which functions as persuasive language rather than neutral description."
+    },
+    {
+      "type": "rhetoric",
+      "name": "hedge_words",
+      "display": "Hedge Words",
+      "excerpt": "I do worry a little bit",
+      "start_time": 362,
+      "end_time": 367,
+      "severity": "subtle",
+      "explanation": "The speaker softens the claim about risks to vulnerable groups with hedging language ('a little bit'), reducing the precision of the concern being expressed."
+    },
+    {
+      "type": "bias",
+      "name": "optimism_bias",
+      "display": "Optimism Bias",
+      "excerpt": "we will slow the rate of the spread, increase the herd immune the likelihood to get to herd herd immunity",
+      "start_time": 367,
+      "end_time": 380,
+      "severity": "subtle",
+      "explanation": "The speaker presents confident positive outcomes (slowing spread, reaching herd immunity) from the delayed-dose strategy without acknowledging significant uncertainty about whether these benefits will materialize."
+    }
+  ],
+  "errors": []
+}

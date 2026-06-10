@@ -5,9 +5,11 @@ import type { ClaimCard, RhetoricMarker, Speaker } from "@/lib/types";
 // ─── Next.js navigation mocks ─────────────────────────────────────────────────
 
 const mockBack = vi.fn();
+let mockSearchParamsRaw = new URLSearchParams("");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ back: mockBack, push: vi.fn() }),
+  useSearchParams: () => mockSearchParamsRaw,
 }));
 
 // ─── Session store mock ───────────────────────────────────────────────────────
@@ -87,7 +89,104 @@ import { LearnMore } from "@/components/session/learn-more";
 
 beforeEach(() => {
   mockBack.mockReset();
+  mockSearchParamsRaw = new URLSearchParams("");
   mockStore();
+});
+
+// ─── Mobile tap targets ──────────────────────────────────────────────────────
+
+describe("LearnMore – mobile learn-route tap targets", () => {
+  it("keeps claim learn back and related-claim controls at the mobile tap-target minimum", () => {
+    const claim = makeClaim({ id: "c-1", topic: "health" });
+    const related = makeClaim({
+      id: "c-2",
+      topic: "health",
+      claim_text: "Related health claim",
+    });
+    mockStore({ claims: [claim, related] });
+
+    render(<LearnMore type="claim" id="c-1" />);
+
+    expect(screen.getByTestId("learn-back-btn").className).toContain("min-h-11");
+    for (const link of screen.getAllByTestId("claim-related-link")) {
+      expect(link.className).toContain("min-h-11");
+    }
+  });
+
+  it("preserves validation context on claim related links and source detail links", () => {
+    mockSearchParamsRaw = new URLSearchParams(
+      "demo=validation&sample=source_quote_anchors&title=Source%20fixture",
+    );
+    const claim = makeClaim({ id: "c-1", topic: "health" });
+    const related = makeClaim({
+      id: "c-2",
+      topic: "health",
+      claim_text: "Related health claim",
+    });
+    mockStore({ claims: [claim, related] });
+
+    render(<LearnMore type="claim" id="c-1" />);
+
+    expect(screen.getByTestId("source-detail-link")).toHaveAttribute(
+      "href",
+      "/session/detail/source/c-1__source__0?demo=validation&sample=source_quote_anchors&title=Source+fixture",
+    );
+    expect(screen.getByTestId("claim-related-link")).toHaveAttribute(
+      "href",
+      "/session/detail/claim/c-2?demo=validation&sample=source_quote_anchors&title=Source+fixture",
+    );
+  });
+
+  it("keeps marker learn back, reading, occurrence, and related-pattern controls at the mobile tap-target minimum", () => {
+    const matchingMarker = makeMarker({
+      id: "m-1",
+      name: "slippery_slope",
+      excerpt: "matching excerpt",
+    });
+    mockStore({ markers: [matchingMarker] });
+
+    render(<LearnMore type="marker" id="slippery_slope" />);
+
+    expect(screen.getByTestId("learn-back-btn").className).toContain("min-h-11");
+    for (const link of screen.getAllByTestId("learn-reading-link")) {
+      expect(link.className).toContain("min-h-11");
+    }
+    for (const link of screen.getAllByTestId("marker-occurrence-link")) {
+      expect(link.className).toContain("min-h-11");
+    }
+    for (const link of screen.getAllByTestId("marker-related-link")) {
+      expect(link.className).toContain("min-h-11");
+    }
+  });
+
+  it("preserves validation context on marker occurrence and related-pattern links", () => {
+    mockSearchParamsRaw = new URLSearchParams(
+      "demo=validation&sample=media_playback_sync&title=Fixture%20clip",
+    );
+    const matchingMarker = makeMarker({
+      id: "m-1",
+      name: "slippery_slope",
+      excerpt: "matching excerpt",
+    });
+    mockStore({ markers: [matchingMarker] });
+
+    render(<LearnMore type="marker" id="slippery_slope" />);
+
+    expect(screen.getByTestId("marker-occurrence-link")).toHaveAttribute(
+      "href",
+      "/session/detail/marker/m-1?demo=validation&sample=media_playback_sync&title=Fixture+clip",
+    );
+    expect(screen.getAllByTestId("marker-related-link")[0]).toHaveAttribute(
+      "href",
+      expect.stringContaining("?demo=validation&sample=media_playback_sync&title=Fixture+clip"),
+    );
+  });
+
+  it("keeps the learn-route missing-item return control at the mobile tap-target minimum", () => {
+    mockStore({ claims: [] });
+    render(<LearnMore type="claim" id="nonexistent-id" />);
+    expect(screen.getByTestId("learn-notfound-back-btn").className).toContain("min-h-11");
+  });
 });
 
 // ─── Marker variant — valid id ────────────────────────────────────────────────
@@ -118,10 +217,29 @@ describe("LearnMore – marker variant, valid canonical_id", () => {
     expect(screen.getByText("Further reading")).toBeTruthy();
   });
 
-  it("chapter placeholder is always visible", () => {
+  it("renders the mapped book chapter as a real field-guide card", () => {
     mockStore({ markers: [] });
     render(<LearnMore type="marker" id="slippery_slope" />);
-    expect(screen.getByText("Book chapter")).toBeTruthy();
+    expect(screen.getByTestId("marker-learning-path-card")).toBeTruthy();
+    expect(screen.getByText("Book field guide")).toBeTruthy();
+    expect(screen.getByText("Chapter: Deficiency in Evidence Fallacies")).toBeTruthy();
+    expect(screen.queryByText(/Chapter mapping is not available/)).toBeNull();
+  });
+
+  it("renders a practice field guide for extra taxonomy entries without book chapters", () => {
+    mockStore({ markers: [] });
+    render(<LearnMore type="marker" id="halo_effect" />);
+    expect(screen.getByText("Practice field guide")).toBeTruthy();
+    expect(screen.getByText("Cognitive bias · authority")).toBeTruthy();
+  });
+
+  it("renders taxonomy examples and practice questions", () => {
+    mockStore({ markers: [] });
+    render(<LearnMore type="marker" id="slippery_slope" />);
+    expect(screen.getByText("Example")).toBeTruthy();
+    expect(screen.getByText(/increased cultural sensitivity toward Jewish people/i)).toBeTruthy();
+    expect(screen.getByText("Practice check")).toBeTruthy();
+    expect(screen.getByText(/Which link in the reasoning chain/i)).toBeTruthy();
   });
 
   it("Wikipedia link is auto-derived and rendered", () => {
@@ -140,6 +258,8 @@ describe("LearnMore – marker variant, valid canonical_id", () => {
     expect(screen.getByText(/Occurrences in this session · 1/)).toBeTruthy();
     // matching excerpt is visible
     expect(screen.getByText(/matching excerpt/)).toBeTruthy();
+    expect(screen.getByText("Assumes a chain of events without justification.")).toBeTruthy();
+    expect(screen.getByText("clear")).toBeTruthy();
     // other excerpt not visible in occurrences
     const otherEl = screen.queryByText(/other excerpt/);
     expect(otherEl).toBeNull();
@@ -204,7 +324,31 @@ describe("LearnMore – claim variant, valid id", () => {
     const claim = makeClaim({ id: "c-1" });
     mockStore({ claims: [claim] });
     render(<LearnMore type="claim" id="c-1" />);
-    expect(screen.getByText("Vaccine Safety Study")).toBeTruthy();
+    expect(screen.getAllByText("Vaccine Safety Study").length).toBeGreaterThan(0);
+  });
+
+  it("renders source dossier summary for attached sources", () => {
+    const claim = makeClaim({
+      id: "c-1",
+      claim_text: "Scientists agree vaccine safety is supported.",
+    });
+    mockStore({ claims: [claim] });
+    render(<LearnMore type="claim" id="c-1" />);
+
+    expect(screen.getByTestId("source-dossier")).toBeTruthy();
+    expect(screen.getByTestId("source-comparison")).toBeTruthy();
+    expect(screen.getByTestId("source-comparison-supports").textContent).toContain("Vaccine Safety Study");
+    expect(screen.getByTestId("source-comparison-supports").textContent).toContain("Strongest");
+    expect(screen.getByTestId("source-comparison-supports").textContent).toContain(
+      "Evidence: high reputation + excerpt + no image",
+    );
+    expect(screen.getByTestId("source-comparison-supports").textContent).toContain(
+      "Claim link: weak overlap only: safety",
+    );
+    expect(screen.getByTestId("source-excerpt-match").textContent).toBe("safety");
+    expect(screen.getByText("1 support / 0 contradict / 0 mixed")).toBeTruthy();
+    expect(screen.getByText("1 high / 0 mid / 0 low")).toBeTruthy();
+    expect(screen.getByText("0 linked / 1 not direct")).toBeTruthy();
   });
 
   it("shows 'No sources attached' when claim has no sources", () => {

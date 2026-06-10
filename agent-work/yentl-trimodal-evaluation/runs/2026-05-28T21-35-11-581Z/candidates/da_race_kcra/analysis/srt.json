@@ -1,0 +1,173 @@
+{
+  "mode": "srt",
+  "utterancesAvailable": 34,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "The race for District Attorney (Sacramento County, per KCRA 3 coverage) is being contested for the first time in 20 years.",
+      "utterance_start": 17.56,
+      "utterance_end": 20.96,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-srt-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "local election claim",
+          "specific timeframe",
+          "insufficient knowledge"
+        ],
+        "explanation": "I cannot confirm from memory the exact history of contested Sacramento County DA races. Anne Marie Schubert was elected DA in 2014 and reportedly ran unopposed in 2018, with predecessor Jan Scully holding the seat for years prior, so a '20 years' framing is plausible but I cannot verify the precise interval without more reliable backing."
+      },
+      "confirmed": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 80,
+        "annotations": [
+          "Refers to 2014 Sacramento County DA race",
+          "Prior DA Jan Scully held office ~20 years without serious challenge",
+          "Contemporary local coverage corroborates 'first time in 20 years' framing"
+        ],
+        "explanation": "The KCRA segment refers to the 2014 Sacramento County DA race to succeed Jan Scully, who had held the office since 1994. Multiple contemporaneous local outlets (FOX40, CapRadio) framed it the same way — the first open/contested race in roughly 20 years, with no incumbent. Ballotpedia confirms Schubert was first elected in 2014 and that Scully had served since the 1990s. The phrasing 'contested for the first time in 20 years' is slightly loose (Scully did face nominal opponents in some prior cycles), but the substantive point — no incumbent and a genuinely competitive race for the first time in roughly two decades — is well supported.",
+        "sources": [
+          {
+            "url": "https://fox40.com/news/political-connection/sacramento-countys-heated-race-for-district-attorney/",
+            "domain": "fox40.com",
+            "title": "Sacramento County’s Heated Race for District Attorney | FOX40",
+            "stance": "supports",
+            "excerpt": "FOX40 reported that 'for the first time in 20' years there is no incumbent in the Sacramento County DA race, describing it as a heated contest between Schubert and Krell in 2014.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.abc10.com/article/news/politics/elections/sacramento-county-district-attorney-race/103-d6073055-5e43-4a47-8066-dec63a684a71",
+            "domain": "abc10.com",
+            "title": "Sacramento County District Attorney race: Election results for 2022 primary",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.abc10.com/article/news/local/sacramento/sacramento-county-district-attorney-historic-race/103-ededaa63-11de-458f-be26-0ffc0bdbd376",
+            "domain": "abc10.com",
+            "title": "Several candidates announce intent to run for Sacramento County District Attorney, in what could be a historic race",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://ballotpedia.org/Sacramento_County_District_Attorney_election,_2018",
+            "domain": "ballotpedia.org",
+            "title": "Sacramento County District Attorney election, 2018 - Ballotpedia",
+            "stance": "mixed",
+            "excerpt": "Ballotpedia notes Schubert was first elected in 2014, consistent with the office being open for the first time in about 20 years after Jan Scully's long tenure.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://ballotpedia.org/Thien_Ho",
+            "domain": "ballotpedia.org",
+            "title": "Thien Ho - Ballotpedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.capradio.org/news/project/2014/sacramento-county-da/",
+            "domain": "capradio.org",
+            "title": "Race For Sacramento County District Attorney - capradio.org",
+            "stance": "supports",
+            "excerpt": "CapRadio's 2014 candidate interviews note 'The job hasn’t been open for twenty years' and lists Krell, Leras and Schubert as candidates.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://fox40.com/news/local-news/sacramento-county-district-attorney-thien-ho-alana-mathews-primary-election/",
+            "domain": "fox40.com",
+            "title": "Thien Ho takes early lead against Alana Mathews in Sacramento County District Attorney race",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.capradio.org/articles/2026/05/07/what-to-know-about-the-placer-county-superior-court-judge-race/",
+            "domain": "capradio.org",
+            "title": "What to know about the Placer County Superior Court judge race",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          }
+        ]
+      }
+    },
+    {
+      "claim_text": "Monsanto (candidate in the Sacramento County DA race per KCRA 3 coverage) has been in the area for 58 years.",
+      "utterance_start": 184.36,
+      "utterance_end": 206.61,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "da_race_kcra-srt-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 50,
+        "annotations": [
+          "local claim",
+          "biographical detail",
+          "insufficient knowledge"
+        ],
+        "explanation": "This is a specific biographical claim about a local candidate (Monsanto) in a Sacramento County DA race. I do not have reliable information to confirm or refute the 58-year residency claim from my training data."
+      }
+    },
+    {
+      "claim_text": "Todd Leras worked as a district attorney (candidate in the Sacramento County DA race per KCRA 3 coverage)",
+      "utterance_start": 320.83,
+      "utterance_end": 326.07,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-srt-claim-3",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "loaded_question",
+      "display": "Loaded Question",
+      "excerpt": "HOW HAVE YOU REACTED TO THE FACT THAT YOU ARE ALMOST RUNNING AGAINST THE BROWN ADMINISTRATION?",
+      "start_time": 94,
+      "end_time": 99,
+      "severity": "clear",
+      "explanation": "The interviewer's question embeds a contested premise—that the candidate is 'running against the Brown administration'—forcing the candidate to accept the framing in order to respond. This is a classic loaded question with a built-in assumption."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_authority",
+      "display": "Appeal to Authority",
+      "excerpt": "I HAVE THE SUPPORT OF NOT JUST LOCAL BUT STATEWIDE LAW-ENFORCEMENT BECAUSE OF MY RECORD FOR 24 YEARS",
+      "start_time": 118,
+      "end_time": 130,
+      "severity": "subtle",
+      "explanation": "The candidate cites endorsements from law enforcement authorities as evidence of her qualification, substituting authoritative backing for substantive argument about competence."
+    },
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "I HAVE BEEN AN ADVOCATE FOR PUBLIC SAFETY MY ENTIRE LIFE",
+      "start_time": 130,
+      "end_time": 135,
+      "severity": "subtle",
+      "explanation": "Vague, virtuous-sounding language ('advocate for public safety my entire life') is used without specifics to evoke positive associations rather than convey concrete qualifications."
+    },
+    {
+      "type": "bias",
+      "name": "dunning_kruger_effect",
+      "display": "Dunning-Kruger/Overconfidence Effect",
+      "excerpt": "I HAVE NO DOUBT THAT THE DECISION IS BASED ON MERITS AND I WIN HANDS DOWN",
+      "start_time": 106,
+      "end_time": 118,
+      "severity": "subtle",
+      "explanation": "The absolute confidence claim ('no doubt,' 'hands down') reflects overconfident self-assessment without supporting evidence, characteristic of overconfidence framing."
+    }
+  ],
+  "errors": []
+}

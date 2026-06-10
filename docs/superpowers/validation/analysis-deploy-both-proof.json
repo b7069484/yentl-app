@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:57:29.081Z",
+  "app_origin": "https://yentl.it",
+  "verify_mode": "both",
+  "deploy_proof": true,
+  "replay_ids": [
+    "solo_005"
+  ],
+  "max_utterances": 6,
+  "checks": [
+    {
+      "name": "corpus-replay-solo_005",
+      "ok": true,
+      "elapsed_ms": 44319,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/solo_005.replay.json",
+      "claims": 2,
+      "markers": 0,
+      "utterances_replayed": 6,
+      "verified_claims": 2,
+      "rhetoric_errors": 0,
+      "verify_mode": "both"
+    }
+  ],
+  "failures": []
+}

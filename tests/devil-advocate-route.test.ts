@@ -133,4 +133,43 @@ describe("POST /api/devil-advocate route", () => {
     const res = await POST(req as never);
     expect(res.status).toBe(400);
   });
+
+  it("returns 400 for invalid JSON without calling Grok", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const { POST } = await import("@/app/api/devil-advocate/route");
+    const req = new Request("http://localhost/api/devil-advocate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{bad json",
+    });
+
+    const res = await POST(req as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.error).toBe("invalid JSON");
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
+  it("returns 413 for oversized declared JSON without calling Grok", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const { POST } = await import("@/app/api/devil-advocate/route");
+    const req = new Request("http://localhost/api/devil-advocate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": `${65 * 1024}`,
+      },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(413);
+    expect(json.error).toBe("request body too large");
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
 });

@@ -103,7 +103,7 @@ export default function ProjectValidationPage() {
               {corpusFunctionalSamples.map((sample) => (
                 <article
                   key={sample.id}
-                  className="rounded-lg border border-line bg-cream p-3"
+                  className="min-w-0 rounded-lg border border-line bg-cream p-3"
                 >
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-line bg-paper px-2 py-0.5 font-mono text-[10.5px] text-ink-3">
@@ -144,11 +144,11 @@ export default function ProjectValidationPage() {
             </div>
           </section>
 
-          <div className="grid gap-3">
+          <div className="grid min-w-0 gap-3">
             {validationFixtures.map((fixture) => (
               <article
                 key={fixture.id}
-                className="rounded-lg border border-line bg-paper p-4 shadow-sm"
+                className="min-w-0 rounded-lg border border-line bg-paper p-4 shadow-sm"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">

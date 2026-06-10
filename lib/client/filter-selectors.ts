@@ -1,5 +1,6 @@
 import type {
   ClaimCard,
+  ClaimStatus,
   RhetoricMarker,
   PrimaryLabel,
   MarkerType,
@@ -10,6 +11,7 @@ import type {
 
 export type ClaimFilters = {
   verdict?: PrimaryLabel[];
+  status?: ClaimStatus[];
   speaker?: number[];
   topic?: string;
 };
@@ -41,6 +43,11 @@ const VERDICT_MAP: Record<string, PrimaryLabel> = {
 
 const VALID_MARKER_TYPES = new Set<string>(["fallacy", "bias", "rhetoric"]);
 const VALID_SEVERITIES = new Set<string>(["subtle", "clear", "blatant"]);
+const VALID_CLAIM_STATUSES = new Set<string>([
+  "checking",
+  "provisional",
+  "confirmed",
+]);
 
 export function parseClaimFilters(params: URLSearchParams): ClaimFilters {
   const filters: ClaimFilters = {};
@@ -61,6 +68,15 @@ export function parseClaimFilters(params: URLSearchParams): ClaimFilters {
       .map((s) => parseInt(s.trim(), 10))
       .filter((n) => !isNaN(n));
     if (speakers.length > 0) filters.speaker = speakers;
+  }
+
+  const statusRaw = params.get("status");
+  if (statusRaw) {
+    const statuses = statusRaw
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter((s): s is ClaimStatus => VALID_CLAIM_STATUSES.has(s));
+    if (statuses.length > 0) filters.status = statuses;
   }
 
   const topic = params.get("topic");
@@ -129,8 +145,13 @@ export function applyClaimFilters(
   f: ClaimFilters,
 ): ClaimCard[] {
   return claims.filter((c) => {
-    // Skip claims still being checked
-    if (c.status === "checking") return false;
+    // Keep the default list stable, but let an explicit status filter inspect
+    // in-flight claims instead of making them unreachable.
+    if (f.status && f.status.length > 0) {
+      if (!f.status.includes(c.status)) return false;
+    } else if (c.status === "checking") {
+      return false;
+    }
 
     // verdict[]: OR within array
     if (f.verdict && f.verdict.length > 0) {
@@ -237,15 +258,22 @@ const VERDICT_DISPLAY: Record<PrimaryLabel, string> = {
   OPINION: "OPINION",
 };
 
+const STATUS_DISPLAY: Record<ClaimStatus, string> = {
+  checking: "Still checking",
+  provisional: "Provisional",
+  confirmed: "Confirmed",
+};
+
 export function describeClaimFilters(
   f: ClaimFilters,
   speakerLabels: Record<number, string>,
 ): string {
   const hasVerdict = f.verdict && f.verdict.length > 0;
+  const hasStatus = f.status && f.status.length > 0;
   const hasSpeaker = f.speaker && f.speaker.length > 0;
   const hasTopic = !!f.topic;
 
-  if (!hasVerdict && !hasSpeaker && !hasTopic) return "All claims";
+  if (!hasVerdict && !hasStatus && !hasSpeaker && !hasTopic) return "All claims";
 
   const speakerName =
     hasSpeaker && f.speaker!.length === 1
@@ -259,30 +287,40 @@ export function describeClaimFilters(
       ? "Filtered"
       : null;
 
+  const statusLabel =
+    hasStatus && f.status!.length === 1
+      ? STATUS_DISPLAY[f.status![0]]
+      : hasStatus
+      ? "Filtered"
+      : null;
+
   const topicLabel = hasTopic
     ? f.topic!.charAt(0).toUpperCase() + f.topic!.slice(1)
     : null;
 
+  const statusPrefix = statusLabel ? `${statusLabel} ` : "";
+
   if (verdictLabel && speakerName && topicLabel) {
-    return `${verdictLabel} claims by ${speakerName} about ${topicLabel}`;
+    return `${statusPrefix}${verdictLabel} claims by ${speakerName} about ${topicLabel}`;
   }
   if (verdictLabel && speakerName) {
-    return `${verdictLabel} claims by ${speakerName}`;
+    return `${statusPrefix}${verdictLabel} claims by ${speakerName}`;
   }
   if (verdictLabel && topicLabel) {
-    return `${verdictLabel} claims about ${topicLabel}`;
+    return `${statusPrefix}${verdictLabel} claims about ${topicLabel}`;
   }
   if (speakerName && topicLabel) {
-    return `All claims by ${speakerName} about ${topicLabel}`;
+    return `${statusLabel ?? "All"} claims by ${speakerName} about ${topicLabel}`;
   }
   if (verdictLabel) {
     return hasVerdict && f.verdict!.length === 1
-      ? `All ${verdictLabel} claims`
+      ? `${statusLabel ?? "All"} ${verdictLabel} claims`
       : `Claims · ${f.verdict!.map((v) => VERDICT_DISPLAY[v]).join(", ")}`;
   }
-  if (speakerName) return `All claims by ${speakerName}`;
-  if (hasSpeaker) return `Filtered claims`;
-  if (topicLabel) return `All claims about ${topicLabel}`;
+  if (speakerName) return `${statusLabel ?? "All"} claims by ${speakerName}`;
+  if (hasSpeaker) return `${statusLabel ?? "Filtered"} claims`;
+  if (topicLabel) return `${statusLabel ?? "All"} claims about ${topicLabel}`;
+  if (statusLabel) return `${statusLabel} claims`;
 
   return "Filtered claims";
 }

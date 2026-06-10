@@ -1,0 +1,217 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:50:33.457Z",
+  "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "headless": false,
+  "app_origin": "http://127.0.0.1:3000",
+  "target_url": "http://127.0.0.1:3000/validation/browser-capture.html",
+  "external_proof": false,
+  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-FXe5dj/extension",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-FXe5dj/profile",
+  "extension_service_workers": [
+    "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+  ],
+  "extension_targets_before_shortcut": {
+    "all": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "yentlServiceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "pages": []
+  },
+  "extension_targets_after_shortcut": {
+    "all": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "yentlServiceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
+        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+      }
+    ],
+    "pages": []
+  },
+  "screenshot": "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png",
+  "screenshot_error": null,
+  "media_playback_before_shortcut": {},
+  "media_playback_after_capture": null,
+  "proof": {
+    "real_user_profile_used": false,
+    "extension_loaded": true,
+    "manual_capture_mode": false,
+    "popup_automation": false,
+    "invocation_path": "keyboard-shortcut",
+    "popup_click_proven": false,
+    "manual_invocation_proven": false,
+    "shortcut_attempted": true,
+    "shortcut_strategy": "os",
+    "shortcut_command_proven": false,
+    "debug_service_worker_fallback_used": true,
+    "panel_injection_proven": true,
+    "tab_capture_stream_id_available": false,
+    "page_text_proven": false,
+    "live_transcription_proven": false
+  },
+  "latency_ms": {
+    "total_ms": 30339,
+    "media_ready_ms": 1169,
+    "capture_invocation_ms": 1172,
+    "panel_injection_ms": 29167,
+    "capture_running_observed": false,
+    "capture_start_event_ms": null,
+    "first_transcript_wait_ms": 14038,
+    "first_transcript_event_ms": null,
+    "manual_capture_wait_ms": null
+  },
+  "manual_capture": null,
+  "shortcut_error": null,
+  "shortcut_panel": null,
+  "extension_diagnostics_after_shortcut": {
+    "ok": true,
+    "captureState": null,
+    "storageError": null,
+    "badgeText": "",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      }
+    ]
+  },
+  "extension_diagnostics_after_fallback": {
+    "ok": true,
+    "captureState": null,
+    "storageError": null,
+    "badgeText": "",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      }
+    ]
+  },
+  "transcript_probe": {
+    "ok": false,
+    "waited_ms": 14038,
+    "liveTranscriptionProven": false,
+    "pageTextProven": false,
+    "page": {
+      "ok": true,
+      "panel": {
+        "panelInjected": true,
+        "bodyMarginRight": "430px",
+        "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+        "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:13\nLive capture started\nYENTL'S READ\nWaiting\n\nWaiting for the extension\n\nWaiting for the Yentl extension to attach to this page.\n\nPULSE\nWaiting\nWaiting for same-page extension capture.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\n\nWaiting for the first finalized transcript line.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+        "iframeError": null,
+        "statusText": "No browser tab capture is active.",
+        "hostWidth": "430px"
+      },
+      "events": []
+    }
+  },
+  "page_capture_state": {
+    "ok": true,
+    "panel": {
+      "panelInjected": true,
+      "bodyMarginRight": "430px",
+      "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+      "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:14\nLive capture started\nYENTL'S READ\nWaiting\n\nWaiting for the extension\n\nWaiting for the Yentl extension to attach to this page.\n\nPULSE\nWaiting\nWaiting for same-page extension capture.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\n\nWaiting for the first finalized transcript line.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+      "iframeError": null,
+      "statusText": "No browser tab capture is active.",
+      "hostWidth": "430px"
+    },
+    "events": []
+  },
+  "debug_panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+    "statusText": "Connected",
+    "hostWidth": "430px"
+  },
+  "service_worker_debug": {
+    "ok": true,
+    "matchedExactValidationUrl": true,
+    "tabs": [
+      {
+        "id": 1027334906,
+        "active": true,
+        "title": "Yentl browser capture validation",
+        "url": "http://127.0.0.1:3000/validation/browser-capture.html"
+      }
+    ],
+    "tabId": 1027334906,
+    "title": "Yentl browser capture validation",
+    "url": "http://127.0.0.1:3000/validation/browser-capture.html",
+    "panelMessageSent": true,
+    "tabCaptureStreamIdAvailable": false,
+    "tabCaptureError": "Extension has not been invoked for the current page (see activeTab permission). Chrome pages cannot be captured."
+  },
+  "panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+    "statusText": "Connected",
+    "hostWidth": "430px"
+  },
+  "failure_reason": null,
+  "notes": [
+    "This proof uses a visible temporary Chrome profile and does not modify the user's normal Chrome profile."
+  ],
+  "chrome_log_tail": [
+    "stderr: DevTools listening on ws://127.0.0.1:54511/devtools/browser/07cf6682-c111-4b36-8b8a-10a8f1393841",
+    "stderr: [81885:17811737:0610/025008.168088:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [81885:17811737:0610/025008.168191:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [81885:17811737:0610/025008.168299:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR"
+  ]
+}

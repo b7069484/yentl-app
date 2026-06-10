@@ -32,9 +32,26 @@ const SAMPLE: Session = {
           title: "BLS Report",
           reputation_tier: "high",
           stance: "supports",
-          excerpt: "BLS confirms the figure.",
+          excerpt: "BLS says unemployment is near a 30-year low.",
         },
       ],
+      stance: "reported",
+      ownership: {
+        owner_speaker_id: null,
+        attribution_status: "uncertain",
+        attribution_reasons: ["quoted_or_reported_speech"],
+        stance: "reported",
+        confidence: 0.22,
+        source_turn_ids: ["turn-1"],
+        source_segment_ids: ["seg-1"],
+      },
+      document_anchor: {
+        kind: "paragraph",
+        block_index: 1,
+        paragraph_index: 1,
+        line_start: 4,
+        line_end: 5,
+      },
     },
   ],
   markers: [
@@ -49,6 +66,11 @@ const SAMPLE: Session = {
       end_time: 1.3,
       severity: "subtle",
       explanation: "Universal phrasing without support.",
+      attribution_status: "unsafe_overlap",
+      attribution_reasons: ["parallel_claim"],
+      overlap_class: "parallel_claim",
+      source_turn_ids: ["turn-a", "turn-b"],
+      source_segment_ids: ["seg-a", "seg-b"],
     },
   ],
   devil_advocate: {
@@ -87,6 +109,38 @@ describe("toReport", () => {
     expect(html).toContain("Absolutism");
     expect(html).toContain("Devil's Advocate");
     expect(html).toContain("chosen timeframe");
+  });
+
+  it("includes source evidence score, alignment, and highlighted claim links", () => {
+    const html = toReport(SAMPLE);
+    expect(html).toContain("Alignment 1 linked / 0 not direct");
+    expect(html).toContain("reuters.com · high · supports · score 38");
+    expect(html).toContain("Evidence: high reputation + excerpt + no image");
+    expect(html).toContain("Claim link: unemployment, 30, year");
+    expect(html).toContain('<mark class="source-match">unemployment</mark>');
+    expect(html).toContain('<mark class="source-match">year</mark>');
+  });
+
+  it("includes claim ownership context in the shareable report", () => {
+    const html = toReport(SAMPLE);
+    expect(html).toContain("Ownership context");
+    expect(html).toContain("stance reported");
+    expect(html).toContain("attribution uncertain");
+    expect(html).toContain("owner unresolved");
+    expect(html).toContain("confidence 22%");
+    expect(html).toContain("quoted or reported speech");
+    expect(html).toContain("source Paragraph 2 · lines 4-5");
+  });
+
+  it("includes marker attribution context in the shareable report", () => {
+    const html = toReport(SAMPLE);
+    expect(html).toContain("Marker attribution context");
+    expect(html).toContain("attribution unsafe overlap");
+    expect(html).toContain("owner unresolved");
+    expect(html).toContain("overlap parallel claim");
+    expect(html).toContain("reasons parallel claim");
+    expect(html).toContain("turns turn-a, turn-b");
+    expect(html).toContain("segments seg-a, seg-b");
   });
 
   it("escapes HTML in user-supplied text", () => {

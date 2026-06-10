@@ -13,6 +13,7 @@ import {
   MonitorPlay,
   Play,
   SearchCheck,
+  Smartphone,
   Upload,
 } from "lucide-react";
 
@@ -87,6 +88,16 @@ const exampleRows: Array<{
     body: "Room audio, talks, phone-on-speaker review",
     Icon: Mic,
   },
+  {
+    title: "Room display",
+    body: "Put a live or saved session on a TV-sized read-only screen.",
+    Icon: MonitorPlay,
+  },
+  {
+    title: "Mobile app",
+    body: "Share links or text into Yentl from iOS, Android, or mobile web.",
+    Icon: Smartphone,
+  },
 ];
 
 const featureRows = [
@@ -117,19 +128,19 @@ export default function Home() {
     <main id="main-content" className="min-h-screen bg-cream text-ink">
       <header className="sticky top-0 z-20 border-b border-line bg-cream/95 backdrop-blur">
         <nav className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-4 px-5">
-          <Link href="/" className="inline-flex items-center gap-3 text-ink" aria-label="Yentl home">
+          <Link href="/" className="inline-flex min-h-11 items-center gap-3 rounded-lg text-ink" aria-label="Yentl home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/yentl-mark.svg" alt="" className="h-8 w-8" />
             <span className="font-serif text-2xl font-medium leading-none">
               yentl<span aria-hidden className="text-amber">.</span>
             </span>
           </Link>
-          <div className="hidden items-center gap-5 text-sm font-medium text-ink-3 md:flex">
-            <a href="#examples" className="hover:text-ink">Examples</a>
-            <a href="#ways-in" className="hover:text-ink">Ways in</a>
-            <a href="#method" className="hover:text-ink">Method</a>
-            <a href="#trust" className="hover:text-ink">Trust</a>
-            <a href="#faq" className="hover:text-ink">FAQ</a>
+          <div className="hidden items-center gap-2 text-sm font-medium text-ink-3 md:flex">
+            <a href="#examples" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Examples</a>
+            <a href="#ways-in" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Ways in</a>
+            <a href="#method" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Method</a>
+            <a href="#trust" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Trust</a>
+            <a href="#faq" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">FAQ</a>
           </div>
           <Link
             href="/session"
@@ -174,9 +185,21 @@ export default function Home() {
             >
               Read method <FileText className="h-4 w-4" aria-hidden />
             </Link>
+            <Link
+              href="/tv"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-line bg-paper px-5 text-sm font-semibold text-ink-2 transition-colors hover:bg-cream-2"
+            >
+              Room mode <MonitorPlay className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              href="/mobile"
+              className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-line bg-paper px-5 text-sm font-semibold text-ink-2 transition-colors hover:bg-cream-2"
+            >
+              Mobile app <Smartphone className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
-          <p className="mt-4 text-sm text-ink-4">
-            Guest-first in v1. Browser-local saved sessions. AI analysis stays reviewable.
+          <p className="mt-4 text-sm text-ink-3">
+            Guest-first in v1. Local-first saves with account sync when configured. AI analysis stays reviewable.
           </p>
         </div>
 
@@ -184,12 +207,12 @@ export default function Home() {
           <div className="rounded-lg border border-line-soft bg-cream p-4">
             <div className="flex items-start justify-between gap-3 border-b border-line pb-4">
               <div>
-                <p className="text-xs font-semibold uppercase text-ink-4">Yentl&apos;s Read</p>
+                <p className="text-xs font-semibold uppercase text-ink-3">Yentl&apos;s Read</p>
                 <h2 className="mt-1 font-serif text-2xl font-medium text-ink">
                   Mixed claims, strong rhetoric, source health still checking.
                 </h2>
               </div>
-              <span className="rounded-lg bg-amber-soft px-2 py-1 text-xs font-semibold text-amber-2">
+              <span className="rounded-lg border border-amber-2/30 bg-amber-soft px-2 py-1 text-xs font-semibold text-ink-2">
                 Live
               </span>
             </div>
@@ -200,7 +223,7 @@ export default function Home() {
                 ["Markers", "9", "Loaded language leads"],
               ].map(([label, value, note]) => (
                 <div key={label} className="rounded-lg border border-line bg-paper p-3">
-                  <p className="text-xs font-semibold uppercase text-ink-4">{label}</p>
+                  <p className="text-xs font-semibold uppercase text-ink-3">{label}</p>
                   <p className="mt-2 font-serif text-3xl font-medium text-ink">{value}</p>
                   <p className="mt-1 text-xs text-ink-3">{note}</p>
                 </div>
@@ -209,7 +232,7 @@ export default function Home() {
             <div className="space-y-3">
               {proofRows.map((row, index) => (
                 <div key={row} className="flex gap-3 rounded-lg border border-line bg-paper p-3">
-                  <span className="mt-0.5 font-mono text-xs text-ink-4">0{index + 1}</span>
+                  <span className="mt-0.5 font-mono text-xs text-ink-3">0{index + 1}</span>
                   <p className="text-sm leading-6 text-ink-3">{row}</p>
                 </div>
               ))}
@@ -231,7 +254,7 @@ export default function Home() {
               account or starting a session.
             </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {exampleRows.map(({ title, body, Icon: ExampleIcon }) => {
               return (
                 <article key={title} className="rounded-lg border border-line bg-cream p-4">
@@ -285,7 +308,7 @@ export default function Home() {
               "Surface bias, fallacy, and rhetoric markers with quote-level context.",
             ].map((step, index) => (
               <li key={step} className="flex gap-4 rounded-lg border border-line bg-cream p-4">
-                <span className="font-mono text-sm text-ink-4">{String(index + 1).padStart(2, "0")}</span>
+                <span className="font-mono text-sm text-ink-3">{String(index + 1).padStart(2, "0")}</span>
                 <span className="text-sm leading-6 text-ink-3">{step}</span>
               </li>
             ))}
@@ -327,7 +350,7 @@ export default function Home() {
           <div className="grid gap-3 sm:grid-cols-2">
             {[
               ["/methodology", "Methodology", "Decision tree, scope rules, prompt versioning"],
-              ["/privacy", "Privacy", "Data handling, processors, local saves"],
+              ["/privacy", "Privacy", "Data handling, processors, saved sessions"],
               ["/pricing", "Pricing", "Current public preview and partner options"],
               ["/accessibility", "Accessibility", "WCAG posture and accessibility contact"],
               ["/faq", "FAQ", "Expanded answers for launch questions"],
@@ -395,11 +418,11 @@ export default function Home() {
       <footer className="border-t border-line bg-cream">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-8 text-sm text-ink-3 sm:flex-row sm:items-center sm:justify-between">
           <p>Yentl is AI-assisted. Review sources before relying on a verdict.</p>
-          <div className="flex flex-wrap gap-4">
-            <Link href="/terms" className="hover:text-ink">Terms</Link>
-            <Link href="/privacy" className="hover:text-ink">Privacy</Link>
-            <Link href="/subprocessors" className="hover:text-ink">Subprocessors</Link>
-            <Link href="/contact" className="hover:text-ink">Contact</Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/terms" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Terms</Link>
+            <Link href="/privacy" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Privacy</Link>
+            <Link href="/subprocessors" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Subprocessors</Link>
+            <Link href="/contact" className="inline-flex min-h-11 items-center rounded-lg px-2 hover:text-ink">Contact</Link>
           </div>
         </div>
       </footer>

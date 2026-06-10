@@ -4,7 +4,7 @@ import type {
   ListenV1Response,
   ListenV1AcceptedResponse,
 } from "@deepgram/sdk";
-import type { TranscriptSegment, Speaker } from "@/lib/types";
+import type { ASRWord, SourceAudioKind, Speaker, SpeakerId, TranscriptSegment } from "@/lib/types";
 
 /**
  * Shared Deepgram transcription options for both URL and file paths.
@@ -18,8 +18,8 @@ import type { TranscriptSegment, Speaker } from "@/lib/types";
  *   utterances:true — groups words into utterance objects with per-utterance
  *                     start/end. Required for our TranscriptSegment mapping;
  *                     without it we only get channel-level transcripts.
- *                     (Without speaker tags, all utterances will carry
- *                     speaker_id 0 in the parser below — by design.)
+ *                     (Without speaker tags, utterances carry speaker_id null
+ *                     plus attribution_status "not_available" — by design.)
  *   numerals:true  — converts spoken numbers ("forty-seven") → digits ("47"),
  *                    which reduces mis-transcription of numerical claims.
  *   smart_format:true — applies Deepgram's post-processing rules (dates,
@@ -77,7 +77,7 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
       ...TRANSCRIBE_OPTIONS,
     });
 
-  return parseDeepgramResponse(response, url);
+  return parseDeepgramResponse(response, url, { source_audio_kind: "audio_file" });
 }
 
 /**
@@ -87,6 +87,7 @@ export async function transcribeUrl(url: string): Promise<TranscribeResult> {
 function parseDeepgramResponse(
   response: ListenV1Response | ListenV1AcceptedResponse,
   source: string,
+  options: { source_audio_kind?: SourceAudioKind } = {},
 ): TranscribeResult {
   if (!("results" in response) || !response.results) {
     throw new Error(
@@ -96,17 +97,50 @@ function parseDeepgramResponse(
   }
 
   const rawUtterances = response.results.utterances ?? [];
+  const allWords =
+    ((response.results.channels?.[0]?.alternatives?.[0]?.words ?? []) as Array<{
+      word?: string;
+      start?: number;
+      end?: number;
+      confidence?: number;
+      speaker?: number;
+      speaker_confidence?: number;
+    }>);
 
   const speakerSet = new Set<number>();
-  const utterances: TranscriptSegment[] = rawUtterances.map((u) => {
-    const speakerId = typeof u.speaker === "number" ? u.speaker : 0;
-    speakerSet.add(speakerId);
+  const utterances: TranscriptSegment[] = rawUtterances.map((u, idx) => {
+    const speakerId: SpeakerId | null = typeof u.speaker === "number" ? u.speaker : null;
+    if (speakerId !== null) speakerSet.add(speakerId);
+
+    const uStart = u.start ?? 0;
+    const uEnd = u.end ?? 0;
+    const words: ASRWord[] = allWords
+      .filter((word) => {
+        const wordStart = word.start ?? 0;
+        const wordEnd = word.end ?? wordStart;
+        const midpoint = (wordStart + wordEnd) / 2;
+        return midpoint >= uStart && midpoint <= uEnd;
+      })
+      .map((word) => ({
+        text: word.word ?? "",
+        start: word.start ?? 0,
+        end: word.end ?? 0,
+        confidence: word.confidence ?? 0,
+        speaker: typeof word.speaker === "number" ? word.speaker : null,
+        speaker_confidence: word.speaker_confidence,
+      }));
+
     return {
+      id: `dg-${idx}`,
+      provider: "deepgram",
       text: u.transcript ?? "",
-      start: u.start ?? 0,
-      end: u.end ?? 0,
+      start: uStart,
+      end: uEnd,
       is_final: true,
       speaker_id: speakerId,
+      words: words.length > 0 ? words : undefined,
+      attribution_status: speakerId === null ? "not_available" : undefined,
+      source_audio_kind: options.source_audio_kind,
     };
   });
 
@@ -143,7 +177,7 @@ export async function transcribeFile(
       TRANSCRIBE_OPTIONS,
     );
 
-  return parseDeepgramResponse(response, `[buffer:${mime}]`);
+  return parseDeepgramResponse(response, `[buffer:${mime}]`, { source_audio_kind: "audio_file" });
 }
 
 /**
@@ -169,5 +203,5 @@ export async function transcribeStream(
       TRANSCRIBE_OPTIONS,
     );
 
-  return parseDeepgramResponse(response, `[stream:${mime}]`);
+  return parseDeepgramResponse(response, `[stream:${mime}]`, { source_audio_kind: "audio_file" });
 }

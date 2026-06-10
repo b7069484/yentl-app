@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Pause, Play, Download, Square, Save, Library, Plus } from "lucide-react";
+import { Pause, Play, Download, Square, Save, Library, Plus, MonitorPlay } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { Button } from "@/components/ui/button";
 import { SpeakerRail } from "@/components/session/speaker-rail";
@@ -13,6 +13,7 @@ import { EndSessionDialog } from "@/components/session/EndSessionDialog";
 import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
 import { SourceSwitchDialog } from "@/components/session/SourceSwitchDialog";
 import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
+import { sessionViewHref, tvHrefForSessionContext } from "@/lib/client/session-route";
 export { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 
@@ -25,7 +26,7 @@ function BrandMark({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     <span className="inline-flex min-w-0 items-baseline gap-2 sm:gap-3">
       <Link
         href="/session"
-        className={`font-serif ${fontMap[size]} font-medium tracking-tight text-ink inline-flex items-baseline`}
+        className={`font-serif ${fontMap[size]} inline-flex min-h-11 items-center font-medium tracking-tight text-ink`}
       >
         <span>yentl</span>
         <span
@@ -107,25 +108,30 @@ function LivePill({ state, elapsed }: { state: PillState; elapsed: string }) {
 function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   const sp = useSearchParams();
   const view = sp.get("view") || "overview";
-  const sourceKind = useSession((s) => s.source.kind);
+  const source = useSession((s) => s.source);
+  const sourceKind = source.kind;
 
   const showWatch = PLAYABLE_SOURCE_KINDS.has(sourceKind);
+  const showSourceReview = sourceKind === "text_doc";
 
   const tabs = [
-    { key: "overview", label: "Overview", href: "/session" },
+    { key: "overview", label: "Overview", href: sessionViewHref(sp, "overview") },
     ...(showWatch
-      ? [{ key: "watch", label: "Watch", href: "/session?view=watch" }]
+      ? [{ key: "watch", label: "Watch", href: sessionViewHref(sp, "watch") }]
       : []),
-    { key: "transcript", label: "Transcript", href: "/session?view=transcript" },
+    ...(showSourceReview
+      ? [{ key: "source", label: "Source", href: sessionViewHref(sp, "source") }]
+      : []),
+    { key: "transcript", label: "Transcript", href: sessionViewHref(sp, "transcript") },
     {
       key: "claims",
       label: `Claims · ${counts.claims}`,
-      href: "/session?view=claims",
+      href: sessionViewHref(sp, "claims"),
     },
     {
       key: "markers",
       label: `Markers · ${counts.markers}`,
-      href: "/session?view=markers",
+      href: sessionViewHref(sp, "markers"),
     },
   ];
 
@@ -134,6 +140,7 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
   function isActive(tabKey: string): boolean {
     if (tabKey === "overview") return view === "overview";
     if (tabKey === "watch") return view === "watch";
+    if (tabKey === "source") return view === "source";
     if (tabKey === "transcript") return view === "transcript";
     if (tabKey === "claims") return view === "claims" || view.startsWith("claims");
     if (tabKey === "markers") return view === "markers" || view.startsWith("markers");
@@ -166,6 +173,7 @@ function Tabs({ counts }: { counts: { claims: number; markers: number } }) {
 
 function TopControls() {
   const router = useRouter();
+  const sp = useSearchParams();
   const isRecording = useSession((s) => s.isRecording);
   const endedAt = useSession((s) => s.endedAt);
   const startedAt = useSession((s) => s.startedAt);
@@ -191,6 +199,7 @@ function TopControls() {
     devilAdvocate?.state === "fresh" ||
     devilAdvocate?.state === "refreshing" ||
     (devilAdvocate?.state === "error" && !!devilAdvocate.brief);
+  const roomHref = tvHrefForSessionContext(sp);
 
   function handleChooseSource() {
     setSourceSwitchOpen(true);
@@ -215,9 +224,30 @@ function TopControls() {
     setExportOpen(true);
   }
 
+  function saveBeforeEnding() {
+    setEndOpen(false);
+    setSaveOpen(true);
+  }
+
+  function exportBeforeEnding() {
+    setEndOpen(false);
+    setExportOpen(true);
+  }
+
   return (
     <>
-      <div className="grid w-full min-w-0 grid-cols-2 gap-2 min-[460px]:grid-cols-4 sm:ml-auto sm:flex sm:w-auto sm:items-center sm:justify-end sm:gap-1.5">
+      <div
+        role="toolbar"
+        aria-label="Session actions"
+        className={[
+          "fixed inset-x-0 bottom-0 z-30 grid w-full min-w-0 grid-cols-4 gap-2",
+          "border-t border-line bg-paper/95 px-3 py-2 shadow-[0_-10px_30px_rgba(31,27,24,0.12)] backdrop-blur",
+          "pb-[calc(0.5rem+env(safe-area-inset-bottom))]",
+          "min-[520px]:grid-cols-6",
+          "sm:static sm:ml-auto sm:flex sm:w-auto sm:items-center sm:justify-end sm:gap-1.5",
+          "sm:border-0 sm:bg-transparent sm:p-0 sm:pb-0 sm:shadow-none sm:backdrop-blur-none",
+        ].join(" ")}
+      >
         {startedAt && sourceKind === "mic" && (
           <Button
             variant="ghost"
@@ -243,6 +273,14 @@ function TopControls() {
           >
             <Plus className="h-3.5 w-3.5" /> Sources
           </Button>
+        )}
+        {startedAt && (
+          <Link
+            href={roomHref}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md px-3 text-sm font-medium text-ink-2 transition-colors hover:bg-accent hover:text-accent-foreground sm:h-10 sm:w-auto"
+          >
+            <MonitorPlay className="h-3.5 w-3.5" /> Room
+          </Link>
         )}
         {startedAt && hasUsefulContent && (
           <Button
@@ -276,7 +314,12 @@ function TopControls() {
       </div>
       <SaveSessionDialog open={saveOpen} onClose={() => setSaveOpen(false)} />
       <ExportDialog open={exportOpen} onClose={() => setExportOpen(false)} />
-      <EndSessionDialog open={endOpen} onClose={() => setEndOpen(false)} />
+      <EndSessionDialog
+        open={endOpen}
+        onClose={() => setEndOpen(false)}
+        onSaveFirst={saveBeforeEnding}
+        onExportFirst={exportBeforeEnding}
+      />
       <SourceSwitchDialog
         open={sourceSwitchOpen}
         onClose={() => setSourceSwitchOpen(false)}
@@ -435,7 +478,9 @@ function SessionShellInner({ children }: { children: ReactNode }) {
       )}
 
       {/* Body slot */}
-      <main className="flex-1">{children}</main>
+      <main className={hasSession ? "flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-0" : "flex-1"}>
+        {children}
+      </main>
     </div>
   );
 }

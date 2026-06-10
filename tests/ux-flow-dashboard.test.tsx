@@ -83,6 +83,7 @@ describe("UxFlowDashboard", () => {
     expect(screen.getAllByText("Mobile Share / Import").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Home / Product Page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Pricing Page").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Mobile App Page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("FAQ Page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Guest Demo Page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Sign In Fallback").length).toBeGreaterThan(0);
@@ -91,6 +92,7 @@ describe("UxFlowDashboard", () => {
     expect(screen.getAllByText("Project Flow Dashboard").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Marker Learn Page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Home / Product Page Mobile").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Mobile App Page Mobile").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Claim Detail Populated").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Marker Learn Populated Mobile").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: /Open Home \/ Product Page screenshot/i })).toBeTruthy();
@@ -152,7 +154,7 @@ describe("UxFlowDashboard", () => {
     expect(screen.getByRole("img", { name: "Extension Claims Tab target UI" })).toBeTruthy();
     expect(screen.getByText("Yentl's Read")).toBeTruthy();
     expect(screen.getByText("Claim risk")).toBeTruthy();
-    expect(screen.getByText("Rhetoric heat")).toBeTruthy();
+    expect(screen.getByText("Language heat")).toBeTruthy();
     expect(screen.getByText("Evidence state")).toBeTruthy();
     expect(screen.getByText("New finding")).toBeTruthy();
     expect(screen.getByText("Devil's Advocate queued")).toBeTruthy();

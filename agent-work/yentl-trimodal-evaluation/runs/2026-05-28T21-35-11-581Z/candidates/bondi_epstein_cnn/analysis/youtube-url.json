@@ -1,0 +1,179 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 33,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Pam Bondi, U.S. Attorney General, faced questions from members of the House Judiciary Committee during a congressional hearing.",
+      "utterance_start": 80,
+      "utterance_end": 21.04,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "public hearing",
+          "verifiable event"
+        ],
+        "explanation": "Pam Bondi serves as U.S. Attorney General in the Trump administration and has testified before the House Judiciary Committee. The video context confirms a congressional hearing setting consistent with this claim."
+      }
+    },
+    {
+      "claim_text": "The U.S. Justice Department released files related to Jeffrey Epstein.",
+      "utterance_start": 80,
+      "utterance_end": 21.04,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 78,
+        "annotations": [
+          "partial release",
+          "ongoing disclosures"
+        ],
+        "explanation": "The DOJ has released some Epstein-related materials in batches, particularly in early 2025 under AG Pam Bondi, though critics noted the releases contained little new information and many files remained withheld. The general claim that DOJ released Epstein-related files is accurate, though incomplete."
+      }
+    },
+    {
+      "claim_text": "Robert Mueller's investigation found no evidence of foreign interference in the 2016 U.S. election.",
+      "utterance_start": 102.16,
+      "utterance_end": 121.44,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Robert F. Kennedy Sr. served as U.S. Attorney General.",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-youtube_url-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Elliot Richardson served as U.S. Attorney General.",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-youtube_url-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Janet Reno served as U.S. Attorney General.",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-youtube_url-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The U.S. Department of Justice released evidence used to obtain a search warrant in Fulton County, Georgia.",
+      "utterance_start": 399.84,
+      "utterance_end": 422.88,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-youtube_url-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The U.S. Department of Justice is involved in a lawsuit with about 24 states seeking sensitive personal voter information.",
+      "utterance_start": 399.84,
+      "utterance_end": 422.88,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-youtube_url-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Blanche has been the main public face of the US Department of Justice on Epstein-related issues",
+      "utterance_start": 556.64,
+      "utterance_end": 567.36,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-youtube_url-claim-9",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "This is a fiasco. Um, I wish I had a nicer way to put it",
+      "start_time": 215,
+      "end_time": 222,
+      "severity": "clear",
+      "explanation": "The speaker uses emotionally charged language ('fiasco') to characterize the hearing, framing it negatively rather than describing specifics."
+    },
+    {
+      "type": "rhetoric",
+      "name": "pejorative_framing",
+      "display": "Pejorative Framing",
+      "excerpt": "her list of insults that somebody caught a a picture of... she feels that she needs to do so that the president sees her fighting back",
+      "start_time": 196,
+      "end_time": 210,
+      "severity": "subtle",
+      "explanation": "The commentator frames Bondi's behavior as performative for Trump, attributing motives in a derogatory way rather than analyzing substance."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "Have we learned anything new about... Have we learned anything new about... Have we learned anything new about",
+      "start_time": 265,
+      "end_time": 280,
+      "severity": "clear",
+      "explanation": "The speaker repeatedly uses the same rhetorical question structure to emphasize a perceived lack of transparency."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_authority",
+      "display": "Appeal to Authority",
+      "excerpt": "This is the same job that was once held by Robert F. Kennedy, senior, by Elliot Richardson, by Janet Reno",
+      "start_time": 222,
+      "end_time": 236,
+      "severity": "subtle",
+      "explanation": "Invokes prestigious past AGs to imply Bondi falls short by comparison, leveraging authority/prestige rather than addressing arguments."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "set off this entire firestorm of controversies and she's not been able to shake that off",
+      "start_time": 542,
+      "end_time": 552,
+      "severity": "subtle",
+      "explanation": "Phrases like 'firestorm of controversies' and 'bungled' are emotionally charged characterizations rather than neutral descriptions, framing Bondi's actions in a strongly negative light."
+    },
+    {
+      "type": "rhetoric",
+      "name": "pejorative_framing",
+      "display": "Pejorative Framing",
+      "excerpt": "she bungled it so badly initially uh that she couldn't be trusted to be uh the face",
+      "start_time": 556,
+      "end_time": 566,
+      "severity": "clear",
+      "explanation": "The framing presupposes Bondi 'bungled it so badly' as a basis for the question, casting her performance in pejorative terms rather than presenting a neutral inquiry."
+    },
+    {
+      "type": "fallacy",
+      "name": "loaded_question",
+      "display": "Loaded Question",
+      "excerpt": "Is that because uh she bungled it so badly initially uh that she couldn't be trusted to be uh the face of this",
+      "start_time": 556,
+      "end_time": 568,
+      "severity": "clear",
+      "explanation": "The question embeds the contested premise that Bondi bungled the issue badly and is untrustworthy, making any answer implicitly accept that framing."
+    }
+  ],
+  "errors": []
+}

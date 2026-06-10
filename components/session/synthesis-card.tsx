@@ -88,6 +88,147 @@ const FAITH_GRADE_STYLE: Record<
 const CHIP_BASE =
   "inline-flex items-center px-2 py-px rounded-full text-[10px] font-semibold leading-snug border whitespace-nowrap";
 
+type MetaReadTone = "good" | "mixed" | "bad" | "insufficient";
+
+const META_READ_STYLE: Record<
+  MetaReadTone,
+  { border: string; bg: string; text: string; dot: string }
+> = {
+  good: {
+    border: "border-green/20",
+    bg: "bg-green-soft",
+    text: "text-green",
+    dot: "bg-green",
+  },
+  mixed: {
+    border: "border-amber-2/25",
+    bg: "bg-amber-soft",
+    text: "text-amber-2",
+    dot: "bg-amber-2",
+  },
+  bad: {
+    border: "border-red/20",
+    bg: "bg-red-soft",
+    text: "text-red",
+    dot: "bg-red",
+  },
+  insufficient: {
+    border: "border-line",
+    bg: "bg-slate-soft",
+    text: "text-ink-3",
+    dot: "bg-ink-4",
+  },
+};
+
+type MetaRead = {
+  tone: MetaReadTone;
+  label: string;
+  summary: string;
+  caveat: string;
+  counts: {
+    good: number;
+    mixed: number;
+    bad: number;
+    insufficient: number;
+  };
+};
+
+function metaReadFromVerdicts(verdicts: SpeakerVerdict[]): MetaRead | null {
+  if (verdicts.length === 0) return null;
+
+  const counts = { good: 0, mixed: 0, bad: 0, insufficient: 0 };
+  for (const verdict of verdicts) {
+    if (verdict.faith_grade === "good_faith") counts.good += 1;
+    else if (verdict.faith_grade === "bad_faith") counts.bad += 1;
+    else if (verdict.faith_grade === "mixed") counts.mixed += 1;
+    else counts.insufficient += 1;
+  }
+
+  const decided = counts.good + counts.mixed + counts.bad;
+  if (decided === 0) {
+    return {
+      tone: "insufficient",
+      label: "Still forming",
+      summary: "Yentl does not have enough speaker evidence for a good-faith read yet.",
+      caveat: "Treat this as a live reading surface until more claims and markers land.",
+      counts,
+    };
+  }
+
+  const topCount = Math.max(counts.good, counts.mixed, counts.bad);
+  const tied =
+    [counts.good, counts.mixed, counts.bad].filter((count) => count === topCount).length > 1;
+
+  if (!tied && counts.bad === topCount) {
+    return {
+      tone: "bad",
+      label: "Bad-faith risk",
+      summary: "Yentl sees the strongest pattern around evasion, hostile framing, or unsupported moves.",
+      caveat: "This is a conversation-level read, not a final judgment about intent.",
+      counts,
+    };
+  }
+
+  if (!tied && counts.good === topCount) {
+    return {
+      tone: "good",
+      label: "Good-faith read",
+      summary: "Yentl sees mostly topic-engaged participation with limited hostile or evasive framing.",
+      caveat: "Keep checking source-backed claims before treating the read as settled.",
+      counts,
+    };
+  }
+
+  return {
+    tone: "mixed",
+    label: "Mixed-faith read",
+    summary: "Yentl sees a split pattern: some direct engagement, some rhetorical or evidentiary pressure.",
+    caveat: "Review the speaker cards and source-backed claims before sharing this read.",
+    counts,
+  };
+}
+
+function MetaReadPanel({ read, refreshing }: { read: MetaRead; refreshing: boolean }) {
+  const style = META_READ_STYLE[read.tone];
+  return (
+    <div
+      data-testid="synthesis-meta-read"
+      className={`mt-3.5 rounded-lg border ${style.border} ${style.bg} px-3 py-2.5`}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <span aria-hidden className={`h-2 w-2 rounded-full ${style.dot}`} />
+        <span className={`text-[10.5px] font-bold uppercase tracking-wide ${style.text}`}>
+          Meta-read
+        </span>
+        <span className="rounded-full border border-white/60 bg-white/45 px-2 py-0.5 text-[10px] font-semibold text-ink-3">
+          {read.label}
+        </span>
+        {refreshing && (
+          <span className="rounded-full border border-white/60 bg-white/45 px-2 py-0.5 text-[10px] font-semibold text-ink-3">
+            Updating while checking
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{read.summary}</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        <MetaCount label="Good-faith" value={read.counts.good} />
+        <MetaCount label="Mixed" value={read.counts.mixed} />
+        <MetaCount label="Bad-faith risk" value={read.counts.bad} />
+        <MetaCount label="Uncertain" value={read.counts.insufficient} />
+      </div>
+      <p className="mt-2 text-[11px] leading-snug text-ink-4">{read.caveat}</p>
+    </div>
+  );
+}
+
+function MetaCount({ label, value }: { label: string; value: number }) {
+  return (
+    <span className="rounded-full border border-line/80 bg-white/65 px-2 py-0.5 text-[10.5px] font-semibold text-ink-3">
+      {label}: {value}
+    </span>
+  );
+}
+
 function GradeChip({
   style,
 }: {
@@ -213,6 +354,7 @@ export function SynthesisCard({
   const text = synthesis.text;
   const headlines = synthesis.headlines ?? [];
   const perSpeakerVerdicts = ("per_speaker_verdicts" in synthesis && synthesis.per_speaker_verdicts) ? synthesis.per_speaker_verdicts : [];
+  const metaRead = metaReadFromVerdicts(perSpeakerVerdicts);
 
   // Age label
   let ageSuffix: string;
@@ -227,14 +369,14 @@ export function SynthesisCard({
       {/* Heading row */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-[10.5px] font-semibold uppercase tracking-wide text-amber-2">
-          Yentl&apos;s read {ageSuffix}
+          Yentl Opinion {ageSuffix}
         </span>
         {onRefresh && (
           <button
             type="button"
             onClick={onRefresh}
             aria-label="Refresh synthesis"
-            className="flex items-center justify-center h-[26px] w-[26px] rounded-full text-ink-3 hover:text-ink-2 hover:bg-cream-2 transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2"
           >
             <IconRefresh spinning={isRefreshing} />
           </button>
@@ -261,6 +403,8 @@ export function SynthesisCard({
         </p>
       ) : null}
 
+      {metaRead && <MetaReadPanel read={metaRead} refreshing={isRefreshing} />}
+
       {/* Headlines row */}
       {headlines.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3.5">
@@ -269,7 +413,7 @@ export function SynthesisCard({
               key={i}
               type="button"
               onClick={() => onHeadlineClick(headline, i)}
-              className="inline-flex items-center gap-1.5 bg-cream-2 border border-line px-2.5 py-1 rounded-full text-[11.5px] text-ink-2 hover:border-ink-4"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-line bg-cream-2 px-3 py-2 text-left text-[11.5px] leading-snug text-ink-2 hover:border-ink-4"
             >
               <span
                 aria-hidden
@@ -298,7 +442,7 @@ export function SynthesisCard({
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="mt-3 inline-flex items-center gap-1 text-[11px] text-ink-3 hover:text-ink-2 md:hidden"
+        className="mt-3 inline-flex min-h-11 items-center gap-1 rounded-lg px-1 text-[11px] text-ink-3 hover:text-ink-2 md:hidden"
       >
         {expanded ? "Hide Yentl's take ⌃" : "Read Yentl's take ⌄"}
       </button>

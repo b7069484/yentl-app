@@ -7,7 +7,6 @@
   "permissions": ["activeTab", "offscreen", "scripting", "storage", "tabCapture", "tabs"],
   "host_permissions": [
     "https://yentl.it/*",
-    "https://factify-rose.vercel.app/*",
     "https://api.deepgram.com/*"
   ],
   "optional_host_permissions": [
@@ -35,14 +34,13 @@
   "content_scripts": [
     {
       "matches": [
-        "https://yentl.it/*",
-        "https://factify-rose.vercel.app/*"
+        "https://yentl.it/*"
       ],
       "js": ["content-script.js"],
       "run_at": "document_start"
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:3000 http://127.0.0.1:3000 https://yentl.it https://factify-rose.vercel.app https://api.deepgram.com wss://api.deepgram.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:3000 http://127.0.0.1:3000 https://yentl.it https://api.deepgram.com wss://api.deepgram.com"
   }
 }

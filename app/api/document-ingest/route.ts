@@ -49,11 +49,11 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
+  let parser: InstanceType<typeof PDFParse> | null = null;
   try {
     configurePdfWorker();
-    const parser = new PDFParse({ data: buffer });
+    parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
-    await parser.destroy();
     const text = normalizeExtractedText(result.text ?? "");
     if (text.split(/\s+/).filter(Boolean).length < 20) {
       return jsonError(
@@ -75,6 +75,8 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
       error instanceof Error ? error.message : "Could not extract text from this PDF.",
       500,
     );
+  } finally {
+    await parser?.destroy().catch(() => undefined);
   }
 }
 

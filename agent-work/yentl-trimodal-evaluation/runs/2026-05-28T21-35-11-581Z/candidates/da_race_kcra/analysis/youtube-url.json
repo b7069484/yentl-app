@@ -1,0 +1,95 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 33,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "The race for District Attorney (covered by KCRA 3, Sacramento area) is being contested for the first time in 20 years.",
+      "utterance_start": 17.56,
+      "utterance_end": 20.96,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "local news claim",
+          "specific timeframe",
+          "insufficient knowledge"
+        ],
+        "explanation": "This is a specific local political claim about the Sacramento County DA race. While it's plausible that the incumbent DA (Anne Marie Schubert or a predecessor) ran unopposed for multiple cycles, I cannot confirm the precise 20-year figure from my training data."
+      }
+    },
+    {
+      "claim_text": "The candidate (Monsanto, a DA candidate in the KCRA-covered race) has been in the area for 58 years.",
+      "utterance_start": 184.36,
+      "utterance_end": 766.05,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "da_race_kcra-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 50,
+        "annotations": [
+          "personal biographical detail",
+          "local race specifics"
+        ],
+        "explanation": "This is a specific biographical claim about a local district attorney candidate's length of residence. Without access to the video content or reliable background on this particular candidate, I cannot confirm or refute the 58-year figure from trained knowledge alone."
+      }
+    },
+    {
+      "claim_text": "The candidate (Monsanto, a DA candidate) has worked as a prosecutor for 24 years.",
+      "utterance_start": 184.36,
+      "utterance_end": 766.05,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Leras worked as a district attorney in the Sacramento-area DA race covered by KCRA 3.",
+      "utterance_start": 320.83,
+      "utterance_end": 795.6,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-youtube_url-claim-4",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "absolutism",
+      "display": "Absolutism",
+      "excerpt": "I am the most qualified candidate",
+      "start_time": 184,
+      "end_time": 244,
+      "severity": "clear",
+      "explanation": "The candidate uses an absolute superlative claim ('the most qualified') without supporting evidence, a common campaign rhetorical device asserting unmatched standing."
+    },
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "we have done a tremendous job, the entire team of reaching the voters",
+      "start_time": 184,
+      "end_time": 244,
+      "severity": "subtle",
+      "explanation": "Vague, positively-charged language ('tremendous job') is used to evoke approval without specifying what was accomplished."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_authority",
+      "display": "Appeal to Authority",
+      "excerpt": "THE DEPUTY ATTORNEY GENERAL SAYS SHE HAS WHAT IT TAKES TO BE THE TOP PROSECUTOR",
+      "start_time": 246,
+      "end_time": 318,
+      "severity": "subtle",
+      "explanation": "The reporter frames credibility via the candidate's title/position rather than substantive qualifications, leveraging authority as the basis for the claim."
+    }
+  ],
+  "errors": []
+}

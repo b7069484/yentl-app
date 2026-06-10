@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { LABEL } from "./verify-provisional";
+import {
+  LABEL,
+  VerifyPromptRequest,
+  userPrompt as provisionalUserPrompt,
+} from "./verify-provisional";
 
 // LLM emits only a thin per-URL stance map. URL/title/domain come from the
 // web_search tool result and are stitched in server-side.
@@ -40,3 +44,7 @@ return an empty stance_refs array. Do not call the fact itself impossible to
 verify; the result is about evidence quality.
 
 If the claim is opinion, label OPINION with score 0 and no stance_refs.`;
+
+export function userPrompt(args: z.infer<typeof VerifyPromptRequest>): string {
+  return provisionalUserPrompt(args);
+}

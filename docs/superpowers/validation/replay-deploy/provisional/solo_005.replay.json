@@ -1,0 +1,109 @@
+{
+  "id": "solo_005",
+  "title": "Hans Rosling: Global population growth, box by box",
+  "category": "solo_monologue",
+  "startedAt": "2026-06-10T06:50:55.344Z",
+  "finishedAt": "2026-06-10T06:51:37.496Z",
+  "baseUrl": "https://yentl.it",
+  "verify": "provisional",
+  "utterancesAvailable": 125,
+  "utterancesReplayed": 10,
+  "claims": [
+    {
+      "claim_text": "The world population reached 3 billion people.",
+      "utterance_start": 16.505,
+      "utterance_end": 24.664999,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "reported",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence",
+          "quoted_or_reported_speech"
+        ],
+        "stance": "reported",
+        "confidence": 0.6,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-1",
+      "speaker_id": 0,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 97,
+        "annotations": [
+          "historical milestone",
+          "occurred 1960"
+        ],
+        "explanation": "The world population reached approximately 3 billion people around 1960, a well-documented demographic milestone."
+      }
+    },
+    {
+      "claim_text": "The world population reached 3 billion people in 1960.",
+      "utterance_start": 25.465,
+      "utterance_end": 27.785,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "asserted",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence"
+        ],
+        "stance": "asserted",
+        "confidence": 0.9,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-2",
+      "speaker_id": 0,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "well-established demographic fact"
+        ],
+        "explanation": "The global population is widely recognized to have reached approximately 3 billion in 1960, according to standard UN demographic estimates."
+      }
+    },
+    {
+      "claim_text": "In 1960, the industrialized world had 1 billion people.",
+      "utterance_start": 60.29,
+      "utterance_end": 61.89,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "reported",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence",
+          "quoted_or_reported_speech"
+        ],
+        "stance": "reported",
+        "confidence": 0.85,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-3",
+      "speaker_id": 0,
+      "status": "provisional",
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 75,
+        "annotations": [
+          "approximate figure",
+          "depends on definition"
+        ],
+        "explanation": "In 1960, the world population was about 3 billion total. The 'industrialized' or 'developed' world (Europe, North America, Japan, Australia/NZ, USSR) totaled roughly 1 billion people, though exact figures depend on which countries are included. This is a commonly cited approximation used by demographers like Hans Rosling."
+      }
+    }
+  ],
+  "markers": [],
+  "errors": []
+}

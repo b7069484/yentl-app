@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:56:33.437Z",
+  "app_origin": "https://yentl.it",
+  "verify_mode": "confirmed",
+  "deploy_proof": true,
+  "replay_ids": [
+    "cable_008",
+    "solo_005",
+    "interview_002"
+  ],
+  "max_utterances": 10,
+  "checks": [
+    {
+      "name": "corpus-replay-cable_008",
+      "ok": true,
+      "elapsed_ms": 60313,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/cable_008.replay.json",
+      "claims": 1,
+      "markers": 7,
+      "utterances_replayed": 10,
+      "verified_claims": 1,
+      "rhetoric_errors": 0,
+      "verify_mode": "confirmed"
+    },
+    {
+      "name": "corpus-replay-solo_005",
+      "ok": true,
+      "elapsed_ms": 90195,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/solo_005.replay.json",
+      "claims": 3,
+      "markers": 0,
+      "utterances_replayed": 10,
+      "verified_claims": 2,
+      "rhetoric_errors": 0,
+      "verify_mode": "confirmed"
+    },
+    {
+      "name": "corpus-replay-interview_002",
+      "ok": true,
+      "elapsed_ms": 29102,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/interview_002.replay.json",
+      "claims": 0,
+      "markers": 2,
+      "utterances_replayed": 10,
+      "verified_claims": 0,
+      "rhetoric_errors": 0,
+      "verify_mode": "confirmed"
+    }
+  ],
+  "failures": []
+}

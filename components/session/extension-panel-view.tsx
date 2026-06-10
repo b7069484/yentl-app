@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import {
   AlertTriangle,
   Captions,
@@ -33,7 +34,9 @@ import type { DevilAdvocateBrief, DevilAdvocateState } from "@/lib/client/sessio
 import { exportSession } from "@/lib/client/export-actions";
 import { loadSession, saveSession, type SavedSessionMeta } from "@/lib/client/session-storage";
 import { VERDICT } from "@/lib/client/verdict-theme";
+import { getEntry } from "@/lib/taxonomy";
 import type { ClaimCard, RhetoricMarker, Session, SessionSource, TranscriptSegment } from "@/lib/types";
+import { MarkerAssetIcon } from "./marker-asset-icon";
 
 type Phase = BrowserTabCaptureStatus["phase"];
 type PanelMetricKey = "pulse" | "claims" | "heat" | "evidence";
@@ -371,12 +374,12 @@ function panelMetrics(summary: ReturnType<typeof buildLiveSignalSummary>): Panel
     },
     {
       key: "heat",
-      label: "Heat",
+      label: "Language",
       value: summary.rhetoricHeat.value,
       caption: summary.rhetoricHeat.detail,
-      detailTitle: `Heat: ${summary.rhetoricHeat.value}`,
-      detailBody: "Heat tracks loaded phrasing, escalation, evasiveness, and misleading speech patterns.",
-      tooltip: "Rhetorical pressure and misleading speech.",
+      detailTitle: `Language heat: ${summary.rhetoricHeat.value}`,
+      detailBody: "Language heat tracks loaded phrasing, escalation, evasiveness, and misleading speech patterns.",
+      tooltip: "Loaded language, escalation, evasiveness, and misleading speech.",
       tone: summary.rhetoricHeat.tone,
     },
     {
@@ -552,8 +555,8 @@ function useValidationDemo() {
 }
 
 function validationDemoEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   return process.env.NODE_ENV !== "production";
 }
 
@@ -707,7 +710,7 @@ export function ExtensionPanelView() {
     }
   }
 
-  function exportCurrent(kind: "report" | "markdown" | "json") {
+  function exportCurrent(kind: "report" | "markdown" | "json" | "transcript") {
     exportSession(useSession.getState().toSession(), kind);
   }
 
@@ -902,6 +905,15 @@ export function ExtensionPanelView() {
             >
               <Download className="h-3.5 w-3.5" aria-hidden />
               Markdown
+            </button>
+            <button
+              type="button"
+              onClick={() => exportCurrent("transcript")}
+              disabled={!hasContent}
+              className="yentl-action-button inline-flex items-center justify-center gap-2 rounded-md border border-line bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream-2 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden />
+              Transcript
             </button>
             <button
               type="button"
@@ -1179,25 +1191,43 @@ function ClaimCardItem({ claim, open }: { claim: ClaimCard; open: boolean }) {
 
 function MarkerCardItem({ marker, open }: { marker: RhetoricMarker; open: boolean }) {
   const isFallacy = marker.type === "fallacy";
+  const entry = getEntry(marker.name);
+  const learningCue = entry?.how_to_spot?.[0] ?? entry?.definition ?? null;
+  const related = entry?.related_canonical_ids
+    ?.map((id) => getEntry(id))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .slice(0, 3) ?? [];
 
   return (
-    <details open={open} className="rounded-lg border border-line bg-cream">
+    <details
+      open={open}
+      data-testid="extension-marker-card"
+      className="rounded-lg border border-line bg-cream"
+    >
       <summary className="cursor-pointer px-3 py-3">
-        <div className="inline-flex max-w-full flex-col gap-2 align-top">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] ${
-              isFallacy ? "border-red-soft bg-red-soft/45 text-red" : severityTone(marker.severity)
-            }`}
-            >
-              {isFallacy ? "fallacy" : marker.type} · {marker.severity}
-            </span>
-            <span className="font-mono text-[10.5px] text-ink-4">
-              {formatTime(marker.start_time)}
+        <div className="flex min-w-0 items-start gap-2.5 align-top">
+          <MarkerAssetIcon
+            canonicalId={marker.name}
+            type={marker.type}
+            display={marker.display}
+            size="sm"
+          />
+          <div className="inline-flex max-w-full min-w-0 flex-1 flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] ${
+                isFallacy ? "border-red-soft bg-red-soft/45 text-red" : severityTone(marker.severity)
+              }`}
+              >
+                {isFallacy ? "fallacy" : marker.type} · {marker.severity}
+              </span>
+              <span className="font-mono text-[10.5px] text-ink-4">
+                {formatTime(marker.start_time)}
+              </span>
+            </div>
+            <span className="text-left text-[13px] font-semibold leading-snug text-ink">
+              {marker.display}
             </span>
           </div>
-          <span className="text-left text-[13px] font-semibold leading-snug text-ink">
-            {marker.display}
-          </span>
         </div>
       </summary>
       <div className="space-y-2 border-t border-line px-3 py-3 text-[12.5px] leading-relaxed text-ink-3">
@@ -1205,6 +1235,46 @@ function MarkerCardItem({ marker, open }: { marker: RhetoricMarker; open: boolea
           &quot;{marker.excerpt}&quot;
         </p>
         {marker.explanation && <p>{marker.explanation}</p>}
+        {learningCue && (
+          <div
+            data-testid="extension-marker-learning-cue"
+            className="rounded-lg border border-line bg-paper px-3 py-2"
+          >
+            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-4">
+              Watch for
+            </div>
+            <p className="mt-1 text-[12px] leading-relaxed text-ink-3">
+              {learningCue}
+            </p>
+          </div>
+        )}
+        {related.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {related.map((item) => (
+              <Link
+                key={item.canonical_id}
+                href={`/session/learn/marker/${item.canonical_id}`}
+                className="inline-flex min-h-8 items-center rounded-full border border-line bg-paper px-2 text-[10.5px] font-semibold text-ink-3"
+              >
+                {item.display}
+              </Link>
+            ))}
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <Link
+            href={`/session/detail/marker/${marker.id}`}
+            className="inline-flex min-h-9 items-center justify-center rounded-md border border-line bg-paper px-2 text-[11px] font-semibold text-ink-2"
+          >
+            Open detail
+          </Link>
+          <Link
+            href={`/session/learn/marker/${marker.name}`}
+            className="inline-flex min-h-9 items-center justify-center rounded-md border border-line bg-paper px-2 text-[11px] font-semibold text-ink-2"
+          >
+            Learn pattern
+          </Link>
+        </div>
       </div>
     </details>
   );

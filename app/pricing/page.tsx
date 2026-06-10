@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const previewFeatures = [
   "Start a source review without an account.",
-  "Use browser-local saved sessions on the same device.",
+  "Use browser-local saved sessions, with account sync available when configured.",
   "Export Markdown or JSON snapshots when available in the workspace.",
   "Review AI-generated claims, source cards, and rhetoric markers with visible limitations.",
 ];
@@ -24,7 +24,10 @@ export default function PricingPage() {
   return (
     <main id="main-content" className="min-h-screen bg-cream text-ink">
       <section className="mx-auto w-full max-w-5xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-teal hover:text-teal-2">
+        <Link
+          href="/"
+          className="-ml-2 inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-teal hover:text-teal-2"
+        >
           Back to home
         </Link>
 
@@ -38,9 +41,10 @@ export default function PricingPage() {
           </h1>
           <p className="mt-5 text-lg leading-8 text-ink-3">
             The current launch posture is guest-first public preview. That means
-            the product should not imply a paid tier, account sync, team billing,
-            or enterprise commitments unless a deployment explicitly enables and
-            documents those terms.
+            the product should not imply a paid tier, team billing, or
+            enterprise commitments unless a deployment explicitly enables and
+            documents those terms. Account sync is for saved sessions, not a
+            paid-plan promise.
           </p>
         </div>
 
@@ -61,7 +65,7 @@ export default function PricingPage() {
               </div>
             </div>
             <p className="mt-6 font-serif text-5xl font-medium text-ink">$0</p>
-            <p className="mt-1 text-sm text-ink-4">No card. No account required for the v1 guest flow.</p>
+            <p className="mt-1 text-sm text-ink-3">No card. No account required for the v1 guest flow.</p>
             <ul className="mt-6 space-y-3">
               {previewFeatures.map((feature) => (
                 <li key={feature} className="flex gap-3 text-sm leading-6 text-ink-3">
@@ -80,7 +84,7 @@ export default function PricingPage() {
 
           <section aria-labelledby="partner-plan" className="rounded-lg border border-line bg-paper p-6">
             <div className="flex items-start gap-4">
-              <span className="rounded-lg bg-amber-soft p-3 text-amber-2">
+              <span className="rounded-lg border border-amber-2/30 bg-amber-soft p-3 text-ink-2">
                 <Building2 className="h-5 w-5" aria-hidden />
               </span>
               <div>
@@ -94,7 +98,7 @@ export default function PricingPage() {
               </div>
             </div>
             <p className="mt-6 font-serif text-5xl font-medium text-ink">Contact</p>
-            <p className="mt-1 text-sm text-ink-4">Scope, support, and privacy review depend on the pilot.</p>
+            <p className="mt-1 text-sm text-ink-3">Scope, support, and privacy review depend on the pilot.</p>
             <ul className="mt-6 space-y-3">
               {partnerFeatures.map((feature) => (
                 <li key={feature} className="flex gap-3 text-sm leading-6 text-ink-3">

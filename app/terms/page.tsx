@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicInfoPage } from "@/components/public-info-page";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Yentl",
@@ -10,10 +11,13 @@ export default function TermsPage() {
   const lastUpdated = "2026-05-18";
 
   return (
-    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 space-y-10">
-      <h1 className="text-3xl font-bold">Terms of Service</h1>
-      <p className="text-sm text-muted-foreground">Last updated: {lastUpdated}</p>
-
+    <PublicInfoPage
+      currentPath="/terms"
+      eyebrow="Terms"
+      title="Terms of Service"
+      description="The terms for using Yentl, including informational-use limits, user obligations, and dispute handling."
+      lastUpdated={lastUpdated}
+    >
       <div
         className="rounded-lg border border-amber-300 bg-amber-50 px-5 py-4 text-amber-900"
         role="note"
@@ -146,6 +150,6 @@ export default function TermsPage() {
           . Continued use of Yentl after changes constitutes acceptance of the updated Terms.
         </p>
       </section>
-    </main>
+    </PublicInfoPage>
   );
 }

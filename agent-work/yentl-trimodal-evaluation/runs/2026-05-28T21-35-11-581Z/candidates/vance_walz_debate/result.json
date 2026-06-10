@@ -1,0 +1,580 @@
+{
+  "candidate": {
+    "id": "vance_walz_debate",
+    "group": "primary",
+    "url": "https://www.youtube.com/watch?v=XocmI6WyoE8",
+    "videoId": "XocmI6WyoE8",
+    "expectedSpeakers": 3,
+    "reason": "Moderated political debate with direct factual claims and evasive answers."
+  },
+  "title": "Highlights from the Vance-Walz vice presidential debate",
+  "channel": "The Boston Globe",
+  "durationS": 612,
+  "captionSource": {
+    "kind": "manual",
+    "lang": "en"
+  },
+  "paths": {
+    "srt": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/vance_walz_debate/source.en.srt",
+    "audio": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/vance_walz_debate/audio.opus",
+    "urlCaptions": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/vance_walz_debate/url-captions.json",
+    "audioProductionTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/vance_walz_debate/audio-production-deepgram.json",
+    "audioDiagnosticTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/vance_walz_debate/audio-diagnostic-diarized-deepgram.json"
+  },
+  "transcriptStats": {
+    "srt": {
+      "segmentCount": 224,
+      "wordCount": 2101,
+      "firstStart": 0.041,
+      "lastEnd": 612.028,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": null,
+      "avgSpeakerConfidence": null
+    },
+    "youtube_url": {
+      "segmentCount": 224,
+      "wordCount": 2101,
+      "firstStart": 41,
+      "lastEnd": 612.028,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": null,
+      "avgSpeakerConfidence": null
+    },
+    "audio_production": {
+      "segmentCount": 59,
+      "wordCount": 2101,
+      "firstStart": 0,
+      "lastEnd": 612.04004,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": 0.9627499897999942,
+      "avgSpeakerConfidence": null
+    },
+    "audio_diagnostic_diarized": {
+      "segmentCount": 59,
+      "wordCount": 2101,
+      "firstStart": 0,
+      "lastEnd": 612.04004,
+      "observedSpeakers": 3,
+      "dominantSpeakerShare": 0.5854355069014755,
+      "avgWordConfidence": 0.962751822657137,
+      "avgSpeakerConfidence": 0.5990064202247617
+    }
+  },
+  "comparisons": {
+    "youtubeUrlVsSrt": {
+      "wer": 0,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "hits": 2101,
+      "refLen": 2101,
+      "hypLen": 2101
+    },
+    "audioProductionVsSrt": {
+      "wer": 0.0637791527843884,
+      "substitutions": 66,
+      "deletions": 34,
+      "insertions": 34,
+      "hits": 2001,
+      "refLen": 2101,
+      "hypLen": 2101
+    },
+    "audioDiagnosticVsSrt": {
+      "wer": 0.0637791527843884,
+      "substitutions": 66,
+      "deletions": 34,
+      "insertions": 34,
+      "hits": 2001,
+      "refLen": 2101,
+      "hypLen": 2101
+    },
+    "youtubeTimingDriftS": 0.02800000000002001
+  },
+  "analysis": {
+    "srt": {
+      "mode": "srt",
+      "utterancesAvailable": 83,
+      "utterancesAnalyzed": 8,
+      "claims": [
+        {
+          "claim_text": "Kamala Harris censored Americans from speaking their mind in the wake of the 2020 COVID situation.",
+          "utterance_start": 0.041,
+          "utterance_end": 11.011,
+          "topic": "Politics",
+          "topic_secondary": "Society",
+          "id": "vance_walz_debate-srt-claim-1",
+          "speaker_id": 0,
+          "provisional": {
+            "primary_label": "MISLEADING",
+            "score": 25,
+            "annotations": [
+              "contested framing",
+              "conflates administration actions",
+              "partisan characterization"
+            ],
+            "explanation": "This claim, made by Vance, refers to Biden-Harris administration communications with social media companies about COVID-19 misinformation. While the administration did flag content to platforms, courts and investigations have not established that this constituted unconstitutional censorship, and attributing it specifically to Harris (rather than the administration broadly) lacks support. The Supreme Court in Murthy v. Missouri rejected standing for plaintiffs making similar claims."
+          },
+          "error": "confirmed: /api/verify-confirmed HTTP 500: {\"error\":\"verify failed\"}"
+        },
+        {
+          "claim_text": "For 40 years, experts said that shipping the U.S. manufacturing base to China would result in cheaper goods.",
+          "utterance_start": 519.894,
+          "utterance_end": 528.069,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-srt-claim-2",
+          "speaker_id": 0,
+          "provisional": {
+            "primary_label": "MOSTLY_TRUE",
+            "score": 70,
+            "annotations": [
+              "simplification",
+              "approximate timeframe"
+            ],
+            "explanation": "It is broadly accurate that for several decades many economists and policy experts argued that globalization and trade with China would lower consumer prices, though '40 years' is approximate (significant China trade liberalization accelerated after the 1990s and WTO accession in 2001). The characterization of expert consensus is a simplification but reflects a real mainstream argument."
+          }
+        },
+        {
+          "claim_text": "Under President Trump, take-home pay rose.",
+          "utterance_start": 603.06,
+          "utterance_end": 612.028,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-srt-claim-3",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "Under President Trump, inflation was lower.",
+          "utterance_start": 603.06,
+          "utterance_end": 612.028,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-srt-claim-4",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "During the Biden-Harris administration, gas, groceries, and housing have become unaffordable for American citizens.",
+          "utterance_start": 603.06,
+          "utterance_end": 612.028,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-srt-claim-5",
+          "speaker_id": 0
+        }
+      ],
+      "markers": [
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "the fairest and the toughest bill on immigration that this nation's seen",
+          "start_time": 201,
+          "end_time": 212,
+          "severity": "clear",
+          "explanation": "Superlative, emotionally charged descriptors ('fairest', 'toughest') are used to frame the bill favorably without substantive support."
+        },
+        {
+          "type": "fallacy",
+          "name": "single_cause_fallacy",
+          "display": "Single Cause Fallacy",
+          "excerpt": "We could come together and solve this if we didn't let Donald Trump continue to make it an issue.",
+          "start_time": 236,
+          "end_time": 246,
+          "severity": "clear",
+          "explanation": "Attributes the complex immigration problem to a single cause—Trump's interference—ignoring multiple contributing factors."
+        },
+        {
+          "type": "rhetoric",
+          "name": "pejorative_framing",
+          "display": "Pejorative Framing",
+          "excerpt": "undo 94 Donald Trump executive actions that opened the border",
+          "start_time": 224,
+          "end_time": 236,
+          "severity": "subtle",
+          "explanation": "Framing Harris's actions as having 'opened the border' is a loaded characterization designed to assign blame rather than describe neutrally."
+        },
+        {
+          "type": "fallacy",
+          "name": "appeal_to_fear",
+          "display": "Appeal to Fear",
+          "excerpt": "the governor had to send state law enforcement to escort kindergartners to school",
+          "start_time": 246,
+          "end_time": 253,
+          "severity": "clear",
+          "explanation": "Evokes a frightening image of children needing police escorts to school to bolster the argument emotionally rather than through evidence."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries and housing unaffordable",
+          "start_time": 603,
+          "end_time": 612,
+          "severity": "clear",
+          "explanation": "The word 'atrocious' is emotionally loaded, framing Harris's record in extreme negative terms rather than through neutral description."
+        },
+        {
+          "type": "rhetoric",
+          "name": "absolutism",
+          "display": "Absolutism",
+          "excerpt": "made gas, groceries and housing unaffordable for American citizens",
+          "start_time": 607,
+          "end_time": 612,
+          "severity": "subtle",
+          "explanation": "Sweeping absolute claim that these necessities are 'unaffordable' for Americans broadly, without qualification."
+        },
+        {
+          "type": "fallacy",
+          "name": "straw_man",
+          "display": "Straw Man",
+          "excerpt": "You've got to pretend that Donald Trump didn't deliver rising take home pay, which of course he did",
+          "start_time": 593,
+          "end_time": 598,
+          "severity": "clear",
+          "explanation": "Vance recasts Walz's argument as a denial of Trump's accomplishments rather than addressing what Walz actually said about manufacturing jobs."
+        },
+        {
+          "type": "fallacy",
+          "name": "cherry_picking",
+          "display": "Cherry Picking",
+          "excerpt": "Kamala Harris has a record 250,000 more manufacturing jobs just getting out of the IRA",
+          "start_time": 567,
+          "end_time": 572,
+          "severity": "subtle",
+          "explanation": "Walz selectively cites a favorable jobs statistic tied to the IRA without context about overall manufacturing trends."
+        }
+      ],
+      "errors": [
+        {
+          "stage": "verify-confirmed:0",
+          "message": "/api/verify-confirmed HTTP 500: {\"error\":\"verify failed\"}"
+        }
+      ]
+    },
+    "youtube_url": {
+      "mode": "youtube_url",
+      "utterancesAvailable": 83,
+      "utterancesAnalyzed": 8,
+      "claims": [
+        {
+          "claim_text": "Donald Trump lost the 2020 presidential election.",
+          "utterance_start": 41,
+          "utterance_end": 11.011,
+          "topic": "Politics",
+          "topic_secondary": "History",
+          "id": "vance_walz_debate-youtube_url-claim-1",
+          "speaker_id": 0,
+          "provisional": {
+            "primary_label": "TRUE",
+            "score": 99,
+            "annotations": [
+              "well-established fact",
+              "certified election results"
+            ],
+            "explanation": "Joe Biden won the 2020 presidential election with 306 electoral votes to Trump's 232, and the results were certified by all 50 states and Congress. Numerous court cases, recounts, and audits affirmed the outcome."
+          }
+        },
+        {
+          "claim_text": "Kamala Harris censored Americans from speaking their mind in the wake of the 2020 Covid situation.",
+          "utterance_start": 41,
+          "utterance_end": 11.011,
+          "topic": "Politics",
+          "topic_secondary": "Healthcare",
+          "id": "vance_walz_debate-youtube_url-claim-2",
+          "speaker_id": 0,
+          "error": "provisional: /api/verify-provisional HTTP 500: {\"error\":\"verify failed\"}"
+        },
+        {
+          "claim_text": "For 40 years, experts said that shipping the US manufacturing base to China would result in cheaper goods.",
+          "utterance_start": 519.894,
+          "utterance_end": 528.069,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-youtube_url-claim-3",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "Under Kamala Harris's tenure as Vice President, gas, groceries, and housing have become unaffordable for American citizens.",
+          "utterance_start": 603.06,
+          "utterance_end": 612.028,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-youtube_url-claim-4",
+          "speaker_id": 0
+        }
+      ],
+      "markers": [
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "That is a threat to democracy that will long outlive this present political moment.",
+          "start_time": 41,
+          "end_time": 45,
+          "severity": "clear",
+          "explanation": "The phrase 'threat to democracy' is emotionally charged language designed to evoke alarm rather than make a specific, falsifiable claim."
+        },
+        {
+          "type": "rhetoric",
+          "name": "glittering_generalities",
+          "display": "Glittering Generalities",
+          "excerpt": "we had the fairest and the toughest bill on immigration that this nation's seen",
+          "start_time": 201,
+          "end_time": 210,
+          "severity": "clear",
+          "explanation": "Vague superlatives ('fairest', 'toughest', 'nation's seen') are used to praise the bill without specifics, a classic glittering generality."
+        },
+        {
+          "type": "fallacy",
+          "name": "single_cause_fallacy",
+          "display": "Single Cause Fallacy",
+          "excerpt": "We could come together and solve this if we didn't let Donald Trump continue to make it an issue.",
+          "start_time": 236,
+          "end_time": 245,
+          "severity": "clear",
+          "explanation": "Walz reduces a complex immigration policy failure to a single cause—Donald Trump's interference—ignoring other structural and political factors."
+        },
+        {
+          "type": "fallacy",
+          "name": "appeal_to_fear",
+          "display": "Appeal to Fear",
+          "excerpt": "the governor had to send state law enforcement to escort kindergartners to school",
+          "start_time": 246,
+          "end_time": 252,
+          "severity": "subtle",
+          "explanation": "Invoking the image of kindergartners needing police escorts is designed to provoke fear and emotional response rather than analyze the policy issue."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries and housing unaffordable",
+          "start_time": 603,
+          "end_time": 612,
+          "severity": "clear",
+          "explanation": "Vance uses emotionally charged words like 'atrocious' to frame Harris's record negatively rather than presenting neutral evidence."
+        },
+        {
+          "type": "rhetoric",
+          "name": "repetition_emphasis",
+          "display": "Repetition for Emphasis",
+          "excerpt": "You've got to pretend that Donald Trump didn't deliver rising take home pay... You've got to pretend that Donald Trump didn't deliver lower inflation",
+          "start_time": 593,
+          "end_time": 603,
+          "severity": "clear",
+          "explanation": "Vance uses the parallel repetition of 'You've got to pretend' to drive home his point rhetorically rather than through additional evidence."
+        },
+        {
+          "type": "fallacy",
+          "name": "straw_man",
+          "display": "Straw Man",
+          "excerpt": "You've got to pretend that Donald Trump didn't deliver rising take home pay, which of course he did",
+          "start_time": 593,
+          "end_time": 598,
+          "severity": "subtle",
+          "explanation": "Vance characterizes Walz's argument as 'pretending' Trump didn't deliver positive outcomes, reframing Walz's position into something easier to attack."
+        },
+        {
+          "type": "fallacy",
+          "name": "single_cause_fallacy",
+          "display": "Single Cause Fallacy",
+          "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries and housing unaffordable for American citizens",
+          "start_time": 603,
+          "end_time": 612,
+          "severity": "clear",
+          "explanation": "Vance attributes complex economic conditions (inflation, housing costs) to a single cause—Harris's record—ignoring numerous other factors."
+        }
+      ],
+      "errors": [
+        {
+          "stage": "verify-provisional:1",
+          "message": "/api/verify-provisional HTTP 500: {\"error\":\"verify failed\"}"
+        }
+      ]
+    },
+    "audio_production": {
+      "mode": "audio_production",
+      "utterancesAvailable": 36,
+      "utterancesAnalyzed": 8,
+      "claims": [
+        {
+          "claim_text": "Kamala Harris, as Vice President, censored Americans from speaking their minds in the wake of the 2020 COVID situation.",
+          "utterance_start": 0,
+          "utterance_end": 11.12,
+          "topic": "Politics",
+          "topic_secondary": "Society",
+          "id": "vance_walz_debate-audio_production-claim-1",
+          "speaker_id": 0,
+          "provisional": {
+            "primary_label": "MISLEADING",
+            "score": 20,
+            "annotations": [
+              "overstated",
+              "mischaracterization",
+              "attribution issue"
+            ],
+            "explanation": "This reflects a Republican talking point about Biden administration pressure on social media companies to remove COVID misinformation. However, Harris personally was not the lead actor on such policies, and courts and investigations have not established that the administration's actions constituted unconstitutional censorship of Americans. The claim overstates Harris's role and mischaracterizes content moderation pressure as direct government censorship."
+          }
+        },
+        {
+          "claim_text": "Donald Trump praised Xi Jinping regarding COVID",
+          "utterance_start": 172.51001,
+          "utterance_end": 186.895,
+          "topic": "Politics",
+          "topic_secondary": "Healthcare",
+          "id": "vance_walz_debate-audio_production-claim-2",
+          "speaker_id": 0,
+          "provisional": {
+            "primary_label": "TRUE",
+            "score": 85,
+            "annotations": [
+              "public record",
+              "early pandemic"
+            ],
+            "explanation": "Trump did publicly praise Xi Jinping multiple times in early 2020 regarding China's handling of COVID-19, including statements about transparency and hard work, before later shifting to harsh criticism."
+          }
+        },
+        {
+          "claim_text": "Donald Trump started a trade war with China during his presidency",
+          "utterance_start": 172.51001,
+          "utterance_end": 186.895,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-audio_production-claim-3",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "In Springfield, Ohio, the governor sent state law enforcement to escort kindergarteners to school amid the immigration controversy.",
+          "utterance_start": 254.075,
+          "utterance_end": 271.87,
+          "topic": "Immigration",
+          "topic_secondary": "Society",
+          "id": "vance_walz_debate-audio_production-claim-4",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "There is an application called the CBP One app that allows migrants to apply for asylum or parole and be granted legal status.",
+          "utterance_start": 343.535,
+          "utterance_end": 362.49503,
+          "topic": "Immigration",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-audio_production-claim-5",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "During Donald Trump's presidency, take-home pay rose.",
+          "utterance_start": 569.59503,
+          "utterance_end": 612.04004,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-audio_production-claim-6",
+          "speaker_id": 0
+        },
+        {
+          "claim_text": "During Donald Trump's presidency, inflation was lower.",
+          "utterance_start": 569.59503,
+          "utterance_end": 612.04004,
+          "topic": "Economy",
+          "topic_secondary": "Politics",
+          "id": "vance_walz_debate-audio_production-claim-7",
+          "speaker_id": 0
+        }
+      ],
+      "markers": [
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "we dehumanize and villainize other human beings",
+          "start_time": 248,
+          "end_time": 256,
+          "severity": "subtle",
+          "explanation": "Emotionally charged phrasing frames the opposition's rhetoric in strong moral terms to evoke a reaction rather than make a substantive argument."
+        },
+        {
+          "type": "fallacy",
+          "name": "single_cause_fallacy",
+          "display": "Single Cause Fallacy",
+          "excerpt": "We could come together and solve this if we didn't let Donald Trump continue to make it an issue",
+          "start_time": 236,
+          "end_time": 246,
+          "severity": "clear",
+          "explanation": "Walz attributes the complex failure of immigration reform to a single cause—Trump's intervention—ignoring other political and structural factors."
+        },
+        {
+          "type": "fallacy",
+          "name": "cherry_picking",
+          "display": "Cherry Picking",
+          "excerpt": "The only thing that she did... was to undo 94 Donald Trump executive actions that opened the border",
+          "start_time": 222,
+          "end_time": 236,
+          "severity": "clear",
+          "explanation": "Selectively cites a specific number to characterize Harris's entire record on the border while omitting other actions or context."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries, and housing unaffordable",
+          "start_time": 605,
+          "end_time": 615,
+          "severity": "clear",
+          "explanation": "Vance uses emotionally charged words like 'atrocious' and sweeping framing to characterize Harris's record, appealing to emotion rather than offering specific evidence."
+        },
+        {
+          "type": "rhetoric",
+          "name": "repetition_emphasis",
+          "display": "Repetition for Emphasis",
+          "excerpt": "You've got to pretend that Donald Trump didn't deliver... You've got to pretend that Donald Trump didn't deliver",
+          "start_time": 595,
+          "end_time": 605,
+          "severity": "clear",
+          "explanation": "Vance repeats the 'You've got to pretend' construction to hammer home his framing that Walz is denying obvious Trump accomplishments."
+        },
+        {
+          "type": "fallacy",
+          "name": "straw_man",
+          "display": "Straw Man",
+          "excerpt": "you've got to pretend that Donald Trump didn't deliver rising take home pay... didn't deliver lower inflation",
+          "start_time": 595,
+          "end_time": 605,
+          "severity": "clear",
+          "explanation": "Vance recasts Walz's argument as a denial of specific Trump accomplishments that Walz never explicitly denied, making it easier to attack."
+        },
+        {
+          "type": "fallacy",
+          "name": "single_cause_fallacy",
+          "display": "Single Cause Fallacy",
+          "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries, and housing unaffordable",
+          "start_time": 608,
+          "end_time": 616,
+          "severity": "subtle",
+          "explanation": "Attributes complex macroeconomic outcomes (inflation in gas, groceries, housing) to a single cause—Harris's record—ignoring global and structural factors."
+        }
+      ],
+      "errors": []
+    }
+  },
+  "crossMode": {
+    "claimJaccard": {
+      "srt_vs_youtube_url": 0.4,
+      "srt_vs_audio_production": 0.14285714285714285,
+      "youtube_url_vs_audio_production": 0.14285714285714285
+    },
+    "provisionalDisagreements": [],
+    "markerNameOverlap": {
+      "srt_vs_youtube_url": 0.4444444444444444,
+      "srt_vs_audio_production": 0.5,
+      "youtube_url_vs_audio_production": 0.5714285714285714
+    },
+    "explicitRevisionEvents": 0
+  },
+  "warnings": [
+    "Production-like audio transcription collapsed speakers to one speaker.",
+    "SRT and audio modes extracted substantially different claim sets.",
+    "No explicit later-context revision events were emitted; current output schema does not expose reopen/merge/supersede behavior."
+  ]
+}

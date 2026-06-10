@@ -9,6 +9,7 @@ import { TranscriptView } from "@/components/session/TranscriptView";
 import { FilteredList } from "@/components/session/filtered-list";
 import { WatchView } from "@/components/session/watch-view";
 import { ExtensionPanelView } from "@/components/session/extension-panel-view";
+import { SourceReviewView } from "@/components/session/source-review-view";
 import { SourceRouter } from "@/lib/client/source-router";
 import { PLAYABLE_SOURCE_KINDS } from "@/lib/source-kinds";
 import { AIDisclosureFooter } from "@/components/session/AIDisclosureFooter";
@@ -17,14 +18,26 @@ import { TwoPartyDisclosure } from "@/components/session/TwoPartyDisclosure";
 import { ClaimsLiveRegion } from "@/components/session/ClaimsLiveRegion";
 import { ConsentGate } from "@/components/session/ConsentGate";
 import { RecordingBeacon } from "@/components/session/RecordingBeacon";
+import { PWAFileLaunchHandler } from "@/components/session/pwa-file-launch-handler";
 import { loadSession } from "@/lib/client/session-storage";
-import type { ClaimCard, RhetoricMarker, SessionSource, Speaker, TranscriptSegment } from "@/lib/types";
+import { loadCloudSession } from "@/lib/client/session-sync";
+import type {
+  ClaimCard,
+  PersistedDevilAdvocate,
+  RhetoricMarker,
+  SessionSource,
+  Speaker,
+  SpeakerVerdict,
+  TranscriptSegment,
+} from "@/lib/types";
 
 export default function SessionPage() {
   return (
     <div id="main-content" className="flex flex-1 flex-col">
+      <h1 className="sr-only">Yentl session workspace</h1>
       <RecordingBeacon />
       <SessionTimer />
+      <PWAFileLaunchHandler />
       <Suspense>
         <SessionPageInner />
       </Suspense>
@@ -59,7 +72,10 @@ function SessionPageInner() {
   const addClaim = useSession((s) => s.addClaim);
   const addMarker = useSession((s) => s.addMarker);
   const ensureSpeaker = useSession((s) => s.ensureSpeaker);
+  const renameSpeaker = useSession((s) => s.renameSpeaker);
   const setRecording = useSession((s) => s.setRecording);
+  const setSynthesis = useSession((s) => s.setSynthesis);
+  const setDevilAdvocate = useSession((s) => s.setDevilAdvocate);
   const [sampleError, setSampleError] = useState<string | null>(null);
   const [restoreError, setRestoreError] = useState<string | null>(null);
   const appliedShareTargetKey = useRef<string | null>(null);
@@ -84,7 +100,20 @@ function SessionPageInner() {
       sampleParam ||
       isExtensionPanel ||
       sourceParam === "browser-tab" ||
-      sourceParam === "youtube"
+      sourceParam === "youtube" ||
+      sourceParam === "audio-file" ||
+      sourceParam === "upload" ||
+      sourceParam === "media-url" ||
+      sourceParam === "media" ||
+      sourceParam === "direct-media" ||
+      sourceParam === "web-url" ||
+      sourceParam === "web" ||
+      sourceParam === "article" ||
+      sourceParam === "text" ||
+      sourceParam === "text-doc" ||
+      sourceParam === "document" ||
+      sourceParam === "claim" ||
+      sourceParam === "quick-check"
     ) {
       return;
     }
@@ -133,7 +162,14 @@ function SessionPageInner() {
     async function restoreSavedSession() {
       setRestoreError(null);
       try {
-        const saved = await loadSession(restoreParam ?? "");
+        let saved;
+        try {
+          saved = await loadSession(restoreParam ?? "");
+        } catch {
+          const cloud = await loadCloudSession(restoreParam ?? "");
+          if (!cloud.ok) throw new Error(cloud.message);
+          saved = cloud.data;
+        }
         if (cancelled) return;
         restoreSession(saved.session);
         router.replace("/session?view=overview");
@@ -168,10 +204,19 @@ function SessionPageInner() {
         setSource(data.source);
         startSession(`Validation demo: ${data.title}`);
         setRecording(false);
-        for (const speaker of data.speakers) ensureSpeaker(speaker.id);
+        for (const speaker of data.speakers) {
+          ensureSpeaker(speaker.id);
+          renameSpeaker(speaker.id, speaker.label);
+        }
         for (const segment of data.segments) appendFinal(segment);
         for (const claim of data.claims) addClaim(claim);
         for (const marker of data.markers) addMarker(marker);
+        if (data.synthesis) {
+          setSynthesis({ state: "fresh", ...data.synthesis, at: Date.now() });
+        }
+        if (data.devil_advocate) {
+          setDevilAdvocate({ state: "fresh", brief: data.devil_advocate, at: Date.now() });
+        }
       } catch (error) {
         if (cancelled) return;
         setSampleError(error instanceof Error ? error.message : "Could not load validation demo.");
@@ -188,10 +233,13 @@ function SessionPageInner() {
     addMarker,
     appendFinal,
     ensureSpeaker,
+    renameSpeaker,
     reset,
     sampleParam,
     setRecording,
+    setDevilAdvocate,
     setSource,
+    setSynthesis,
     startSession,
     startedAt,
   ]);
@@ -222,6 +270,75 @@ function SessionPageInner() {
       });
     }
   }, [isExtensionPanel, isValidationDemo, prerecordStage, source, sourceParam, startedAt, setBrowserTabStatus, setPrerecordStage, setSource, titleParam]);
+
+  useEffect(() => {
+    if (startedAt) return;
+    if (sourceParam !== "media-url" && sourceParam !== "media" && sourceParam !== "direct-media") return;
+    const normalizedUrl = normalizeSharedUrl(sharedUrlParam) ?? "";
+    if (source.kind !== "media_url" || source.url !== normalizedUrl) {
+      setSource({ kind: "media_url", url: normalizedUrl });
+    }
+    if (prerecordStage !== "selected") {
+      setPrerecordStage("selected");
+    }
+  }, [prerecordStage, setPrerecordStage, setSource, sharedUrlParam, source, sourceParam, startedAt]);
+
+  useEffect(() => {
+    if (startedAt) return;
+    if (sourceParam !== "web-url" && sourceParam !== "web" && sourceParam !== "article") return;
+    if (source.kind !== "text_doc" || source.intent !== "web_url") {
+      setSource({
+        kind: "text_doc",
+        filename: "",
+        mime: "text/html",
+        byte_count: 0,
+        intent: "web_url",
+        source_url: "",
+      });
+    }
+    if (prerecordStage !== "selected") {
+      setPrerecordStage("selected");
+    }
+  }, [prerecordStage, setPrerecordStage, setSource, source, sourceParam, startedAt]);
+
+  useEffect(() => {
+    if (startedAt) return;
+    if (sourceParam !== "claim" && sourceParam !== "quick-check") return;
+    if (source.kind !== "text_doc" || source.intent !== "claim_only") {
+      setSource({
+        kind: "text_doc",
+        filename: "Claim quick check",
+        mime: "text/plain",
+        byte_count: 0,
+        intent: "claim_only",
+      });
+    }
+    if (prerecordStage !== "selected") {
+      setPrerecordStage("selected");
+    }
+  }, [prerecordStage, setPrerecordStage, setSource, source, sourceParam, startedAt]);
+
+  useEffect(() => {
+    if (startedAt) return;
+    if (sourceParam !== "text" && sourceParam !== "text-doc" && sourceParam !== "document") return;
+    if (source.kind !== "text_doc" || source.intent) {
+      setSource({ kind: "text_doc", filename: "", mime: "", byte_count: 0 });
+    }
+    if (prerecordStage !== "selected") {
+      setPrerecordStage("selected");
+    }
+  }, [prerecordStage, setPrerecordStage, setSource, source, sourceParam, startedAt]);
+
+  useEffect(() => {
+    if (startedAt) return;
+    if (sourceParam !== "audio-file" && sourceParam !== "upload") return;
+    if (source.kind !== "audio_file") {
+      setSource({ kind: "audio_file", blob_url: "", duration_sec: 0, filename: "", mime: "" });
+    }
+    if (prerecordStage !== "selected") {
+      setPrerecordStage("selected");
+    }
+  }, [prerecordStage, setPrerecordStage, setSource, source, sourceParam, startedAt]);
 
   useEffect(() => {
     if (startedAt) return;
@@ -258,8 +375,8 @@ function SessionPageInner() {
             Saved snapshot not found
           </div>
           <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-ink-3">
-            Yentl could not find that browser-local saved session on this
-            device. It may have been deleted, saved in another browser, or
+            Yentl could not find that saved session locally or in account sync.
+            It may have been deleted, saved in another browser without sync, or
             cleared with site data.
           </p>
           <div className="mt-5 rounded-lg border border-red-soft bg-red-soft px-4 py-3 text-[13px] text-red">
@@ -270,7 +387,7 @@ function SessionPageInner() {
               href="/sessions"
               className="inline-flex min-h-11 items-center justify-center rounded-lg border border-line bg-cream-2 px-4 text-[13px] font-medium text-ink-2 transition-colors hover:bg-paper"
             >
-              Open local saves
+              Open saved sessions
             </Link>
             <Link
               href="/session"
@@ -344,6 +461,9 @@ function SessionPageInner() {
     case "watch":
       content = <WatchView />;
       break;
+    case "source":
+      content = <SourceReviewView />;
+      break;
     case "overview":
     default:
       content = <HomeOverview />;
@@ -360,8 +480,8 @@ function SessionPageInner() {
 }
 
 function validationDemoEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   return process.env.NODE_ENV !== "production";
 }
 
@@ -375,6 +495,12 @@ type CorpusSampleResponse = {
   segments: TranscriptSegment[];
   claims: ClaimCard[];
   markers: RhetoricMarker[];
+  synthesis?: {
+    text: string;
+    headlines: string[];
+    per_speaker_verdicts?: SpeakerVerdict[];
+  };
+  devil_advocate?: Omit<PersistedDevilAdvocate, "at">;
 };
 
 type CorpusSampleError = {
@@ -420,11 +546,7 @@ function sourceFromSharedTargetParams({
     };
   }
 
-  const initialText = [title, text]
-    .map((value) => value?.trim())
-    .filter((value): value is string => Boolean(value))
-    .join("\n\n")
-    .slice(0, 1_048_576);
+  const initialText = composeSharedText(title, text).slice(0, 1_048_576);
 
   if (!initialText) return null;
 
@@ -435,6 +557,19 @@ function sourceFromSharedTargetParams({
     byte_count: initialText.length,
     initial_text: initialText,
   };
+}
+
+function composeSharedText(title: string | null, text: string | null): string {
+  const titleText = title?.trim() ?? "";
+  const bodyText = text?.trim() ?? "";
+
+  if (!titleText) return bodyText;
+  if (!bodyText) return titleText;
+  if (bodyText === titleText || bodyText.startsWith(`${titleText}\n`)) {
+    return bodyText;
+  }
+
+  return `${titleText}\n\n${bodyText}`;
 }
 
 function normalizeSharedUrl(value: string | null): string | null {

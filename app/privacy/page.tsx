@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicInfoPage } from "@/components/public-info-page";
 import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -11,10 +12,13 @@ export default function PrivacyPage() {
   const lastUpdated = "2026-05-18";
 
   return (
-    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 space-y-10">
-      <h1 className="text-3xl font-bold">Privacy Policy</h1>
-      <p className="text-sm text-muted-foreground">Last updated: {lastUpdated}</p>
-
+    <PublicInfoPage
+      currentPath="/privacy"
+      eyebrow="Privacy"
+      title="Privacy Policy"
+      description="How Yentl handles source material, saved sessions, processors, retention, and data-rights requests."
+      lastUpdated={lastUpdated}
+    >
       <section aria-labelledby="overview">
         <h2 id="overview" className="text-xl font-semibold mb-3">Overview</h2>
         <p className="text-muted-foreground leading-relaxed">
@@ -23,7 +27,9 @@ export default function PrivacyPage() {
           legal basis, and what rights you have.{" "}
           <strong>
             In v1, Yentl is guest-first and saves sessions locally in your
-            browser, not in an account-backed server library.
+            browser first. If you sign in on a deployment with account sync
+            configured, saved sessions can also be stored in Yentl&apos;s database
+            so they can be restored on another device.
           </strong>{" "}
           API requests may temporarily process audio, media, transcript text,
           claims, sources, and analysis so the app can work.
@@ -87,6 +93,18 @@ export default function PrivacyPage() {
             </a>
             .
           </li>
+          <li>
+            <strong>Clerk</strong> — Provides authentication and account identity
+            when sign-in is enabled for a deployment. Clerk may process account
+            identifiers, email addresses, session cookies, and related metadata.
+            Guest use does not require a Clerk account.
+          </li>
+          <li>
+            <strong>Neon</strong> — Provides the Postgres database used for
+            account-synced saved sessions when the cloud backend is configured.
+            Synced records include serialized session data, source metadata,
+            timestamps, and the saved-session display name.
+          </li>
         </ul>
         <p className="text-muted-foreground mt-3">
           Full subprocessor details are available at{" "}
@@ -128,20 +146,23 @@ export default function PrivacyPage() {
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           <strong>
-            Saved sessions in v1 are browser-local.
+            Saved sessions are local-first.
           </strong>{" "}
           If you use the Save button, the session snapshot is stored in this
-          browser&apos;s IndexedDB so it can appear in the local saved sessions
-          library. Clearing site data, changing browsers, or using another
-          device can remove or hide those saves. Yentl does not provide
-          account-backed session history or cross-device sync in this v1 build.
+          browser&apos;s IndexedDB so it can appear in the saved sessions library.
+          Clearing site data, changing browsers, or using another device can
+          remove or hide browser-local saves. If you are signed in and account
+          sync is configured, Yentl also stores the serialized session, source
+          metadata, timestamps, and display name in its database so the session
+          can be listed, restored, renamed, deleted, and exported from another
+          device.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
           Yentl server routes may temporarily process media, transcript text,
           and analysis while a request runs. Deepgram, Anthropic, Vercel, and
-          any deployment-specific auth provider may retain API request or
-          account metadata per their own retention policies. Refer to their
-          respective privacy policies for details.
+          Clerk, Neon, and any deployment-specific provider may retain API
+          request, account, or database metadata per their own retention
+          policies. Refer to their respective privacy policies for details.
         </p>
       </section>
 
@@ -159,8 +180,9 @@ export default function PrivacyPage() {
             (Deepgram).
           </li>
           <li>
-            Standard Contractual Clauses (SCCs) — for all US-based processors (Deepgram,
-            Anthropic, Vercel), as incorporated into their respective DPAs.
+            Standard Contractual Clauses (SCCs) — for US-based processors and
+            deployment-specific auth/database providers where incorporated into
+            their respective agreements.
           </li>
           <li>UK International Data Transfer Agreement (IDTA) — for UK data subjects.</li>
           <li>
@@ -251,8 +273,9 @@ export default function PrivacyPage() {
         <p className="text-muted-foreground leading-relaxed">
           Quebec&apos;s Act respecting the protection of personal information in the private
           sector (Law 25 / Bill 64) applies to processing of Quebec residents&apos; personal
-          information. Yentl&apos;s guest-first, browser-local save model minimizes account-backed
-          personal data retention consistent with Law 25 data minimization principles.
+          information. Yentl&apos;s guest-first, local-first save model minimizes
+          account-backed personal data retention unless the user signs in and
+          uses account sync, consistent with Law 25 data minimization principles.
           {/* TODO: legal review needed — confirm full Law 25 compliance including privacy impact assessment (PIA) requirements before commercial launch in Quebec */}
         </p>
       </section>
@@ -275,6 +298,6 @@ export default function PrivacyPage() {
           .
         </p>
       </section>
-    </main>
+    </PublicInfoPage>
   );
 }

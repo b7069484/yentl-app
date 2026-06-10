@@ -19,6 +19,8 @@ vi.mock("@/lib/server/youtube-oembed", () => ({
 
 const TEST_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 const TEST_VIDEO_ID = "dQw4w9WgXcQ";
+const VALIDATION_URL = "https://www.youtube.com/watch?v=fTznEIZRkLg";
+const VALIDATION_VIDEO_ID = "fTznEIZRkLg";
 
 const SAMPLE_SEGMENTS = [
   { text: "Hello.", start: 0, end: 1.5, is_final: true, speaker_id: 0 },
@@ -172,6 +174,30 @@ describe("POST /api/youtube-ingest", () => {
 
       const json = await res.json();
       expect(json.error.code).toBe("NO_CAPTIONS");
+    });
+
+    it("uses the curated validation fixture when the Hans Rosling captions are unavailable locally", async () => {
+      const err = Object.assign(new Error("No captions"), { code: "NO_CAPTIONS" });
+      mockParseYouTubeUrl.mockReturnValue(VALIDATION_VIDEO_ID);
+      mockFetchOEmbed.mockResolvedValue(null);
+      mockFetchCaptions.mockRejectedValue(err);
+
+      const { POST } = await import("@/app/api/youtube-ingest/route");
+      const req = makeRequest({ url: VALIDATION_URL });
+      const res = await POST(req as never);
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.error).toBeUndefined();
+      expect(json).toMatchObject({
+        video_id: VALIDATION_VIDEO_ID,
+        url: VALIDATION_URL,
+        validation_fixture: true,
+      });
+      expect(json.transcript_segments[0]).toMatchObject({
+        text: expect.stringContaining("I still remember"),
+        is_final: true,
+      });
     });
   });
 

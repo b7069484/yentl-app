@@ -1,0 +1,132 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 19,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Canada decided to delay the second dose of COVID-19 vaccines by up to four months.",
+      "utterance_start": 80,
+      "utterance_end": 26.48,
+      "topic": "Healthcare",
+      "topic_secondary": "Politics",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 85,
+        "annotations": [
+          "public health policy",
+          "2021 decision"
+        ],
+        "explanation": "In March 2021, Canada's National Advisory Committee on Immunization (NACI) recommended extending the interval between first and second doses of COVID-19 vaccines to up to four months to maximize first-dose coverage amid limited supply. Provinces broadly adopted this guidance, though intervals were later shortened as supply improved."
+      }
+    },
+    {
+      "claim_text": "Canada's decision to delay the second COVID-19 vaccine dose was based on a recommendation from the National Advisory Committee on Immunization (NACI).",
+      "utterance_start": 80,
+      "utterance_end": 26.48,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 90,
+        "annotations": [
+          "public health policy",
+          "well-documented"
+        ],
+        "explanation": "In March 2021, NACI recommended extending the interval between first and second COVID-19 vaccine doses up to four months to maximize first-dose coverage amid limited supply. Provinces across Canada adopted this recommendation as the basis for their dose-delay policies."
+      }
+    },
+    {
+      "claim_text": "Health Canada's product monograph specifies a 21-day interval for the Pfizer COVID-19 vaccine, 28 days for Moderna, and between 4 and 12 weeks for AstraZeneca.",
+      "utterance_start": 64,
+      "utterance_end": 84.24,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "AstraZeneca's COVID-19 vaccine clinical trials used a longer dosing interval between first and second doses.",
+      "utterance_start": 64,
+      "utterance_end": 84.24,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "At the time NACI reviewed the data, there was substantial data on an eight-week interval between first and second doses of the mRNA COVID-19 vaccines from other countries.",
+      "utterance_start": 64,
+      "utterance_end": 84.24,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Operation Remote Immunity involved teams flying into remote First Nations communities in northern Ontario to deliver COVID-19 vaccines.",
+      "utterance_start": 310.8,
+      "utterance_end": 334.4,
+      "topic": "Healthcare",
+      "topic_secondary": "Society",
+      "id": "vaccine_delay_rciscience-youtube_url-claim-6",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "hedge_words",
+      "display": "Hedge Words",
+      "excerpt": "potentially there might be some differences in some of the subgroups",
+      "start_time": 163,
+      "end_time": 180,
+      "severity": "subtle",
+      "explanation": "Multiple stacked hedges ('potentially', 'might be', 'some') soften the claim to the point of vagueness, which is common in cautious scientific communication but qualifies as hedge-word rhetoric."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "up to and i'll just say that again up to four months",
+      "start_time": 134,
+      "end_time": 150,
+      "severity": "clear",
+      "explanation": "The speaker explicitly repeats 'up to' to emphasize that four months is a ceiling, not a mandate. This is a deliberate rhetorical repetition to correct perceived misinterpretation."
+    },
+    {
+      "type": "rhetoric",
+      "name": "hedge_words",
+      "display": "Hedge Words",
+      "excerpt": "i do worry a little bit so i think that's where",
+      "start_time": 362,
+      "end_time": 368,
+      "severity": "subtle",
+      "explanation": "The speaker uses multiple hedges ('a little bit', 'I think') to soften a concern about vulnerable populations, reducing the assertiveness of the claim."
+    },
+    {
+      "type": "rhetoric",
+      "name": "vagueness",
+      "display": "Vagueness / Hand-waving",
+      "excerpt": "we should be seeing some nuanced approach to vaccine distribution and not be angry about that",
+      "start_time": 380,
+      "end_time": 389,
+      "severity": "subtle",
+      "explanation": "The call for a 'nuanced approach' is vague—no specifics are given about what that nuance entails, functioning as hand-waving toward a policy position."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "this collective well-being which actually will benefit me as well as an individual",
+      "start_time": 360,
+      "end_time": 368,
+      "severity": "subtle",
+      "explanation": "Framing the policy in terms of 'collective well-being' is emotionally loaded language designed to align the listener with a communitarian framing rather than presenting neutral tradeoffs."
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,78 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:46:57.085Z",
+  "app_origin": "https://yentl.it",
+  "pages": [
+    "/contact",
+    "/privacy",
+    "/terms",
+    "/accessibility",
+    "/pricing",
+    "/faq",
+    "/about"
+  ],
+  "checks": [
+    {
+      "name": "trust-page-/contact",
+      "ok": true,
+      "elapsed_ms": 193,
+      "status": 200,
+      "path": "/contact"
+    },
+    {
+      "name": "trust-page-/privacy",
+      "ok": true,
+      "elapsed_ms": 58,
+      "status": 200,
+      "path": "/privacy"
+    },
+    {
+      "name": "trust-page-/terms",
+      "ok": true,
+      "elapsed_ms": 131,
+      "status": 200,
+      "path": "/terms"
+    },
+    {
+      "name": "trust-page-/accessibility",
+      "ok": true,
+      "elapsed_ms": 59,
+      "status": 200,
+      "path": "/accessibility"
+    },
+    {
+      "name": "trust-page-/pricing",
+      "ok": true,
+      "elapsed_ms": 86,
+      "status": 200,
+      "path": "/pricing"
+    },
+    {
+      "name": "trust-page-/faq",
+      "ok": true,
+      "elapsed_ms": 76,
+      "status": 200,
+      "path": "/faq"
+    },
+    {
+      "name": "trust-page-/about",
+      "ok": true,
+      "elapsed_ms": 62,
+      "status": 200,
+      "path": "/about"
+    }
+  ],
+  "deploy_blockers": [
+    {
+      "page": "/faq",
+      "missing_preferred_copy": "/contact",
+      "note": "Required in repo source; redeploy needed if this blocker appears on production."
+    },
+    {
+      "page": "/faq",
+      "missing_preferred_copy": "privacy@yentl.it",
+      "note": "Required in repo source; redeploy needed if this blocker appears on production."
+    }
+  ],
+  "failures": []
+}

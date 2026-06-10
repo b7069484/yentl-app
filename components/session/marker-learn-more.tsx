@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { TaxonomyEntry } from "@/lib/taxonomy";
 import type { RhetoricMarker, Speaker, MarkerType } from "@/lib/types";
+import { sessionPathHref } from "@/lib/client/session-route";
 import { wikiUrlFor } from "@/lib/taxonomy/wiki-slug";
 import { getEntry } from "@/lib/taxonomy";
 
@@ -18,6 +20,34 @@ function formatTs(seconds: number): string {
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
   return text.slice(0, max).trimEnd() + "…";
+}
+
+function markerTypeLabel(type: MarkerType): string {
+  if (type === "fallacy") return "Logical fallacy";
+  if (type === "bias") return "Cognitive bias";
+  return "Rhetorical device";
+}
+
+function practiceQuestions(entry: TaxonomyEntry): string[] {
+  if (entry.type === "fallacy") {
+    return [
+      "What exact conclusion is the speaker asking the audience to accept?",
+      "Which link in the reasoning chain is assumed rather than shown?",
+      "What would count as enough evidence to make this move fair?",
+    ];
+  }
+  if (entry.type === "bias") {
+    return [
+      "What prior belief, identity, or emotional shortcut might be steering the judgment?",
+      "What evidence would the speaker notice if the preferred conclusion were wrong?",
+      "Would the same standard be used if the people or sides were reversed?",
+    ];
+  }
+  return [
+    "Which words carry the persuasive force beyond the literal facts?",
+    "How could the same point be phrased in colder, more neutral language?",
+    "What audience reaction does this framing seem designed to invite?",
+  ];
 }
 
 // ─── Type theme maps ──────────────────────────────────────────────────────────
@@ -195,7 +225,8 @@ function ReadingCard({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 p-2.5 bg-cream-2 border border-line-soft rounded-lg hover:border-ink-4 transition-colors"
+      data-testid="learn-reading-link"
+      className="flex min-h-11 items-center gap-3 p-2.5 bg-cream-2 border border-line-soft rounded-lg hover:border-ink-4 transition-colors"
     >
       {icon}
       <div className="flex-1 min-w-0">
@@ -218,21 +249,50 @@ function ReadingCard({
   );
 }
 
-function ChapterPlaceholder() {
-  // For v1, no real book-chapters.json mapping exists yet. Render placeholder card.
-  // When book-chapters.json lands, this component is upgraded to read it and link out.
+function LearningPathCard({ entry }: { entry: TaxonomyEntry }) {
+  const hasChapter = entry.source === "book" && Boolean(entry.chapter);
   return (
-    <div className="flex items-center gap-3 p-2.5 bg-cream-2 border border-line-soft rounded-lg opacity-60">
-      <div className="w-9 h-9 rounded-lg bg-amber-soft border border-amber-soft flex items-center justify-center text-amber-2 font-bold text-[11px] flex-shrink-0">
-        CH
+    <div
+      data-testid="marker-learning-path-card"
+      className="flex items-center gap-3 rounded-lg border border-line-soft bg-cream-2 p-2.5"
+    >
+      <div className={`w-9 h-9 rounded-lg ${typeBgMap[entry.type]} ${typeBorderMap[entry.type]} border flex items-center justify-center ${typeTextMap[entry.type]} flex-shrink-0`}>
+        <GenericTypeIcon type={entry.type} className="h-4 w-4" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-semibold text-ink-3">Book chapter</div>
-        <div className="text-[11px] text-ink-4 mt-px">
-          Chapter mapping is not available in this build.
+        <div className="text-[13px] font-semibold text-ink">
+          {hasChapter ? "Book field guide" : "Practice field guide"}
+        </div>
+        <div className="mt-px text-[11px] text-ink-4">
+          {hasChapter
+            ? `Chapter: ${entry.chapter}`
+            : `${markerTypeLabel(entry.type)} · ${entry.archetype ?? "general pattern"}`}
         </div>
       </div>
     </div>
+  );
+}
+
+function PracticeCheck({ entry }: { entry: TaxonomyEntry }) {
+  const questions = practiceQuestions(entry);
+  return (
+    <Section title="Practice check">
+      <div className="rounded-2xl border border-line bg-paper px-4 py-3">
+        <div className="mb-2 text-[12px] font-semibold text-ink-2">
+          Before treating the marker as settled, ask:
+        </div>
+        <ul className="space-y-2">
+          {questions.map((question, index) => (
+            <li key={question} className="flex gap-2 text-[13px] leading-relaxed text-ink-2">
+              <span className={`mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${typeBgMap[entry.type]} ${typeTextMap[entry.type]} text-[10px] font-bold`}>
+                {index + 1}
+              </span>
+              <span>{question}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
   );
 }
 
@@ -249,6 +309,7 @@ export function MarkerLearnMore({
   speakers: Speaker[];
   onBack: () => void;
 }) {
+  const searchParams = useSearchParams();
   const wikiUrl = wikiUrlFor(entry.canonical_id);
 
   return (
@@ -257,10 +318,11 @@ export function MarkerLearnMore({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-[12px] text-ink-3 hover:text-ink-2 font-medium mb-5 transition-colors"
+        data-testid="learn-back-btn"
+        className="inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-md px-1.5 text-[12px] text-ink-3 hover:text-ink-2 font-medium mb-5 transition-colors"
       >
         <svg
-          className="w-3.5 h-3.5"
+          className="w-3.5 h-3.5 flex-shrink-0"
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -283,12 +345,7 @@ export function MarkerLearnMore({
         </div>
         <div className="min-w-0">
           <div className={`text-[11px] tracking-wider uppercase font-bold mb-0.5 break-words ${typeTextMap[entry.type]}`}>
-            {entry.type === "fallacy"
-              ? "Logical fallacy"
-              : entry.type === "bias"
-                ? "Cognitive bias"
-                : "Rhetorical device"}{" "}
-            · archetype: {entry.archetype ?? "unknown"}
+            {markerTypeLabel(entry.type)} · archetype: {entry.archetype ?? "unknown"}
           </div>
           <h1 className="font-serif text-[32px] font-medium leading-tight tracking-tight text-ink mb-1">
             {entry.display}
@@ -307,6 +364,16 @@ export function MarkerLearnMore({
           {entry.definition ?? "No definition available."}
         </p>
       </Section>
+
+      {entry.example && (
+        <Section title="Example">
+          <div className="rounded-2xl border border-line bg-paper px-4 py-3">
+            <p className="font-serif text-[15px] leading-relaxed text-ink-2">
+              {entry.example}
+            </p>
+          </div>
+        </Section>
+      )}
 
       {/* How to spot it */}
       {entry.how_to_spot && entry.how_to_spot.length > 0 && (
@@ -327,8 +394,7 @@ export function MarkerLearnMore({
       {/* Further reading */}
       <Section title="Further reading">
         <div className="flex flex-col gap-2">
-          {/* Chapter card placeholder per Q16 */}
-          <ChapterPlaceholder />
+          <LearningPathCard entry={entry} />
 
           {/* Wikipedia auto-derived */}
           {wikiUrl && (
@@ -372,6 +438,8 @@ export function MarkerLearnMore({
         </div>
       </Section>
 
+      <PracticeCheck entry={entry} />
+
       {/* Occurrences in this session */}
       {occurrences.length > 0 && (
         <Section title={`Occurrences in this session · ${occurrences.length}`}>
@@ -382,15 +450,24 @@ export function MarkerLearnMore({
               return (
                 <Link
                   key={m.id}
-                  href={`/session/detail/marker/${m.id}`}
-                  className="flex items-center gap-2.5 p-2.5 bg-cream-2 border border-line-soft rounded-lg hover:bg-cream-3 transition-colors"
+                  href={sessionPathHref(searchParams, `/session/detail/marker/${m.id}`)}
+                  data-testid="marker-occurrence-link"
+                  className="flex min-h-11 items-start gap-2.5 rounded-lg border border-line-soft bg-cream-2 p-2.5 hover:bg-cream-3 transition-colors"
                 >
                   <SpeakerDot speakerId={m.speaker_id ?? 0} label={label} />
-                  <span className="font-serif italic text-[12.5px] text-ink-2 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
-                    &ldquo;{truncate(m.excerpt, 80)}&rdquo;
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-serif italic text-[12.5px] text-ink-2">
+                      &ldquo;{truncate(m.excerpt, 110)}&rdquo;
+                    </span>
+                    <span className="mt-1 block text-[11.5px] leading-snug text-ink-4">
+                      {m.explanation}
+                    </span>
                   </span>
-                  <span className="text-[10px] text-ink-4 tabular-nums flex-shrink-0">
-                    {formatTs(m.start_time)}
+                  <span className="flex flex-shrink-0 flex-col items-end gap-1 text-[10px] text-ink-4">
+                    <span className="tabular-nums">{formatTs(m.start_time)}</span>
+                    <span className="rounded-full border border-line bg-paper px-1.5 py-0.5 font-semibold capitalize">
+                      {m.severity}
+                    </span>
                   </span>
                 </Link>
               );
@@ -409,8 +486,9 @@ export function MarkerLearnMore({
               return (
                 <Link
                   key={cid}
-                  href={`/session/learn/marker/${cid}`}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-cream-2 border border-line rounded-full text-[11.5px] text-ink-2 hover:border-ink-4 transition-colors"
+                  href={sessionPathHref(searchParams, `/session/learn/marker/${cid}`)}
+                  data-testid="marker-related-link"
+                  className="inline-flex min-h-11 items-center gap-1.5 px-2.5 py-1.5 bg-cream-2 border border-line rounded-full text-[11.5px] text-ink-2 hover:border-ink-4 transition-colors"
                 >
                   <GenericTypeIcon
                     type={rel.type}

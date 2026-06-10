@@ -4,6 +4,11 @@ import { useEffect, useRef } from "react";
 const BAR_COUNT = 5;
 const THRESHOLDS = [0.05, 0.10, 0.18, 0.30, 0.45];   // RMS levels at which each bar lights
 
+type AudioMeterProps = {
+  stream: MediaStream | null;
+  onRmsSample?: (rms: number) => void;
+};
+
 /**
  * Pure helper — exported for unit testing. Converts a Uint8Array of
  * AudioContext.getByteTimeDomainData() samples (centered around 128) into a
@@ -19,7 +24,7 @@ export function rmsFromTimeDomain(buf: Uint8Array): number {
   return Math.sqrt(sum / buf.length);
 }
 
-export function AudioMeter({ stream }: { stream: MediaStream | null }) {
+export function AudioMeter({ stream, onRmsSample }: AudioMeterProps) {
   const barsRef = useRef<Array<HTMLSpanElement | null>>([]);
   const rafRef = useRef<number | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
@@ -32,6 +37,7 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
         if (el) el.style.background = "rgb(148 163 184 / 0.4)"; // slate-400/40
       });
       if (a11yRef.current) a11yRef.current.textContent = "Microphone silent";
+      onRmsSample?.(0);
       return;
     }
 
@@ -54,6 +60,7 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
     const tick = () => {
       analyser.getByteTimeDomainData(buf);
       const level = rmsFromTimeDomain(buf);
+      onRmsSample?.(level);
       barsRef.current.forEach((el, i) => {
         if (!el) return;
         const active = level >= THRESHOLDS[i];
@@ -78,7 +85,7 @@ export function AudioMeter({ stream }: { stream: MediaStream | null }) {
       void ctx.close();
       ctxRef.current = null;
     };
-  }, [stream]);
+  }, [onRmsSample, stream]);
 
   // Committee amendment (Accessibility — WCAG 1.1.1 / 1.3.3): the 5 visual bars
   // are decorative (aria-hidden). A visually-hidden, polite live region carries

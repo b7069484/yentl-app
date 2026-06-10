@@ -105,6 +105,44 @@ describe("mergeStanceWithCitations", () => {
     expect(nasa?.stance).toBe("contradicts");
   });
 
+  it("does not attach stance refs from sibling URL prefixes", () => {
+    const sources = mergeStanceWithCitations(
+      [sourceStep([{ url: "https://nasa.gov/apollo-11", title: "Apollo 11 — NASA" }])],
+      [
+        {
+          url: "https://nasa.gov/apollo-110",
+          stance: "supports",
+          excerpt: "wrong sibling page",
+        },
+      ],
+    );
+
+    expect(sources).toHaveLength(1);
+    expect(sources[0]).toMatchObject({
+      url: "https://nasa.gov/apollo-11",
+      stance: "mixed",
+      excerpt: "",
+    });
+  });
+
+  it("matches harmless query-string variants without broad path prefixing", () => {
+    const sources = mergeStanceWithCitations(
+      [sourceStep([{ url: "https://nasa.gov/apollo-11", title: "Apollo 11 — NASA" }])],
+      [
+        {
+          url: "https://nasa.gov/apollo-11?utm_source=model",
+          stance: "supports",
+          excerpt: "query variant",
+        },
+      ],
+    );
+
+    expect(sources[0]).toMatchObject({
+      stance: "supports",
+      excerpt: "query variant",
+    });
+  });
+
   it("deduplicates a citation that appears in multiple steps", () => {
     const dupSteps = [
       sourceStep([{ url: "https://nasa.gov/apollo-11", title: "Apollo 11" }]),

@@ -52,6 +52,11 @@ Second caption.
       speaker_id: 0,
       is_final: true,
     });
+    expect(
+      fixture?.transcript_segments.some((segment) =>
+        segment.text.includes("possibilist"),
+      ),
+    ).toBe(true);
   });
 
   it("returns null for unregistered video IDs", async () => {

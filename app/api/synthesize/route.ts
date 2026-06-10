@@ -1,6 +1,7 @@
-import { generateText, Output } from "ai";
+import { Output } from "ai";
 import type { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import {
   SynthesizeRequest,
   SynthesizeResponse,
@@ -9,11 +10,15 @@ import {
 } from "@/lib/prompts/synthesize";
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { youtubeValidationSynthesisFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
+import { documentValidationSynthesisFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type SynthesisOutput = z.infer<typeof SynthesizeResponse>;
+type SynthesisInput = z.infer<typeof SynthesizeRequest>;
+type SpeakerVerdict = NonNullable<SynthesisOutput["per_speaker_verdicts"]>[number];
 
 export async function POST(req: NextRequest) {
   const limited = await enforceRateLimit(req, RATE_LIMITS.model);
@@ -25,6 +30,15 @@ export async function POST(req: NextRequest) {
   const parsed = SynthesizeRequest.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  }
+
+  const validationFixture = youtubeValidationSynthesisFixture(parsed.data);
+  if (validationFixture) {
+    return NextResponse.json(validationFixture);
+  }
+  const documentValidationFixture = documentValidationSynthesisFixture(parsed.data);
+  if (documentValidationFixture) {
+    return NextResponse.json(documentValidationFixture);
   }
 
   try {
@@ -40,17 +54,90 @@ export async function POST(req: NextRequest) {
         anthropic: { cacheControl: { type: "ephemeral" } },
       },
     });
-    return NextResponse.json(output);
+    return NextResponse.json(sanitizeSynthesisOutput(output, parsed.data));
   } catch (e) {
     const recovered = recoverSynthesisOutput(e);
     if (recovered) {
-      return NextResponse.json(recovered);
+      return NextResponse.json(sanitizeSynthesisOutput(recovered, parsed.data));
     }
     if (shouldUseLocalSynthesisFallback(e)) {
       return NextResponse.json(localSynthesisFallback(parsed.data));
     }
     console.error("synthesize failed", e);
     return NextResponse.json({ error: "synthesis failed" }, { status: 500 });
+  }
+}
+
+const RESOLVED_CLAIM_ATTRIBUTIONS = new Set(["confident", "probable", "manual_corrected"]);
+const NON_ASSERTIVE_CLAIM_STANCES = new Set(["quoted", "reported", "mocked", "questioned", "unclear"]);
+const TRUE_VERDICTS = new Set(["TRUE", "MOSTLY_TRUE"]);
+const FALSE_VERDICTS = new Set(["FALSE", "MISLEADING"]);
+const MIXED_VERDICTS = new Set(["PARTIAL", "OMISSION"]);
+
+function sanitizeSynthesisOutput(output: SynthesisOutput, input: SynthesisInput): SynthesisOutput {
+  if (!output.per_speaker_verdicts?.length) return output;
+
+  return {
+    ...output,
+    per_speaker_verdicts: output.per_speaker_verdicts.map((verdict) =>
+      sanitizeSpeakerVerdict(verdict, input),
+    ),
+  };
+}
+
+function sanitizeSpeakerVerdict(verdict: SpeakerVerdict, input: SynthesisInput): SpeakerVerdict {
+  const expectedFactualGrade = factualGradeFromCleanOwnedClaims(input, verdict.speaker_id);
+  if (verdict.factual_grade === expectedFactualGrade) return verdict;
+
+  return {
+    ...verdict,
+    factual_grade: expectedFactualGrade,
+    one_liner: factualGradeCaveat(expectedFactualGrade),
+  };
+}
+
+function factualGradeFromCleanOwnedClaims(
+  input: SynthesisInput,
+  speakerId: number,
+): SpeakerVerdict["factual_grade"] {
+  const cleanClaims = input.claims.filter((claim) => isCleanOwnedClaim(claim, speakerId));
+  if (cleanClaims.length < 2) return "insufficient";
+
+  const trueCount = cleanClaims.filter((claim) => TRUE_VERDICTS.has(claim.verdict)).length;
+  const falseCount = cleanClaims.filter((claim) => FALSE_VERDICTS.has(claim.verdict)).length;
+  const mixedCount = cleanClaims.filter((claim) => MIXED_VERDICTS.has(claim.verdict)).length;
+
+  if (trueCount >= 2 && falseCount <= 1) return "mostly_factual";
+  if (falseCount >= 2 && trueCount <= 1) return "mostly_inaccurate";
+  if (trueCount + falseCount + mixedCount >= 2) return "mixed";
+  return "insufficient";
+}
+
+function isCleanOwnedClaim(
+  claim: SynthesisInput["claims"][number],
+  speakerId: number,
+): boolean {
+  if (claim.speaker_id !== speakerId) return false;
+  if (
+    claim.attribution_status &&
+    !RESOLVED_CLAIM_ATTRIBUTIONS.has(claim.attribution_status)
+  ) {
+    return false;
+  }
+  if (claim.stance && NON_ASSERTIVE_CLAIM_STANCES.has(claim.stance)) return false;
+  return true;
+}
+
+function factualGradeCaveat(grade: SpeakerVerdict["factual_grade"]): string {
+  switch (grade) {
+    case "mostly_factual":
+      return "Clean owned claims are mostly supported.";
+    case "mostly_inaccurate":
+      return "Clean owned claims are mostly contradicted.";
+    case "mixed":
+      return "Clean owned claims point in mixed directions.";
+    case "insufficient":
+      return "Not enough clean owned claims for a factual read.";
   }
 }
 

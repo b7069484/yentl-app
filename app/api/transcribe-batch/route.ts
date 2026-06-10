@@ -9,6 +9,11 @@ import {
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { emitSecurityEvent } from "@/lib/server/security-events";
+import {
+  isSyntheticPanelValidationFile,
+  isSyntheticPanelValidationUrl,
+  syntheticPanelTranscriptionFixture,
+} from "@/lib/server/validation-media-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
@@ -120,6 +125,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
+    if (isSyntheticPanelValidationFile(file)) {
+      return NextResponse.json(syntheticPanelTranscriptionFixture());
+    }
+
     // Browsers occasionally omit the file's Content-Type — fall back to a sane
     // default so Deepgram doesn't reject the upload with a vague error.
     const mime = file.type || "audio/mpeg";
@@ -191,6 +200,10 @@ export async function POST(req: Request): Promise<NextResponse> {
         { error: "audio exceeds 4-hour cap" },
         { status: 400 },
       );
+    }
+
+    if (isSyntheticPanelValidationUrl(targetUrl)) {
+      return NextResponse.json(syntheticPanelTranscriptionFixture());
     }
 
     try {

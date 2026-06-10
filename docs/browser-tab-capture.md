@@ -85,6 +85,9 @@ Current same-page flow:
 14. The client orchestrator also sends enough transcript context to
    `/api/devil-advocate`, which uses Grok through Vercel AI Gateway to produce
    a compact "Devil's Advocate" challenge in the extension panel.
+15. `popup.html` / `popup.js` show the active tab, configured Yentl app origin,
+    current capture status, start/stop control, settings access, and
+    unsupported-page recovery copy before the user records a tab.
 
 Latency note: this implementation removes the capture-start gap by recording
 as soon as Chrome hands us tab audio. It does not make transcription literally
@@ -124,6 +127,68 @@ script into those page DOMs, opens the Yentl panel, verifies a `page-text`
 snapshot, and writes the proof report to
 `docs/superpowers/validation/real-webpage-targets.json`.
 
+Package/readiness check:
+
+```bash
+npm run extension:check
+```
+
+This checks the launch manifest, required extension files, production/local
+origin posture, CSP, forbidden legacy domains, popup controls, README coverage,
+and JavaScript parseability. It is not a substitute for installing the extension
+in Chrome and proving tab audio capture.
+
+Installed-extension local proof:
+
+```bash
+npm run extension:proof:local
+```
+
+This launches Chrome for Testing with a temporary profile, loads the unpacked
+extension, opens `/validation/browser-capture.html`, and writes proof to
+`docs/superpowers/validation/installed-extension-local-proof.json` plus a
+screenshot at
+`docs/superpowers/validation/screenshots/installed-extension-local-fixture.png`.
+The proof is intentionally explicit about what each layer proves:
+
+- `extension_loaded: true` means Yentl's unpacked `background.js` worker loaded
+  in the temporary profile.
+- `shortcut_command_proven: true` means the visible Chrome for Testing profile
+  accepted the OS-level extension command and invoked Yentl on the active tab.
+- `panel_injection_proven: true` means the installed extension injected the real
+  same-page panel into the validation page.
+- `tab_capture_stream_id_available: true` means the extension moved beyond
+  injection into live tab-capture state with the offscreen document running.
+- `live_transcription_proven: true` means the panel iframe received at least one
+  transcript line from the captured validation audio.
+
+Chrome only grants tab-capture authority after a real extension invocation. The
+default visible proof therefore uses an OS-level `Alt+Shift+Y` command and
+records shortcut, capture-state, and transcript evidence separately. If that
+browser-level shortcut cannot be delivered in a given desktop session, the
+diagnostic fallback can still prove extension load and panel injection, but it
+does not prove live tab audio.
+
+The harness prefers Chrome for Testing because official Google Chrome may ignore
+`--load-extension` in automation launches. It does not modify the user's normal
+Chrome profile. Headless mode can be forced with
+`YENTL_EXTENSION_PROOF_HEADLESS=1`, but headless Chrome currently does not prove
+this extension path reliably.
+
+Manual toolbar/popup gate:
+
+```bash
+YENTL_EXTENSION_PROOF_MANUAL_CAPTURE=1 npm run extension:proof:local
+```
+
+This uses the same temporary Chrome for Testing profile, but pauses for a real
+toolbar/popup invocation. It is useful when the OS shortcut cannot be trusted or
+when the release gate needs proof of the exact click path a normal user will use.
+It records `manual_invocation_proven`, `tab_capture_stream_id_available`, and
+`live_transcription_proven` separately. If the manual run proves capture state
+but not transcript events, the remaining issue is in token/transcription plumbing
+rather than extension invocation.
+
 Static layout preview:
 
 - Open `http://localhost:3000/validation/extension-panel-preview.html` to see
@@ -150,18 +215,16 @@ Product flow:
 ## Still Needed Before Store Release
 
 - Add signed extension build and Chrome Web Store listing assets.
-- Add a proper extension popup with start/stop status, target tab title, current
-  Yentl origin, and capture diagnostics instead of relying only on the action
-  badge and injected panel chrome.
-- Measure real first-interim and first-final transcript latency in Chrome after
-  reloading the unpacked extension with the immediate-buffering `offscreen.js`
-  change.
+- Measure first-interim and first-final transcript latency across repeated
+  installed-extension runs and at least one real external video target, not only
+  the local validation audio fixture.
 - Decide whether the injected panel remains the production default or graduates
   to Chrome's native Side Panel API where available.
 - Add user-visible permission and consent copy for recording third-party audio.
 - Add a native pause/resume handshake between the Yentl app and extension.
-- Add an automated installed-extension integration harness. The local manual
-  media fixture now exists at `/validation/browser-capture.html`.
+- Add a release proof for the toolbar/popup click path with
+  `YENTL_EXTENSION_PROOF_MANUAL_CAPTURE=1 npm run extension:proof:local`, so the
+  non-shortcut user journey is covered before store submission.
 - Add production app-origin defaults once `yentl.it` DNS is fully live.
 
 ## Mobile App Prep

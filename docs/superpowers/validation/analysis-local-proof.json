@@ -1,0 +1,54 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T05:37:01.666Z",
+  "app_origin": "http://127.0.0.1:3000",
+  "replay_ids": [
+    "cable_008",
+    "solo_005",
+    "interview_002"
+  ],
+  "checks": [
+    {
+      "name": "corpus-replay-cable_008",
+      "ok": true,
+      "elapsed_ms": 36713,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/cable_008.replay.json",
+      "claims": 1,
+      "markers": 6,
+      "utterances_replayed": 12,
+      "verify_mode": "none"
+    },
+    {
+      "name": "corpus-replay-solo_005",
+      "ok": true,
+      "elapsed_ms": 37675,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/solo_005.replay.json",
+      "claims": 5,
+      "markers": 0,
+      "utterances_replayed": 12,
+      "verify_mode": "none"
+    },
+    {
+      "name": "corpus-replay-interview_002",
+      "ok": true,
+      "elapsed_ms": 30266,
+      "replay_path": "/Users/israelbitton/Live FactCheck/test-corpus/scores/interview_002.replay.json",
+      "claims": 0,
+      "markers": 2,
+      "utterances_replayed": 12,
+      "verify_mode": "none"
+    },
+    {
+      "name": "speaker-attribution-score",
+      "ok": true,
+      "elapsed_ms": 676,
+      "report_path": "/Users/israelbitton/Live FactCheck/test-corpus/speaker-attribution/report/speaker-attribution-report.json",
+      "windows": 16,
+      "scored": 9,
+      "mean_speaker_purity": 0.9975402269130341,
+      "mean_claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1
+    }
+  ],
+  "failures": []
+}

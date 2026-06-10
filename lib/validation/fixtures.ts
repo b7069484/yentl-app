@@ -82,6 +82,36 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     verification: "provisional",
     status: "review",
   },
+  {
+    id: "source_quote_anchors",
+    title: "Source Review quote-anchor proof",
+    category: "source_review",
+    purpose:
+      "Imported text sample with persisted character offsets: proves Source Review quote previews, exact sentence highlights, and mobile-safe source navigation.",
+    sessionHref: "/session?demo=validation&sample=source_quote_anchors&view=source",
+    reportHref: "/project/validation",
+    youtubeUrl: "/session?demo=validation&sample=source_quote_anchors&view=source",
+    claims: 3,
+    markers: 0,
+    errors: 0,
+    verification: "provisional",
+    status: "pass",
+  },
+  {
+    id: "media_playback_sync",
+    title: "Synthetic audio playback sync proof",
+    category: "media_playback",
+    purpose:
+      "Local WAV sample with timed transcript, claims, and markers: proves Watch playback sync, finding queue seeking, and mobile-safe audio review.",
+    sessionHref: "/session?demo=validation&sample=media_playback_sync&view=watch",
+    reportHref: "/project/validation",
+    youtubeUrl: "/validation/yentl-synthetic-panel.wav",
+    claims: 2,
+    markers: 1,
+    errors: 0,
+    verification: "provisional",
+    status: "pass",
+  },
 ];
 
 export const validationFixtures: ValidationFixture[] = [
@@ -90,10 +120,10 @@ export const validationFixtures: ValidationFixture[] = [
     sourceType: "YouTube",
     title: "Hans Rosling population box talk",
     purpose:
-      "Exercises the YouTube caption success flow, Watch redirect, transcript load, and playable-source navigation.",
-    primaryTarget: "Paste into YouTube ingest",
+      "Exercises the YouTube caption success flow, deterministic validation loader, transcript arming, and synced live-analysis rail.",
+    primaryTarget: "Open /session?source=youtube and click Load validation YouTube",
     expectedResult:
-      "In local development this is backed by a deterministic fixture excerpt when live YouTube caption access fails.",
+      "In local development this is backed by a deterministic fixture excerpt when live YouTube caption access fails; captions arm in the same YouTube workspace and can be imported into Watch with Analyze caption track.",
     url: "https://www.youtube.com/watch?v=fTznEIZRkLg",
     status: "ready",
   },
@@ -147,13 +177,27 @@ export const validationFixtures: ValidationFixture[] = [
     status: "manual-extension",
   },
   {
+    id: "web-url-local-article",
+    sourceType: "Web URL",
+    title: "Local validation article",
+    purpose:
+      "Exercises readable article URL import, local validation SSRF bypass gating, source text handoff, claim extraction, and overview rendering.",
+    primaryTarget: "Open /session?source=web-url and click Load validation article",
+    expectedResult:
+      "Yentl imports the local article fixture, builds transcript segments, extracts claims, and opens Overview with source text.",
+    url: "http://localhost:3000/validation/yentl-synthetic-article.html",
+    localPath: "public/validation/yentl-synthetic-article.html",
+    status: "ready",
+  },
+  {
     id: "audio-file-wav",
     sourceType: "Audio file",
     title: "Synthetic spoken WAV",
     purpose:
-      "Exercises upload, duration probing, Deepgram batch transcription, transcript ingestion, and Watch redirect.",
-    primaryTarget: "Drop into Audio file ingest",
-    expectedResult: "Yentl transcribes the known speech and opens Watch.",
+      "Exercises upload staging, duration probing, deterministic batch transcription, speaker handoff, transcript ingestion, and Watch redirect.",
+    primaryTarget: "Open /session?source=audio-file and click Load validation WAV",
+    expectedResult:
+      "Yentl stages the WAV as a file, transcribes the known two-speaker panel, and opens Watch.",
     url: "http://localhost:3000/validation/yentl-synthetic-panel.wav",
     localPath: "public/validation/yentl-synthetic-panel.wav",
     status: "ready",
@@ -163,8 +207,8 @@ export const validationFixtures: ValidationFixture[] = [
     sourceType: "Text file",
     title: "Synthetic two-speaker transcript",
     purpose:
-      "Exercises paste/drop transcript ingest, speaker-label parsing, claim extraction dispatch, and transcript rendering.",
-    primaryTarget: "Paste or drop into Text doc ingest",
+      "Exercises transcript staging, speaker-label parsing, claim extraction dispatch, and transcript rendering.",
+    primaryTarget: "Open /session?source=text-doc and click Load validation TXT",
     expectedResult: "Transcript segments appear with speaker-aware text.",
     url: "http://localhost:3000/validation/yentl-synthetic-transcript.txt",
     localPath: "public/validation/yentl-synthetic-transcript.txt",
@@ -176,10 +220,34 @@ export const validationFixtures: ValidationFixture[] = [
     title: "Markdown transcript variant",
     purpose:
       "Exercises markdown/plain-text file handling with the same claim and rhetoric content.",
-    primaryTarget: "Drop into Text doc ingest",
+    primaryTarget: "Open /session?source=text-doc and click Load validation MD",
     expectedResult: "Yentl accepts the file and populates the transcript input.",
     url: "http://localhost:3000/validation/yentl-synthetic-transcript.md",
     localPath: "public/validation/yentl-synthetic-transcript.md",
+    status: "ready",
+  },
+  {
+    id: "docx-document",
+    sourceType: "Word document",
+    title: "Small DOCX validation brief",
+    purpose:
+      "Exercises binary DOCX fixture loading, Mammoth extraction, outline generation, and speaker-aware text review.",
+    primaryTarget: "Open /session?source=text-doc and click Load validation DOCX",
+    expectedResult: "Yentl extracts the Word document text and keeps it ready for anchored review.",
+    url: "http://localhost:3000/validation/yentl-small-brief.docx",
+    localPath: "public/validation/yentl-small-brief.docx",
+    status: "ready",
+  },
+  {
+    id: "pdf-text-layer-document",
+    sourceType: "PDF document",
+    title: "Small selectable-text PDF",
+    purpose:
+      "Exercises binary PDF fixture loading, server-side text-layer extraction, page-count metadata, and outline generation.",
+    primaryTarget: "Open /session?source=text-doc and click Load validation PDF",
+    expectedResult: "Yentl extracts selectable PDF text, shows document metadata, and enables transcript processing.",
+    url: "http://localhost:3000/validation/yentl-small-text-layer.pdf",
+    localPath: "public/validation/yentl-small-text-layer.pdf",
     status: "ready",
   },
   {
@@ -187,9 +255,9 @@ export const validationFixtures: ValidationFixture[] = [
     sourceType: "Timed text",
     title: "Synthetic WebVTT captions",
     purpose:
-      "Exercises caption-parser expectations and future timed-text import work.",
-    primaryTarget: "Parser and future caption import",
-    expectedResult: "Cue timings and text are deterministic.",
+      "Exercises caption-parser expectations, timed-text staging, and transcript ingestion.",
+    primaryTarget: "Open /session?source=text-doc and click Load validation VTT",
+    expectedResult: "Cue timings and text are deterministic and ingest as timed transcript segments.",
     url: "http://localhost:3000/validation/yentl-synthetic-captions.vtt",
     localPath: "public/validation/yentl-synthetic-captions.vtt",
     status: "ready",
@@ -199,9 +267,9 @@ export const validationFixtures: ValidationFixture[] = [
     sourceType: "Timed text",
     title: "Synthetic SRT captions",
     purpose:
-      "Exercises the existing SRT parser shape used by YouTube caption fallback.",
-    primaryTarget: "parseSrt and caption fixture tests",
-    expectedResult: "Five deterministic timed transcript segments.",
+      "Exercises the SRT parser shape used by caption fallback and direct text ingest.",
+    primaryTarget: "Open /session?source=text-doc and click Load validation SRT",
+    expectedResult: "Five deterministic timed transcript segments ingest with source metadata.",
     url: "http://localhost:3000/validation/yentl-synthetic-captions.srt",
     localPath: "public/validation/yentl-synthetic-captions.srt",
     status: "ready",
@@ -218,16 +286,33 @@ export const validationFixtures: ValidationFixture[] = [
     url: "https://raw.githubusercontent.com/mozilla/DeepSpeech/master/data/smoke_test/LDC93S1.wav",
     status: "ready",
   },
+  {
+    id: "media-url-local-validation-wav",
+    sourceType: "Media URL",
+    title: "Local validation WAV transcription",
+    purpose:
+      "Exercises the media URL backend against Yentl's deterministic local WAV transcript without requiring a live Deepgram call.",
+    primaryTarget: "Open /session?source=media-url and click Load validation media URL",
+    expectedResult:
+      "Yentl returns five timed utterances from the validation fixture and opens Watch.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.wav",
+    localPath: "public/validation/yentl-synthetic-panel.wav",
+    status: "ready",
+  },
 ];
 
 export const validationRunbook = [
   "Open /project/validation and confirm every fixture is visible.",
-  "Use the YouTube fixture URL to verify the local success path reaches Watch.",
-  "Use the synthetic WAV file to verify audio upload, batch transcription, and Watch redirect.",
-  "Use the text transcript fixture to verify paste/drop transcript ingest.",
+  "Use /session?source=youtube, Load validation YouTube, and Analyze caption track to verify deterministic YouTube ingest, caption arming, Watch handoff, and transcript analysis dispatch.",
+  "Use /session?source=audio-file and Load validation WAV to verify audio upload, batch transcription, speaker handoff, and Watch redirect.",
+  "Use /session?source=text-doc and the text validation loaders to verify TXT, Markdown, VTT, and SRT transcript ingest.",
+  "Use /session?source=web-url and Load validation article to verify readable article URL ingest, source-review handoff, and claim extraction.",
   "Use the browser-capture page to verify same-page extension capture and analysis.",
   "Use the Wikimedia Commons real video page to verify same-page extension capture on a third-party playable-media page.",
   "Use the Wikinews real article page to verify page-text extraction and analysis without requiring playable media.",
   "Use the three corpus functional samples to verify the rendered Yentl Watch experience against replayed transcripts, claims, and markers.",
+  "Use the Source Review quote-anchor sample to verify imported-text claim anchors and exact quote highlighting.",
+  "Use the media playback sync sample to verify local audio player readiness, finding queue seeking, and current transcript highlighting.",
+  "Use /session?source=media-url and Load validation media URL to verify deterministic /api/media-ingest and Watch redirect.",
   "Use the Mozilla WAV URL to verify direct media URL ingest.",
 ];

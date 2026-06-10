@@ -1,4 +1,11 @@
 import type { Session } from "@/lib/types";
+import {
+  sourceClaimOverlap,
+  sourceClaimOverlapTerms,
+  sourceDossierStats,
+  sourceEvidenceBreakdown,
+  sourceEvidenceScore,
+} from "@/lib/source-evidence";
 
 export function toJSON(session: Session): string {
   const obj: Record<string, unknown> = {
@@ -17,6 +24,25 @@ export function toJSON(session: Session): string {
   obj.speakers = session.speakers;
   obj.transcript = session.transcript;
   obj.claims = session.claims;
+  obj.source_evidence = {
+    claims: session.claims.map((claim) => ({
+      claim_id: claim.id,
+      summary: sourceDossierStats(claim.sources, claim.claim_text),
+      sources: claim.sources
+        .map((source) => ({
+          url: source.url,
+          title: source.title,
+          domain: source.domain,
+          stance: source.stance,
+          reputation_tier: source.reputation_tier,
+          evidence_score: sourceEvidenceScore(source),
+          evidence_breakdown: sourceEvidenceBreakdown(source),
+          claim_link: sourceClaimOverlap(claim.claim_text, source.excerpt),
+          claim_link_terms: sourceClaimOverlapTerms(claim.claim_text, source.excerpt),
+        }))
+        .sort((a, b) => b.evidence_score - a.evidence_score),
+    })),
+  };
   obj.markers = session.markers;
   if (session.synthesis) obj.synthesis = session.synthesis;
   if (session.devil_advocate) obj.devil_advocate = session.devil_advocate;

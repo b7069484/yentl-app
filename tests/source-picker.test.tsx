@@ -193,6 +193,17 @@ describe("SourcePicker – rendered platform versions", () => {
     expect(screen.getByText("On mobile, start with a shared link, file, text, or microphone.")).toBeTruthy();
     expectAbsent("Android share intent handoff");
   });
+
+  it("keeps mobile source cards at comfortable tap-target height", async () => {
+    mockUserAgent(MOBILE_IOS_UA);
+    render(<SourcePicker />);
+
+    const sharedLinkButton = (await screen.findByText("Shared link")).closest("button");
+    const importFileButton = screen.getByText("Import file").closest("button");
+
+    expect(sharedLinkButton?.className).toContain("min-h-11");
+    expect(importFileButton?.className).toContain("min-h-11");
+  });
 });
 
 // ─── 2. Click handlers call setSource with correct kind ──────────────────────

@@ -1,0 +1,37 @@
+{
+  "id": "interview_002",
+  "title": "Quentin Tarantino interview: 'I'm shutting your butt down!'",
+  "category": "1on1_interview",
+  "startedAt": "2026-06-10T06:25:48.650Z",
+  "finishedAt": "2026-06-10T06:26:17.434Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "verify": "none",
+  "utterancesAvailable": 74,
+  "utterancesReplayed": 12,
+  "claims": [],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "laying waste to a genocidal white racist class in the institution of slavery",
+      "start_time": 48,
+      "end_time": 62,
+      "severity": "clear",
+      "explanation": "Highly charged descriptors ('laying waste', 'genocidal white racist class') are used to frame the antagonists in emotionally and morally maximal terms, characteristic of loaded language.",
+      "id": "interview_002-marker-1"
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "this happens and this happens and this happens and this happens and that happens",
+      "start_time": 65,
+      "end_time": 72,
+      "severity": "subtle",
+      "explanation": "The speaker repeats 'this happens' multiple times to rhetorically emphasize the contrast between a dry historical retelling and his revenge narrative.",
+      "id": "interview_002-marker-2"
+    }
+  ],
+  "errors": []
+}

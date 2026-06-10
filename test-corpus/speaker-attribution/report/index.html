@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yentl Speaker Attribution Hard Windows</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 32px; color: #18202f; background: #f7f8fb; }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0; }
+    .metric { background: white; border: 1px solid #d9deea; border-radius: 8px; padding: 12px; }
+    .metric strong { display: block; font-size: 20px; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #d9deea; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e7eaf1; font-size: 13px; vertical-align: top; }
+    th { background: #eef2f8; font-size: 12px; text-transform: uppercase; letter-spacing: .02em; }
+  </style>
+</head>
+<body>
+  <h1>Yentl Speaker Attribution Hard Windows</h1>
+  <p>Generated 2026-06-10T05:37:01.650Z. Missing labels are blockers, not passes.</p>
+  <section class="summary">
+    <div class="metric">Windows<strong>16</strong></div>
+    <div class="metric">Scored<strong>9</strong></div>
+    <div class="metric">Partial<strong>0</strong></div>
+    <div class="metric">Missing Labels<strong>7</strong></div>
+    <div class="metric">Mean Speaker Purity<strong>99.8%</strong></div>
+    <div class="metric">Mean Claim Owner Accuracy<strong>100.0%</strong></div>
+  </section>
+  <table>
+    <thead>
+      <tr>
+        <th>Window</th>
+        <th>Source</th>
+        <th>Failure Family</th>
+        <th>Labels</th>
+        <th>Speaker Purity</th>
+        <th>Claim Owner</th>
+        <th>Unsafe Recall</th>
+        <th>Quote Errors</th>
+        <th>WER</th>
+        <th>Missing</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>cable_008_panel_open</td>
+        <td>test-corpus/cable_008</td>
+        <td>crosstalk_turn_attribution</td>
+        <td>scored</td>
+        <td>99.6%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>political_010_collapsed_panel</td>
+        <td>test-corpus/political_010</td>
+        <td>speaker_collapse</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus/speaker-attribution/sidecars/political_010_collapsed_panel.json</td>
+      </tr>
+
+      <tr>
+        <td>israel_010_sensitive_boundary</td>
+        <td>test-corpus/israel_010</td>
+        <td>sensitive_quote_stance</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus/speaker-attribution/sidecars/israel_010_sensitive_boundary.json</td>
+      </tr>
+
+      <tr>
+        <td>holocaust_010_historical_framing</td>
+        <td>test-corpus/holocaust_010</td>
+        <td>historical_memory_boundary</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus/speaker-attribution/sidecars/holocaust_010_historical_framing.json</td>
+      </tr>
+
+      <tr>
+        <td>solo_001_clean_control</td>
+        <td>test-corpus/solo_001</td>
+        <td>clean_solo_control</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>solo_003_smoke_single_speaker</td>
+        <td>test-corpus/solo_003</td>
+        <td>clean_solo_control</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>solo_008_clean_control</td>
+        <td>test-corpus/solo_008</td>
+        <td>clean_solo_control</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>interview_002_clean_control</td>
+        <td>test-corpus/interview_002</td>
+        <td>clean_interview_control</td>
+        <td>scored</td>
+        <td>98.7%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>interview_003_clean_control</td>
+        <td>test-corpus/interview_003</td>
+        <td>clean_interview_control</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>c2_mech_01_crosstalk</td>
+        <td>test-corpus-2/c2_mech_01</td>
+        <td>crosstalk_turn_attribution</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>0</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>c2_mech_05_interruption_repair</td>
+        <td>test-corpus-2/c2_mech_05</td>
+        <td>heated_interruption_repair</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_mech_05_interruption_repair.json</td>
+      </tr>
+
+      <tr>
+        <td>c2_quote_02_deadpan_irony</td>
+        <td>test-corpus-2/c2_quote_02</td>
+        <td>quote_irony_stance</td>
+        <td>scored</td>
+        <td>99.6%</td>
+        <td>100.0%</td>
+        <td>n/a</td>
+        <td>2</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>c2_quote_09_harmful_quote</td>
+        <td>test-corpus-2/c2_quote_09</td>
+        <td>harmful_quote_boundary</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_quote_09_harmful_quote.json</td>
+      </tr>
+
+      <tr>
+        <td>c2_ident_10_identity_boundary</td>
+        <td>test-corpus-2/c2_ident_10</td>
+        <td>identity_definition_boundary</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_ident_10_identity_boundary.json</td>
+      </tr>
+
+      <tr>
+        <td>c2_rhet_03_loaded_question</td>
+        <td>test-corpus-2/c2_rhet_03</td>
+        <td>loaded_question_trap</td>
+        <td>scored</td>
+        <td>99.8%</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>3</td>
+        <td>0.0%</td>
+        <td>none</td>
+      </tr>
+
+      <tr>
+        <td>c2_platform_03_many_speakers</td>
+        <td>test-corpus-2/c2_platform_03</td>
+        <td>platform_native_speaker_merge</td>
+        <td>missing</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>n/a</td>
+        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_platform_03_many_speakers.json</td>
+      </tr></tbody>
+  </table>
+</body>
+</html>

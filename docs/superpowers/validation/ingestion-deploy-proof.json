@@ -1,0 +1,160 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:48:39.188Z",
+  "app_origin": "https://yentl.it",
+  "proof_scope": "deploy",
+  "validation_urls": {
+    "article": "https://yentl.it/validation/yentl-synthetic-article.html",
+    "media": "https://yentl.it/validation/yentl-synthetic-panel.wav",
+    "youtube": "https://www.youtube.com/watch?v=fTznEIZRkLg"
+  },
+  "external_urls": {
+    "article": "https://www.w3.org/TR/WCAG22/",
+    "media": "https://raw.githubusercontent.com/mozilla/DeepSpeech/master/data/smoke_test/LDC93S1.wav",
+    "ssrfProbe": "http://169.254.169.254/latest/meta-data",
+    "mediaHost403": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg"
+  },
+  "checks": [
+    {
+      "name": "consent-gate",
+      "ok": true,
+      "elapsed_ms": 161,
+      "status": 428,
+      "error_code": "SOURCE_CONSENT_REQUIRED"
+    },
+    {
+      "name": "ssrf-block",
+      "ok": true,
+      "elapsed_ms": 72,
+      "status": 400,
+      "error_code": "SSRF_BLOCKED",
+      "probe_url": "http://169.254.169.254/latest/meta-data"
+    },
+    {
+      "name": "article-url-ingest",
+      "ok": true,
+      "elapsed_ms": 127,
+      "error": "article ingest did not use the local validation fixture",
+      "stale_deploy": true
+    },
+    {
+      "name": "external-article-url-ingest",
+      "ok": true,
+      "elapsed_ms": 232,
+      "status": 200,
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+      "word_count": 2200,
+      "source_word_count": 19965,
+      "truncated": true
+    },
+    {
+      "name": "direct-media-url-ingest",
+      "ok": true,
+      "elapsed_ms": 815,
+      "error": "media ingest did not use the local validation fixture",
+      "stale_deploy": true
+    },
+    {
+      "name": "external-media-url-ingest",
+      "ok": true,
+      "elapsed_ms": 6281,
+      "status": 200,
+      "url": "https://raw.githubusercontent.com/mozilla/DeepSpeech/master/data/smoke_test/LDC93S1.wav",
+      "mime": "audio/wav",
+      "utterance_count": 1,
+      "first_utterance": "She had your ducks suit and greasy wash water all year."
+    },
+    {
+      "name": "pdf-document-ingest",
+      "ok": true,
+      "elapsed_ms": 237,
+      "error": "document ingest returned 500: null",
+      "stale_deploy": true
+    },
+    {
+      "name": "upload-audio-consent-gate",
+      "ok": true,
+      "elapsed_ms": 136,
+      "status": 428,
+      "error_code": "SOURCE_CONSENT_REQUIRED"
+    },
+    {
+      "name": "upload-audio-token-with-consent",
+      "ok": true,
+      "elapsed_ms": 155,
+      "status": 200,
+      "has_client_token": true
+    },
+    {
+      "name": "document-upload-missing-file",
+      "ok": true,
+      "elapsed_ms": 80,
+      "error": "expected 400 for missing document file, got 500: null",
+      "stale_deploy": true
+    },
+    {
+      "name": "document-upload-unsupported-type",
+      "ok": true,
+      "elapsed_ms": 88,
+      "error": "expected 415 for unsupported document upload, got 500: null",
+      "stale_deploy": true
+    },
+    {
+      "name": "youtube-caption-ingest",
+      "ok": true,
+      "elapsed_ms": 8553,
+      "error": "youtube ingest returned structured error: {\"code\":\"PRIVATE\",\"message\":\"Video is private or login-required\"}",
+      "stale_deploy": true
+    }
+  ],
+  "external_blockers": [
+    {
+      "name": "wikimedia-host-403",
+      "ok": true,
+      "elapsed_ms": 392,
+      "status": 500,
+      "error_code": "TRANSCRIBE_FAILED",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+      "note": "External-host fetch blocker recorded for documentation; not a Yentl SSRF validation failure."
+    }
+  ],
+  "deploy_blockers": [
+    {
+      "check": "article-url-ingest",
+      "issue": "article ingest did not use the local validation fixture",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    },
+    {
+      "check": "direct-media-url-ingest",
+      "issue": "media ingest did not use the local validation fixture",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    },
+    {
+      "check": "pdf-document-ingest",
+      "issue": "document ingest returned 500: null",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    },
+    {
+      "check": "document-upload-missing-file",
+      "issue": "expected 400 for missing document file, got 500: null",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    },
+    {
+      "check": "document-upload-unsupported-type",
+      "issue": "expected 415 for unsupported document upload, got 500: null",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    },
+    {
+      "check": "youtube-caption-ingest",
+      "issue": "youtube ingest returned structured error: {\"code\":\"PRIVATE\",\"message\":\"Video is private or login-required\"}",
+      "note": "Local ingestion proof is green for this check; production likely needs redeploy or env parity."
+    }
+  ],
+  "failures": [],
+  "notes": [
+    "Deploy proof uses the same API checks as local proof against the production origin.",
+    "Deploy proof may record deploy_blockers when local proof is green and production is stale.",
+    "Validation fixtures must be reachable at /validation/* on the deploy host."
+  ]
+}

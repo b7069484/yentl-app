@@ -10,7 +10,7 @@ import { SessionShell } from "@/components/session/session-shell";
 import { useSession } from "@/lib/client/session-store";
 import { startMic, type MicHandle } from "@/lib/client/mic";
 import { openDeepgramStream } from "@/lib/client/deepgram-stream";
-import { onFinalUtterance } from "@/lib/client/orchestrator";
+import { onFinalUtterance, withAudioFeatures } from "@/lib/client/orchestrator";
 import { ExtensionBridge } from "@/components/session/ExtensionBridge";
 
 export default function SessionLayout({ children }: { children: React.ReactNode }) {
@@ -39,8 +39,9 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
       dg.current = await openDeepgramStream({
         onInterim: (t) => session.setInterim(t),
         onFinal: (seg) => {
-          session.appendFinal(seg);
-          void onFinalUtterance(seg);
+          const segment = withAudioFeatures(seg);
+          session.appendFinal(segment);
+          void onFinalUtterance(segment);
         },
         onError: () => {
           setError("Lost connection to Deepgram. Check your network or refresh and try again.");

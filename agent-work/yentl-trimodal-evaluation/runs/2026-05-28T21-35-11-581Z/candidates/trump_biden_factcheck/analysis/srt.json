@@ -1,0 +1,378 @@
+{
+  "mode": "srt",
+  "utterancesAvailable": 30,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "The Trump administration has pulled the United States out of almost every international organization.",
+      "utterance_start": 4.64,
+      "utterance_end": 25.039,
+      "topic": "Politics",
+      "topic_secondary": "Defense",
+      "id": "trump_biden_factcheck-srt-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "FALSE",
+        "score": 15,
+        "annotations": [
+          "exaggeration",
+          "hyperbole"
+        ],
+        "explanation": "While the Trump administration withdrew from or announced withdrawal from several international agreements and organizations (Paris Climate Accord, WHO, UNESCO, UN Human Rights Council, Iran nuclear deal, INF Treaty, Open Skies Treaty, TPP), this represents a small fraction of the many international organizations the US belongs to. The US remained in NATO, UN, IMF, World Bank, WTO, G7, G20, and many others. 'Almost every' is a significant exaggeration."
+      },
+      "confirmed": {
+        "primary_label": "PARTIAL",
+        "score": 42,
+        "annotations": [
+          "hyperbole",
+          "quantifier 'almost every' is overstated",
+          "US remains in most IGOs"
+        ],
+        "explanation": "The Trump administration has withdrawn from a notable number of international organizations (e.g., WHO, UN Human Rights Council, Paris Agreement, UNESCO; and in Jan 2026 announced withdrawal from 66 entities including 31 UN bodies). However, 'almost every international organization' is hyperbolic. The Center for Global Development notes the US government participates in a far larger universe of international organizations and remains a member of most; the US continues participation in the UN Security Council, IMF, World Bank, NATO, WTO, UNICEF, WFP, and many others. The claim captures a real trend of unprecedented withdrawals but exaggerates the scope.",
+        "sources": [
+          {
+            "url": "https://www.aljazeera.com/news/2026/1/8/which-are-the-66-global-organisations-the-us-is-leaving-under-trump",
+            "domain": "aljazeera.com",
+            "title": "Which are the 66 global organisations the US is leaving under Trump? | Climate Crisis News | Al Jazeera",
+            "stance": "mixed",
+            "excerpt": "Trump administration announced withdrawal from 66 international organizations, including 31 UN entities and 35 non-UN bodies — a large but bounded list, not 'almost every' organization.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.state.gov/releases/office-of-the-spokesperson/2026/01/withdrawal-from-wasteful-ineffective-or-harmful-international-organizations",
+            "domain": "state.gov",
+            "title": "Withdrawal from Wasteful, Ineffective, or Harmful International Organizations - United States Department of State",
+            "stance": "supports",
+            "excerpt": "State Department confirms the Trump administration has withdrawn from multiple international organizations it deems wasteful, ineffective, or harmful, with review of others ongoing.",
+            "reputation_tier": "high"
+          },
+          {
+            "url": "https://www.newsweek.com/donald-trump-withdraws-us-organizations-full-list-11326908",
+            "domain": "newsweek.com",
+            "title": "Donald Trump withdraws US from 66 \"harmful\" organizations: Full list",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.whitehouse.gov/fact-sheets/2026/01/fact-sheet-president-donald-j-trump-withdraws-the-united-states-from-international-organizations-that-are-contrary-to-the-interests-of-the-united-states/",
+            "domain": "whitehouse.gov",
+            "title": "Fact Sheet: President Donald J. Trump Withdraws the United States from International Organizations that Are Contrary to the Interests of the United States – The White House",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "high"
+          },
+          {
+            "url": "https://earth.org/trump-withdraws-us-from-66-international-organizations-including-pivotal-climate-treaties/",
+            "domain": "earth.org",
+            "title": "US Withdraws From 66 Int'l Bodies, Including Key Climate Treaties",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.npr.org/sections/goats-and-soda/2026/01/08/nx-s1-5671117/trump-withdrawal-united-nations-health",
+            "domain": "npr.org",
+            "title": "Why is the U.S. pulling out of 31 U.N. groups? And what's the impact?",
+            "stance": "contradicts",
+            "excerpt": "NPR reports that the US is not pulling away from the UN entirely; it continues to participate in the Security Council and remains a donor to UNICEF and the World Food Programme.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.ibanet.org/US-presidency-Trump-administration-withdraws-from-dozens-of-international-organisations-in-unprecedented-move",
+            "domain": "ibanet.org",
+            "title": "US presidency: Trump administration withdraws from dozens of international organisations in unprecedented move | International Bar Association",
+            "stance": "supports",
+            "excerpt": "International Bar Association characterizes the withdrawals from dozens of international organizations as unprecedented in scope.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/International_organization_membership_of_the_United_States",
+            "domain": "en.wikipedia.org",
+            "title": "International organization membership of the United States - Wikipedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.cgdev.org/blog/us-staying-most-international-organizations-slashing-support",
+            "domain": "cgdev.org",
+            "title": "The US Is Staying in Most International Organizations, but Slashing Support | Center For Global Development",
+            "stance": "contradicts",
+            "excerpt": "Center for Global Development argues the US is staying in most international organizations, noting the 66 listed entities should be compared to an estimated 45,000 international organizations worldwide.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/List_of_intergovernmental_organizations",
+            "domain": "en.wikipedia.org",
+            "title": "List of intergovernmental organizations - Wikipedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/International_organization",
+            "domain": "en.wikipedia.org",
+            "title": "International organization - Wikipedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.un.org/en/about-us/main-bodies",
+            "domain": "un.org",
+            "title": "Main Bodies | United Nations",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.un.org/en/about-us/intergovernmental-and-other-organizations",
+            "domain": "un.org",
+            "title": "Intergovernmental and Other Organizations | United Nations",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/United_Nations",
+            "domain": "en.wikipedia.org",
+            "title": "United Nations - Wikipedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://guides.ll.georgetown.edu/c.php?g=365747&p=7141851",
+            "domain": "guides.ll.georgetown.edu",
+            "title": "Specialized Agencies of the UN - United Nations Research Guide - Guides at Georgetown Law Library",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "high"
+          },
+          {
+            "url": "https://ask.un.org/faq/140935",
+            "domain": "ask.un.org",
+            "title": "What are UN Specialized Agencies and how many are there? - Ask DAG!",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          }
+        ]
+      }
+    },
+    {
+      "claim_text": "President Trump and former Vice President Joe Biden held town halls at the same time in two different cities (Miami and Philadelphia) with less than 20 days until the election",
+      "utterance_start": 70.96,
+      "utterance_end": 91.92,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "well-documented event"
+        ],
+        "explanation": "On October 15, 2020, Trump held a town hall on NBC in Miami while Biden held one on ABC in Philadelphia, airing simultaneously. The election was November 3, 2020, which is less than 20 days away."
+      }
+    },
+    {
+      "claim_text": "President Trump's town hall was one hour long",
+      "utterance_start": 70.96,
+      "utterance_end": 91.92,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Savannah Guthrie was the NBC moderator of President Trump's town hall",
+      "utterance_start": 154.64,
+      "utterance_end": 174.64,
+      "topic": "Politics",
+      "topic_secondary": "Culture",
+      "id": "trump_biden_factcheck-srt-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Donald Trump previously said the Senate should wait until the next president to fill a Supreme Court seat.",
+      "utterance_start": 231.84,
+      "utterance_end": 254,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-srt-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Supreme Court confirmation vote for Justice Amy Coney Barrett was expected to happen days before the 2020 election.",
+      "utterance_start": 231.84,
+      "utterance_end": 254,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-srt-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "A model published in March by Imperial College London predicted 2.2 million people in the U.S. could die from COVID-19 if no mitigation efforts were in place.",
+      "utterance_start": 318.8,
+      "utterance_end": 341.759,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "trump_biden_factcheck-srt-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Leroy Garcia is the Colorado Senate President and a Democrat.",
+      "utterance_start": 399.28,
+      "utterance_end": 418.4,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Joe Biden has said he supports waiting before making a decision on court packing.",
+      "utterance_start": 399.28,
+      "utterance_end": 418.4,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-srt-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden held 53% to Trump's 41% among registered voters",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Trump and Biden were tied at 48% among men",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-11",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden led Trump 59% to 36% among women",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-12",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Biden's lead among women in the ABC News/Washington Post poll is the widest margin among women for any presidential candidate in exit polls dating back to 1976",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "trump_biden_factcheck-srt-claim-13",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Election Day in the 2020 US election is November 3rd",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-14",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado mail-in ballots needed to be mailed by October 26th to arrive on time for processing",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-15",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado has thousands of ballot drop boxes located across the state",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-16",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Colorado Secretary of State's office maintains a statewide list of ballot drop boxes",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-17",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado voters can register to vote until 7 p.m. on Election Day",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-18",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado offers a ballot tracking system called Ballot Trax that lets voters track their ballot from sending to acceptance at a processing facility",
+      "utterance_start": 569.36,
+      "utterance_end": 572.8,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-srt-claim-19",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "tu_quoque",
+      "display": "Tu Quoque",
+      "excerpt": "i denounce white supremacy and frankly you want to know something i denounce antifa",
+      "start_time": 173,
+      "end_time": 183,
+      "severity": "clear",
+      "explanation": "Trump deflects the question about denouncing white supremacy by pivoting to denouncing the opposing side (antifa, leftists), a classic 'you too' deflection rather than directly engaging the original question."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "these people on the left that are burning down our cities",
+      "start_time": 177,
+      "end_time": 184,
+      "severity": "clear",
+      "explanation": "Emotionally charged framing characterizing political opponents as destroyers of cities is designed to provoke an emotional response rather than describe events neutrally."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_pity",
+      "display": "Appeal to Pity",
+      "excerpt": "i have never seen a human being treated so badly with false accusations",
+      "start_time": 228,
+      "end_time": 235,
+      "severity": "subtle",
+      "explanation": "Trump justifies changing his stance on filling a Supreme Court seat by invoking sympathy for Kavanaugh's treatment rather than offering a principled reason."
+    },
+    {
+      "type": "rhetoric",
+      "name": "absolutism",
+      "display": "Absolutism",
+      "excerpt": "i have never seen any human being... i have never seen a human being treated so badly",
+      "start_time": 225,
+      "end_time": 233,
+      "severity": "clear",
+      "explanation": "Sweeping absolute language ('never seen any human being') is used for rhetorical emphasis rather than as a defensible factual claim."
+    }
+  ],
+  "errors": []
+}

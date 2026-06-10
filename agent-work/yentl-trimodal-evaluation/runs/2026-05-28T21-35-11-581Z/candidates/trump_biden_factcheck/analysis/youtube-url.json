@@ -1,0 +1,203 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 30,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "The Trump administration has withdrawn from almost every international organization.",
+      "utterance_start": 4.64,
+      "utterance_end": 25.039,
+      "topic": "Politics",
+      "topic_secondary": "Defense",
+      "id": "trump_biden_factcheck-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "FALSE",
+        "score": 15,
+        "annotations": [
+          "exaggeration",
+          "hyperbole"
+        ],
+        "explanation": "While the Trump administration withdrew from several international organizations and agreements (WHO, Paris Climate Accord, UNESCO, UN Human Rights Council, Iran nuclear deal, INF Treaty, Open Skies Treaty), the US remained a member of the vast majority of international organizations including the UN, NATO, IMF, World Bank, WTO, G7, G20, and many others. 'Almost every' is a significant exaggeration."
+      }
+    },
+    {
+      "claim_text": "President Trump and former Vice President Joe Biden held town halls at the same time in two different cities (Miami and Philadelphia) less than 20 days before the election.",
+      "utterance_start": 70.96,
+      "utterance_end": 91.92,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "historical event",
+          "October 2020"
+        ],
+        "explanation": "On October 15, 2020, Trump held a town hall on NBC in Miami while Biden held one on ABC in Philadelphia at the same time, roughly 19 days before the November 3, 2020 election. This replaced the second presidential debate that was cancelled."
+      }
+    },
+    {
+      "claim_text": "President Trump's town hall lasted one hour.",
+      "utterance_start": 70.96,
+      "utterance_end": 91.92,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Savannah Guthrie was the NBC moderator of President Trump's town hall.",
+      "utterance_start": 154.64,
+      "utterance_end": 174.64,
+      "topic": "Politics",
+      "topic_secondary": "Culture",
+      "id": "trump_biden_factcheck-youtube_url-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Donald Trump previously said the Senate should wait until the next president to fill a Supreme Court seat before an election.",
+      "utterance_start": 231.84,
+      "utterance_end": 254,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-youtube_url-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Justice Brett Kavanaugh faced accusations during his Supreme Court confirmation process.",
+      "utterance_start": 231.84,
+      "utterance_end": 254,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "trump_biden_factcheck-youtube_url-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Supreme Court confirmation vote was expected to happen days before the 2020 election.",
+      "utterance_start": 231.84,
+      "utterance_end": 254,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-youtube_url-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "A model published in March by Imperial College London predicted 2.2 million people in the U.S. could die from COVID-19 if no mitigation efforts were in place.",
+      "utterance_start": 318.8,
+      "utterance_end": 341.759,
+      "topic": "Healthcare",
+      "topic_secondary": "Science",
+      "id": "trump_biden_factcheck-youtube_url-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "President Trump claimed that original projections for coronavirus deaths in the U.S. would be around 2.2 million people.",
+      "utterance_start": 318.8,
+      "utterance_end": 341.759,
+      "topic": "Politics",
+      "topic_secondary": "Healthcare",
+      "id": "trump_biden_factcheck-youtube_url-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Leroy Garcia is the Colorado Senate President and a Democrat.",
+      "utterance_start": 399.28,
+      "utterance_end": 418.4,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Joe Biden has said he supports waiting before making a decision on packing the Supreme Court.",
+      "utterance_start": 399.28,
+      "utterance_end": 418.4,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-youtube_url-claim-11",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden holds 53% to Trump's 41% among registered voters.",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-12",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Trump and Biden are tied at 48% among men.",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-13",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden leads Trump 59% to 36% among women.",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-youtube_url-claim-14",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Biden's lead among women in the ABC News/Washington Post poll is the widest margin among women for any presidential candidate in exit polls dating back to 1976.",
+      "utterance_start": 482.319,
+      "utterance_end": 508.319,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "trump_biden_factcheck-youtube_url-claim-15",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "these people on the left that are burning down our cities",
+      "start_time": 173,
+      "end_time": 193,
+      "severity": "clear",
+      "explanation": "Trump uses emotionally charged, vivid language ('burning down our cities') to characterize political opponents, framing them as destructive rather than making a substantive argument."
+    },
+    {
+      "type": "rhetoric",
+      "name": "absolutism",
+      "display": "Absolutism",
+      "excerpt": "I have never seen any human being... treated so badly with false accusations",
+      "start_time": 231,
+      "end_time": 250,
+      "severity": "clear",
+      "explanation": "Trump uses absolute language ('never seen any human being') to dramatize the Kavanaugh hearings and justify reversing his prior position, an extreme overstatement."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_emotion",
+      "display": "Appeal to Emotion",
+      "excerpt": "I have never seen a human being treated so badly with false accusations",
+      "start_time": 231,
+      "end_time": 250,
+      "severity": "clear",
+      "explanation": "Rather than providing principled justification for changing his stance on Supreme Court nominations during an election year, Trump appeals to sympathy/outrage over Kavanaugh's treatment."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "the whole ball game changed when I saw the way they treated Justice Kavanaugh",
+      "start_time": 231,
+      "end_time": 250,
+      "severity": "subtle",
+      "explanation": "Trump deflects from the question about his inconsistent position on election-year confirmations by pivoting to Kavanaugh's treatment, an unrelated grievance."
+    }
+  ],
+  "errors": []
+}

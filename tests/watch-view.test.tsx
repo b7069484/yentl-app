@@ -53,6 +53,10 @@ vi.mock("@/lib/client/orchestrator", () => ({
   runSynthesisNow: mockRunSynthesisNow,
 }));
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(window.location.search),
+}));
+
 // ── Session store mock ────────────────────────────────────────────────────────
 
 type StoreState = {
@@ -148,6 +152,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   ytCallbacks = {};
   audioCallbacks = {};
+  window.history.pushState({}, "", "/");
   mockStoreState = {
     source: { kind: "youtube", video_id: "abc123", url: "https://youtube.com/watch?v=abc123" },
     claims: [],
@@ -270,7 +275,7 @@ describe("WatchView — transcript panel", () => {
     const board = await screen.findByTestId("watch-signal-board");
     expect(within(board).getByText("Current read")).toBeTruthy();
     expect(within(board).getByText("False")).toBeTruthy();
-    expect(within(board).getByText("Rhetoric heat")).toBeTruthy();
+    expect(within(board).getByText("Language heat")).toBeTruthy();
     expect(within(board).getByText("High")).toBeTruthy();
     expect(within(board).getByText("Evidence state")).toBeTruthy();
     expect(within(board).getByText("Needs backing")).toBeTruthy();
@@ -489,6 +494,31 @@ describe("WatchView — click-to-seek on transcript", () => {
 // ── 5. Inline annotations ────────────────────────────────────────────────────
 
 describe("WatchView — inline annotations", () => {
+  it("renders validation-sample inline annotations from the seeded excerpt playhead", async () => {
+    window.history.pushState(
+      {},
+      "",
+      "/session?demo=validation&sample=solo_005&view=watch",
+    );
+    mockStoreState = {
+      ...mockStoreState,
+      source: {
+        kind: "youtube",
+        video_id: "abc123",
+        url: "https://youtube.com/watch?v=abc123",
+      },
+      transcript: [makeSegment(5), makeSegment(10)],
+      claims: [makeClaim("c-at-5", 5)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("annotation-claim-c-at-5")).toBeTruthy();
+      expect(screen.getByTestId("annotation-chip-btn")).toBeTruthy();
+      expect(screen.getByTestId("annotation-detail-link")).toBeTruthy();
+    });
+  });
+
   it("claim at utterance_start=5 appears under t=5 segment when currentTime=7", async () => {
     mockStoreState = {
       ...mockStoreState,
@@ -527,6 +557,33 @@ describe("WatchView — inline annotations", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("annotation-marker-m-at-5")).toBeTruthy();
+    });
+  });
+
+  it("keeps transcript rows and inline annotation controls at mobile tap-target minimums", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      transcript: [makeSegment(0), makeSegment(5)],
+      claims: [makeClaim("c-at-5", 5)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => expect(ytCallbacks.onTimeUpdate).toBeDefined());
+
+    act(() => {
+      ytCallbacks.onTimeUpdate!(7);
+    });
+
+    await waitFor(() => {
+      const transcriptRow = screen.getByTestId("transcript-seg-5");
+      const annotationRow = screen.getByTestId("annotation-claim-c-at-5");
+      const chipButton = annotationRow.querySelector("[data-testid='annotation-chip-btn']");
+      const detailLink = annotationRow.querySelector("[data-testid='annotation-detail-link']");
+
+      expect(transcriptRow.className).toContain("min-h-11");
+      expect(chipButton?.className).toContain("min-h-11");
+      expect(chipButton?.className).toContain("min-w-11");
+      expect(detailLink?.className).toContain("min-h-11");
     });
   });
 });
@@ -575,6 +632,32 @@ describe("WatchView — synthesis card", () => {
     });
 
     expect(screen.queryByTestId("synthesis-card")).toBeNull();
+  });
+
+  it("schedules a synthesis pass for imported sources with findings but no read", async () => {
+    vi.useFakeTimers();
+    try {
+      mockStoreState = {
+        ...mockStoreState,
+        transcript: [makeSegment(0)],
+        claims: [makeClaim("claim-1", 0)],
+        synthesis: null,
+      };
+
+      render(<WatchView />);
+
+      expect(screen.getByTestId("synthesis-card").textContent).toContain(
+        "1 checkable claim",
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1300);
+      });
+
+      expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
@@ -684,6 +767,93 @@ describe("WatchView — audio source", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("transcript-seg-5")).toBeTruthy();
+    });
+  });
+
+  it("supports the validation media sync path with finding queue seek and current-line highlight", async () => {
+    mockStoreState = {
+      ...mockStoreState,
+      source: {
+        kind: "audio_file",
+        blob_url: "/validation/yentl-synthetic-panel.wav",
+        duration_sec: 31.953,
+        filename: "yentl-synthetic-panel.wav",
+        mime: "audio/wav",
+      },
+      transcript: [
+        makeSegment(0, "Welcome to the Yentl validation panel."),
+        makeSegment(4, "The city library budget increased by 12 percent this year."),
+        makeSegment(10, "That number needs context because the technology grant expired."),
+        makeSegment(17, "If we do not ban every social platform by Friday, schools will collapse."),
+        makeSegment(25, "That is a slippery slope."),
+      ],
+      claims: [makeClaim("media-sync-claim-platform-collapse", 17)],
+      markers: [makeMarker("media-sync-marker-slippery-slope", 17)],
+    };
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(audioCallbacks.onTimeUpdate).toBeDefined();
+      expect(screen.getByText("yentl-synthetic-panel.wav")).toBeTruthy();
+      expect(screen.getByTestId("queue-claim-media-sync-claim-platform-collapse")).toBeTruthy();
+      expect(screen.getByTestId("queue-marker-media-sync-marker-slippery-slope")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("queue-claim-media-sync-claim-platform-collapse"));
+    expect(mockSeekTo).toHaveBeenCalledWith(17);
+
+    act(() => {
+      audioCallbacks.onTimeUpdate!(18);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("transcript-seg-17").getAttribute("data-is-current")).toBe("true");
+      expect(screen.getByTestId("status-counter").textContent).toContain("1 claim");
+      expect(screen.getByTestId("status-counter").textContent).toContain("1 marker");
+    });
+  });
+
+  it("honors transcript jump timestamps when Watch opens with ?t=", async () => {
+    window.history.pushState(
+      {},
+      "",
+      "/session?demo=validation&sample=media_playback_sync&view=watch&t=17",
+    );
+    mockStoreState = {
+      ...mockStoreState,
+      source: {
+        kind: "audio_file",
+        blob_url: "/validation/yentl-synthetic-panel.wav",
+        duration_sec: 31.953,
+        filename: "yentl-synthetic-panel.wav",
+        mime: "audio/wav",
+      },
+      transcript: [
+        makeSegment(0, "Welcome to the Yentl validation panel."),
+        makeSegment(4, "The city library budget increased by 12 percent this year."),
+        makeSegment(10, "That number needs context because the technology grant expired."),
+        makeSegment(17, "If we do not ban every social platform by Friday, schools will collapse."),
+        makeSegment(25, "That is a slippery slope."),
+      ],
+      claims: [makeClaim("media-sync-claim-platform-collapse", 17)],
+      markers: [makeMarker("media-sync-marker-slippery-slope", 17)],
+    };
+
+    render(<WatchView />);
+
+    await waitFor(() => {
+      expect(audioCallbacks.onReady).toBeDefined();
+      expect(mockSeekTo).toHaveBeenCalledWith(17);
+      expect(screen.getByTestId("transcript-seg-17").getAttribute("data-is-current")).toBe("true");
+    });
+
+    act(() => {
+      audioCallbacks.onReady!();
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("00:17").length).toBeGreaterThan(0);
+      expect(screen.getByTestId("transcript-seg-17").getAttribute("data-is-current")).toBe("true");
     });
   });
 });

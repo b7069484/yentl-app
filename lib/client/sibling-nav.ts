@@ -17,6 +17,21 @@ export type Siblings = {
   total: number;
 };
 
+export function sourceBlockIndexFromQuery(fromQuery: URLSearchParams | null): number | null {
+  const value = fromQuery?.get("source");
+  if (!value?.startsWith("block:")) return null;
+  const parsed = Number(value.slice("block:".length));
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function claimBlockIndex(claim: ClaimCard): number | null {
+  const anchor = claim.document_anchor;
+  if (!anchor) return null;
+  if (anchor.paragraph_index !== undefined) return anchor.paragraph_index;
+  if (anchor.cue_index !== undefined) return anchor.cue_index;
+  return anchor.block_index ?? null;
+}
+
 /**
  * Compute prev/next sibling IDs for a claim within a (optionally filtered) pool.
  *
@@ -30,15 +45,20 @@ export function claimSiblings(
   currentId: string,
   fromQuery: URLSearchParams | null,
 ): Siblings {
-  let pool: ClaimCard[];
+  let pool = [...claims];
+  const sourceBlockIndex = sourceBlockIndexFromQuery(fromQuery);
+
+  if (sourceBlockIndex !== null) {
+    pool = pool.filter((claim) => claimBlockIndex(claim) === sourceBlockIndex);
+  }
 
   if (fromQuery) {
     const filters = parseClaimFilters(fromQuery);
     const sort = parseClaimSort(fromQuery);
-    pool = sortClaims(applyClaimFilters(claims, filters), sort);
+    pool = sortClaims(applyClaimFilters(pool, filters), sort);
   } else {
     // No filter context → all claims sorted most-recent first
-    pool = sortClaims([...claims], "recent");
+    pool = sortClaims(pool, "recent");
   }
 
   const index = pool.findIndex((c) => c.id === currentId);

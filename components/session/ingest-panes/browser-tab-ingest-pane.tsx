@@ -63,7 +63,7 @@ export function BrowserTabIngestPane() {
       <button
         type="button"
         onClick={() => setPrerecordStage("picker")}
-        className="inline-flex items-center gap-1.5 text-[12px] text-ink-3 hover:text-ink-2 mb-6"
+        className="mb-6 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
       </button>

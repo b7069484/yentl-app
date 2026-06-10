@@ -1,0 +1,828 @@
+1
+00:27:22,480 --> 00:27:25,120
+    A really common question we're getting in 
+
+2
+00:27:25,440 --> 00:27:28,240
+    the chat is about the decision in Canada 
+
+3
+00:27:28,240 --> 00:27:29,480
+    to delay the second 
+
+4
+00:27:29,520 --> 00:27:31,440
+    dose up to four months. 
+
+5
+00:27:32,040 --> 00:27:34,320
+    This was based off a recommendation from 
+
+6
+00:27:34,320 --> 00:27:35,680
+    the from NACI, the 
+
+7
+00:27:35,720 --> 00:27:36,880
+    National Advisory Committee 
+
+8
+00:27:36,920 --> 00:27:37,880
+    for Immunizations. 
+
+9
+00:27:37,880 --> 00:27:40,960
+    I think that's the full acronym. 
+
+10
+00:27:42,160 --> 00:27:45,720
+    Doctor Sharma can I get your insights on this one? 
+
+11
+00:27:47,280 --> 00:27:48,000
+    Sure, so 
+
+12
+00:27:48,000 --> 00:27:49,360
+    I mean the first part of it is that 
+
+13
+00:27:49,360 --> 00:27:51,080
+    that NACI is, as I said 
+
+14
+00:27:51,080 --> 00:27:53,800
+    in my presentation, independent and 
+
+15
+00:27:53,840 --> 00:27:55,200
+    it's not part of Health Canada. 
+
+16
+00:27:55,200 --> 00:27:57,200
+    I'm getting a lot of emails telling me 
+
+17
+00:27:57,200 --> 00:27:58,480
+    that I shouldn't have made that decision. 
+
+18
+00:27:58,480 --> 00:28:00,760
+    I didn't, just to be clear. 
+
+19
+00:28:00,800 --> 00:28:01,960
+    The Health Canada position 
+
+20
+00:28:02,000 --> 00:28:03,960
+    is what's in the product monograph, so 
+
+21
+00:28:04,000 --> 00:28:05,480
+    we still from the Health Canada 
+
+22
+00:28:05,480 --> 00:28:07,520
+    perspective are saying a 21 day 
+
+23
+00:28:07,520 --> 00:28:09,600
+    interval for Pfizer, 28 day for 
+
+24
+00:28:09,640 --> 00:28:12,280
+    Moderna and then between four weeks 
+
+25
+00:28:12,280 --> 00:28:14,320
+    and 12 weeks for AstraZeneca. 
+
+26
+00:28:14,640 --> 00:28:17,120
+    And what NACI does, though is give those 
+
+27
+00:28:17,120 --> 00:28:19,320
+    recommendations on how best to use 
+
+28
+00:28:19,360 --> 00:28:21,400
+    the vaccines and when they look at 
+
+29
+00:28:21,440 --> 00:28:22,000
+    them, they looked 
+
+30
+00:28:22,040 --> 00:28:23,960
+    at obviously the clinical trial data. 
+
+31
+00:28:24,360 --> 00:28:26,400
+    They looked at real-world data. 
+
+32
+00:28:26,440 --> 00:28:28,560
+    We have data from 
+
+33
+00:28:28,600 --> 00:28:30,600
+    other countries that have actually used a 
+
+34
+00:28:30,600 --> 00:28:32,760
+    longer dosing interval. At the time 
+
+35
+00:28:32,760 --> 00:28:33,440
+    that they looked at it, 
+
+36
+00:28:33,440 --> 00:28:35,640
+    there was a lot of data around an 8 week 
+
+37
+00:28:35,640 --> 00:28:36,880
+    interval between the 1st and 
+
+38
+00:28:36,880 --> 00:28:40,720
+    2nd doses of the mRNA vaccines, and of course for 
+
+39
+00:28:40,840 --> 00:28:41,880
+    AstraZeneca we already 
+
+40
+00:28:41,880 --> 00:28:43,120
+    have that kind of longer 
+
+41
+00:28:43,120 --> 00:28:44,760
+    interval in the clinical trials. 
+
+42
+00:28:45,160 --> 00:28:46,200
+    They were also looking at 
+
+43
+00:28:46,200 --> 00:28:49,360
+    what they knew about vaccines in general. 
+
+44
+00:28:49,400 --> 00:28:50,840
+    And we know that when you have 
+
+45
+00:28:50,880 --> 00:28:51,920
+    immunity, especially at 
+
+46
+00:28:51,920 --> 00:28:53,160
+    these high levels, 
+
+47
+00:28:53,160 --> 00:28:55,360
+    that Dr. Gommerman talked about, 
+
+48
+00:28:55,360 --> 00:28:56,560
+    they don't just immediately sort of 
+
+49
+00:28:56,560 --> 00:28:58,160
+    fall off a cliff all of a sudden. 
+
+50
+00:28:58,160 --> 00:29:02,200
+    So we don't know how long they last. 
+
+51
+00:29:02,200 --> 00:29:03,600
+    We are getting more information on 
+
+52
+00:29:03,600 --> 00:29:05,640
+    how sustained that immune response is, 
+
+53
+00:29:05,720 --> 00:29:06,960
+    but we do know that you've 
+
+54
+00:29:06,960 --> 00:29:08,240
+    already got a high level. 
+
+55
+00:29:08,240 --> 00:29:08,800
+    It's not going to 
+
+56
+00:29:08,800 --> 00:29:10,760
+    drop off very quickly, so they 
+
+57
+00:29:10,800 --> 00:29:12,880
+    use that along with some modeling, 
+
+58
+00:29:12,960 --> 00:29:14,600
+    and then this is the important part, 
+
+59
+00:29:14,640 --> 00:29:16,000
+    amd looked at what the supply 
+
+60
+00:29:16,040 --> 00:29:17,560
+    situation would be in Canada. 
+
+61
+00:29:17,880 --> 00:29:19,680
+    So this is the part that's a bit, 
+
+62
+00:29:19,720 --> 00:29:20,920
+    I think, challenging for 
+
+63
+00:29:20,920 --> 00:29:23,760
+    people. So they took a look at 
+
+64
+00:29:23,800 --> 00:29:25,200
+    what the benefits were 
+
+65
+00:29:25,320 --> 00:29:26,600
+    of getting first doses 
+
+66
+00:29:26,600 --> 00:29:28,360
+    into as many people as possible 
+
+67
+00:29:28,440 --> 00:29:30,560
+    versus sticking to a shorter 
+
+68
+00:29:30,760 --> 00:29:33,680
+    interval and potentially then 
+
+69
+00:29:33,880 --> 00:29:34,960
+    having more people 
+
+70
+00:29:34,960 --> 00:29:37,080
+    having completed vaccination 
+
+71
+00:29:37,080 --> 00:29:38,800
+    schedules and 
+
+72
+00:29:38,800 --> 00:29:40,640
+    having some people that don't. 
+
+73
+00:29:40,680 --> 00:29:42,560
+    And so their recommendation was 
+
+74
+00:29:42,840 --> 00:29:45,400
+    that you could go up to and 
+
+75
+00:29:45,400 --> 00:29:45,880
+    I'll just say that 
+
+76
+00:29:45,880 --> 00:29:47,880
+    again, up to four months 
+
+77
+00:29:47,880 --> 00:29:48,880
+    in their opinion, 
+
+78
+00:29:48,960 --> 00:29:51,400
+    without compromising the immune response. 
+
+79
+00:29:51,480 --> 00:29:53,720
+    They didn't say that you have to, so 
+
+80
+00:29:53,720 --> 00:29:54,680
+    I know a lot of places are 
+
+81
+00:29:54,720 --> 00:30:00,960
+    automatically giving that second vaccination dose 
+
+82
+00:30:00,960 --> 00:30:02,240
+    exactly four months later. 
+
+83
+00:30:02,280 --> 00:30:04,760
+    That's not what they said. They were saying, you could, 
+
+84
+00:30:04,760 --> 00:30:05,880
+    if it's for, you know, 
+
+85
+00:30:05,920 --> 00:30:07,120
+    in your best interest to get more 
+
+86
+00:30:07,120 --> 00:30:09,080
+    people vaccinated, you could go 
+
+87
+00:30:09,120 --> 00:30:11,560
+    up to four months. Now what they're doing 
+
+88
+00:30:11,600 --> 00:30:13,320
+    is that they're also looking at 
+
+89
+00:30:13,360 --> 00:30:15,840
+    new data that's come out that's showing 
+
+90
+00:30:15,840 --> 00:30:16,840
+    that potentially there might 
+
+91
+00:30:16,840 --> 00:30:18,040
+    be some differences 
+
+92
+00:30:18,080 --> 00:30:20,240
+    in some of the subgroups, so 
+
+93
+00:30:20,280 --> 00:30:21,640
+    people that might have a bit of 
+
+94
+00:30:21,680 --> 00:30:22,760
+    a compromised immune 
+
+95
+00:30:22,760 --> 00:30:24,480
+    system, such as people that had cancer 
+
+96
+00:30:24,480 --> 00:30:25,640
+    and received treatment, 
+
+97
+00:30:25,720 --> 00:30:26,840
+    whether or not in the 
+
+98
+00:30:26,840 --> 00:30:29,520
+    elderly population so 70 and older, 
+
+99
+00:30:29,560 --> 00:30:31,440
+    80 and older. 
+
+100
+00:30:31,480 --> 00:30:32,480
+    Maybe their immunity 
+
+101
+00:30:32,480 --> 00:30:33,960
+    drops off a bit quicker than 
+
+102
+00:30:33,960 --> 00:30:35,440
+    other groups, so they're actually 
+
+103
+00:30:35,440 --> 00:30:36,760
+    in the process of looking at 
+
+104
+00:30:36,760 --> 00:30:38,400
+    that as well now 
+
+105
+00:30:38,440 --> 00:30:40,200
+    and to see if they need to 
+
+106
+00:30:40,480 --> 00:30:42,600
+    update that recommendation in any way. 
+
+107
+00:30:42,640 --> 00:30:46,880
+    So we've got the Health Canada 
+
+108
+00:30:46,880 --> 00:30:49,200
+    sort of strict interpretation of the data, 
+
+109
+00:30:49,240 --> 00:30:50,440
+    whether it's clinical trial, 
+
+110
+00:30:50,440 --> 00:30:51,480
+    real-world evidence, and then 
+
+111
+00:30:51,480 --> 00:30:52,560
+    we have this, like 
+
+112
+00:30:52,560 --> 00:30:55,000
+    how do we best use 
+
+113
+00:30:55,000 --> 00:30:56,960
+    these vaccines in Canada 
+
+114
+00:30:57,120 --> 00:30:58,640
+    to protect us all 
+
+115
+00:30:58,720 --> 00:31:00,720
+    in the best ways we can get 
+
+116
+00:31:00,920 --> 00:31:02,760
+    you know, back to some state 
+
+117
+00:31:02,760 --> 00:31:04,320
+    of normality as quickly 
+
+118
+00:31:04,320 --> 00:31:05,760
+    as possible, so that's 
+
+119
+00:31:05,760 --> 00:31:06,440
+    where that came from. 
+
+120
+00:31:06,440 --> 00:31:08,040
+    But again, I just want to underscore that 
+
+121
+00:31:08,080 --> 00:31:09,760
+    it's up to four months and 
+
+122
+00:31:09,760 --> 00:31:11,440
+    it's really dependent on availability 
+
+123
+00:31:11,440 --> 00:31:13,880
+    of vaccines, and it might change based 
+
+124
+00:31:13,880 --> 00:31:15,080
+    on evidence, which you know 
+
+125
+00:31:15,080 --> 00:31:16,560
+    is challenging in and of itself, 
+
+126
+00:31:16,560 --> 00:31:17,880
+    when we change recommendations. 
+
+127
+00:31:18,000 --> 00:31:19,160
+    But just to say that that's 
+
+128
+00:31:19,160 --> 00:31:19,880
+    what they're looking at 
+
+129
+00:31:19,880 --> 00:31:20,640
+    when they're giving their 
+
+130
+00:31:20,640 --> 00:31:22,120
+    recommendations to the provinces 
+
+131
+00:31:22,160 --> 00:31:22,840
+    and territories. 
+
+132
+00:31:22,920 --> 00:31:24,160
+    Dr Richardson, do you have 
+
+133
+00:31:24,160 --> 00:31:26,240
+    anything to add on on that topic, 
+
+134
+00:31:26,240 --> 00:31:27,480
+    especially from a 
+
+135
+00:31:27,480 --> 00:31:29,040
+    HealthEquity perspective? 
+
+136
+00:31:30,400 --> 00:31:32,120
+    Yeah, I really like what you were 
+
+137
+00:31:32,120 --> 00:31:34,320
+    just saying Sam about about this 
+
+138
+00:31:34,320 --> 00:31:35,640
+    idea of the collective 
+
+139
+00:31:35,680 --> 00:31:37,320
+    versus the individual. 
+
+140
+00:31:37,320 --> 00:31:38,600
+    We're used to health care 
+
+141
+00:31:38,640 --> 00:31:40,600
+    in Canada being entirely focused 
+
+142
+00:31:40,600 --> 00:31:43,160
+    on our individual access, 
+
+143
+00:31:43,160 --> 00:31:44,240
+    apart from, of course, 
+
+144
+00:31:44,240 --> 00:31:45,360
+    the small group of people 
+
+145
+00:31:45,400 --> 00:31:46,560
+    who practice public health. 
+
+146
+00:31:46,600 --> 00:31:48,280
+    And how can we actually 
+
+147
+00:31:48,280 --> 00:31:49,640
+    start to understand that? 
+
+148
+00:31:49,640 --> 00:31:51,600
+    Thinking around the collective? 
+
+149
+00:31:51,840 --> 00:31:54,440
+    Actually, not only is it a morally 
+
+150
+00:31:54,440 --> 00:31:57,080
+    just thing to do because it actually 
+
+151
+00:31:57,120 --> 00:31:59,760
+    makes sure that vaccine 
+
+152
+00:31:59,800 --> 00:32:01,040
+    access goes to those who 
+
+153
+00:32:01,040 --> 00:32:02,560
+    will benefit more from it. 
+
+154
+00:32:02,640 --> 00:32:03,880
+    It will help get us 
+
+155
+00:32:03,920 --> 00:32:05,200
+    out of the situation that 
+
+156
+00:32:05,200 --> 00:32:06,560
+    we're in more quickly. 
+
+157
+00:32:06,600 --> 00:32:08,080
+    So how do we actually 
+
+158
+00:32:08,080 --> 00:32:09,080
+    ensure that those 
+
+159
+00:32:09,080 --> 00:32:10,440
+    postal code regions that 
+
+160
+00:32:10,440 --> 00:32:11,920
+    I was talking about that 
+
+161
+00:32:11,920 --> 00:32:14,280
+    currently in the heat bath in Toronto 
+
+162
+00:32:14,280 --> 00:32:17,560
+    are showing lower access to vaccines and 
+
+163
+00:32:17,560 --> 00:32:20,880
+    yet higher rates of COVID? 
+
+164
+00:32:20,920 --> 00:32:22,120
+    How do we ensure that 
+
+165
+00:32:22,160 --> 00:32:24,520
+    we're getting vaccine there quickly? 
+
+166
+00:32:24,680 --> 00:32:29,680
+    I can tell you that the elongated interval 
+
+167
+00:32:29,680 --> 00:32:31,840
+    I can see being complex for 
+
+168
+00:32:31,840 --> 00:32:33,800
+    some of the outreach work that I'm doing. 
+
+169
+00:32:34,000 --> 00:32:35,320
+    When I look at the magnitude 
+
+170
+00:32:35,360 --> 00:32:36,680
+    of something called Operation 
+
+171
+00:32:36,680 --> 00:32:37,800
+    Remote Immunity, which 
+
+172
+00:32:37,800 --> 00:32:39,800
+    involved teams of us flying into 
+
+173
+00:32:39,840 --> 00:32:41,080
+    remote First Nations 
+
+174
+00:32:41,080 --> 00:32:43,720
+    in the North of Ontario, it was an 
+
+175
+00:32:43,760 --> 00:32:45,840
+    unbelievable operation 
+
+176
+00:32:45,880 --> 00:32:47,320
+    that would oversee. 
+
+177
+00:32:47,320 --> 00:32:49,880
+    It's been done incredibly well 
+
+178
+00:32:49,880 --> 00:32:53,040
+    but to look at having now a gap to 
+
+179
+00:32:53,040 --> 00:32:54,400
+    actually complete that 
+
+180
+00:32:54,440 --> 00:32:55,720
+    after the logistical 
+
+181
+00:32:55,760 --> 00:32:56,760
+    infrastructure that 
+
+182
+00:32:56,760 --> 00:32:58,960
+    went in, that's going to be complex. 
+
+183
+00:32:58,960 --> 00:33:01,000
+    When I look at vaccinating people 
+
+184
+00:33:01,000 --> 00:33:02,640
+    in the park for experiencing 
+
+185
+00:33:02,640 --> 00:33:03,720
+    homelessness like we 
+
+186
+00:33:03,720 --> 00:33:04,920
+    were doing last week here 
+
+187
+00:33:04,960 --> 00:33:06,680
+    in Toronto with Anishnawbe Health, 
+
+188
+00:33:07,400 --> 00:33:11,480
+    elongating that time is going to be is hard. 
+
+189
+00:33:11,480 --> 00:33:13,880
+    We have outreach workers who are going to 
+
+190
+00:33:13,920 --> 00:33:15,600
+    meet people three weeks, 
+
+191
+00:33:15,600 --> 00:33:17,520
+    four weeks, we can do that. Reminder, 
+
+192
+00:33:17,520 --> 00:33:18,520
+    we know where people are 
+
+193
+00:33:18,520 --> 00:33:20,160
+    more likely to be, etc. 
+
+194
+00:33:20,160 --> 00:33:22,280
+    But when we extend that time for 
+
+195
+00:33:22,280 --> 00:33:23,600
+    particularly vulnerable 
+
+196
+00:33:23,600 --> 00:33:25,320
+    groups, I do worry a 
+
+197
+00:33:25,320 --> 00:33:27,040
+    little bit, so I think that's where when 
+
+198
+00:33:27,040 --> 00:33:29,520
+    we start to think from this collective 
+
+199
+00:33:29,520 --> 00:33:30,920
+    well being, which actually 
+
+200
+00:33:30,920 --> 00:33:33,320
+    will benefit me as well as an 
+
+201
+00:33:33,320 --> 00:33:35,000
+    individual because 
+
+202
+00:33:35,040 --> 00:33:36,720
+    we will slow the rate of the spread, 
+
+203
+00:33:36,760 --> 00:33:40,520
+    increase the likelihood to get to herd immunity. 
+
+204
+00:33:40,560 --> 00:33:42,720
+    I think we do need to recognize that 
+
+205
+00:33:42,720 --> 00:33:44,600
+    we should be seeing some nuanced 
+
+206
+00:33:44,640 --> 00:33:46,560
+    approach to vaccine distribution 
+
+207
+00:33:46,680 --> 00:33:48,400
+    and not be angry about that. 
+

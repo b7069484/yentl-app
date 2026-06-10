@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "window_id": "cable_008_panel_open",
+  "corpus_id": "test-corpus",
+  "source_id": "cable_008",
+  "start_s": 0,
+  "end_s": 90,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "So what do you think is going on with him? Trump is being Trump. What we Oh, really? There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't. What I'm saying is 77 So what's really going on here? When people talk about Donald Trump, the conversation almost always gets reduced to personality. His tone, his style, his behavior, but focusing only on that completely ignores the larger reality forming underneath. Over 77,000,000 people showed up and voted for him. That's not random, and it's not something you can dismiss as confusion or misinformation. That kind of support signals something deeper happening in the country, something structural, not emotional. You don't have to agree with him to recognize that reality, but you do have to acknowledge it exists. Because when millions of people move in the same direction, the story isn't just about the candidate, it's about what pushed them there. And ignoring that only widens the gap between institutions and the public. It it is a mandate, and I'm gonna explain why. And I don't mind the question, but let me be very clear. I'm no supporter of Trump. I'm a supporter of truth and the facts, and here's the facts. The man won every swing state. He increased in terms of his vote voter turnout in his favor from the standpoint of blacks, Latinos, and young voters. He increased his numbers in that regard from 2020. Eighty nine percent of the counties shifted to the right.",
+    "turns": [
+      {
+        "id": "cable-008-host-question-1",
+        "start_s": 0.48,
+        "end_s": 2.56,
+        "speaker_id": "host_a",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "cable-008-panelist-brief-1",
+        "start_s": 3.2,
+        "end_s": 4.72,
+        "speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "cable-008-host-challenge-1",
+        "start_s": 4.8,
+        "end_s": 7.28,
+        "speaker_id": "host_a",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "crosstalk"
+      },
+      {
+        "id": "cable-008-panelist-fragment-1",
+        "start_s": 7.28,
+        "end_s": 10.24,
+        "speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "crosstalk"
+      },
+      {
+        "id": "cable-008-narrator-analysis-1",
+        "start_s": 10.56,
+        "end_s": 64.21,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "none"
+      },
+      {
+        "id": "cable-008-panelist-facts-1",
+        "start_s": 64.45,
+        "end_s": 89.92,
+        "speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "cable-008-claim-1",
+        "start_s": 3.2,
+        "end_s": 4.72,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-2",
+        "start_s": 13.065,
+        "end_s": 18.665,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-3",
+        "start_s": 28.33,
+        "end_s": 32.49,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-4",
+        "start_s": 38.49,
+        "end_s": 45.295,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-5",
+        "start_s": 51.935,
+        "end_s": 64.21,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-6",
+        "start_s": 64.45,
+        "end_s": 66.85,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-7",
+        "start_s": 69.17,
+        "end_s": 72.13,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-8",
+        "start_s": 73.33,
+        "end_s": 74.69,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-9",
+        "start_s": 75.125,
+        "end_s": 85.685,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-008-claim-10",
+        "start_s": 86.085,
+        "end_s": 89.92,
+        "owner_speaker_id": "panelist_a",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

@@ -21,12 +21,13 @@ export function SourceRouter() {
   const prerecordStage = useSession((s) => s.prerecordStage);
   const source = useSession((s) => s.source);
   const sourceKind = source.kind;
+  const directYouTubeRequested = searchParams.get("source") === "youtube";
   const directYouTubeUrl =
-    searchParams.get("source") === "youtube" ? searchParams.get("url") : null;
+    directYouTubeRequested ? searchParams.get("url") : null;
 
   if (prerecordStage === "picker") {
-    if (directYouTubeUrl) {
-      return <YoutubeIngestPane initialUrlOverride={directYouTubeUrl} />;
+    if (directYouTubeRequested) {
+      return <YoutubeIngestPane initialUrlOverride={directYouTubeUrl ?? undefined} />;
     }
     return <SourcePicker />;
   }

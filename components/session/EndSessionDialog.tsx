@@ -16,14 +16,20 @@ import { stopBrowserTabCapture } from "@/components/session/ExtensionBridge";
 export function EndSessionDialog({
   open,
   onClose,
+  onSaveFirst,
+  onExportFirst,
 }: {
   open: boolean;
   onClose: () => void;
+  onSaveFirst?: () => void;
+  onExportFirst?: () => void;
 }) {
   const session = useSession();
   const claimCount = useSession((s) => s.claims.length);
   const markerCount = useSession((s) => s.markers.length);
   const transcriptCount = useSession((s) => s.transcript.length);
+  const hasCapturedWork =
+    transcriptCount > 0 || claimCount > 0 || markerCount > 0;
 
   const elapsed = useMemo(() => {
     if (!session.startedAt) return 0;
@@ -71,11 +77,45 @@ export function EndSessionDialog({
           <Stat label="Duration" value={fmtDuration(elapsed)} wide />
         </dl>
 
+        {hasCapturedWork ? (
+          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+            <p className="text-sm font-medium text-foreground">
+              Keep a copy before stopping
+            </p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onSaveFirst}
+                disabled={!onSaveFirst}
+                className="w-full justify-start"
+              >
+                Save first
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onExportFirst}
+                disabled={!onExportFirst}
+                className="w-full justify-start"
+              >
+                Export first
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p className="rounded-lg border border-border/60 bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            No transcript, claims, or markers have been captured yet.
+          </p>
+        )}
+
         <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="outline" onClick={onClose}>
             Keep going
           </Button>
-          <Button onClick={handleConfirm}>End session</Button>
+          <Button variant="destructive" onClick={handleConfirm}>
+            End session
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

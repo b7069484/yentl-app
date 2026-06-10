@@ -6,6 +6,7 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
+  ClipboardPaste,
   FileText,
   Globe2,
   Link as LinkIcon,
@@ -16,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
 import { parseArticleText } from "@/lib/client/text-ingest";
+import { readUrlFromClipboard } from "@/lib/client/clipboard-url";
 import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 
 type Phase =
@@ -34,6 +36,8 @@ type ArticleIngestResponse = {
   word_count?: number;
   error?: { code: string; message: string };
 };
+
+const VALIDATION_ARTICLE_URL = "http://localhost:3000/validation/yentl-synthetic-article.html";
 
 function isValidWebUrl(value: string) {
   try {
@@ -93,6 +97,7 @@ export function WebUrlIngestPane() {
   );
   const [url, setUrl] = useState(initialUrl);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  const [clipboardStatus, setClipboardStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const handoffRef = useRef(false);
 
@@ -110,13 +115,13 @@ export function WebUrlIngestPane() {
     setPrerecordStage("picker");
   }, [setPrerecordStage]);
 
-  const switchToYouTube = useCallback(() => {
-    setSource({ kind: "youtube", video_id: "", url: trimmedUrl });
+  const switchToYouTube = useCallback((nextUrl = trimmedUrl) => {
+    setSource({ kind: "youtube", video_id: "", url: nextUrl });
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource, trimmedUrl]);
 
-  const switchToMediaUrl = useCallback(() => {
-    setSource({ kind: "media_url", url: trimmedUrl });
+  const switchToMediaUrl = useCallback((nextUrl = trimmedUrl) => {
+    setSource({ kind: "media_url", url: nextUrl });
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource, trimmedUrl]);
 
@@ -125,14 +130,15 @@ export function WebUrlIngestPane() {
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource, trimmedUrl]);
 
-  const handleAnalyze = useCallback(async () => {
-    if (!canAnalyze) return;
-    if (isYouTubeUrl(trimmedUrl)) {
-      switchToYouTube();
+  const handleAnalyze = useCallback(async (urlOverride?: string) => {
+    const analysisUrl = (urlOverride ?? trimmedUrl).trim();
+    if (isBusy || !isValidWebUrl(analysisUrl)) return;
+    if (isYouTubeUrl(analysisUrl)) {
+      switchToYouTube(analysisUrl);
       return;
     }
-    if (isDirectMediaUrl(trimmedUrl)) {
-      switchToMediaUrl();
+    if (isDirectMediaUrl(analysisUrl)) {
+      switchToMediaUrl(analysisUrl);
       return;
     }
 
@@ -147,7 +153,7 @@ export function WebUrlIngestPane() {
           "Content-Type": "application/json",
           ...sourceAnalysisConsentHeaders(),
         },
-        body: JSON.stringify({ url: trimmedUrl }),
+        body: JSON.stringify({ url: analysisUrl }),
         signal: ac.signal,
       });
       const data = (await res.json()) as ArticleIngestResponse;
@@ -159,7 +165,7 @@ export function WebUrlIngestPane() {
         return;
       }
 
-      const title = data.title || hostLabel(data.final_url || trimmedUrl);
+      const title = data.title || hostLabel(data.final_url || analysisUrl);
       const text = data.text.trim();
       const segments = parseArticleText(text);
       if (segments.length === 0) {
@@ -178,7 +184,7 @@ export function WebUrlIngestPane() {
         byte_count: text.length,
         intent: "web_url",
         initial_text: text,
-        source_url: data.final_url || trimmedUrl,
+        source_url: data.final_url || analysisUrl,
       });
 
       setPhase({ kind: "ingesting" });
@@ -197,14 +203,34 @@ export function WebUrlIngestPane() {
         message: error instanceof Error ? error.message : "Yentl could not import this page.",
       });
     }
-  }, [canAnalyze, router, setSource, switchToMediaUrl, switchToYouTube, trimmedUrl]);
+  }, [isBusy, router, setSource, switchToMediaUrl, switchToYouTube, trimmedUrl]);
+
+  const handleLoadValidationArticle = useCallback(async () => {
+    if (isBusy) return;
+    setClipboardStatus(null);
+    setUrl(VALIDATION_ARTICLE_URL);
+    if (phase.kind === "error") setPhase({ kind: "idle" });
+    await handleAnalyze(VALIDATION_ARTICLE_URL);
+  }, [handleAnalyze, isBusy, phase.kind]);
+
+  const handlePasteFromClipboard = useCallback(async () => {
+    const result = await readUrlFromClipboard();
+    if (!result.ok) {
+      setClipboardStatus({ kind: "error", message: result.message });
+      return;
+    }
+
+    setUrl(result.url);
+    setClipboardStatus({ kind: "success", message: "URL pasted from clipboard." });
+    if (phase.kind === "error") setPhase({ kind: "idle" });
+  }, [phase.kind]);
 
   return (
     <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 md:px-8">
       <button
         type="button"
         onClick={handleBack}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
+        className="mb-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Back to sources
       </button>
@@ -223,7 +249,7 @@ export function WebUrlIngestPane() {
             Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths.
           </p>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="mt-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
             <label className="sr-only" htmlFor="web-url-input">
               Web page URL
             </label>
@@ -233,6 +259,7 @@ export function WebUrlIngestPane() {
               value={url}
               onChange={(event) => {
                 setUrl(event.target.value);
+                setClipboardStatus(null);
                 if (phase.kind === "error") setPhase({ kind: "idle" });
               }}
               placeholder="https://example.com/article"
@@ -241,14 +268,51 @@ export function WebUrlIngestPane() {
             />
             <button
               type="button"
-              onClick={handleAnalyze}
+              onClick={() => void handleAnalyze()}
               disabled={!canAnalyze}
               className="yentl-action-button inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-ink px-5 text-[14px] font-medium text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isBusy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <ArrowRight className="h-4 w-4" aria-hidden />}
               {phase.kind === "fetching" ? "Reading page" : phase.kind === "ingesting" ? "Building analysis" : "Analyze URL"}
             </button>
+            <button
+              type="button"
+              onClick={handlePasteFromClipboard}
+              disabled={isBusy}
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-4 text-[13px] font-medium text-ink-2 transition-colors hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-45"
+              aria-label="Paste URL from clipboard"
+            >
+              <ClipboardPaste className="h-4 w-4" aria-hidden />
+              Paste
+            </button>
           </div>
+
+          {validationDemoEnabled() && !isBusy && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void handleLoadValidationArticle()}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-3 text-[12.5px] font-semibold text-teal transition-colors hover:bg-teal/10"
+              >
+                <FileText className="h-4 w-4" aria-hidden />
+                Load validation article
+              </button>
+            </div>
+          )}
+
+          {clipboardStatus && (
+            <div
+              role="status"
+              className={[
+                "mt-3 rounded-lg border px-4 py-2 text-[12.5px]",
+                clipboardStatus.kind === "success"
+                  ? "border-green/25 bg-green-soft text-green"
+                  : "border-amber/40 bg-amber-soft text-amber-2",
+              ].join(" ")}
+            >
+              {clipboardStatus.message}
+            </div>
+          )}
 
           {trimmedUrl && isValid && (
             <div className="mt-4 rounded-lg border border-line bg-cream px-4 py-3 text-[13px] leading-relaxed text-ink-3">
@@ -295,7 +359,7 @@ export function WebUrlIngestPane() {
                     </button>
                     <button
                       type="button"
-                      onClick={switchToMediaUrl}
+                      onClick={() => switchToMediaUrl()}
                       className="inline-flex min-h-10 items-center gap-2 rounded-md border border-line bg-paper px-3 text-[12.5px] font-medium text-ink-2"
                     >
                       <LinkIcon className="h-3.5 w-3.5" aria-hidden />
@@ -338,4 +402,10 @@ function UrlRoute({ label, body }: { label: string; body: string }) {
       <p className="mt-0.5 leading-snug">{body}</p>
     </div>
   );
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
 }

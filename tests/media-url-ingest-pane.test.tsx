@@ -34,10 +34,12 @@ vi.mock("@/lib/client/ingest-orchestrator", () => ({
 
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
+let mockClipboardReadText = vi.fn();
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const VALID_URL = "https://example.com/episode.mp3";
+const VALIDATION_MEDIA_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
 const INVALID_URL_FORMAT = "not-a-url";
 const PRIVATE_IP_URL = "http://192.168.1.1/audio.mp3";
 
@@ -79,6 +81,13 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockBulkIngest.mockResolvedValue(undefined);
   mockSource = { kind: "media_url", url: "" };
+  mockClipboardReadText = vi.fn();
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      readText: mockClipboardReadText,
+    },
+  });
 });
 
 // ─── 1. Renders ───────────────────────────────────────────────────────────────
@@ -113,6 +122,16 @@ describe("MediaUrlIngestPane — renders", () => {
   it("renders the Process button", () => {
     render(<MediaUrlIngestPane />);
     expect(screen.getByRole("button", { name: /Process/i })).toBeTruthy();
+  });
+
+  it("renders a clipboard paste action", () => {
+    render(<MediaUrlIngestPane />);
+    expect(screen.getByRole("button", { name: "Paste media URL from clipboard" })).toBeTruthy();
+  });
+
+  it("renders a local validation media URL loader in development", () => {
+    render(<MediaUrlIngestPane />);
+    expect(screen.getByRole("button", { name: "Load validation media URL" })).toBeTruthy();
   });
 
   it("renders the Back to sources button", () => {
@@ -163,6 +182,30 @@ describe("MediaUrlIngestPane — Process button disabled state", () => {
     fireEvent.change(input, { target: { value: "http://podcast.example.com/ep.mp3" } });
     expect(screen.getByRole("button", { name: /Process/i })).not.toBeDisabled();
   });
+
+  it("pastes the first copied URL into the media URL field", async () => {
+    mockClipboardReadText.mockResolvedValue(`Listen here ${VALID_URL}.`);
+
+    render(<MediaUrlIngestPane />);
+    fireEvent.click(screen.getByRole("button", { name: "Paste media URL from clipboard" }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Media URL")).toHaveValue(VALID_URL);
+      expect(screen.getByText("URL pasted from clipboard.")).toBeTruthy();
+      expect(screen.getByRole("button", { name: /^Process$/i })).not.toBeDisabled();
+    });
+  });
+
+  it("shows a clipboard error when copied text has no URL", async () => {
+    mockClipboardReadText.mockResolvedValue("episode notes only");
+
+    render(<MediaUrlIngestPane />);
+    fireEvent.click(screen.getByRole("button", { name: "Paste media URL from clipboard" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Clipboard did not contain an http or https URL.")).toBeTruthy();
+    });
+  });
 });
 
 // ─── 3. Happy-path flow ───────────────────────────────────────────────────────
@@ -212,7 +255,10 @@ describe("MediaUrlIngestPane — happy path", () => {
     await waitFor(() => {
       expect(mockBulkIngest).toHaveBeenCalledWith(
         SAMPLE_UTTERANCES,
-        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          speakers: SAMPLE_SPEAKERS,
+        }),
       );
     });
   });
@@ -228,6 +274,42 @@ describe("MediaUrlIngestPane — happy path", () => {
   it("opens Watch after successful media ingest", async () => {
     await typeAndProcess();
     await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
+    });
+  });
+
+  it("loads the local validation media URL through the same ingest path", async () => {
+    render(<MediaUrlIngestPane />);
+    mockFetch.mockResolvedValueOnce(happyFetchResponse());
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation media URL" }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Media URL")).toHaveValue(VALIDATION_MEDIA_URL);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/api/media-ingest",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "x-yentl-source-consent": "source-analysis-v1",
+          }),
+          body: JSON.stringify({ url: VALIDATION_MEDIA_URL }),
+        }),
+      );
+      expect(mockSetSource).toHaveBeenCalledWith({
+        kind: "media_url",
+        url: VALIDATION_MEDIA_URL,
+      });
+      expect(mockBulkIngest).toHaveBeenCalledWith(
+        SAMPLE_UTTERANCES,
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          speakers: SAMPLE_SPEAKERS,
+        }),
+      );
       expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
     });
   });

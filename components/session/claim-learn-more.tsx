@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { ClaimCard, Speaker } from "@/lib/types";
+import { sessionPathHref } from "@/lib/client/session-route";
 import { SourceCard } from "./source-card";
-import { ScoreChip } from "./claim-detail";
+import { ScoreChip, SourceDossier } from "./claim-detail";
+import { sourceDetailId } from "./source-detail";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -53,6 +56,7 @@ export function ClaimLearnMore({
   speakers: Speaker[];
   onBack: () => void;
 }) {
+  const searchParams = useSearchParams();
   const relatedTopic = claims.filter(
     (c) =>
       c.id !== claim.id &&
@@ -66,10 +70,11 @@ export function ClaimLearnMore({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-[12px] text-ink-3 hover:text-ink-2 font-medium mb-5 transition-colors"
+        data-testid="learn-back-btn"
+        className="inline-flex min-h-11 min-w-11 items-center gap-1.5 rounded-md px-1.5 text-[12px] text-ink-3 hover:text-ink-2 font-medium mb-5 transition-colors"
       >
         <svg
-          className="w-3.5 h-3.5"
+          className="w-3.5 h-3.5 flex-shrink-0"
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -92,9 +97,19 @@ export function ClaimLearnMore({
 
       {/* Full source list */}
       <Section title={`Full source list · ${claim.sources.length}`}>
+        {claim.sources.length > 0 && (
+          <SourceDossier sources={claim.sources} claimText={claim.claim_text} />
+        )}
         <div className="flex flex-col gap-2">
           {claim.sources.map((s, i) => (
-            <SourceCard key={i} source={s} />
+            <SourceCard
+              key={`${s.url}-${i}`}
+              source={s}
+              detailHref={sessionPathHref(
+                searchParams,
+                `/session/detail/source/${sourceDetailId(claim.id, i)}`,
+              )}
+            />
           ))}
           {claim.sources.length === 0 && (
             <div className="text-[11px] italic text-ink-4">
@@ -121,8 +136,9 @@ export function ClaimLearnMore({
               return (
                 <Link
                   key={c.id}
-                  href={`/session/detail/claim/${c.id}`}
-                  className="flex items-center gap-2.5 p-2.5 bg-cream-2 border border-line-soft rounded-lg hover:bg-cream-3 transition-colors"
+                  href={sessionPathHref(searchParams, `/session/detail/claim/${c.id}`)}
+                  data-testid="claim-related-link"
+                  className="flex min-h-11 items-center gap-2.5 p-2.5 bg-cream-2 border border-line-soft rounded-lg hover:bg-cream-3 transition-colors"
                 >
                   <ScoreChip score={c.score} verdict={c.primary_label} />
                   <span className="font-serif italic text-[12.5px] text-ink-2 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">

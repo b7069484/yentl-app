@@ -6,21 +6,32 @@ import type { TranscriptSegment } from "@/lib/types";
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 // Use vi.hoisted() so mock fns are available inside vi.mock() factories.
 
-const { mockSetPrerecordStage, mockSetSource, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdf, mockParseTimedText, mockPush } =
+const { mockSetPrerecordStage, mockSetSource, mockClearPendingLaunchFile, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdfWithMetadata, mockParseTimedText, mockBuildDocumentOutline, mockPush } =
   vi.hoisted(() => {
     const mockSetPrerecordStage = vi.fn();
     const mockSetSource = vi.fn();
+    const mockClearPendingLaunchFile = vi.fn();
     const mockParsePlainText = vi.fn((): TranscriptSegment[] => [
-      { text: "Hello.", start: 0, end: 400, is_final: true, speaker_id: 0 },
+      { text: "Hello.", start: 0, end: 0.4, is_final: true, speaker_id: 0 },
     ]);
     const mockBulkIngest = vi.fn().mockResolvedValue(undefined);
     const mockParseDocx = vi.fn().mockResolvedValue("Extracted docx text");
-    const mockParsePdf = vi.fn().mockResolvedValue("Extracted pdf text");
+    const mockParsePdfWithMetadata = vi.fn().mockResolvedValue({
+      text: "Extracted pdf text",
+      filename: "paper.pdf",
+      mime: "application/pdf",
+      pageCount: 4,
+      byteCount: 14,
+      outline: [{ kind: "heading", label: "Findings", preview: "Extracted pdf text", line_start: 1 }],
+    });
     const mockParseTimedText = vi.fn((): TranscriptSegment[] => [
       { text: "Caption line.", start: 1, end: 3, is_final: true, speaker_id: null },
     ]);
+    const mockBuildDocumentOutline = vi.fn(() => [
+      { kind: "paragraph", label: "Paragraph 1", preview: "Extracted text", paragraph_index: 0 },
+    ]);
     const mockPush = vi.fn();
-    return { mockSetPrerecordStage, mockSetSource, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdf, mockParseTimedText, mockPush };
+    return { mockSetPrerecordStage, mockSetSource, mockClearPendingLaunchFile, mockParsePlainText, mockBulkIngest, mockParseDocx, mockParsePdfWithMetadata, mockParseTimedText, mockBuildDocumentOutline, mockPush };
   });
 let mockSource: {
   kind: string;
@@ -29,6 +40,7 @@ let mockSource: {
   byte_count: number;
   initial_text?: string;
 } = { kind: "text_doc", filename: "", mime: "", byte_count: 0 };
+let mockPendingLaunchFile: File | null = null;
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -39,6 +51,8 @@ vi.mock("@/lib/client/session-store", () => ({
     const state = {
       setPrerecordStage: mockSetPrerecordStage,
       setSource: mockSetSource,
+      clearPendingLaunchFile: mockClearPendingLaunchFile,
+      pendingLaunchFile: mockPendingLaunchFile,
       source: mockSource,
     };
     return selector ? selector(state) : state;
@@ -46,9 +60,10 @@ vi.mock("@/lib/client/session-store", () => ({
 }));
 
 vi.mock("@/lib/client/text-ingest", () => ({
+  buildDocumentOutline: mockBuildDocumentOutline,
   parsePlainText: mockParsePlainText,
   parseDocx: mockParseDocx,
-  parsePdf: mockParsePdf,
+  parsePdfWithMetadata: mockParsePdfWithMetadata,
   parseTimedText: mockParseTimedText,
 }));
 
@@ -64,16 +79,27 @@ beforeEach(() => {
   vi.clearAllMocks();
   // Restore default implementations after clearAllMocks
   mockParsePlainText.mockReturnValue([
-    { text: "Hello.", start: 0, end: 400, is_final: true, speaker_id: 0 },
+    { text: "Hello.", start: 0, end: 0.4, is_final: true, speaker_id: 0 },
   ]);
   mockBulkIngest.mockResolvedValue(undefined);
   mockParseDocx.mockResolvedValue("Extracted docx text");
-  mockParsePdf.mockResolvedValue("Extracted pdf text");
+  mockParsePdfWithMetadata.mockResolvedValue({
+    text: "Extracted pdf text",
+    filename: "paper.pdf",
+    mime: "application/pdf",
+    pageCount: 4,
+    byteCount: 14,
+    outline: [{ kind: "heading", label: "Findings", preview: "Extracted pdf text", line_start: 1 }],
+  });
   mockParseTimedText.mockReturnValue([
     { text: "Caption line.", start: 1, end: 3, is_final: true, speaker_id: null },
   ]);
+  mockBuildDocumentOutline.mockReturnValue([
+    { kind: "paragraph", label: "Paragraph 1", preview: "Extracted text", paragraph_index: 0 },
+  ]);
   mockPush.mockReset();
   mockSource = { kind: "text_doc", filename: "", mime: "", byte_count: 0 };
+  mockPendingLaunchFile = null;
 });
 
 // ─── 1. Renders ───────────────────────────────────────────────────────────────
@@ -114,9 +140,33 @@ describe("TextIngestPane — rendering", () => {
     expect(screen.getByText(/Detect speaker labels/i)).toBeTruthy();
   });
 
+  it("previews line-by-line speaker labels before processing", () => {
+    render(<TextIngestPane />);
+    const ta = screen.getByPlaceholderText(/Paste your transcript here/i);
+
+    fireEvent.change(ta, {
+      target: {
+        value: "Speaker 1: Opening claim.\nSpeaker 2: Response without a blank line.",
+      },
+    });
+
+    expect(screen.getByText("Speaker labels").closest("div")?.textContent).toContain("2");
+    expect(screen.getByText("Transcript lines").closest("div")?.textContent).toContain("2");
+    expect(screen.getByText("Review anchors").closest("div")?.textContent).toContain("2");
+  });
+
   it("renders the Process transcript button", () => {
     render(<TextIngestPane />);
     expect(screen.getByRole("button", { name: /Process transcript/i })).toBeTruthy();
+  });
+
+  it("renders local validation fixture loaders in development", () => {
+    render(<TextIngestPane />);
+
+    expect(screen.getByRole("button", { name: "Load validation TXT" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Load validation DOCX" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Load validation PDF" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Load validation VTT" })).toBeTruthy();
   });
 
   it("renders the Back to sources button", () => {
@@ -197,6 +247,120 @@ describe("TextIngestPane — file drop", () => {
     });
   });
 
+  it("stages a pending PWA-launched text file and clears the handoff slot", async () => {
+    const content = "This transcript came from the operating system.";
+    mockPendingLaunchFile = new File([content], "launch.txt", { type: "text/plain" });
+
+    render(<TextIngestPane />);
+
+    await waitFor(() => {
+      const updatedTa = screen.getByPlaceholderText(
+        /Paste your transcript here/i,
+      ) as HTMLTextAreaElement;
+      expect(updatedTa.value).toBe(content);
+      expect(mockClearPendingLaunchFile).toHaveBeenCalledOnce();
+    });
+  });
+
+  it("loads the validation TXT fixture through the file reader path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      text: async () => "Moderator: Opening claim.",
+    } as Response);
+
+    render(<TextIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation TXT" }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-synthetic-transcript.txt");
+      expect(screen.getByDisplayValue("Moderator: Opening claim.")).toBeTruthy();
+      expect(screen.getByText("yentl-synthetic-transcript.txt")).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process transcript/i })).not.toBeDisabled();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
+  it("loads the validation VTT fixture as timed caption cues", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      text: async () => "WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nCaption line.",
+    } as Response);
+
+    render(<TextIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation VTT" }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-synthetic-captions.vtt");
+      expect(mockParseTimedText).toHaveBeenCalledWith(expect.stringContaining("Caption line"), "vtt");
+      expect(screen.getByDisplayValue(/0:01 Caption line/i)).toBeTruthy();
+      expect(screen.getByText(/1 timed cues/i)).toBeTruthy();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
+  it("loads the validation DOCX fixture through the binary file reader path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      arrayBuffer: async () => new Uint8Array([80, 75, 3, 4]).buffer,
+    } as Response);
+
+    render(<TextIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation DOCX" }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-small-brief.docx");
+      expect(mockParseDocx).toHaveBeenCalledOnce();
+      const file = mockParseDocx.mock.calls[0][0] as File;
+      expect(file.name).toBe("yentl-small-brief.docx");
+      expect(file.type).toBe("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      expect(screen.getByDisplayValue("Extracted docx text")).toBeTruthy();
+      expect(screen.getByText("yentl-small-brief.docx")).toBeTruthy();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
+  it("loads the validation PDF fixture through the binary document-ingest path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      arrayBuffer: async () => new Uint8Array([37, 80, 68, 70]).buffer,
+    } as Response);
+
+    render(<TextIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation PDF" }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-small-text-layer.pdf");
+      expect(mockParsePdfWithMetadata).toHaveBeenCalledOnce();
+      const file = mockParsePdfWithMetadata.mock.calls[0][0] as File;
+      expect(file.name).toBe("yentl-small-text-layer.pdf");
+      expect(file.type).toBe("application/pdf");
+      expect(screen.getByDisplayValue("Extracted pdf text")).toBeTruthy();
+      expect(screen.getByText("yentl-small-text-layer.pdf")).toBeTruthy();
+      expect(screen.getAllByText(/4 PDF pages/i).length).toBeGreaterThan(0);
+    });
+
+    fetchSpy.mockRestore();
+  });
+
   it("file drop with .docx: calls parseDocx and populates textarea", async () => {
     render(<TextIngestPane />);
     const file = new File(["fake docx bytes"], "transcript.docx", {
@@ -220,7 +384,7 @@ describe("TextIngestPane — file drop", () => {
     });
   });
 
-  it("file drop with .pdf: calls parsePdf and populates textarea", async () => {
+  it("file drop with .pdf: preserves document metadata and shows the outline", async () => {
     render(<TextIngestPane />);
     const file = new File(["fake pdf bytes"], "paper.pdf", {
       type: "application/pdf",
@@ -235,11 +399,32 @@ describe("TextIngestPane — file drop", () => {
     });
 
     await waitFor(() => {
-      expect(mockParsePdf).toHaveBeenCalledWith(file);
+      expect(mockParsePdfWithMetadata).toHaveBeenCalledWith(file);
       const updatedTa = screen.getByPlaceholderText(
         /Paste your transcript here/i,
       ) as HTMLTextAreaElement;
       expect(updatedTa.value).toBe("Extracted pdf text");
+      expect(screen.getAllByText(/4 PDF pages/i).length).toBeGreaterThan(0);
+      expect(screen.getByText("Findings")).toBeTruthy();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Process transcript/i }));
+    });
+
+    await waitFor(() => {
+      expect(mockSetSource).toHaveBeenCalledWith(expect.objectContaining({
+        kind: "text_doc",
+        filename: "paper.pdf",
+        mime: "application/pdf",
+        document_meta: expect.objectContaining({
+          extraction_kind: "pdf_text_layer",
+          page_count: 4,
+          outline: expect.arrayContaining([
+            expect.objectContaining({ label: "Findings" }),
+          ]),
+        }),
+      }));
     });
   });
 

@@ -243,7 +243,10 @@ describe("AudioIngestPane — valid file preview", () => {
 
   it("loads the local validation WAV into the same staged-file flow", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(new Blob(["RIFF"], { type: "audio/wav" }), { status: 200 }),
+      new Response("RIFF", {
+        status: 200,
+        headers: { "Content-Type": "audio/wav" },
+      }),
     );
 
     render(<AudioIngestPane />);

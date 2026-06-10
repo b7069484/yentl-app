@@ -21,7 +21,7 @@ const guestRows = [
   },
   {
     title: "Know what persists",
-    body: "Browser-local saved sessions stay on this device. Export anything you need outside this browser.",
+    body: "Guest saves stay in this browser. Signed-in deployments can also sync saved sessions to your account.",
     Icon: Save,
   },
   {
@@ -35,7 +35,10 @@ export default function DemoPage() {
   return (
     <main id="main-content" className="min-h-screen bg-cream text-ink">
       <section className="mx-auto w-full max-w-5xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-teal hover:text-teal-2">
+        <Link
+          href="/"
+          className="-ml-2 inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-teal hover:text-teal-2"
+        >
           Back to home
         </Link>
 

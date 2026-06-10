@@ -44,6 +44,7 @@ new Promise((resolve) => {
 const routeTargets: Array<{ slug: string; path: string }> = [
   { slug: "route-home", path: "/" },
   { slug: "route-pricing", path: "/pricing" },
+  { slug: "route-mobile", path: "/mobile" },
   { slug: "route-faq", path: "/faq" },
   { slug: "route-demo", path: "/demo" },
   { slug: "route-signin", path: "/signin" },
@@ -130,6 +131,11 @@ const populatedTargets: CaptureTarget[] = [
 ];
 
 const allTargets: CaptureTarget[] = [
+  ...routeTargets.map((target) => ({
+    slug: target.slug,
+    path: target.path,
+    viewport: desktop,
+  })),
   ...routeTargets.map((target) => ({
     slug: `${target.slug}-mobile`,
     path: target.path,

@@ -1,10 +1,53 @@
-import type { ClaimCard as ClaimCardT } from "@/lib/types";
+import type { ClaimCard as ClaimCardT, ClaimStance } from "@/lib/types";
 import { VERDICT } from "@/lib/client/verdict-theme";
+import { documentAnchorLabel } from "@/lib/document-anchor";
+import { ATTRIBUTION_STATUS_LABEL, isAttributionStatusResolved } from "./attribution-labels";
 import { SourceListItem } from "./SourceListItem";
 import { SpeakerBadge } from "./SpeakerBadge";
 import Image from "next/image";
 import type { ReputationTier, SourcePreview, Stance } from "@/lib/types";
 import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
+
+const CLAIM_STANCE_LABEL: Record<ClaimStance, string> = {
+  asserted: "Asserted",
+  denied: "Denied",
+  quoted: "Quoted",
+  reported: "Reported",
+  mocked: "Mocked",
+  questioned: "Questioned",
+  corrected: "Corrected",
+  hedged: "Hedged",
+  unclear: "Unclear",
+};
+
+export function claimContextLabels(card: ClaimCardT): string[] {
+  const labels: string[] = [];
+  const stance = card.ownership?.stance ?? card.stance;
+
+  if (stance) {
+    labels.push(`Stance: ${CLAIM_STANCE_LABEL[stance]}`);
+  }
+
+  if (card.ownership) {
+    const owner =
+      card.ownership.owner_speaker_id === null ||
+      !isAttributionStatusResolved(card.ownership.attribution_status)
+        ? null
+        : `Speaker ${card.ownership.owner_speaker_id + 1}`;
+    labels.push(
+      owner
+        ? `Owner: ${owner} (${ATTRIBUTION_STATUS_LABEL[card.ownership.attribution_status]})`
+        : `Ownership: ${ATTRIBUTION_STATUS_LABEL[card.ownership.attribution_status]}`,
+    );
+  }
+
+  const anchorLabel = documentAnchorLabel(card.document_anchor);
+  if (anchorLabel) {
+    labels.push(`Source: ${anchorLabel}`);
+  }
+
+  return labels;
+}
 
 export function ClaimCard({
   card,
@@ -22,6 +65,7 @@ export function ClaimCard({
     card.status === "checking" ||
     (card.status === "provisional" && card.primary_label === "UNVERIFIABLE");
   const isProvisional = card.status === "provisional" && !isPending;
+  const contextLabels = claimContextLabels(card);
 
   return (
     <article
@@ -95,6 +139,14 @@ export function ClaimCard({
             </span>
           )}
           <SpeakerBadge speakerId={card.speaker_id} />
+          {contextLabels.map((label) => (
+            <span
+              key={label}
+              className="inline-flex items-center rounded-full border border-border/60 bg-muted/50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-foreground/65"
+            >
+              {label}
+            </span>
+          ))}
         </div>
         {!isPending && <ScoreNumber score={card.score} colorClass={verdict.scoreText} />}
       </header>

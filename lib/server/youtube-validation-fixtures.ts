@@ -18,7 +18,7 @@ const FIXTURES: Record<string, YouTubeValidationFixture> = {
     channel: "TED",
     url: "https://www.youtube.com/watch?v=fTznEIZRkLg",
     vttPath: "test-corpus/ground-truth/fTznEIZRkLg.en.vtt",
-    maxSegments: 10,
+    maxSegments: 241,
   },
 };
 

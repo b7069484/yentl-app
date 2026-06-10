@@ -1,0 +1,214 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T04:11:19.558Z",
+  "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "headless": false,
+  "app_origin": "http://127.0.0.1:3000",
+  "target_url": "http://127.0.0.1:3000/validation/browser-capture.html",
+  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-Zvd2gy/extension",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-Zvd2gy/profile",
+  "extension_service_workers": [
+    "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js"
+  ],
+  "extension_targets_before_shortcut": {
+    "all": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      }
+    ],
+    "yentlServiceWorkers": [],
+    "pages": []
+  },
+  "extension_targets_after_shortcut": {
+    "all": [
+      {
+        "type": "background_page",
+        "title": "Yentl tab capture",
+        "url": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/offscreen.html"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js",
+        "url": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js",
+        "url": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js"
+      }
+    ],
+    "yentlServiceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js",
+        "url": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/background.js"
+      }
+    ],
+    "pages": []
+  },
+  "screenshot": "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png",
+  "screenshot_error": null,
+  "media_playback_before_shortcut": {
+    "ok": false,
+    "error": "No playable audio or video element found.",
+    "audioCount": 0,
+    "videoCount": 0
+  },
+  "media_playback_after_capture": {
+    "ok": true,
+    "title": "Yentl browser capture validation",
+    "target": "audio",
+    "audioCount": 1,
+    "videoCount": 1,
+    "paused": false,
+    "muted": false,
+    "volume": 1,
+    "currentTime": 0,
+    "duration": 31.953379,
+    "readyState": 3,
+    "playError": null
+  },
+  "proof": {
+    "real_user_profile_used": false,
+    "extension_loaded": true,
+    "manual_capture_mode": false,
+    "manual_invocation_proven": false,
+    "shortcut_attempted": true,
+    "shortcut_strategy": "os",
+    "shortcut_command_proven": true,
+    "debug_service_worker_fallback_used": false,
+    "panel_injection_proven": true,
+    "tab_capture_stream_id_available": true,
+    "live_transcription_proven": true
+  },
+  "manual_capture": null,
+  "shortcut_error": null,
+  "shortcut_panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+    "statusText": "Browser tab capture is active.",
+    "hostWidth": "430px"
+  },
+  "extension_diagnostics_after_shortcut": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "29bd9a7e-5e65-4f59-8763-6a49544e893d",
+      "running": true,
+      "sessionId": "71446336-eedd-496e-a196-8e05de1d7639",
+      "startedAt": 1781064675678,
+      "targetTabId": 1198398704
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "extension_diagnostics_after_fallback": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "29bd9a7e-5e65-4f59-8763-6a49544e893d",
+      "running": true,
+      "sessionId": "71446336-eedd-496e-a196-8e05de1d7639",
+      "startedAt": 1781064675678,
+      "targetTabId": 1198398704
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://gihhcilhfnnjigokjmddmefhjhbhlmif/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "transcript_probe": {
+    "ok": true,
+    "waited_ms": 3008,
+    "liveTranscriptionProven": true,
+    "page": {
+      "ok": true,
+      "panel": {
+        "panelInjected": true,
+        "bodyMarginRight": "430px",
+        "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+        "iframeText": "Skip to main content\nREC\n00:00:03\nLive capture started\nYENTL'S READ\nTranscribing\n\nYentl is reading this page live.\n\n1 transcript line captured. Claims, markers, and evidence checks will keep updating here.\n\nPULSE\nTranscribing\n1 transcript line captured.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\nSPEAKER 1\n0:00\n\nWelcome to the Yentle validation panel.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+        "iframeError": null,
+        "statusText": "Transcript updating",
+        "hostWidth": "430px"
+      },
+      "events": []
+    }
+  },
+  "page_capture_state": {
+    "ok": true,
+    "panel": {
+      "panelInjected": true,
+      "bodyMarginRight": "430px",
+      "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+      "iframeText": "Skip to main content\nREC\n00:00:03\nLive capture started\nYENTL'S READ\nTranscribing\n\nYentl is reading this page live.\n\n1 transcript line captured. Claims, markers, and evidence checks will keep updating here.\n\nPULSE\nTranscribing\n1 transcript line captured.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\nSPEAKER 1\n0:00\n\nWelcome to the Yentle validation panel.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+      "iframeError": null,
+      "statusText": "Transcript updating",
+      "hostWidth": "430px"
+    },
+    "events": []
+  },
+  "debug_panel": null,
+  "service_worker_debug": null,
+  "panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
+    "statusText": "Browser tab capture is active.",
+    "hostWidth": "430px"
+  },
+  "failure_reason": null,
+  "notes": [
+    "This proof uses a visible temporary Chrome profile and does not modify the user's normal Chrome profile."
+  ],
+  "chrome_log_tail": [
+    "stderr: DevTools listening on ws://127.0.0.1:58883/devtools/browser/5b26de5f-53a2-4e9c-a598-e4e432ea67cc",
+    "stderr: [69767:16852565:0610/001118.869583:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
+  ]
+}

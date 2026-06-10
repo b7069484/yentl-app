@@ -1,5 +1,13 @@
-import { describe, expect, it, vi } from "vitest";
-import { rmsFromTimeDomain } from "@/components/session/AudioMeter";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render } from "@testing-library/react";
+import { createElement } from "react";
+import { AudioMeter, rmsFromTimeDomain } from "@/components/session/AudioMeter";
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("rmsFromTimeDomain", () => {
   it("returns 0 for total silence (all samples == 128)", () => {
@@ -32,31 +40,44 @@ describe("rmsFromTimeDomain", () => {
     expect(rms).toBeGreaterThan(0.65);
     expect(rms).toBeLessThan(0.75);
   });
-});
 
-describe("rmsFromTimeDomain — onRmsSample callback contract", () => {
-  it("onRmsSample receives a value in [0, 1] for silence (all samples == 128)", () => {
-    const buf = new Uint8Array(512).fill(128);
-    const onRmsSample = vi.fn();
-    const rms = rmsFromTimeDomain(buf);
-    // Simulate what AudioMeter's tick loop does after computing RMS:
-    // it calls onRmsSample?.(rms). We verify the contract on the pure helper.
-    onRmsSample(rms);
-    expect(onRmsSample).toHaveBeenCalledTimes(1);
-    const received = onRmsSample.mock.calls[0][0] as number;
-    expect(received).toBeGreaterThanOrEqual(0);
-    expect(received).toBeLessThanOrEqual(1);
-  });
+  it("invokes onRmsSample with the latest rendered RMS value", () => {
+    const samples: number[] = [];
+    installAudioContextMock(192);
 
-  it("onRmsSample receives a value in [0, 1] for a max-amplitude square wave", () => {
-    const buf = new Uint8Array(512);
-    for (let i = 0; i < buf.length; i++) buf[i] = i % 2 === 0 ? 0 : 255;
-    const onRmsSample = vi.fn();
-    const rms = rmsFromTimeDomain(buf);
-    onRmsSample(rms);
-    expect(onRmsSample).toHaveBeenCalledTimes(1);
-    const received = onRmsSample.mock.calls[0][0] as number;
-    expect(received).toBeGreaterThanOrEqual(0);
-    expect(received).toBeLessThanOrEqual(1);
+    render(createElement(AudioMeter, {
+      stream: {} as MediaStream,
+      onRmsSample: (rms: number) => samples.push(rms),
+    }));
+
+    expect(samples.length).toBeGreaterThan(0);
+    expect(samples[0]).toBeGreaterThanOrEqual(0);
+    expect(samples[0]).toBeLessThanOrEqual(1);
+    expect(samples[0]).toBeGreaterThan(0.4);
+    expect(samples[0]).toBeLessThan(0.6);
   });
 });
+
+function installAudioContextMock(sampleValue: number) {
+  const analyser = {
+    fftSize: 0,
+    frequencyBinCount: 4,
+    getByteTimeDomainData: vi.fn((buf: Uint8Array) => {
+      buf.fill(sampleValue);
+    }),
+  };
+  const source = { connect: vi.fn() };
+
+  class MockAudioContext {
+    createMediaStreamSource = vi.fn(() => source);
+    createAnalyser = vi.fn(() => analyser);
+    close = vi.fn();
+  }
+
+  Object.defineProperty(window, "AudioContext", {
+    configurable: true,
+    value: MockAudioContext,
+  });
+  vi.stubGlobal("requestAnimationFrame", vi.fn(() => 1));
+  vi.stubGlobal("cancelAnimationFrame", vi.fn());
+}

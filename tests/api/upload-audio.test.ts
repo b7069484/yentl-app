@@ -189,7 +189,8 @@ describe("POST /api/upload-audio — onUploadCompleted", () => {
     vi.clearAllMocks();
   });
 
-  it("onUploadCompleted resolves without throwing", async () => {
+  it("onUploadCompleted resolves without logging or throwing", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
     mockHandleUpload.mockImplementation(async ({ onUploadCompleted }) => {
       // Simulate Vercel calling the completed callback
       await onUploadCompleted({
@@ -203,5 +204,7 @@ describe("POST /api/upload-audio — onUploadCompleted", () => {
     const res = await POST(req);
 
     expect(res.status).toBe(200);
+    expect(logSpy).not.toHaveBeenCalled();
+    logSpy.mockRestore();
   });
 });

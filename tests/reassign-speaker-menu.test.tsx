@@ -3,15 +3,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Speaker, TranscriptSegment } from "@/lib/types";
+import type { SpeakerCorrectionSnapshot } from "@/lib/client/session-store";
 
 // ── Session store mock ────────────────────────────────────────────────────────
 
 const mockReassignUtterance = vi.fn();
-const mockAddNewSpeaker = vi.fn();
 const mockSplitSegmentAt = vi.fn();
+const mockUndoLastSpeakerCorrection = vi.fn();
 
 let mockSpeakers: Speaker[] = [];
 let mockTranscript: TranscriptSegment[] = [];
+let mockLastSpeakerCorrection: SpeakerCorrectionSnapshot | null = null;
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn((selector: (s: unknown) => unknown) => {
@@ -19,8 +21,9 @@ vi.mock("@/lib/client/session-store", () => ({
       speakers: mockSpeakers,
       transcript: mockTranscript,
       reassignUtterance: mockReassignUtterance,
-      addNewSpeaker: mockAddNewSpeaker,
       splitSegmentAt: mockSplitSegmentAt,
+      lastSpeakerCorrection: mockLastSpeakerCorrection,
+      undoLastSpeakerCorrection: mockUndoLastSpeakerCorrection,
     };
     return selector(state);
   }),
@@ -72,7 +75,7 @@ beforeEach(() => {
       speaker_id: 0,
     },
   ];
-  mockAddNewSpeaker.mockReturnValue(2);
+  mockLastSpeakerCorrection = null;
 });
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -132,14 +135,12 @@ describe("ReassignSpeakerMenu — interactions", () => {
     expect(mockReassignUtterance).toHaveBeenCalledWith(2, 1);
   });
 
-  it("clicking 'Add new speaker' calls addNewSpeaker and then reassignUtterance", async () => {
-    mockAddNewSpeaker.mockReturnValue(3);
+  it("clicking 'Add new speaker' assigns the next speaker id", async () => {
     renderMenu(1, 0);
     await openMenu("reassign-trigger-1");
     const addNew = await screen.findByTestId("reassign-add-new");
     await userEvent.setup().click(addNew);
-    expect(mockAddNewSpeaker).toHaveBeenCalledTimes(1);
-    expect(mockReassignUtterance).toHaveBeenCalledWith(1, 3);
+    expect(mockReassignUtterance).toHaveBeenCalledWith(1, 2);
   });
 
   it("does not call reassignUtterance when trigger is clicked but no option is selected", async () => {
@@ -147,6 +148,28 @@ describe("ReassignSpeakerMenu — interactions", () => {
     await openMenu("reassign-trigger-0");
     // No option selected — expect no call
     expect(mockReassignUtterance).not.toHaveBeenCalled();
+  });
+
+  it("shows the last correction note and can undo it", async () => {
+    mockLastSpeakerCorrection = {
+      kind: "reassign",
+      summary: "Reassigned one transcript line from Speaker 1 to Speaker 2.",
+      at: 1,
+      previousTranscript: mockTranscript,
+      previousClaims: [],
+      previousMarkers: [],
+      previousSpeakers: mockSpeakers,
+    };
+
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    expect(await screen.findByTestId("speaker-correction-note")).toHaveTextContent(
+      "Reassigned one transcript line from Speaker 1 to Speaker 2.",
+    );
+
+    await userEvent.setup().click(screen.getByTestId("speaker-correction-undo"));
+    expect(mockUndoLastSpeakerCorrection).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -159,6 +182,14 @@ describe("ReassignSpeakerMenu — edge cases", () => {
     await waitFor(() => {
       expect(screen.getByTestId("reassign-add-new")).toBeTruthy();
     });
+  });
+
+  it("adds speaker zero when no speakers exist", async () => {
+    mockSpeakers = [];
+    renderMenu(0, null);
+    await openMenu("reassign-trigger-0");
+    await userEvent.setup().click(await screen.findByTestId("reassign-add-new"));
+    expect(mockReassignUtterance).toHaveBeenCalledWith(0, 0);
   });
 
   it("renders correctly with a single speaker", async () => {
@@ -297,6 +328,28 @@ describe("ReassignSpeakerMenu — Split & reassign sub-menu", () => {
     expect(calledIndex).toBe(0);
     expect(calledTime).toBeCloseTo(15, 5);
     expect(calledSpeaker).toBe(1);
+  });
+
+  it("splits to a new speaker id without pre-registering the speaker", async () => {
+    const user = userEvent.setup();
+    renderMenu(0, 0);
+    await openMenu("reassign-trigger-0");
+
+    const subTrigger = await screen.findByTestId("split-reassign-trigger");
+    await user.hover(subTrigger);
+    fireEvent.click(await screen.findByTestId("split-word-1"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("split-add-new-speaker")).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByTestId("split-add-new-speaker"));
+
+    expect(mockSplitSegmentAt).toHaveBeenCalledTimes(1);
+    const [calledIndex, calledTime, calledSpeaker] = mockSplitSegmentAt.mock.calls[0];
+    expect(calledIndex).toBe(0);
+    expect(calledTime).toBeCloseTo(15, 5);
+    expect(calledSpeaker).toBe(2);
   });
 
   it("does not call splitSegmentAt when menu is opened but no word is selected", async () => {

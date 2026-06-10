@@ -21,6 +21,7 @@ vi.mock("@/lib/server/deepgram-batch", () => ({
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const TEST_URL = "https://example.com/episode.mp3";
+const LOCAL_VALIDATION_WAV_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
 
 const SAMPLE_UTTERANCES = [
   { text: "Hello.", start: 0, end: 1.5, is_final: true, speaker_id: 0 },
@@ -102,6 +103,34 @@ describe("POST /api/media-ingest", () => {
       await POST(req as never);
 
       expect(mockTranscribeUrl).toHaveBeenCalledWith(TEST_URL);
+    });
+
+    it("returns the deterministic local WAV validation transcript without calling Deepgram", async () => {
+      const { POST } = await import("@/app/api/media-ingest/route");
+      const req = makeRequest({ url: LOCAL_VALIDATION_WAV_URL });
+      const res = await POST(req as never);
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.validation_fixture).toBe(true);
+      expect(json.validation_fixture_id).toBe("yentl_synthetic_panel_wav");
+      expect(json.mime).toBe("audio/wav");
+      expect(json.utterances).toHaveLength(5);
+      expect(json.utterances.map((segment: { start: number }) => segment.start)).toEqual([0, 4, 10, 17, 25]);
+      expect(json.utterances[0]).toMatchObject({
+        provider: "validation_fixture",
+        speaker_id: 0,
+        attribution_status: "confident",
+        source_audio_kind: "audio_file",
+      });
+      expect(json.utterances.map((segment: { speaker_id: number | null }) => segment.speaker_id)).toEqual([0, 0, 1, 0, 1]);
+      expect(json.speakers).toEqual([
+        { id: 0, label: "Moderator" },
+        { id: 1, label: "Analyst" },
+      ]);
+      expect(mockAssertSafeUrl).not.toHaveBeenCalled();
+      expect(mockCheckMediaMime).not.toHaveBeenCalled();
+      expect(mockTranscribeUrl).not.toHaveBeenCalled();
     });
   });
 

@@ -86,6 +86,7 @@ describe("POST /api/article-ingest", () => {
     expect(json.title).toBe("Example Fact Check");
     expect(json.description).toBe("Readable article description");
     expect(json.text).toContain("Fact checking paragraph 1 explains a concrete claim");
+    expect(json.text).toContain("\n\nFact checking paragraph 2 explains a concrete claim");
     expect(json.text).not.toContain("Subscribe Sign in");
     expect(json.text).not.toContain("Navigation table");
     expect(json.text).not.toContain("privacy policy");
@@ -103,5 +104,24 @@ describe("POST /api/article-ingest", () => {
     expect(json.source_word_count).toBe(2600);
     expect(json.word_count).toBe(2200);
     expect(json.truncated).toBe(true);
+  });
+
+  it("serves the gated local validation article without weakening normal SSRF checks", async () => {
+    const { POST } = await import("@/app/api/article-ingest/route");
+    const res = await POST(
+      makeRequest("http://localhost:3000/validation/yentl-synthetic-article.html") as never,
+    );
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(mockAssertSafeUrl).not.toHaveBeenCalled();
+    expect(json.validation_fixture).toBe(true);
+    expect(json.validation_fixture_id).toBe("yentl_synthetic_article_html");
+    expect(json.title).toBe("Yentl Validation Article");
+    expect(json.description).toBe("A local article fixture for Yentl URL ingest validation.");
+    expect(json.text).toContain("The city library operating budget increased by 12 percent");
+    expect(json.text).toContain("At Ridgeview Middle School");
+    expect(json.text).not.toContain("Subscribe Sign in");
+    expect(json.text).not.toContain("Footer links");
   });
 });

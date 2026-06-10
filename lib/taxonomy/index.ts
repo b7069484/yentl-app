@@ -11,6 +11,7 @@ export type TaxonomyEntry = {
   type: MarkerType;
   display: string;
   source: "book" | "extra";
+  chapter?: string;
   definition?: string;
   example?: string;
   aka?: string;
@@ -38,6 +39,7 @@ const BOOK_AS_ENTRIES: TaxonomyEntry[] = (bookEntries as Array<{
   type: e.type,
   display: e.display,
   source: "book" as const,
+  chapter: e.chapter,
   definition: e.definition,
   example: e.example,
   archetype: e.archetype,

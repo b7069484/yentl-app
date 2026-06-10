@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 
 const mockExportSession = vi.fn();
 const mockOnClose = vi.fn();
@@ -102,6 +102,10 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe("ExportDialog", () => {
   it("shows an in-dialog report preview before export", () => {
     render(<ExportDialog open onClose={mockOnClose} />);
@@ -117,11 +121,31 @@ describe("ExportDialog", () => {
   });
 
   it("exports and closes when a format succeeds", () => {
+    vi.useFakeTimers();
     render(<ExportDialog open onClose={mockOnClose} />);
 
     fireEvent.click(screen.getByRole("button", { name: /Markdown file/i }));
 
     expect(mockExportSession).toHaveBeenCalledWith(expect.any(Object), "markdown");
+    expect(screen.getByRole("status").textContent).toContain("Markdown export started");
+    expect(mockOnClose).not.toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
+    expect(mockOnClose).toHaveBeenCalledOnce();
+  });
+
+  it("exports a transcript-only file from the dialog", () => {
+    vi.useFakeTimers();
+    render(<ExportDialog open onClose={mockOnClose} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Transcript file/i }));
+
+    expect(mockExportSession).toHaveBeenCalledWith(expect.any(Object), "transcript");
+    expect(screen.getByRole("status").textContent).toContain("Transcript export started");
+    act(() => {
+      vi.advanceTimersByTime(800);
+    });
     expect(mockOnClose).toHaveBeenCalledOnce();
   });
 

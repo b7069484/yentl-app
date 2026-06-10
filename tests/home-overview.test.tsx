@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
+import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { HomeOverview } from "@/components/session/home-overview";
 import type { ClaimCard, RhetoricMarker, Speaker, TranscriptSegment } from "@/lib/types";
 import type { SynthesisState } from "@/lib/client/session-store";
@@ -7,9 +8,26 @@ import type { SynthesisState } from "@/lib/client/session-store";
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
 const mockPush = vi.fn();
+let mockSearchParamsRaw = new URLSearchParams("");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+  useSearchParams: () => mockSearchParamsRaw,
+}));
+
+vi.mock("next/link", () => ({
+  default: ({
+    href,
+    children,
+    ...props
+  }: {
+    href: string;
+    children: ReactNode;
+  } & AnchorHTMLAttributes<HTMLAnchorElement>) => (
+    <a href={href} data-next-link="true" {...props}>
+      {children}
+    </a>
+  ),
 }));
 
 // ─── Mock useSession store ────────────────────────────────────────────────────
@@ -87,6 +105,7 @@ function mockStore(storeData: ReturnType<typeof makeDefaultStoreState>) {
 
 beforeEach(() => {
   mockPush.mockReset();
+  mockSearchParamsRaw = new URLSearchParams("");
   mockStore(makeDefaultStoreState());
 });
 
@@ -178,7 +197,7 @@ describe("HomeOverview – headline click routing", () => {
 
     fireEvent.click(secondHeadlineBtn!);
     expect(mockPush).toHaveBeenCalledWith(
-      "/session?view=claims&verdict=true,mostly_true",
+      "/session?view=claims&verdict=true%2Cmostly_true",
     );
   });
 
@@ -313,7 +332,174 @@ describe("HomeOverview – tile values", () => {
   });
 });
 
-// 8. SpeakerLegend renders "No utterances yet" when no transcript
+// 8. Source health card
+
+describe("HomeOverview – source health", () => {
+  it("renders waiting source health for an empty mic session", () => {
+    render(<HomeOverview />);
+
+    expect(screen.getByTestId("source-health-card")).toBeTruthy();
+    expect(screen.getByText("Source health")).toBeTruthy();
+    expect(screen.getByText("Microphone")).toBeTruthy();
+    expect(screen.getByText("Waiting for transcript")).toBeTruthy();
+  });
+
+  it("shows source-backed health when reviewed claims have citations", () => {
+    const claims = [
+      makeClaim({
+        primary_label: "TRUE",
+        status: "confirmed",
+        sources: [
+          {
+            url: "https://nasa.gov/fact",
+            domain: "nasa.gov",
+            title: "NASA fact",
+            reputation_tier: "high",
+            stance: "supports",
+          },
+        ],
+      }),
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: "The moon landing happened.", start: 0, end: 2, is_final: true, speaker_id: 0 },
+    ];
+
+    mockStore(
+      makeDefaultStoreState({
+        claims,
+        transcript,
+        source: {
+          kind: "youtube",
+          video_id: "abc",
+          url: "https://youtu.be/abc",
+          title: "Apollo clip",
+          channel: "Archive",
+        },
+      }),
+    );
+
+    render(<HomeOverview />);
+
+    expect(screen.getByText("YouTube")).toBeTruthy();
+    expect(screen.getByText("Apollo clip")).toBeTruthy();
+    expect(screen.getAllByText("Source-backed").length).toBeGreaterThan(0);
+    expect(screen.getByText("1 total, 1 high-rep")).toBeTruthy();
+  });
+
+  it("keeps checking status visible while claims are still being sourced", () => {
+    const claims = [
+      makeClaim({ primary_label: "TRUE", status: "checking" }),
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: "Checking this now.", start: 0, end: 2, is_final: true, speaker_id: 0 },
+    ];
+    mockStore(makeDefaultStoreState({ claims, transcript }));
+
+    render(<HomeOverview />);
+
+    expect(screen.getByText("Checking sources")).toBeTruthy();
+    expect(screen.getByText("Still checking")).toBeTruthy();
+  });
+});
+
+// 9. Text/article source review card
+
+describe("HomeOverview – text source review", () => {
+  it("renders imported article text, outline, anchors, and review links", () => {
+    mockSearchParamsRaw = new URLSearchParams(
+      "demo=validation&sample=source_quote_anchors&view=overview&t=17&block=3",
+    );
+    const source: SessionSource = {
+      kind: "text_doc",
+      filename: "",
+      mime: "text/html",
+      byte_count: 850,
+      intent: "web_url",
+      source_url: "https://example.com/story",
+      initial_text:
+        "Shared article headline. The first paragraph gives the user enough source context to audit the analysis without leaving the overview.",
+      document_meta: {
+        extraction_kind: "plain_text",
+        outline: [
+          {
+            kind: "heading",
+            label: "Shared article headline",
+            preview: "The first paragraph gives the user enough source context.",
+            line_start: 1,
+          },
+        ],
+      },
+    };
+    const transcript: TranscriptSegment[] = [
+      {
+        text: "The first paragraph gives the user enough source context.",
+        start: 0,
+        end: 4,
+        is_final: true,
+        speaker_id: 0,
+        document_anchor: { kind: "paragraph", block_index: 0, paragraph_index: 0, line_start: 1 },
+      },
+    ];
+    const claims = [
+      makeClaim({
+        primary_label: "TRUE",
+        status: "confirmed",
+        document_anchor: { kind: "paragraph", block_index: 0, paragraph_index: 0, line_start: 1 },
+      }),
+    ];
+
+    mockStore(makeDefaultStoreState({ source, transcript, claims }));
+
+    render(<HomeOverview />);
+
+    const card = within(screen.getByTestId("text-source-review-card"));
+    expect(card.getByText("Article source")).toBeTruthy();
+    expect(card.getByText("example.com")).toBeTruthy();
+    expect(card.getByText("Plain text")).toBeTruthy();
+    expect(card.getAllByText(/Shared article headline/)).toHaveLength(2);
+    expect(card.getAllByText("1").length).toBeGreaterThanOrEqual(2);
+    expect(card.getByText("anchored transcript lines")).toBeTruthy();
+    expect(card.getByText("anchored claims")).toBeTruthy();
+    expect(card.getByRole("link", { name: "Review source" })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=source_quote_anchors&view=source&t=17",
+    );
+    expect(card.getByRole("link", { name: "Review source" })).toHaveAttribute(
+      "data-next-link",
+      "true",
+    );
+    expect(card.getByRole("link", { name: "Review transcript" })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=source_quote_anchors&view=transcript&t=17",
+    );
+    expect(card.getByRole("link", { name: "Review transcript" })).toHaveAttribute(
+      "data-next-link",
+      "true",
+    );
+    expect(card.getByRole("link", { name: "Review claims" })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=source_quote_anchors&view=claims&t=17",
+    );
+    expect(card.getByRole("link", { name: "Review claims" })).toHaveAttribute(
+      "data-next-link",
+      "true",
+    );
+    expect(card.getByRole("link", { name: /Open original/i })).toHaveAttribute(
+      "href",
+      "https://example.com/story",
+    );
+  });
+
+  it("does not render the text source review card for microphone sessions", () => {
+    mockStore(makeDefaultStoreState({ source: { kind: "mic" } }));
+
+    render(<HomeOverview />);
+
+    expect(screen.queryByTestId("text-source-review-card")).toBeNull();
+  });
+});
+
+// 10. SpeakerLegend renders "No utterances yet" when no transcript
 
 describe("HomeOverview – speaker legend empty", () => {
   it("renders 'No utterances yet' in speaker tile when no transcript segments", () => {
@@ -325,7 +511,7 @@ describe("HomeOverview – speaker legend empty", () => {
   });
 });
 
-// 9. ListeningEmptyState conditional rendering
+// 11. ListeningEmptyState conditional rendering
 
 describe("HomeOverview – listening empty state", () => {
   it("shows ListeningEmptyState and hides MetricTiles when startedAt set, transcript empty, source=mic", () => {

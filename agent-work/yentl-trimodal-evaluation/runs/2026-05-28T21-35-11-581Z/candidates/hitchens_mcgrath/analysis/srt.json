@@ -1,0 +1,190 @@
+{
+  "mode": "srt",
+  "utterancesAvailable": 21,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Michael Shermer is president of the Skeptics Society.",
+      "utterance_start": 81.88,
+      "utterance_end": 109.36,
+      "topic": "Society",
+      "topic_secondary": "Science",
+      "id": "hitchens_mcgrath-srt-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 98,
+        "annotations": [
+          "public role",
+          "well-documented"
+        ],
+        "explanation": "Michael Shermer founded and serves as the president/executive director of the Skeptics Society, and is the publisher of Skeptic magazine."
+      },
+      "confirmed": {
+        "primary_label": "TRUE",
+        "score": 97,
+        "annotations": [
+          "Verified via official Skeptics Society source",
+          "Long-standing public role"
+        ],
+        "explanation": "Michael Shermer founded the Skeptics Society and serves as its president, a well-documented public role. The Skeptics Society's own website and Shermer's biography confirm this.",
+        "sources": []
+      }
+    },
+    {
+      "claim_text": "Michael Shermer wrote in his book 'How We Believe' that for every religious atrocity there are 10,000 unreported acts of kindness and generosity arising from religious commitment.",
+      "utterance_start": 81.88,
+      "utterance_end": 109.36,
+      "topic": "Culture",
+      "topic_secondary": "Society",
+      "id": "hitchens_mcgrath-srt-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "specific attribution",
+          "specific numerical claim",
+          "cannot verify exact wording"
+        ],
+        "explanation": "Michael Shermer did write a book titled 'How We Believe' (2000) exploring the psychology of religious belief, and he has generally argued that religion produces both good and bad outcomes. However, I cannot confirm the specific 10,000-to-1 ratio or this exact claim appearing in that book from my training knowledge."
+      }
+    },
+    {
+      "claim_text": "Lenin authorized the protracted use of brutality against religious believers, stating there was no higher authority by which he may be judged.",
+      "utterance_start": 158.8,
+      "utterance_end": 188.319,
+      "topic": "History",
+      "topic_secondary": "Politics",
+      "id": "hitchens_mcgrath-srt-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Madame Roland was brought to the guillotine on trumped up charges in 1793",
+      "utterance_start": 238.56,
+      "utterance_end": 266.04,
+      "topic": "History",
+      "topic_secondary": null,
+      "id": "hitchens_mcgrath-srt-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "As Madame Roland was led to the guillotine, she pointed to a statue of Liberty and said 'Liberty, what crimes are committed in your name'",
+      "utterance_start": 238.56,
+      "utterance_end": 266.04,
+      "topic": "History",
+      "topic_secondary": "Culture",
+      "id": "hitchens_mcgrath-srt-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the Gethsemane account, Jesus instructed his followers to put down their swords when some sought to defend him from being betrayed.",
+      "utterance_start": 372.68,
+      "utterance_end": 402.599,
+      "topic": "Culture",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-srt-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Amish Schoolhouse killings occurred in October 2006.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-srt-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the Amish Schoolhouse killings, a gunman broke into an Amish schoolhouse and shot approximately 10 Amish schoolgirls, of whom five died.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-srt-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Amish are a conservative Protestant sect.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Culture",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-srt-claim-9",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "look at uh the period under stallin... the French Revolution... by 1793 it degenerate into the reign of terror",
+      "start_time": 195,
+      "end_time": 225,
+      "severity": "subtle",
+      "explanation": "McGrath pivots from religion's harms to secular atrocities (Stalin, French Revolution) to deflect criticism of religion specifically — a classic tu quoque/red herring move in religion debates."
+    },
+    {
+      "type": "fallacy",
+      "name": "tu_quoque",
+      "display": "Tu Quoque",
+      "excerpt": "look at uh the period under stallin there are many other examples we could give of World Views",
+      "start_time": 190,
+      "end_time": 205,
+      "severity": "clear",
+      "explanation": "By pointing to Stalin and the Terror as examples of bad worldviews, the speaker counters criticism of religion by saying 'secular ideologies do it too' rather than addressing the original critique."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the most Dreadful acts of violence",
+      "start_time": 225,
+      "end_time": 232,
+      "severity": "subtle",
+      "explanation": "Emotionally charged descriptors ('Dreadful acts of violence,' 'tragic story') amplify the rhetorical force of the anti-secular example beyond what neutral framing would convey."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "the tragic story of Madame Roland who was brought to the guillotine on trumped up charges",
+      "start_time": 232,
+      "end_time": 245,
+      "severity": "subtle",
+      "explanation": "A single emotionally resonant anecdote about Madame Roland is used to characterize the broader nature of secular/revolutionary worldviews going wrong."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "the cycle of violence was broken instantly because for them Christ ordered them commanded them to show forgiveness",
+      "start_time": 473,
+      "end_time": 500,
+      "severity": "clear",
+      "explanation": "McGrath uses a single example (likely the Amish school shooting forgiveness) to argue that Christianity contains a capacity for self-criticism and ethical correction, generalizing from one anecdote to a broader claim about religion."
+    },
+    {
+      "type": "fallacy",
+      "name": "no_true_scotsman",
+      "display": "No True Scotsman",
+      "excerpt": "this is not the way God is this is not the way we should be behaving and I fully concede there are those who fail to live up to that",
+      "start_time": 510,
+      "end_time": 525,
+      "severity": "subtle",
+      "explanation": "By framing violent religious actors as those who 'fail to live up to' the true norm, the speaker subtly dismisses counterexamples as not representative of authentic Christianity."
+    },
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "there is the norm before you authorized as what God would like us to do",
+      "start_time": 522,
+      "end_time": 535,
+      "severity": "subtle",
+      "explanation": "Appeals to vague, virtuous-sounding concepts ('the norm,' 'what God would like') without specifying content, using emotionally positive framing to bolster the argument."
+    }
+  ],
+  "errors": []
+}

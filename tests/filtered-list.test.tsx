@@ -7,6 +7,7 @@ import type { ClaimCard, RhetoricMarker } from "@/lib/types";
 const mockPush = vi.fn();
 let mockSearchParamsRaw = new URLSearchParams("view=claims");
 const mockPathname = "/session";
+const mockDownloadFile = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -16,6 +17,11 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/lib/client/session-store", () => ({
   useSession: vi.fn(),
+}));
+
+vi.mock("@/lib/client/export-actions", () => ({
+  downloadFile: (...args: unknown[]) => mockDownloadFile(...args),
+  fileSafe: (value: string) => (value || "yentl-session").replace(/[^\w-]+/g, "_").slice(0, 60),
 }));
 
 import { useSession } from "@/lib/client/session-store";
@@ -61,11 +67,15 @@ function makeMarker(overrides: Partial<RhetoricMarker> = {}): RhetoricMarker {
 // ─── Mock store helper ────────────────────────────────────────────────────────
 
 function mockStore(state: {
+  title?: string;
+  source?: { kind: "mic" | "youtube" | "text_doc"; title?: string; url?: string; filename?: string };
   claims?: ClaimCard[];
   markers?: RhetoricMarker[];
   speakers?: { id: number; label: string }[];
 }) {
   const data = {
+    title: state.title ?? "Council clip",
+    source: state.source ?? { kind: "mic" as const },
     claims: state.claims ?? [],
     markers: state.markers ?? [],
     speakers: state.speakers ?? [],
@@ -80,6 +90,7 @@ function mockStore(state: {
 
 beforeEach(() => {
   mockPush.mockReset();
+  mockDownloadFile.mockReset();
   mockSearchParamsRaw = new URLSearchParams("view=claims");
   mockStore({});
 });
@@ -143,12 +154,15 @@ describe("FilteredList – markers view", () => {
   it("renders marker rows when view=markers", () => {
     mockSearchParamsRaw = new URLSearchParams("view=markers");
     const markers = [
-      makeMarker({ display: "Slippery Slope", excerpt: "If we allow X then..." }),
+      makeMarker({ name: "slippery_slope", display: "Slippery Slope", excerpt: "If we allow X then..." }),
     ];
     mockStore({ markers });
 
     render(<FilteredList />);
     expect(screen.getByText("Slippery Slope")).toBeTruthy();
+    expect(screen.getByText("Fallacy")).toBeTruthy();
+    expect(screen.getByText("Watch for:")).toBeTruthy();
+    expect(screen.getByText(/next it'll be Y/)).toBeTruthy();
   });
 
   it("links marker rows to the real detail route and preserves filter context", () => {
@@ -203,7 +217,7 @@ describe("FilteredList – filtering", () => {
     expect(screen.queryByText(/True claim here/)).toBeNull();
   });
 
-  it("excludes checking claims always", () => {
+  it("excludes checking claims by default", () => {
     mockSearchParamsRaw = new URLSearchParams("view=claims");
     const claims = [
       makeClaim({
@@ -215,6 +229,26 @@ describe("FilteredList – filtering", () => {
 
     render(<FilteredList />);
     expect(screen.queryByText(/Checking claim/)).toBeNull();
+  });
+
+  it("shows checking claims when the status filter asks for them", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=claims&status=checking");
+    const claims = [
+      makeClaim({
+        claim_text: "Checking claim visible.",
+        status: "checking",
+      }),
+      makeClaim({
+        claim_text: "Confirmed claim hidden by status filter.",
+        status: "confirmed",
+      }),
+    ];
+    mockStore({ claims });
+
+    render(<FilteredList />);
+    expect(screen.getByText(/Checking claim visible/)).toBeTruthy();
+    expect(screen.getByText("Status: Still checking")).toBeTruthy();
+    expect(screen.queryByText(/Confirmed claim hidden/)).toBeNull();
   });
 });
 
@@ -236,6 +270,91 @@ describe("FilteredList – sort change → URL push", () => {
     expect(mockPush).toHaveBeenCalledWith(
       expect.stringContaining("sort=score"),
     );
+  });
+});
+
+describe("FilteredList – export current list", () => {
+  it("exports the filtered claims list as Markdown", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=claims&verdict=false");
+    mockStore({
+      title: "Budget hearing",
+      source: { kind: "youtube", title: "Council hearing", url: "https://youtu.be/abc" },
+      claims: [
+        makeClaim({
+          id: "false-claim",
+          claim_text: "The city doubled transit spending.",
+          primary_label: "FALSE",
+          score: 12,
+          status: "confirmed",
+          sources: [
+            {
+              title: "Budget table",
+              url: "https://example.com/budget",
+              domain: "example.com",
+              reputation_tier: "high",
+              stance: "contradicts",
+            },
+          ],
+        }),
+        makeClaim({
+          id: "true-claim",
+          claim_text: "This true claim should not export.",
+          primary_label: "TRUE",
+          status: "confirmed",
+        }),
+      ],
+    });
+
+    render(<FilteredList />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Export filtered claims" }));
+    fireEvent.click(screen.getByRole("button", { name: "Markdown" }));
+
+    expect(mockDownloadFile).toHaveBeenCalledOnce();
+    const [filename, content, type] = mockDownloadFile.mock.calls[0];
+    expect(filename).toBe("Budget_hearing-claims.md");
+    expect(type).toBe("text/markdown");
+    expect(content).toContain("# All FALSE claims");
+    expect(content).toContain("The city doubled transit spending.");
+    expect(content).toContain("Review status: Confirmed");
+    expect(content).toContain("Budget table");
+    expect(content).toContain("Methodology: https://yentl.it/methodology");
+    expect(content).not.toContain("This true claim should not export.");
+  });
+
+  it("exports the filtered markers list as JSON", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=markers&type=fallacy");
+    mockStore({
+      title: "Debate analysis",
+      markers: [
+        makeMarker({
+          id: "fallacy-marker",
+          type: "fallacy",
+          display: "False Dilemma",
+        }),
+        makeMarker({
+          id: "rhetoric-marker",
+          type: "rhetoric",
+          display: "Loaded language",
+        }),
+      ],
+    });
+
+    render(<FilteredList />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Export filtered markers" }));
+    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
+
+    expect(mockDownloadFile).toHaveBeenCalledOnce();
+    const [filename, content, type] = mockDownloadFile.mock.calls[0];
+    expect(filename).toBe("Debate_analysis-markers.json");
+    expect(type).toBe("application/json");
+    const payload = JSON.parse(content as string);
+    expect(payload.view).toBe("markers");
+    expect(payload.filter_title).toBe("All Fallacy markers");
+    expect(payload.item_count).toBe(1);
+    expect(payload.items[0].id).toBe("fallacy-marker");
+    expect(JSON.stringify(payload)).not.toContain("rhetoric-marker");
   });
 });
 
@@ -306,6 +425,16 @@ describe("FilteredList – title reflects active filters", () => {
     render(<FilteredList />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "All claims by Speaker 1",
+    );
+  });
+
+  it("shows 'Provisional claims' with status=provisional", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=claims&status=provisional");
+    mockStore({});
+
+    render(<FilteredList />);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Provisional claims",
     );
   });
 });

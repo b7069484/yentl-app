@@ -1,4 +1,11 @@
 import type { ClaimCard, RhetoricMarker, Session, Speaker, SpeakerId } from "@/lib/types";
+import { documentAnchorDetail } from "@/lib/document-anchor";
+import {
+  sourceClaimOverlap,
+  sourceDossierStats,
+  sourceEvidenceBreakdown,
+  sourceEvidenceScore,
+} from "@/lib/source-evidence";
 
 function labelFor(speakers: Speaker[], id: SpeakerId | null): string | null {
   if (id === null) return null;
@@ -83,30 +90,81 @@ function renderClaim(c: ClaimCard, speakers: Speaker[]): string[] {
   out.push("");
   out.push(`> "${c.claim_text}"`);
   out.push("");
+  const ownership = renderOwnershipContext(c, speakers);
+  if (ownership) out.push(ownership, "");
   out.push(c.explanation);
   if (c.annotations.length)
     out.push("", `_Annotations:_ ${c.annotations.join(", ")}`);
   if (c.sources.length) {
+    const stats = sourceDossierStats(c.sources, c.claim_text);
     out.push("", "**Sources:**");
-    for (const s of c.sources) {
+    out.push(
+      `_Source alignment:_ ${stats.claimLinked} linked / ${stats.claimUnlinked} not direct; ${stats.high} high / ${stats.mid} mid / ${stats.low} low; ${stats.supports} support / ${stats.contradicts} contradict / ${stats.mixed} mixed`,
+    );
+    for (const s of [...c.sources].sort((a, b) => sourceEvidenceScore(b) - sourceEvidenceScore(a))) {
       out.push(
-        `- [${s.title}](${s.url}) — ${s.domain} · ${s.reputation_tier} · ${s.stance}`,
+        `- [${s.title}](${s.url}) — ${s.domain} · ${s.reputation_tier} · ${s.stance} · score ${sourceEvidenceScore(s)}`,
       );
+      out.push(`  - Evidence: ${sourceEvidenceBreakdown(s)}`);
+      out.push(`  - Claim link: ${sourceClaimOverlap(c.claim_text, s.excerpt)}`);
+      if (s.excerpt) out.push(`  - Excerpt: "${s.excerpt}"`);
     }
   }
   out.push("");
   return out;
 }
 
+function renderOwnershipContext(c: ClaimCard, speakers: Speaker[]): string | null {
+  const parts: string[] = [];
+  const stance = c.ownership?.stance ?? c.stance;
+  if (stance) parts.push(`stance ${humanize(stance)}`);
+  if (c.ownership) {
+    parts.push(`attribution ${humanize(c.ownership.attribution_status)}`);
+    const owner = labelFor(speakers, c.ownership.owner_speaker_id);
+    parts.push(owner ? `owner ${owner}` : "owner unresolved");
+    parts.push(`confidence ${Math.round(c.ownership.confidence * 100)}%`);
+    if (c.ownership.attribution_reasons.length > 0) {
+      parts.push(
+        `reasons ${c.ownership.attribution_reasons.map(humanize).join(", ")}`,
+      );
+    }
+  }
+  const anchor = documentAnchorDetail(c.document_anchor);
+  if (anchor) parts.push(`source ${anchor}`);
+  if (parts.length === 0) return null;
+  return `**Ownership context:** ${parts.join("; ")}`;
+}
+
 function renderMarker(m: RhetoricMarker, speakers: Speaker[]): string[] {
   const label = labelFor(speakers, m.speaker_id);
-  return [
+  const attribution = renderMarkerAttributionContext(m, speakers);
+  const out = [
     `### [${m.type.toUpperCase()}] ${m.display} · ${m.severity}`,
     label ? `_— ${label}_` : "",
     "",
     `> "${m.excerpt}"`,
     "",
-    m.explanation,
-    "",
   ].filter((line) => line !== "");
+  if (attribution) out.push(attribution, "");
+  out.push(m.explanation, "");
+  return out.filter((line) => line !== "");
+}
+
+function renderMarkerAttributionContext(m: RhetoricMarker, speakers: Speaker[]): string | null {
+  const parts: string[] = [];
+  if (m.attribution_status) parts.push(`attribution ${humanize(m.attribution_status)}`);
+  const owner = labelFor(speakers, m.speaker_id);
+  if (m.attribution_status) parts.push(owner ? `owner ${owner}` : "owner unresolved");
+  if (m.overlap_class) parts.push(`overlap ${humanize(m.overlap_class)}`);
+  if (m.attribution_reasons?.length) {
+    parts.push(`reasons ${m.attribution_reasons.map(humanize).join(", ")}`);
+  }
+  if (m.source_turn_ids?.length) parts.push(`turns ${m.source_turn_ids.join(", ")}`);
+  if (m.source_segment_ids?.length) parts.push(`segments ${m.source_segment_ids.join(", ")}`);
+  if (parts.length === 0) return null;
+  return `**Marker attribution context:** ${parts.join("; ")}`;
+}
+
+function humanize(value: string): string {
+  return value.replace(/_/g, " ");
 }

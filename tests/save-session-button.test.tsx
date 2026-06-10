@@ -67,9 +67,14 @@ vi.mock("@/components/session/speaker-rail", () => ({
 // ─── Mock save-session-storage ────────────────────────────────────────────────
 
 const mockSaveSession = vi.fn();
+const mockSaveCloudSession = vi.fn();
 
 vi.mock("@/lib/client/session-storage", () => ({
   saveSession: (...args: unknown[]) => mockSaveSession(...args),
+}));
+
+vi.mock("@/lib/client/session-sync", () => ({
+  saveCloudSession: (...args: unknown[]) => mockSaveCloudSession(...args),
 }));
 
 // ─── Mock session store ───────────────────────────────────────────────────────
@@ -142,6 +147,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockSearchParamsRaw = new URLSearchParams("");
   mockSaveSession.mockResolvedValue({ id: "new-id", name: "Test" });
+  mockSaveCloudSession.mockResolvedValue({ ok: false, status: "signed_out", message: "Sign in to sync." });
 });
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
@@ -249,6 +255,10 @@ describe("Save button — SessionShell", () => {
         expect.any(Object),
         expect.objectContaining({ name: "Custom name" }),
       ),
+    );
+    expect(mockSaveCloudSession).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({ id: "new-id", name: "Test" }),
     );
   });
 

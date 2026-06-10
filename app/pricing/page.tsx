@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const previewFeatures = [
   "Start a source review without an account.",
-  "Use browser-local saved sessions on the same device.",
+  "Use browser-local saved sessions, with account sync available when configured.",
   "Export Markdown or JSON snapshots when available in the workspace.",
   "Review AI-generated claims, source cards, and rhetoric markers with visible limitations.",
 ];
@@ -24,7 +24,10 @@ export default function PricingPage() {
   return (
     <main id="main-content" className="min-h-screen bg-cream text-ink">
       <section className="mx-auto w-full max-w-5xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-teal hover:text-teal-2">
+        <Link
+          href="/"
+          className="-ml-2 inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-teal hover:text-teal-2"
+        >
           Back to home
         </Link>
 
@@ -38,9 +41,10 @@ export default function PricingPage() {
           </h1>
           <p className="mt-5 text-lg leading-8 text-ink-3">
             The current launch posture is guest-first public preview. That means
-            the product should not imply a paid tier, account sync, team billing,
-            or enterprise commitments unless a deployment explicitly enables and
-            documents those terms.
+            the product should not imply a paid tier, team billing, or
+            enterprise commitments unless a deployment explicitly enables and
+            documents those terms. Account sync is for saved sessions, not a
+            paid-plan promise.
           </p>
         </div>
 

@@ -1,0 +1,59 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 37,
+  "utterancesAnalyzed": 8,
+  "claims": [],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "it's like asking Judd Apatow, why do you like making comedies?",
+      "start_time": 174,
+      "end_time": 180,
+      "severity": "subtle",
+      "explanation": "Tarantino equates questions about depicting graphic violence in a slavery film with asking a comedy director why he likes comedy. The moral and artistic stakes differ substantially, making the analogy misleading."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the holocaustic aspects, the Auschwitzian aspects of the slave trade in America",
+      "start_time": 232,
+      "end_time": 240,
+      "severity": "clear",
+      "explanation": "Invoking 'holocaust' and 'Auschwitz' is emotionally charged framing designed to elevate the moral weight of his film's subject matter rather than make an argument."
+    },
+    {
+      "type": "fallacy",
+      "name": "proof_by_assertion",
+      "display": "Proof by Assertion",
+      "excerpt": "I think it's good cinema. I consider it good cinema.",
+      "start_time": 188,
+      "end_time": 196,
+      "severity": "subtle",
+      "explanation": "Rather than supporting the claim, Tarantino simply restates that it is good cinema, asserting the conclusion in place of justifying it."
+    },
+    {
+      "type": "fallacy",
+      "name": "special_pleading",
+      "display": "Special Pleading",
+      "excerpt": "That hasn't been dealt with in America to the extent that I deal with it",
+      "start_time": 217,
+      "end_time": 224,
+      "severity": "subtle",
+      "explanation": "He carves out a unique justification for his own treatment of the subject, implying his work is exempt from criticism because no one else has tackled it as he has."
+    },
+    {
+      "type": "fallacy",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "directors are like boxers. They have their time.",
+      "start_time": 486,
+      "end_time": 502,
+      "severity": "subtle",
+      "explanation": "Tarantino compares film directors to boxers to support the claim that directors decline with age. The analogy is rhetorically vivid but logically weak — the skills, physical demands, and career arcs of boxers differ substantially from those of directors."
+    }
+  ],
+  "errors": []
+}

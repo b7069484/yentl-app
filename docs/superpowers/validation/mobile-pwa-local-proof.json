@@ -1,0 +1,692 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T04:22:37.803Z",
+  "app_origin": "http://127.0.0.1:3000",
+  "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-mobile-proof-96ju0b/profile",
+  "widths": [
+    390,
+    430,
+    768
+  ],
+  "routes": [
+    {
+      "slug": "mobile-start",
+      "path": "/mobile"
+    },
+    {
+      "slug": "source-picker",
+      "path": "/session"
+    },
+    {
+      "slug": "share-target-text",
+      "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific."
+    },
+    {
+      "slug": "saved-sessions",
+      "path": "/sessions"
+    },
+    {
+      "slug": "room-mode",
+      "path": "/tv?demo=validation&sample=cable_008"
+    }
+  ],
+  "report_path": "docs/superpowers/validation/mobile-pwa-local-proof.json",
+  "checks": [
+    {
+      "slug": "mobile-start",
+      "path": "/mobile",
+      "url": "http://127.0.0.1:3000/mobile",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl mobile app",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Yentl on iOS": true,
+        "Mobile paths stay honest": true,
+        "iOS": true,
+        "Android": true,
+        "Mobile web": true
+      },
+      "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
+      "fieldTextStart": "",
+      "controlCount": 9,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "mobile-start",
+      "path": "/mobile",
+      "url": "http://127.0.0.1:3000/mobile",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl mobile app",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Yentl on iOS": true,
+        "Mobile paths stay honest": true,
+        "iOS": true,
+        "Android": true,
+        "Mobile web": true
+      },
+      "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
+      "fieldTextStart": "",
+      "controlCount": 9,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "mobile-start",
+      "path": "/mobile",
+      "url": "http://127.0.0.1:3000/mobile",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl mobile app",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Yentl on iOS": true,
+        "Mobile paths stay honest": true,
+        "iOS": true,
+        "Android": true,
+        "Mobile web": true
+      },
+      "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
+      "fieldTextStart": "",
+      "controlCount": 9,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "source-picker",
+      "path": "/session",
+      "url": "http://127.0.0.1:3000/session",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Choose your source path": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, or meeting. URL You have ",
+      "fieldTextStart": "on on on on on",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-picker",
+      "path": "/session",
+      "url": "http://127.0.0.1:3000/session",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Choose your source path": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, or meeting. URL You have ",
+      "fieldTextStart": "on on on on on",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-picker",
+      "path": "/session",
+      "url": "http://127.0.0.1:3000/session",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Choose your source path": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. Live Something is happening or playing now. Current tab Analyze what is already open in Chrome. Microphone Listen to a live room, call, class, or meeting. URL You have a link to a page, video, or media file. YouTube Paste a link, watch here, and run live analysis. Web page Article, readable page, or mixed page with text Yentl can pull in. Direct",
+      "fieldTextStart": "on on on on on",
+      "controlCount": 16,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-text",
+      "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Shared note": true,
+        "The claim is specific": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-text",
+      "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Shared note": true,
+        "The claim is specific": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-text",
+      "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Shared note": true,
+        "The claim is specific": true
+      },
+      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "saved-sessions",
+      "path": "/sessions",
+      "url": "http://127.0.0.1:3000/sessions",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Saved sessions": true
+      },
+      "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
+      "fieldTextStart": "",
+      "controlCount": 5,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "saved-sessions",
+      "path": "/sessions",
+      "url": "http://127.0.0.1:3000/sessions",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Saved sessions": true
+      },
+      "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
+      "fieldTextStart": "",
+      "controlCount": 5,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "saved-sessions",
+      "path": "/sessions",
+      "url": "http://127.0.0.1:3000/sessions",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Saved sessions": true
+      },
+      "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
+      "fieldTextStart": "",
+      "controlCount": 5,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode",
+      "path": "/tv?demo=validation&sample=cable_008",
+      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true
+      },
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "fieldTextStart": "",
+      "controlCount": 8,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode",
+      "path": "/tv?demo=validation&sample=cable_008",
+      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true
+      },
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "fieldTextStart": "",
+      "controlCount": 8,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode",
+      "path": "/tv?demo=validation&sample=cable_008",
+      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true
+      },
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "fieldTextStart": "",
+      "controlCount": 8,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "chrome_log_tail": [
+    "stderr: DevTools listening on ws://127.0.0.1:62216/devtools/browser/123f4fc9-e51e-46cf-b6f8-9660e888d611"
+  ]
+}

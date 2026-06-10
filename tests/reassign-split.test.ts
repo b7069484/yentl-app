@@ -225,6 +225,29 @@ describe("session store — splitSegmentAt", () => {
     expect(speakersWithId1).toHaveLength(1);
   });
 
+  it("records and undoes a split speaker correction", () => {
+    seedWithOneSegment();
+    useSession.getState().addClaim(makeClaimFixture("cPost", SPLIT_TIME, SEG_END, 0));
+    useSession.getState().addMarker(makeMarkerFixture("mPost", SPLIT_TIME + 0.5, SEG_END - 0.5, 0));
+
+    useSession.getState().splitSegmentAt(0, SPLIT_TIME, 5);
+
+    expect(useSession.getState().transcript).toHaveLength(2);
+    expect(useSession.getState().claims[0].speaker_id).toBe(5);
+    expect(useSession.getState().markers[0].speaker_id).toBe(5);
+    expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(true);
+    expect(useSession.getState().lastSpeakerCorrection?.summary).toContain("Split one transcript line");
+
+    useSession.getState().undoLastSpeakerCorrection();
+
+    expect(useSession.getState().transcript).toHaveLength(1);
+    expect(useSession.getState().transcript[0].text).toBe(SEG_TEXT);
+    expect(useSession.getState().claims[0].speaker_id).toBe(0);
+    expect(useSession.getState().markers[0].speaker_id).toBe(0);
+    expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(false);
+    expect(useSession.getState().lastSpeakerCorrection).toBeNull();
+  });
+
   // Additional: works correctly with multiple pre-existing segments
   it("correctly inserts the new segment after the split segment (multi-segment transcript)", () => {
     useSession.getState().reset();

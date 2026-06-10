@@ -15,6 +15,10 @@ export const DevilAdvocateRequest = z.object({
       verdict: z.string(),
       score: z.number().optional(),
       speaker_id: z.number().nullable(),
+      topic: z.string().nullable().optional(),
+      stance: z.string().optional(),
+      attribution_status: z.string().optional(),
+      attribution_reasons: z.array(z.string()).default([]),
       explanation: z.string().optional(),
     }),
   ).default([]),
@@ -53,6 +57,8 @@ Rules:
 - Do not invent facts, sources, statistics, or events not present in the input.
 - Use source context only to disambiguate people, channels, pages, and topics. Do not treat page metadata as external evidence.
 - Do not reverse a claim verdict unless the input itself supports the challenge.
+- Use stance and attribution context before assigning responsibility for a claim. Quoted, reported, denied, mocked, questioned, uncertain, unsafe, or clip-sourced claims may not be direct assertions by the visible speaker.
+- If attribution or ownership is uncertain, stress-test that uncertainty as a candidate weak assumption instead of laundering it into a confident speaker verdict.
 - If the transcript is thin, say so and keep confidence low.
 - Avoid snark. Be sharp, fair, and useful.`;
 
@@ -67,10 +73,16 @@ export function userPrompt(args: z.infer<typeof DevilAdvocateRequest>): string {
   const claims = args.claims.length > 0
     ? args.claims
         .map((claim, index) => {
-          const speaker = claim.speaker_id === null ? "Unknown" : `Speaker ${claim.speaker_id + 1}`;
+          const speaker = claim.speaker_id === null ? "Unknown owner" : `Speaker ${claim.speaker_id + 1}`;
           const score = typeof claim.score === "number" ? ` score=${claim.score}` : "";
+          const topic = claim.topic ? ` topic=${claim.topic}` : "";
+          const stance = claim.stance ? ` stance=${claim.stance}` : "";
+          const attribution = claim.attribution_status ? ` attribution=${claim.attribution_status}` : "";
+          const attributionReasons = claim.attribution_reasons.length > 0
+            ? ` attribution_reasons=${claim.attribution_reasons.join(",")}`
+            : "";
           const explanation = claim.explanation ? ` explanation="${claim.explanation}"` : "";
-          return `${index + 1}. [${speaker}] verdict=${claim.verdict}${score}: ${claim.text}${explanation}`;
+          return `${index + 1}. [${speaker}] verdict=${claim.verdict}${score}${topic}${stance}${attribution}${attributionReasons}: ${claim.text}${explanation}`;
         })
         .join("\n")
     : "(none yet)";

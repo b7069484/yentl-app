@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicInfoPage } from "@/components/public-info-page";
 import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -11,9 +12,13 @@ export default function SubprocessorsPage() {
   const lastUpdated = "2026-05-18";
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl px-6 py-12 space-y-8">
-      <h1 className="text-3xl font-bold">Subprocessors</h1>
-      <p className="text-sm text-muted-foreground">Last updated: {lastUpdated}</p>
+    <PublicInfoPage
+      currentPath="/subprocessors"
+      eyebrow="Subprocessors"
+      title="Subprocessors"
+      description="The named processors Yentl depends on for transcription, AI analysis, hosting, account sync, and routing."
+      lastUpdated={lastUpdated}
+    >
       <p className="text-muted-foreground leading-relaxed">
         Yentl uses the following subprocessors to deliver its service. This list is maintained
         as a transparency measure consistent with GDPR Art. 28(3)(d) and Yentl&apos;s Privacy
@@ -68,7 +73,7 @@ export default function SubprocessorsPage() {
                 </a>
               </td>
             </tr>
-            <tr>
+            <tr className="border-b">
               <td className="py-3 pr-6 font-medium text-foreground">Vercel</td>
               <td className="py-3 pr-6">Application hosting and edge routing (Vercel AI Gateway)</td>
               <td className="py-3 pr-6">US / global edge network</td>
@@ -82,6 +87,27 @@ export default function SubprocessorsPage() {
                 >
                   Privacy Policy
                 </a>
+              </td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-3 pr-6 font-medium text-foreground">Clerk</td>
+              <td className="py-3 pr-6">
+                Authentication, account identity, and signed-in session management when
+                account sync is enabled
+              </td>
+              <td className="py-3 pr-6">Provider-managed infrastructure</td>
+              <td className="py-3">
+                Deployment-specific agreement and provider terms
+              </td>
+            </tr>
+            <tr>
+              <td className="py-3 pr-6 font-medium text-foreground">Neon</td>
+              <td className="py-3 pr-6">
+                Postgres database for account-synced saved-session records when configured
+              </td>
+              <td className="py-3 pr-6">Deployment database region</td>
+              <td className="py-3">
+                Deployment-specific agreement and provider terms
               </td>
             </tr>
           </tbody>
@@ -103,6 +129,6 @@ export default function SubprocessorsPage() {
         </Link>
         .
       </p>
-    </main>
+    </PublicInfoPage>
   );
 }

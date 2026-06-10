@@ -1,0 +1,492 @@
+[
+  {
+    "text": "A really common question we're getting in",
+    "start": 0,
+    "end": 2.8799999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the chat is about the decision in Canada to delay the second dose up to 4 months.",
+    "start": 3.04,
+    "end": 9.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "This was based off a recommendation from the, from NASI, the National Advisory Committee for Immunizations.",
+    "start": 9.599999,
+    "end": 15.585,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I think that's the full the full acronym.",
+    "start": 15.585,
+    "end": 18.705,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Doctor. Sharma, can I can I get your insights on this 1?",
+    "start": 19.905,
+    "end": 23.105,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Sure. So I mean, the first part of it is that, that NACI is, as I said in my presentation,",
+    "start": 24.81,
+    "end": 29.929998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "independent.",
+    "start": 29.93,
+    "end": 30.81,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And it's not part of Health Canada. I'm getting a lot of emails telling me that I shouldn't have made that decision. I didn't.",
+    "start": 31.449999,
+    "end": 36.57,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Just to be clear, the Health Canada position is what's in the product monograph. So, we still from a Health Canada perspective",
+    "start": 37.385002,
+    "end": 43.865,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "are saying a 21 day interval for Pfizer, 28 day for Moderna,",
+    "start": 44.025,
+    "end": 48.025,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and then between 4 weeks and 12 weeks for AstraZeneca.",
+    "start": 48.025,
+    "end": 51.705,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And what NASI does though is give those recommendations on how best to use the vaccines.",
+    "start": 52.47,
+    "end": 58.15,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And when they look at them, they looked at obviously the clinical trials data.",
+    "start": 58.15,
+    "end": 61.829998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "They looked at real world data. We have",
+    "start": 62.23,
+    "end": 65.03,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "data from other countries that have actually used a longer dosing interval.",
+    "start": 65.43,
+    "end": 69.875,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "At the time that they looked at it, there was a lot of data around an 8 week interval between the first and second doses of the mRNA",
+    "start": 70.035,
+    "end": 76.355,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccines. And of course for AstraZeneca, we already have that kind of longer interval in the clinical trials.",
+    "start": 76.755005,
+    "end": 82.5,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "They were also looking at what they knew about",
+    "start": 82.74,
+    "end": 85.14,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccines in general. And we know that when you have immunity, especially at these high levels that Doctor. Government",
+    "start": 85.78,
+    "end": 91.619995,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "talked about, they don't just immediately sort of fall off a cliff all of a sudden.",
+    "start": 92.305,
+    "end": 95.985,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "So, we, you know, we don't know how long they last. We are getting more information on how sustained that immune response is. But we do know that you've already got a high level. It's not going to drop off very quickly. So, they use that along with some modeling.",
+    "start": 96.225,
+    "end": 110.62,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And then this is the important part and looked at what the supply situation would be in Canada.",
+    "start": 110.78,
+    "end": 115.58,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "So, this is the part that's a bit, I think, challenging for people. So, we actually looked they took a look at what the benefits were of getting first doses into as many people as possible",
+    "start": 115.9,
+    "end": 126.034996,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "versus sticking to a shorter interval",
+    "start": 126.275,
+    "end": 129.235,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and potentially then",
+    "start": 129.635,
+    "end": 131.475,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "having more people having completed",
+    "start": 131.635,
+    "end": 133.715,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccination",
+    "start": 133.715,
+    "end": 134.755,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "schedules",
+    "start": 134.83499,
+    "end": 135.475,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "versus having some people that don't.",
+    "start": 135.71,
+    "end": 138.35,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And so, their recommendation was",
+    "start": 138.35,
+    "end": 140.27,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that you could go up to,",
+    "start": 140.51,
+    "end": 142.67001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and I'll just say that again, up to 4 months in their opinion,",
+    "start": 142.91,
+    "end": 146.51001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "without compromising the immune response. They didn't say that you have to. So, know a lot of places are automatically giving that second, you know,",
+    "start": 146.91,
+    "end": 154.695,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "second, vaccination dose exactly 4 months later. That's not what they said. They were saying you could, if it's for, you know, in your best interest to get more people vaccinated,",
+    "start": 157.015,
+    "end": 166.02,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you could go up to 4 months.",
+    "start": 166.34,
+    "end": 167.86,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Now what they're doing is that they're also looking at new data that's come out that's showing that potentially there might be some differences in some of the subgroups.",
+    "start": 168.18,
+    "end": 176.81999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "So, people that might have a bit of a compromised immune system, such as people that had cancer and received treatment,",
+    "start": 177.20499,
+    "end": 183.285,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "whether or not in the elderly population,",
+    "start": 183.765,
+    "end": 185.765,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "so 70 and older,",
+    "start": 185.765,
+    "end": 187.125,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "80 and older,",
+    "start": 187.84499,
+    "end": 188.885,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "maybe their immunity drops off a bit quicker than other groups. So they're actually in the process of looking at that as well now and to see if they need to",
+    "start": 189.20499,
+    "end": 197.78,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "update that recommendation in any way. So it really,",
+    "start": 198.42,
+    "end": 201.62,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you know, it's we've got the Health Canada sort of strict interpretation of the data, whether it's clinical trial or real world evidence. And then we have this like, how we how do we best",
+    "start": 201.78,
+    "end": 212.05501,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "use these vaccines in Canada",
+    "start": 212.215,
+    "end": 214.69499,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to protect us all in the best ways we can get, you know, back to some state of normality as quickly as possible.",
+    "start": 214.69499,
+    "end": 222.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "So that's where that came from. But again, I just wanted to underscore that it's up to 4 months and it's really dependent on availability of vaccines and it might change based on evidence, which, you know, is challenging in and of itself when we change recommendations.",
+    "start": 222.95999,
+    "end": 235.545,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Just to say that that's what they're looking at when they're giving their recommendations to the provinces and territories. Doctor. Richardson, do you have anything to add on that topic, especially from a health equity perspective?",
+    "start": 235.94499,
+    "end": 246.345,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Yeah. I think I really like what you were just saying, Sam, about about this idea of the collective versus the individual. We are used to health care in Canada being entirely focused on our individual",
+    "start": 247.94,
+    "end": 259.78,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "access",
+    "start": 259.94,
+    "end": 260.74,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "apart from, of course, the small group of people who practice public health. And how can we actually start to understand that thinking around the collective?",
+    "start": 260.845,
+    "end": 269.405,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Actually, not only is a morally just thing to do because it actually",
+    "start": 269.805,
+    "end": 274.685,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "makes sure that vaccine",
+    "start": 275,
+    "end": 277.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "access goes to those who will benefit more from it, it will help get us out of the situation that we're in more quickly.",
+    "start": 277.32,
+    "end": 284.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "So how do we actually ensure that those postal code regions that I was talking about, that currently in the heat bath in Toronto are showing lower access to vaccines",
+    "start": 284.44,
+    "end": 294.845,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and yet higher",
+    "start": 295.005,
+    "end": 296.445,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "ins higher rates of COVID, how do we ensure that we're getting vaccine there quickly?",
+    "start": 296.445,
+    "end": 301.885,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I can tell you that the shortened interval when I or the the elongated interval,",
+    "start": 302.4,
+    "end": 307.6,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I can see being complex",
+    "start": 307.6,
+    "end": 309.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "for some of the outreach work that I'm doing. When I look at the magnitude of something called operation remote immunity, which involved teams of us flying into remote First Nations in the North Of Ontario.",
+    "start": 309.2,
+    "end": 320.32498,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "It was an unbelievable",
+    "start": 320.645,
+    "end": 322.565,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "operation that would to oversee. It was it's been done incredibly well. But to look at having now a gap",
+    "start": 322.565,
+    "end": 330.00497,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to actually complete that after the logistical infrastructure",
+    "start": 330.37,
+    "end": 334.13,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that went in, that's gonna be complex.",
+    "start": 334.13,
+    "end": 336.69,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "When I look at vaccinating people in the park who are experiencing homelessness,",
+    "start": 336.85,
+    "end": 341.17,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "like we were doing last week here in Toronto with Anishinaabe Health,",
+    "start": 341.17,
+    "end": 344.13,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "elongating",
+    "start": 344.955,
+    "end": 345.835,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that time is going to be is going to be hard. We have outreach workers who are going to meet people 3 weeks, 4 weeks. We can do that. Reminder, we know where people are more likely to be, etcetera. But when we extend that time for particularly vulnerable groups, I do worry a little bit. So I think that's where when we start to think from this collective well-being,",
+    "start": 345.835,
+    "end": 367.96002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "which actually will benefit",
+    "start": 367.96002,
+    "end": 369.56003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "me as well as an individual because we will slow the rate of the spread, increase the herd immune the likelihood to get to herd herd immunity. I think we do need to recognize that we should be seeing some nuanced approach to vaccine distribution",
+    "start": 369.72,
+    "end": 384.255,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and not be angry about that.",
+    "start": 384.255,
+    "end": 385.97998,
+    "is_final": true,
+    "speaker_id": 0
+  }
+]

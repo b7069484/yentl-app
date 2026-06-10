@@ -1,15 +1,22 @@
 "use client";
 import { ulid } from "ulid";
 import { useSession } from "./session-store";
+import { claimContextForVerification, compactContextPairs, sourceContextForPrompt } from "./analysis-context";
 import { hashClaim, RecentSet } from "@/lib/dedup";
+import { documentAnchorLabel } from "@/lib/document-anchor";
+import { bestSourceQuoteRange } from "@/lib/source-evidence";
 import { getEntry } from "@/lib/taxonomy";
 import type {
-  BrowserTabContext,
+  AttributionReason,
+  AttributionStatus,
   ClaimCard,
+  ClaimOwnership,
+  ClaimStance,
+  DocumentAnchor,
+  OverlapClass,
   RhetoricMarker,
   Source,
   SourcePreview,
-  SessionSource,
   SpeakerId,
   TranscriptSegment,
 } from "@/lib/types";
@@ -19,20 +26,8 @@ const recentMarkerHashes = new RecentSet(40);
 let utteranceCounter = 0;
 let lastRhetoricRunAt = 0;
 
-// Rolling RMS state — populated by AudioMeter via onRmsSample callback (Phase 1a).
 let latestRms = 0;
 let peakRmsSinceLastSegment = 0;
-
-/**
- * Called each animation frame by AudioMeter with the current RMS amplitude.
- * The orchestrator accumulates a peak window and attaches it to the next
- * finalized TranscriptSegment as audio_features. This makes Phase E prosody
- * a prompt change rather than a schema change.
- */
-export function recordRmsSample(rms: number) {
-  latestRms = rms;
-  if (rms > peakRmsSinceLastSegment) peakRmsSinceLastSegment = rms;
-}
 
 let synthesisUtteranceCounter = 0;
 let lastSynthesisRunAt = 0;
@@ -48,71 +43,176 @@ type ExtractedClaim = {
   utterance_end: number;
   topic: string;
   topic_secondary: string | null;
-  stance?: import("@/lib/types").ClaimStance;
+  stance?: ClaimStance;
+  ownership?: ClaimOwnership;
 };
 
-function compactContextPairs(pairs: Array<[string, string | string[] | number | undefined | null]>) {
-  return pairs
-    .flatMap(([label, value]) => {
-      if (Array.isArray(value)) {
-        return value.length > 0 ? [`${label}: ${value.join(", ")}`] : [];
-      }
-      if (value === undefined || value === null || value === "") return [];
-      return [`${label}: ${String(value)}`];
-    })
-    .join("\n");
+const LOW_CONFIDENCE_OWNER_STATUSES = new Set<AttributionStatus>([
+  "uncertain",
+  "unsafe_overlap",
+  "quote_or_clip",
+  "not_available",
+]);
+
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(1, value));
 }
 
-function browserContextForPrompt(context?: BrowserTabContext) {
-  if (!context) return "";
+function fallbackOwnershipConfidence(status: AttributionStatus): number {
+  if (status === "manual_corrected") return 0.9;
+  if (status === "confident") return 0.8;
+  if (status === "probable") return 0.6;
+  if (status === "uncertain") return 0.35;
+  return 0.2;
+}
+
+function fallbackOwnerSpeakerId(segment: TranscriptSegment, status: AttributionStatus): SpeakerId | null {
+  if (segment.speaker_id === null) return null;
+  if (LOW_CONFIDENCE_OWNER_STATUSES.has(status)) return null;
+  return segment.speaker_id;
+}
+
+function fallbackSourceTurnIds(segment: TranscriptSegment): string[] {
+  return segment.turn_id ? [segment.turn_id] : [];
+}
+
+function fallbackSourceSegmentIds(segment: TranscriptSegment): string[] {
+  return segment.id ? [segment.id] : [];
+}
+
+function claimSummaryForAnalysis(claim: ClaimCard) {
+  return {
+    text: claim.claim_text,
+    verdict: claim.primary_label,
+    score: claim.score,
+    speaker_id: claim.ownership?.owner_speaker_id ?? claim.speaker_id,
+    topic: claim.topic,
+    stance: claim.ownership?.stance ?? claim.stance,
+    attribution_status: claim.ownership?.attribution_status,
+    attribution_reasons: claim.ownership?.attribution_reasons ?? [],
+    explanation: claim.explanation,
+  };
+}
+
+function claimSummariesForSynthesis(claims: ClaimCard[]) {
+  return claims.slice(-24).map(claimSummaryForAnalysis);
+}
+
+export function claimOwnershipForSegment(
+  segment: TranscriptSegment,
+  stance: ClaimStance,
+  modelOwnership?: ClaimOwnership,
+): ClaimOwnership {
+  const fallbackStatus: AttributionStatus =
+    segment.attribution_status ?? (segment.speaker_id === null ? "not_available" : "confident");
+  const fallback: ClaimOwnership = {
+    owner_speaker_id: fallbackOwnerSpeakerId(segment, fallbackStatus),
+    attribution_status: fallbackStatus,
+    attribution_reasons: segment.attribution_reasons ?? [],
+    stance,
+    confidence: fallbackOwnershipConfidence(fallbackStatus),
+    source_turn_ids: fallbackSourceTurnIds(segment),
+    source_segment_ids: fallbackSourceSegmentIds(segment),
+  };
+
+  if (!modelOwnership) return fallback;
+
+  return {
+    owner_speaker_id: modelOwnership.owner_speaker_id,
+    attribution_status: modelOwnership.attribution_status,
+    attribution_reasons:
+      modelOwnership.attribution_reasons.length > 0
+        ? modelOwnership.attribution_reasons
+        : fallback.attribution_reasons,
+    stance: modelOwnership.stance,
+    confidence: clamp01(modelOwnership.confidence),
+    source_turn_ids:
+      modelOwnership.source_turn_ids.length > 0
+        ? modelOwnership.source_turn_ids
+        : fallback.source_turn_ids,
+    source_segment_ids:
+      modelOwnership.source_segment_ids.length > 0
+        ? modelOwnership.source_segment_ids
+        : fallback.source_segment_ids,
+  };
+}
+
+export function documentAnchorLabelForPrompt(anchor?: DocumentAnchor): string | null {
+  return documentAnchorLabel(anchor);
+}
+
+export function documentAnchorWithClaimQuote(
+  anchor: DocumentAnchor | undefined,
+  segmentText: string,
+  claimText: string,
+): DocumentAnchor | undefined {
+  if (!anchor) return undefined;
+  const quote = bestSourceQuoteRange(claimText, segmentText, {
+    minScore: 0.25,
+    allowSingleSentence: true,
+  });
+  if (!quote) return anchor;
+
+  const baseOffset = Number.isFinite(anchor.char_start) ? anchor.char_start ?? 0 : 0;
+  return {
+    ...anchor,
+    char_start: baseOffset + quote.start,
+    char_end: baseOffset + quote.end,
+    quote_text: quote.text,
+  };
+}
+
+function documentAnchorContextForPrompt(anchor?: DocumentAnchor): string {
+  if (!anchor) return "";
   return compactContextPairs([
-    ["page title", context.page_title],
-    ["site", context.site_name],
-    ["channel", context.channel_name],
-    ["author", context.author_name],
-    ["username", context.username],
-    ["canonical url", context.canonical_url],
-    ["description", context.description],
-    ["detected names", context.detected_names],
+    ["label", documentAnchorLabelForPrompt(anchor)],
+    ["kind", anchor.kind],
+    ["block", anchor.block_index + 1],
+    ["paragraph", anchor.paragraph_index !== undefined ? anchor.paragraph_index + 1 : undefined],
+    ["line range", anchor.line_start !== undefined ? `${anchor.line_start}-${anchor.line_end ?? anchor.line_start}` : undefined],
+    ["cue", anchor.cue_index !== undefined ? anchor.cue_index + 1 : undefined],
+    ["speaker label", anchor.speaker_label],
+    ["character range", anchor.char_start !== undefined && anchor.char_end !== undefined ? `${anchor.char_start}-${anchor.char_end}` : undefined],
+    ["quote", anchor.quote_text],
   ]);
 }
 
-function sourceContextForPrompt(source: SessionSource) {
-  if (source.kind === "browser_tab") {
-    return browserContextForPrompt({
-      ...(source.context ?? {}),
-      page_title: source.context?.page_title ?? source.title,
-      canonical_url: source.context?.canonical_url ?? source.url,
-    });
-  }
+function transcriptContextLineForPrompt(segment: TranscriptSegment): string {
+  const speaker = segment.speaker_id !== null ? `[Speaker ${segment.speaker_id}]` : "[Unknown speaker]";
+  const anchor = documentAnchorLabelForPrompt(segment.document_anchor);
+  const sourceKind = segment.source_audio_kind ? `[${segment.source_audio_kind}]` : "";
+  const position = anchor ? `[${anchor}]` : "";
+  return [position, sourceKind, speaker, segment.text].filter(Boolean).join(" ");
+}
 
-  if (source.kind === "youtube") {
-    return compactContextPairs([
-      ["source type", "YouTube"],
-      ["title", source.title],
-      ["channel", source.channel],
-      ["url", source.url],
-      ["video id", source.video_id],
-      ["duration seconds", source.duration_sec],
-    ]);
-  }
+function normalizeRms(rms: number): number {
+  if (!Number.isFinite(rms)) return 0;
+  return Math.max(0, Math.min(1, rms));
+}
 
-  if (source.kind === "media_url") {
-    return compactContextPairs([
-      ["source type", "media URL"],
-      ["url", source.url],
-    ]);
-  }
+export function recordRmsSample(rms: number) {
+  const normalized = normalizeRms(rms);
+  latestRms = normalized;
+  peakRmsSinceLastSegment = Math.max(peakRmsSinceLastSegment, normalized);
+}
 
-  if (source.kind === "audio_file" || source.kind === "text_doc") {
-    return compactContextPairs([
-      ["source type", source.kind],
-      ["filename", source.filename],
-      ["mime", source.mime],
-    ]);
-  }
+export function withAudioFeatures(segment: TranscriptSegment): TranscriptSegment {
+  const peakRms = Math.max(peakRmsSinceLastSegment, latestRms);
+  peakRmsSinceLastSegment = latestRms;
+  return {
+    ...segment,
+    audio_features: {
+      ...segment.audio_features,
+      rms: latestRms,
+      peak_rms: peakRms,
+    },
+  };
+}
 
-  return "";
+export function resetAudioFeatureWindowForTest() {
+  latestRms = 0;
+  peakRmsSinceLastSegment = 0;
 }
 
 export function attributeMarker(
@@ -127,15 +227,171 @@ export function attributeMarker(
   return ids.size === 1 ? (overlapping[0].speaker_id as number) : null;
 }
 
-export async function onFinalUtterance(segment: TranscriptSegment) {
-  // Attach RMS snapshot captured since the prior segment (Phase 1a prosody groundwork).
-  // Only mic sources have meaningful RMS; for non-mic sources latestRms stays 0.
-  segment.audio_features = {
-    rms: latestRms,
-    peak_rms: peakRmsSinceLastSegment,
-  };
-  peakRmsSinceLastSegment = 0;
+function unique<T>(values: T[]): T[] {
+  return Array.from(new Set(values));
+}
 
+function markerOverlappingSegments(
+  m: { start_time: number; end_time: number },
+  transcript: TranscriptSegment[],
+): TranscriptSegment[] {
+  return transcript.filter((s) => s.end >= m.start_time && s.start <= m.end_time);
+}
+
+function compactIds(values: Array<string | null | undefined>): string[] {
+  return unique(values.filter((value): value is string => Boolean(value)));
+}
+
+function primaryOverlapClass(segments: TranscriptSegment[]): OverlapClass {
+  const overlap = segments.find((s) => s.overlap_class && s.overlap_class !== "none")?.overlap_class;
+  return overlap ?? "none";
+}
+
+function strongestOverlapClass(
+  transcriptOverlapClass: OverlapClass,
+  modelOverlapClass?: OverlapClass,
+): OverlapClass {
+  return transcriptOverlapClass !== "none"
+    ? transcriptOverlapClass
+    : (modelOverlapClass ?? "none");
+}
+
+function fallbackMarkerAttributionStatus(
+  segments: TranscriptSegment[],
+  speakerId: SpeakerId | null,
+  overlapClass: OverlapClass,
+): AttributionStatus {
+  const statuses = segments
+    .map((s) => s.attribution_status)
+    .filter((value): value is AttributionStatus => Boolean(value));
+
+  if (statuses.includes("unsafe_overlap") || overlapClass === "parallel_claim") return "unsafe_overlap";
+  if (statuses.includes("quote_or_clip") || overlapClass === "crowd_or_bleed") return "quote_or_clip";
+  if (statuses.includes("uncertain")) return "uncertain";
+  if (statuses.includes("probable")) return "probable";
+  if (statuses.includes("manual_corrected")) return "manual_corrected";
+  if (speakerId !== null && segments.length > 0) return "confident";
+  return segments.length > 0 ? "uncertain" : "not_available";
+}
+
+function fallbackMarkerAttributionReasons(
+  segments: TranscriptSegment[],
+  status: AttributionStatus,
+  overlapClass: OverlapClass,
+): AttributionReason[] {
+  const reasons = unique(segments.flatMap((s) => s.attribution_reasons ?? []));
+  if (reasons.length > 0) return reasons;
+  if (status === "confident") return ["single_speaker_high_confidence"];
+  if (status === "not_available") return ["provider_missing_speaker"];
+  if (overlapClass === "parallel_claim") return ["parallel_claim"];
+  if (overlapClass === "competitive_interruption") return ["competitive_interruption"];
+  if (overlapClass === "backchannel_continuer") return ["short_backchannel"];
+  if (overlapClass === "crowd_or_bleed") return ["crowd_or_bleed"];
+  return ["dominant_speaker_low_margin"];
+}
+
+function attributionSafetyRank(status: AttributionStatus): number {
+  switch (status) {
+    case "confident":
+    case "manual_corrected":
+      return 4;
+    case "probable":
+      return 3;
+    case "uncertain":
+      return 2;
+    case "unsafe_overlap":
+    case "quote_or_clip":
+    case "not_available":
+      return 1;
+  }
+}
+
+function saferMarkerAttributionStatus(
+  fallbackStatus: AttributionStatus,
+  modelStatus?: AttributionStatus,
+): AttributionStatus {
+  if (!modelStatus) return fallbackStatus;
+  return attributionSafetyRank(modelStatus) < attributionSafetyRank(fallbackStatus)
+    ? modelStatus
+    : fallbackStatus;
+}
+
+function trustedModelIds(modelIds: string[] | undefined, transcriptIds: string[]): string[] {
+  if (!modelIds?.length) return transcriptIds;
+  const trusted = modelIds.filter((id) => transcriptIds.includes(id));
+  return trusted.length > 0 ? trusted : transcriptIds;
+}
+
+type MarkerAttributionInput = Partial<
+  Pick<
+    RhetoricMarker,
+    | "attribution_status"
+    | "attribution_reasons"
+    | "overlap_class"
+    | "source_turn_ids"
+    | "source_segment_ids"
+  >
+>;
+
+export function markerAttributionForSpan(
+  marker: { start_time: number; end_time: number },
+  transcript: TranscriptSegment[],
+  modelAttribution: MarkerAttributionInput = {},
+): Pick<
+  RhetoricMarker,
+  "attribution_status" | "attribution_reasons" | "overlap_class" | "source_turn_ids" | "source_segment_ids"
+> {
+  const overlapping = markerOverlappingSegments(marker, transcript);
+  const speakerId = attributeMarker(marker, transcript);
+  const transcriptOverlapClass = primaryOverlapClass(overlapping);
+  const overlapClass = strongestOverlapClass(transcriptOverlapClass, modelAttribution.overlap_class);
+  const fallbackStatus = fallbackMarkerAttributionStatus(overlapping, speakerId, overlapClass);
+  const attributionStatus = saferMarkerAttributionStatus(
+    fallbackStatus,
+    modelAttribution.attribution_status,
+  );
+  const shouldTrustModelReasons =
+    modelAttribution.attribution_status === attributionStatus &&
+    modelAttribution.attribution_reasons?.length;
+  const attributionReasons = shouldTrustModelReasons
+      ? modelAttribution.attribution_reasons
+      : fallbackMarkerAttributionReasons(overlapping, attributionStatus, overlapClass);
+  const transcriptTurnIds = compactIds(overlapping.map((s) => s.turn_id));
+  const transcriptSegmentIds = compactIds(overlapping.map((s) => s.id));
+
+  return {
+    attribution_status: attributionStatus,
+    attribution_reasons: attributionReasons,
+    overlap_class: overlapClass,
+    source_turn_ids: trustedModelIds(modelAttribution.source_turn_ids, transcriptTurnIds),
+    source_segment_ids: trustedModelIds(modelAttribution.source_segment_ids, transcriptSegmentIds),
+  };
+}
+
+export function formatRhetoricTranscriptLine(segment: TranscriptSegment): string {
+  const tags = [
+    `speaker=${segment.speaker_id === null ? "unknown" : `Speaker ${segment.speaker_id}`}`,
+    `attribution=${segment.attribution_status ?? (segment.speaker_id === null ? "not_available" : "confident")}`,
+    `overlap=${segment.overlap_class ?? "none"}`,
+    segment.turn_id ? `turn=${segment.turn_id}` : null,
+    segment.id ? `segment=${segment.id}` : null,
+  ].filter(Boolean);
+
+  return `[${Math.floor(segment.start)}s] ${tags.join(" ")} :: ${segment.text}`;
+}
+
+export function rhetoricTranscriptWindowForSegments(
+  transcript: TranscriptSegment[],
+  endAtSeconds = transcript.at(-1)?.end ?? 0,
+): string {
+  const cutoff = endAtSeconds - 60;
+  return transcript
+    .filter((s) => s.end >= cutoff)
+    .map(formatRhetoricTranscriptLine)
+    .join("\n");
+}
+
+export async function onFinalUtterance(segment: TranscriptSegment) {
   maybeRunRhetoric();
   maybeRunSynthesis();
   maybeRunDevilAdvocate();
@@ -147,11 +403,13 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
   // model can distinguish first-person assertion from reported speech.
   const transcriptContext = transcript
     .filter((s) => s.end >= cutoff)
-    .map((s) => s.speaker_id !== null ? `[Speaker ${s.speaker_id}] ${s.text}` : s.text)
-    .join(" ");
+    .map(transcriptContextLineForPrompt)
+    .join("\n");
   const sourceContext = sourceContextForPrompt(source);
+  const documentPosition = documentAnchorContextForPrompt(segment.document_anchor);
   const ctx = [
     sourceContext ? `SOURCE_CONTEXT:\n${sourceContext}` : "",
+    documentPosition ? `CURRENT_DOCUMENT_POSITION:\n${documentPosition}` : "",
     `TRANSCRIPT_CONTEXT:\n${transcriptContext}`,
   ].filter(Boolean).join("\n\n");
 
@@ -166,6 +424,14 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
         utterance_end: segment.end,
         context: ctx,
         recent_hashes: recentClaimHashes.toArray(),
+        speaker_id: segment.speaker_id,
+        segment_id: segment.id ?? null,
+        turn_id: segment.turn_id ?? null,
+        attribution_status: segment.attribution_status,
+        attribution_reasons: segment.attribution_reasons ?? [],
+        overlap_class: segment.overlap_class,
+        source_audio_kind: segment.source_audio_kind,
+        document_anchor: segment.document_anchor,
       }),
     });
   } catch (e) {
@@ -181,12 +447,14 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
     if (recentClaimHashes.has(h)) continue;
     recentClaimHashes.add(h);
 
+    const stance = c.stance ?? "asserted";
+    const ownership = claimOwnershipForSegment(segment, stance, c.ownership);
     const card: ClaimCard = {
       id: ulid(),
       claim_text: c.claim_text,
       utterance_start: c.utterance_start,
       utterance_end: c.utterance_end,
-      speaker_id: segment.speaker_id,
+      speaker_id: ownership.owner_speaker_id,
       topic: c.topic ?? "Other",
       topic_secondary: c.topic_secondary ?? null,
       primary_label: "UNVERIFIABLE",   // overridden once verify-provisional or verify-confirmed lands
@@ -195,12 +463,14 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
       explanation: "",
       status: "checking",
       sources: [],
-      stance: c.stance ?? "asserted",
+      stance,
+      ownership,
+      document_anchor: documentAnchorWithClaimQuote(segment.document_anchor, segment.text, c.claim_text),
     };
     useSession.getState().addClaim(card);
 
-    void verifyProvisional(card.id, c.claim_text, sourceContext);
-    void verifyConfirmed(card.id, c.claim_text, sourceContext);
+    void verifyProvisional(card, sourceContext);
+    void verifyConfirmed(card, sourceContext);
   }
 }
 
@@ -273,7 +543,15 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
   if (current === null) {
     state.setSynthesis({ state: "warming", at: Date.now() });
   } else if (current.state === "fresh" || current.state === "refreshing") {
-    state.setSynthesis({ state: "refreshing", text: current.text, headlines: current.headlines, at: Date.now() });
+    state.setSynthesis({
+      state: "refreshing",
+      text: current.text,
+      headlines: current.headlines,
+      ...(current.per_speaker_verdicts !== undefined
+        ? { per_speaker_verdicts: current.per_speaker_verdicts }
+        : {}),
+      at: Date.now(),
+    });
   }
 
   // Use the explicit full transcript when provided (endSession path),
@@ -284,6 +562,8 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
     text: s.text,
     start: s.start,
     end: s.end,
+    source_audio_kind: s.source_audio_kind,
+    anchor: documentAnchorLabelForPrompt(s.document_anchor),
   }));
 
   // Build counters from claims
@@ -316,6 +596,7 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
   };
 
   const speakersPayload = speakers.map((s) => ({ id: s.id, label: s.label }));
+  const claimsPayload = claimSummariesForSynthesis(claims);
 
   // Abort any previous in-flight request
   synthesisAbortController?.abort();
@@ -327,7 +608,13 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
     res = await fetch("/api/synthesize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ utterances, counters, speakers: speakersPayload }),
+      body: JSON.stringify({
+        utterances,
+        counters,
+        speakers: speakersPayload,
+        claims: claimsPayload,
+        source_context: sourceContextForPrompt(state.source),
+      }),
       signal,
     });
   } catch (e) {
@@ -340,7 +627,15 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
     useSession.getState().setSynthesis({
       state: "error",
       at: Date.now(),
-      ...(prev && "text" in prev ? { text: prev.text, headlines: prev.headlines } : {}),
+      ...(prev && "text" in prev
+        ? {
+          text: prev.text,
+          headlines: prev.headlines,
+          ...(prev.per_speaker_verdicts !== undefined
+            ? { per_speaker_verdicts: prev.per_speaker_verdicts }
+            : {}),
+        }
+        : {}),
       lastError: String(e),
     });
     return;
@@ -351,7 +646,15 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
     useSession.getState().setSynthesis({
       state: "error",
       at: Date.now(),
-      ...(prev && "text" in prev ? { text: prev.text, headlines: prev.headlines } : {}),
+      ...(prev && "text" in prev
+        ? {
+          text: prev.text,
+          headlines: prev.headlines,
+          ...(prev.per_speaker_verdicts !== undefined
+            ? { per_speaker_verdicts: prev.per_speaker_verdicts }
+            : {}),
+        }
+        : {}),
     });
     return;
   }
@@ -410,13 +713,7 @@ async function runDevilAdvocate(opts?: { fullTranscript?: TranscriptSegment[] })
         claims: state.claims
           .filter((claim) => claim.status !== "checking")
           .slice(-8)
-          .map((claim) => ({
-            text: claim.claim_text,
-            verdict: claim.primary_label,
-            score: claim.score,
-            speaker_id: claim.speaker_id,
-            explanation: claim.explanation,
-          })),
+          .map(claimSummaryForAnalysis),
         markers: state.markers.slice(-8).map((marker) => ({
           display: marker.display,
           severity: marker.severity,
@@ -472,11 +769,7 @@ async function runRhetoric() {
   if (transcript.length === 0) return;
 
   const last = transcript[transcript.length - 1];
-  const cutoff = last.end - 60;
-  const win = transcript
-    .filter((s) => s.end >= cutoff)
-    .map((s) => `[${Math.floor(s.start)}s] ${s.text}`)
-    .join("\n");
+  const win = rhetoricTranscriptWindowForSegments(transcript, last.end);
 
   let res: Response;
   try {
@@ -517,9 +810,15 @@ async function runRhetoric() {
       { start_time: m.start_time, end_time: m.end_time },
       currentTranscript,
     );
+    const attribution = markerAttributionForSpan(
+      { start_time: m.start_time, end_time: m.end_time },
+      currentTranscript,
+      m,
+    );
 
     useSession.getState().addMarker({
       ...m,
+      ...attribution,
       type: correctedType,
       display: correctedDisplay,
       speaker_id: speakerId,
@@ -528,13 +827,17 @@ async function runRhetoric() {
   }
 }
 
-async function verifyProvisional(id: string, claim_text: string, source_context?: string) {
+async function verifyProvisional(claim: ClaimCard, source_context?: string) {
   let res: Response;
   try {
     res = await fetch("/api/verify-provisional", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ claim_text, source_context }),
+      body: JSON.stringify({
+        claim_text: claim.claim_text,
+        source_context,
+        claim_context: claimContextForVerification(claim),
+      }),
     });
   } catch (e) {
     console.error("verify-provisional fetch failed", e);
@@ -542,18 +845,22 @@ async function verifyProvisional(id: string, claim_text: string, source_context?
   }
   if (!res.ok) return;
   const data = await res.json();
-  const current = useSession.getState().claims.find((c) => c.id === id);
+  const current = useSession.getState().claims.find((c) => c.id === claim.id);
   if (!current || current.status === "confirmed") return;
-  useSession.getState().updateClaim(id, { ...data, status: "provisional" });
+  useSession.getState().updateClaim(claim.id, { ...data, status: "provisional" });
 }
 
-async function verifyConfirmed(id: string, claim_text: string, source_context?: string) {
+async function verifyConfirmed(claim: ClaimCard, source_context?: string) {
   let res: Response;
   try {
     res = await fetch("/api/verify-confirmed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ claim_text, source_context }),
+      body: JSON.stringify({
+        claim_text: claim.claim_text,
+        source_context,
+        claim_context: claimContextForVerification(claim),
+      }),
     });
   } catch (e) {
     console.error("verify-confirmed fetch failed", e);
@@ -561,11 +868,11 @@ async function verifyConfirmed(id: string, claim_text: string, source_context?: 
   }
   if (!res.ok) return;
   const data = (await res.json()) as Omit<ClaimCard, "id" | "claim_text" | "utterance_start" | "utterance_end" | "speaker_id" | "topic" | "status">;
-  useSession.getState().updateClaim(id, { ...data, status: "confirmed" });
+  useSession.getState().updateClaim(claim.id, { ...data, status: "confirmed" });
 
   // Fire OG-preview fetches in the background; they'll patch each Source.preview when they land.
   if (Array.isArray(data.sources) && data.sources.length > 0) {
-    void fetchAndApplyPreviews(id, data.sources);
+    void fetchAndApplyPreviews(claim.id, data.sources);
   }
 }
 

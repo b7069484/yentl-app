@@ -3,10 +3,15 @@
 import { useSession } from "@/lib/client/session-store";
 import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
 import { mergeIntoUtterances } from "@/lib/client/utterance-merge";
-import type { TranscriptSegment } from "@/lib/types";
+import type { Speaker, TranscriptSegment } from "@/lib/types";
 
 const ANALYSIS_CONCURRENCY = 4;
 const SYNTHESIS_BATCH_DELAY_MS = 4000;
+
+type BulkIngestOptions = {
+  signal?: AbortSignal;
+  speakers?: Speaker[];
+};
 
 /**
  * Bulk-ingests a list of pre-parsed TranscriptSegments into the pipeline.
@@ -27,13 +32,17 @@ const SYNTHESIS_BATCH_DELAY_MS = 4000;
  */
 export async function bulkIngest(
   segments: TranscriptSegment[],
-  opts?: { signal?: AbortSignal },
+  opts?: BulkIngestOptions,
 ): Promise<void> {
   const state = useSession.getState();
 
   if (state.startedAt === null) {
     state.startSession();
   }
+
+  if (opts?.signal?.aborted) return;
+
+  registerDetectedSpeakers(opts?.speakers);
 
   // 1. Append every segment synchronously so the transcript is fully
   //    present before we yield. Watch view and Transcript view both see
@@ -61,6 +70,19 @@ export async function bulkIngest(
   //    a few claims to work with. Subsequent synthesis runs are paced by
   //    the orchestrator naturally.
   scheduleSynthesis(opts?.signal);
+}
+
+function registerDetectedSpeakers(speakers: Speaker[] | undefined): void {
+  if (!speakers || speakers.length === 0) return;
+
+  for (const speaker of speakers) {
+    const label = speaker.label.trim();
+    const state = useSession.getState();
+    state.ensureSpeaker(speaker.id);
+    if (label) {
+      useSession.getState().renameSpeaker(speaker.id, label);
+    }
+  }
 }
 
 async function runAnalysisInBackground(

@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Output } from "ai";
-import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
-import { SYSTEM, VerifyProvisionalResponse } from "@/lib/prompts/verify-provisional";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
+import {
+  SYSTEM,
+  VerifyClaimContext,
+  VerifyProvisionalResponse,
+  userPrompt,
+} from "@/lib/prompts/verify-provisional";
 import { enforceEngagementGate } from "@/lib/server/engagement-gate";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { youtubeValidationVerifyProvisionalFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
+import { documentValidationVerifyProvisionalFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -14,6 +21,7 @@ const MAX_JSON_BYTES = 24 * 1024;
 const VerifyRequest = z.object({
   claim_text: z.string().trim().min(3).max(2_000),
   source_context: z.string().max(6_000).optional(),
+  claim_context: VerifyClaimContext.optional(),
 }).strict();
 
 function rejectOversizedJson(req: NextRequest) {
@@ -45,16 +53,21 @@ export async function POST(req: NextRequest) {
   const gateError = await enforceEngagementGate(claim_text, req, source_context);
   if (gateError) return gateError;
 
-  const context = typeof source_context === "string" && source_context.trim()
-    ? `SOURCE_CONTEXT (for disambiguation only; not evidence):\n${source_context.trim()}\n\n`
-    : "";
+  const validationFixture = youtubeValidationVerifyProvisionalFixture(parsed.data);
+  if (validationFixture) {
+    return NextResponse.json(validationFixture);
+  }
+  const documentValidationFixture = documentValidationVerifyProvisionalFixture(parsed.data);
+  if (documentValidationFixture) {
+    return NextResponse.json(documentValidationFixture);
+  }
 
   try {
     const { output } = await generateText({
       model: opus,
       output: Output.object({ schema: VerifyProvisionalResponse }),
       system: SYSTEM,
-      prompt: `${context}CLAIM:\n${claim_text}`,
+      prompt: userPrompt(parsed.data),
     });
     return NextResponse.json(output);
   } catch (e) {

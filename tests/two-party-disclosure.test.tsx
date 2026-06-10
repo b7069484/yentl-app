@@ -33,6 +33,15 @@ describe("TwoPartyDisclosure", () => {
     expect(localStorage.getItem(FLAG_KEY)).toBe("1");
   });
 
+  it("uses a mobile-sized dismiss touch target", async () => {
+    render(<TwoPartyDisclosure />);
+    const dismissBtn = await screen.findByRole("button", {
+      name: /Dismiss consent reminder/i,
+    });
+
+    expect(dismissBtn).toHaveClass("min-h-11", "min-w-11");
+  });
+
   it("banner disappears after dismissal", async () => {
     render(<TwoPartyDisclosure />);
     const dismissBtn = await screen.findByRole("button", {

@@ -1,0 +1,215 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 34,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "A number of Muslim commentators declined to take part in the BBC Newsnight debate because they did not want to share a platform with Maajid Nawaz.",
+      "utterance_start": 3.12,
+      "utterance_end": 24.48,
+      "topic": "Culture",
+      "topic_secondary": "Politics",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "behind-the-scenes claim",
+          "not independently documented"
+        ],
+        "explanation": "This is a claim about private editorial decisions by potential guests, which would typically only be known to the BBC production team or those approached. While it is consistent with the public controversy surrounding Maajid Nawaz at the time (particularly the Jesus & Mo cartoon row), I cannot confirm from reliable knowledge that specific Muslim commentators publicly declined for this reason."
+      }
+    },
+    {
+      "claim_text": "Maajid Nawaz authored the piece being discussed on BBC Newsnight.",
+      "utterance_start": 3.12,
+      "utterance_end": 24.48,
+      "topic": "Culture",
+      "topic_secondary": "Politics",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 70,
+        "annotations": [
+          "context-dependent",
+          "likely accurate"
+        ],
+        "explanation": "Maajid Nawaz did write opinion pieces around the time of his Newsnight appearances (notably around the Jesus & Mo cartoon controversy in early 2014), which were discussed on the programme. Without the exact transcript context I cannot be certain which piece is referenced, but it is consistent with known facts."
+      }
+    },
+    {
+      "claim_text": "Mehdi Hasan is the political director of The Huffington Post UK.",
+      "utterance_start": 3.12,
+      "utterance_end": 24.48,
+      "topic": "Politics",
+      "topic_secondary": "Culture",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Mo Ansar is a Muslim community activist.",
+      "utterance_start": 3.12,
+      "utterance_end": 24.48,
+      "topic": "Culture",
+      "topic_secondary": null,
+      "id": "maajid_mehdi_bbc-youtube_url-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "A petition asking for Maajid Nawaz's deselection in Hampstead and Kilburn was signed by approximately 1% of the UK's Muslims",
+      "utterance_start": 92.799,
+      "utterance_end": 111.64,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "There are 1.5 billion Muslims in the world",
+      "utterance_start": 92.799,
+      "utterance_end": 111.64,
+      "topic": "Society",
+      "topic_secondary": null,
+      "id": "maajid_mehdi_bbc-youtube_url-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The petition against Maajid Nawaz was distributed internationally and gained only 20,000 signatures",
+      "utterance_start": 92.799,
+      "utterance_end": 111.64,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Mo Ansar has for many years been used by the UK government as a Muslim community leader",
+      "utterance_start": 92.799,
+      "utterance_end": 111.64,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In Islam, depictions of the Prophet Muhammad are not normally permitted",
+      "utterance_start": 246.56,
+      "utterance_end": 262.88,
+      "topic": "Culture",
+      "topic_secondary": "History",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Maajid Nawaz tweeted a cartoon from the 'Jesus and Mo' series",
+      "utterance_start": 246.56,
+      "utterance_end": 262.88,
+      "topic": "Culture",
+      "topic_secondary": "Politics",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Maajid Nawaz's organization (Quilliam) has for the past six years worked to discredit mainstream Muslim organizations including the Muslim Council of Britain",
+      "utterance_start": 323.52,
+      "utterance_end": 342.16,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-11",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The BBC Newsnight Muslim debate panel featured three male Muslim panelists",
+      "utterance_start": 491.039,
+      "utterance_end": 506.759,
+      "topic": "Culture",
+      "topic_secondary": "Politics",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-12",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "A Muslim woman panelist was scheduled for the BBC Newsnight debate but was dropped by producers before the show began",
+      "utterance_start": 491.039,
+      "utterance_end": 506.759,
+      "topic": "Culture",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-youtube_url-claim-13",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "ad_hominem",
+      "display": "Ad Hominem",
+      "excerpt": "you have a long history of upsetting people in the Muslim Community in a gratuitous manner that is the real issue",
+      "start_time": 230,
+      "end_time": 246,
+      "severity": "clear",
+      "explanation": "Rather than addressing Nawaz's argument about the cartoon, the speaker attacks his character and pattern of behavior, framing him as a gratuitous provocateur to undermine the argument itself."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "is it offensive telling people to f off on your Twitter timeline I think you've done that too is it offensive standing for Parliament",
+      "start_time": 196,
+      "end_time": 214,
+      "severity": "clear",
+      "explanation": "The speaker diverts from the question of whether the cartoon was offensive by introducing unrelated past behaviors (tweets, running for Parliament) to deflect the original issue."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "attention seeking being provocative gratuitous whatever you want",
+      "start_time": 230,
+      "end_time": 246,
+      "severity": "subtle",
+      "explanation": "Stacking pejorative descriptors ('attention seeking,' 'provocative,' 'gratuitous') frames Nawaz's actions negatively without engaging the substance of his position."
+    },
+    {
+      "type": "fallacy",
+      "name": "plurium_interrogationum",
+      "display": "Plurium Interrogationum",
+      "excerpt": "is it offensive telling people to f off on your Twitter timeline... is it offensive standing for Parliament is it offensive to you that I tweeted that cartoon",
+      "start_time": 196,
+      "end_time": 214,
+      "severity": "subtle",
+      "explanation": "The speaker rapidly fires multiple loaded questions in succession, making it impossible to address each one and conflating distinct issues into a single rhetorical barrage."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "a mainstream media commentator attacked me this weekend on Twitter because he believed me to have homophobic views",
+      "start_time": 543,
+      "end_time": 560,
+      "severity": "clear",
+      "explanation": "The speaker uses a single personal anecdote about a Twitter exchange to make a broader point about how Muslim voices are treated in media, substituting one isolated incident for systemic argument."
+    },
+    {
+      "type": "fallacy",
+      "name": "hasty_generalization",
+      "display": "Hasty Generalization",
+      "excerpt": "who speaks for Muslims Muslims speak for Muslims and I wish journalists would understand that rather than picking people speak on their behalf",
+      "start_time": 560,
+      "end_time": 581,
+      "severity": "subtle",
+      "explanation": "From one personal grievance, the speaker generalizes about journalists' overall behavior toward Muslims, drawing a sweeping conclusion from a limited example."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "how we use and abuse the Muslim voice",
+      "start_time": 560,
+      "end_time": 575,
+      "severity": "subtle",
+      "explanation": "The phrase 'use and abuse' is emotionally charged framing designed to evoke indignation rather than describe events neutrally."
+    }
+  ],
+  "errors": []
+}

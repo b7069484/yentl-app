@@ -17,7 +17,7 @@ import { SOURCE_ANALYSIS_CONSENT_VALUE, hasSourceAnalysisConsent } from "@/lib/s
  *   2. onBeforeGenerateToken validates the content-type and returns a token.
  *   3. Browser uploads file directly to Vercel Blob using the token.
  *   4. Vercel Blob calls POST /api/upload-audio with { type: "blob.upload-completed" }
- *   5. onUploadCompleted logs the completed upload (no DB write needed here).
+ *   5. onUploadCompleted accepts the callback without a DB write.
  *   6. Browser receives the blob URL and calls /api/transcribe-batch with
  *      { blob_url, duration_sec } JSON — the existing JSON branch handles it.
  *
@@ -88,11 +88,10 @@ export async function POST(request: Request): Promise<NextResponse> {
           }),
         };
       },
-      onUploadCompleted: async ({ blob }) => {
+      onUploadCompleted: async () => {
         // Called by Vercel Blob servers when the client upload finishes.
         // The browser has already received the blob URL synchronously from
-        // the upload() call, so nothing to do here except log.
-        console.log("upload-audio: blob upload completed", blob.url);
+        // the upload() call, so this hook intentionally has no side effect.
       },
     });
 

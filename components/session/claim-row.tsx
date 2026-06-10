@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import type { ClaimCard, PrimaryLabel } from "@/lib/types";
+import type { ClaimCard, ClaimStatus, PrimaryLabel } from "@/lib/types";
+import { attributionStatusLabel, isAttributionStatusResolved } from "./attribution-labels";
 import { TopicChip } from "./chips";
+import { claimContextLabels } from "./ClaimCard";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -40,6 +42,41 @@ function stanceVerb(c: ClaimCard): string {
   if (counts.contradicts > counts.supports) return "contradict";
   if (counts.supports > counts.contradicts) return "support";
   return "weigh in on";
+}
+
+function formatClaimStatus(status: ClaimStatus): string {
+  switch (status) {
+    case "checking":
+      return "Still checking";
+    case "provisional":
+      return "Provisional";
+    case "confirmed":
+      return "Confirmed";
+  }
+}
+
+function claimAttributionRowLabel(
+  claim: ClaimCard,
+  speakerLabel: string,
+): { label: string; speakerId: number | null; showAvatar: boolean } {
+  if (!claim.ownership) {
+    if (claim.speaker_id === null) {
+      return { label: "Speaker unknown", speakerId: null, showAvatar: false };
+    }
+    return { label: speakerLabel, speakerId: claim.speaker_id, showAvatar: true };
+  }
+
+  const statusLabel = attributionStatusLabel(claim.ownership.attribution_status);
+  const ownerId = claim.ownership.owner_speaker_id;
+  if (ownerId !== null && isAttributionStatusResolved(claim.ownership.attribution_status)) {
+    return { label: `Owner: ${speakerLabel}`, speakerId: ownerId, showAvatar: true };
+  }
+
+  return {
+    label: `Owner unresolved: ${statusLabel}`,
+    speakerId: null,
+    showAvatar: false,
+  };
 }
 
 // ─── Verdict color map ────────────────────────────────────────────────────────
@@ -80,6 +117,11 @@ export function ClaimRow({
   const verdictColor = VERDICT_COLOR_MAP[claim.primary_label];
   const score = Math.round(claim.score);
   const sourceCount = claim.sources.length;
+  const attributionRow = claimAttributionRowLabel(claim, speakerLabel);
+  const contextLabels =
+    claim.status === "confirmed"
+      ? claimContextLabels(claim)
+      : [`Status: ${formatClaimStatus(claim.status)}`, ...claimContextLabels(claim)];
 
   const domainPreview =
     sourceCount > 0
@@ -113,15 +155,30 @@ export function ClaimRow({
       <div className="flex-1 min-w-0">
         {/* Speaker row */}
         <div className="flex items-center gap-2 text-[11px] text-ink-3 mb-1.5 flex-wrap">
-          <SpeakerAvatar
-            speakerId={claim.speaker_id ?? 0}
-            label={speakerLabel}
-          />
-          <span className="font-medium text-ink-2">{speakerLabel}</span>
+          {attributionRow.showAvatar && attributionRow.speakerId !== null && (
+            <SpeakerAvatar
+              speakerId={attributionRow.speakerId}
+              label={speakerLabel}
+            />
+          )}
+          <span className="font-medium text-ink-2">{attributionRow.label}</span>
           <span>·</span>
           <span>{formatTs(claim.utterance_start)}</span>
           {claim.topic && <TopicChip topic={claim.topic} />}
         </div>
+
+        {contextLabels.length > 0 && (
+          <div className="mb-1.5 flex flex-wrap gap-1.5">
+            {contextLabels.map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-line bg-ink-05 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-4"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Claim text */}
         <div className="font-serif italic text-[15px] text-ink-2 leading-snug line-clamp-2">

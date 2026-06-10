@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_rhet_03_loaded_question",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_rhet_03",
+  "start_s": 0,
+  "end_s": 90,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "I believe I'll have some tough conversations with my management team. For the first time in twenty years, the race for County District Attorney is being contested. Three people are trying to replace outgoing five term incumbent, Jan Sculley. And we have team coverage on this race tonight. Let's begin with KCRA three's Tom Duhane with the current Deputy District Attorney, Ann Marie Schubert. Tom? That's right. And this is Schubert's election party tonight, which is underway. And she is the chosen candidate to buy the outgoing VA or at least recommended by him and the sheriff as well. She's a longtime prosecutor in the office for twenty four years and a veteran of over a 100 trials. She's here with us now. Let's talk with her briefly. Anne Marie, thank you. Hi. I'm just wondering how you feeling tonight after this campaign, and I know you're ready for the possibility of five months more. Oh, I'm excited about this campaign. I you know, I've been in it in it to win it, and I'm very excited about the possibilities of ending this tonight, quite frankly. How would you describe the campaign, and did it at all surprise you? You know, it's a lot of work. There's no question. I mean, I I have lived in a in a completely different world as a prosecutor for twenty four years, but there's been tremendously rewarding parts, which is to get out into the community, to reach out to people, to hear what they wanna to know about it and what they want from their chief law enforcement officer. And what I found with everybody is that they want the most qualified candidate. How have you reacted to the fact that you're almost running against the Brown administration?",
+    "turns": [
+      {
+        "id": "c2-rhet-03-prior-clip-1",
+        "start_s": 6.48,
+        "end_s": 10.4,
+        "speaker_id": "prior_clip_speaker",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-rhet-03-anchor-intro-1",
+        "start_s": 10.4,
+        "end_s": 19.215,
+        "speaker_id": "studio_anchor_intro",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-rhet-03-anchor-handoff-1",
+        "start_s": 19.215,
+        "end_s": 27.38,
+        "speaker_id": "studio_anchor_handoff",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-rhet-03-reporter-setup-1",
+        "start_s": 28.17,
+        "end_s": 55.385,
+        "speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "diarization_blip"
+      },
+      {
+        "id": "c2-rhet-03-candidate-answer-1",
+        "start_s": 55.545,
+        "end_s": 62.34,
+        "speaker_id": "candidate",
+        "expected_provider_speaker_id": 4,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-rhet-03-reporter-question-1",
+        "start_s": 62.34,
+        "end_s": 65.7,
+        "speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-rhet-03-candidate-answer-2",
+        "start_s": 65.94,
+        "end_s": 85.83,
+        "speaker_id": "candidate",
+        "expected_provider_speaker_id": 4,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-rhet-03-loaded-question-1",
+        "start_s": 85.83,
+        "end_s": 90.79,
+        "speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-rhet-03-claim-1",
+        "start_s": 6.48,
+        "end_s": 10.4,
+        "owner_speaker_id": "prior_clip_speaker",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-2",
+        "start_s": 10.4,
+        "end_s": 19.215,
+        "owner_speaker_id": "studio_anchor_intro",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-3",
+        "start_s": 19.215,
+        "end_s": 27.38,
+        "owner_speaker_id": "studio_anchor_handoff",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-4",
+        "start_s": 28.17,
+        "end_s": 39.05,
+        "owner_speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-rhet-03-claim-5",
+        "start_s": 39.05,
+        "end_s": 49.305,
+        "owner_speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-rhet-03-claim-6",
+        "start_s": 49.625,
+        "end_s": 55.385,
+        "owner_speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "stance": "questioned",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-rhet-03-claim-7",
+        "start_s": 55.545,
+        "end_s": 62.34,
+        "owner_speaker_id": "candidate",
+        "expected_provider_speaker_id": 4,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-8",
+        "start_s": 62.34,
+        "end_s": 65.7,
+        "owner_speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "stance": "questioned",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-9",
+        "start_s": 65.94,
+        "end_s": 75.3,
+        "owner_speaker_id": "candidate",
+        "expected_provider_speaker_id": 4,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-10",
+        "start_s": 75.3,
+        "end_s": 85.83,
+        "owner_speaker_id": "candidate",
+        "expected_provider_speaker_id": 4,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-rhet-03-claim-11",
+        "start_s": 85.83,
+        "end_s": 90.79,
+        "owner_speaker_id": "field_reporter",
+        "expected_provider_speaker_id": 3,
+        "stance": "questioned",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": [
+      {
+        "id": "c2-rhet-03-unsafe-1",
+        "start_s": 28.17,
+        "end_s": 55.385,
+        "reason": "field-reporter setup includes a provider diarization blip assigning the word 'is' to the studio-anchor speaker, plus imperfect ASR wording in the candidate-recommendation sentence; keep claim ownership cautious"
+      }
+    ]
+  }
+}

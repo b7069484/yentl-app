@@ -96,6 +96,17 @@ describe("session store — speakers", () => {
     expect(useSession.getState().micDeviceId).toBe("usb-mic");
   });
 
+  it("keeps launched files transient instead of carrying them into started sessions", () => {
+    useSession.getState().reset();
+    const file = new File(["Shared transcript"], "launch.txt", { type: "text/plain" });
+    useSession.getState().setPendingLaunchFile(file);
+    expect(useSession.getState().pendingLaunchFile).toBe(file);
+
+    useSession.getState().startSession();
+
+    expect(useSession.getState().pendingLaunchFile).toBeNull();
+  });
+
   it("startSession sets truthful recording state by source", () => {
     useSession.getState().reset();
     // mic: should record
@@ -242,6 +253,69 @@ describe("session store — reassignUtterance", () => {
     expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(false);
     useSession.getState().reassignUtterance(0, 5);
     expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(true);
+  });
+
+  it("records and undoes the last speaker reassignment", () => {
+    seed();
+    useSession.getState().addClaim({
+      id: "cUndo",
+      claim_text: "World claim",
+      utterance_start: 2,
+      utterance_end: 4,
+      speaker_id: 1,
+      topic: "test",
+      topic_secondary: null,
+      primary_label: "TRUE",
+      score: 80,
+      annotations: [],
+      explanation: "",
+      status: "confirmed",
+      sources: [],
+    });
+    useSession.getState().addMarker({
+      id: "mUndo",
+      type: "fallacy",
+      name: "straw-man",
+      display: "Straw Man",
+      excerpt: "World.",
+      speaker_id: 1,
+      start_time: 2.5,
+      end_time: 3.8,
+      severity: "clear",
+      explanation: "",
+    });
+
+    useSession.getState().reassignUtterance(1, 5);
+
+    expect(useSession.getState().transcript[1].speaker_id).toBe(5);
+    expect(useSession.getState().claims[0].speaker_id).toBe(5);
+    expect(useSession.getState().markers[0].speaker_id).toBe(5);
+    expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(true);
+    expect(useSession.getState().lastSpeakerCorrection?.summary).toContain("Reassigned one transcript line");
+
+    useSession.getState().undoLastSpeakerCorrection();
+
+    expect(useSession.getState().transcript[1].speaker_id).toBe(1);
+    expect(useSession.getState().claims[0].speaker_id).toBe(1);
+    expect(useSession.getState().markers[0].speaker_id).toBe(1);
+    expect(useSession.getState().speakers.some((sp) => sp.id === 5)).toBe(false);
+    expect(useSession.getState().lastSpeakerCorrection).toBeNull();
+  });
+
+  it("clears stale speaker undo when new transcript arrives", () => {
+    seed();
+    useSession.getState().reassignUtterance(1, 0);
+    expect(useSession.getState().lastSpeakerCorrection).not.toBeNull();
+
+    useSession.getState().appendFinal({
+      text: "New live line.",
+      start: 6,
+      end: 8,
+      is_final: true,
+      speaker_id: 0,
+    });
+
+    expect(useSession.getState().lastSpeakerCorrection).toBeNull();
   });
 });
 

@@ -1,0 +1,695 @@
+[
+  {
+    "text": "We've been watching a congressional hearing erupt into shouting matches. Attorney General",
+    "start": 80,
+    "end": 85.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Pam Bondi has been defiant and explosive as she feels questions from members of the House",
+    "start": 5.6,
+    "end": 10.719999999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Judiciary Committee. And it's happening on multiple fronts and multiple controversies,",
+    "start": 10.72,
+    "end": 16.48,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "including the Justice Department's release of the Jeffrey Epstein files.",
+    "start": 16.48,
+    "end": 21.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "First, just watch this exchange with Democratic Congresswoman Primila Jipal.",
+    "start": 21.04,
+    "end": 26.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "It is about you taking responsibility for your Department of Justice and the harm that it has",
+    "start": 27.76,
+    "end": 34.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "done to the survivors who are standing right behind you and are waiting for you to turn to",
+    "start": 34.56,
+    "end": 41.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "them and apologize for what your Department of Justice has done. Members members get to ask",
+    "start": 41.36,
+    "end": 46.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the questions. The witness gets to answer in the way they want to answer that attorney general.",
+    "start": 46.4,
+    "end": 50.48,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "That's not accurate, Mr. Chairman, because she doesn't like the answer. So, um, Mr. Mr. Chairman,",
+    "start": 50.48,
+    "end": 56.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I have asked she asked Merritt Garland this I am reclaiming my time and when I will chairman the",
+    "start": 56.8,
+    "end": 65.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "gentle lady get in the gutter for her theatrics. There was also this moment when Congresswoman",
+    "start": 65.28,
+    "end": 71.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Gyipal asked Jeffrey Epstein survivors who are in the room to raise their hands if they haven't been",
+    "start": 71.76,
+    "end": 77.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "able to meet with the Justice Department. Every one of them raised their hands. Now, Bondi did",
+    "start": 77.28,
+    "end": 83.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "acknowledge in her opening statement the victims and she said she's deeply sorry for what they've",
+    "start": 83.12,
+    "end": 88.32000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "been through and that the FBI wants to hear from them. Over the last two hours, it has been very",
+    "start": 88.32,
+    "end": 94.72,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "clear that the attorney general was speaking to an audience of one. Lots of moments like this. Robert",
+    "start": 94.72,
+    "end": 102.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Mueller found no evidence, none, of foreign interference in 2016. Have you apologized to",
+    "start": 102.16,
+    "end": 109.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "President Trump? Have you apologized to President Trump? All of you who participated in those",
+    "start": 109.28,
+    "end": 115.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "impeachment hearings against Donald Trump, you all should be apologizing. You sit here and you attack",
+    "start": 115.04,
+    "end": 121.44000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the president and I am not going to have it. I'm not going to put up with it. You can let her",
+    "start": 121.44,
+    "end": 126.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "filibuster all day long, but not on our watch. Not on our time. No way. And I told you about that,",
+    "start": 126.24,
+    "end": 132.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Attorney General, before you started. You don't tell me. Yeah. Oh, I did tell you because we saw",
+    "start": 132.24,
+    "end": 136.32000000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "what you did in the Senate. Lawyer. Not even a lawyer. Within 40 minutes, you asked me a",
+    "start": 136.32,
+    "end": 143.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "question. Within 40 minutes, Wexner's name was added back. Within 40 minutes of me catching",
+    "start": 143.04,
+    "end": 149.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you redhanded. Red hand. There was one redaction where he's listed as a cocon and we invited you",
+    "start": 149.28,
+    "end": 157.6,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in. We This guy has Trump derangement syndrome. He needs to get You're a failed politician.",
+    "start": 157.6,
+    "end": 165.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Okay. I'm joined now uh with our panel. start with somebody who is the opposite of a washed up",
+    "start": 165.44,
+    "end": 169.92,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "loser lawyer. Thank you. You're welcome. Uh I I I want to get into, you know, a lot of the specifics",
+    "start": 169.92,
+    "end": 176.07999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "because so much um of sort of what is bubbling up in in news and controversy goes through the",
+    "start": 176.08,
+    "end": 183.60000000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Justice Department right now across the board, Epstein files, uh and on and on and on. But I",
+    "start": 183.6,
+    "end": 190.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "just want to for a second talk about the tone and tenor of this hearing. Yes, we saw Pam Bondi do",
+    "start": 190.16,
+    "end": 196.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "this the last time she testified. She had, you know, her list of insults that somebody caught",
+    "start": 196.96,
+    "end": 202.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a a picture of. She knows uh what she feels that she needs to do so that the president sees her",
+    "start": 202.16,
+    "end": 208.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "fighting back. She also wants to deflect on a lot of these issues where she is in the hot seat. Um,",
+    "start": 208.4,
+    "end": 215.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "as somebody who worked at the DOJ, your thoughts on what we've seen so far? This is a fiasco. Um,",
+    "start": 215.04,
+    "end": 220.95999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I wish I had a nicer way to put it, but this is the attorney general of the United States. This is",
+    "start": 220.96,
+    "end": 225.6,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the top law enforcement official in the country. This is the same job that was once held by Robert",
+    "start": 225.6,
+    "end": 229.35999999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "F. Kennedy, senior, by Elliot Richardson, by Janet Reno. And there are vital questions that",
+    "start": 229.36,
+    "end": 234.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the American public needs transparency, needs substantive answers on. Instead, what do we get?",
+    "start": 234.96,
+    "end": 241.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Accusations of Trump derangement syndrome, name calling, you're a loser, lawyer, this and that.",
+    "start": 241.44,
+    "end": 246,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I mean, coming from the AG of the United States in the US Senate, did we get any meaningful clarity",
+    "start": 246,
+    "end": 251.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "on the Epstein investigations, on the Epstein files? To your point, do the victims feel, MJ,",
+    "start": 251.84,
+    "end": 256.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to what you were saying earlier, like they've been given any transparency, any clarity on any",
+    "start": 256.88,
+    "end": 261.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "of this? Have we learned anything new about what DOJ is doing to investigate in Minnesota? Have we",
+    "start": 261.52,
+    "end": 266.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "learned anything new about the search warrant in Fulton County? Have we learned anything new",
+    "start": 266.4,
+    "end": 270.15999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "about the fact that dozens of judges across this country have found that this DOJ lacks",
+    "start": 270.16,
+    "end": 275.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "credibility? No. It's been name calling. It's been amateurish. It's an embarrassment",
+    "start": 275.44,
+    "end": 279.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to the Justice Department. What we're seeing from Pam Bondi. I mean, plus one, I guess,",
+    "start": 279.36,
+    "end": 285.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in some level, but from the non- lawyer, washed up or otherwise. Um, I think I'm not some like stuffy",
+    "start": 285.2,
+    "end": 290.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "institutionalist. I love a good back and forth in a hearing. I point to Scott Besson who's had",
+    "start": 290.88,
+    "end": 295.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "some really great oneline retorts that he didn't have to prepare for or have his staff prepare in",
+    "start": 295.52,
+    "end": 300.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a very lengthy book of opposition research before his hearing. I I think that's a great part of the",
+    "start": 300.24,
+    "end": 304.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "game and lawmakers are just as guilty of this as administration officials and have been from every",
+    "start": 304.64,
+    "end": 308.71999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "single Congress and administration you can think of. This is farcical and it's embarrassing and it",
+    "start": 308.72,
+    "end": 313.84000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "is also extraordinarily juvenile in the approach. And to Ellie's point, which I think is important,",
+    "start": 313.84,
+    "end": 318.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "as we've seen kind of the congressional role in the branches of government continue to diminish",
+    "start": 318.56,
+    "end": 323.28000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "year after year after year across several administrations, but in particular in the last",
+    "start": 323.28,
+    "end": 326.71999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "13 months, like this is an oversight committee of this agency. There was a moment where a Democratic",
+    "start": 326.72,
+    "end": 332.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "lawmaker asked the AG, can you please submit this document that I'm talking about since you",
+    "start": 332.56,
+    "end": 337.28000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "won't answer questions to the committee? Which the answer has to be yes. and she said, \"I'm not going",
+    "start": 337.28,
+    "end": 343.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to commit to anything because I don't like how you're answering or asking these questions.\" Like,",
+    "start": 343.2,
+    "end": 347.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that's it's it's just should not be a plausible option for a cabinet official, period. And there",
+    "start": 347.2,
+    "end": 354.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "are so many important questions which, you know, there's still a lot of people who are left to ask",
+    "start": 354.8,
+    "end": 360.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "questions um including like you said, I mean, one of the things that we've been talking about a lot",
+    "start": 360.64,
+    "end": 365.91999999999996,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "on this show is um the elections coming up. First of all, the fact that uh the DOJ released the",
+    "start": 365.92,
+    "end": 373.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "evidence that they gave to uh allow for and to get permission for a search warrant in Fulton County,",
+    "start": 373.76,
+    "end": 380,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "Georgia. There were a lot of um sort of washed up to borrow a term from uh Pam Bondi conspiracy",
+    "start": 380,
+    "end": 386.48,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "theories that were used and somehow the magistrate jud judge said yes. There is the lawsuit that DOJ",
+    "start": 386.48,
+    "end": 393.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "is involved with uh about 24 states to try to get really sensitive personal information",
+    "start": 393.76,
+    "end": 399.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "uh from them on voters. And so these are critical issues for the American people and for",
+    "start": 399.84,
+    "end": 407.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the Congress to do their constitutional duty for oversight and you know sort of owning the libs and",
+    "start": 407.84,
+    "end": 416.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you know showing the conservatives in conservative media that you're not going to sort of answer",
+    "start": 416.4,
+    "end": 422.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "questions of Democrats and even some Republicans. that does undermine what this is supposed to do.",
+    "start": 422.88,
+    "end": 429.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And you know, look, I mean, to be fair, there are theatrics on the Democratic side, too. There's",
+    "start": 429.36,
+    "end": 434.32,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "theater, at least bad theater, like not getting good reviews theater across the board. I think",
+    "start": 434.32,
+    "end": 440.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "one of the most striking things to me about these hearings is they've really devolved over time. And",
+    "start": 440.56,
+    "end": 445.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I wonder if a member just asking a question plainly without sort of the hyperbole going",
+    "start": 445.12,
+    "end": 452.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "into it. I don't think it would change anything for Pam Bondi in this hearing. But it does get",
+    "start": 452.88,
+    "end": 459.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to the the the whole underlying issue, which is there was a time where even if it was a Republican",
+    "start": 459.76,
+    "end": 466.32,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "administration, if a Republican witness was acting that way, the Republican side of the aisle,",
+    "start": 466.32,
+    "end": 474,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "at least someone, and not Thomas Massie in this case, because we know how he and the president",
+    "start": 474,
+    "end": 478.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "feel about each other, but someone else would say, you know, as a reminder in the course of",
+    "start": 478.16,
+    "end": 483.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "this hearing, and that just is not happening. This is just a free-for-all. This is for clips. This is",
+    "start": 483.44,
+    "end": 489.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "for the president and obviously for the audience of one that we've been talking about. It's mostly",
+    "start": 489.28,
+    "end": 492.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "for the president, right? I mean, the number of times that she sort of unprompted uh brought up",
+    "start": 492.96,
+    "end": 498.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the president's record, the moment where she was being asked about Epstein related issues and then",
+    "start": 498.08,
+    "end": 503.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "brought up the DAO breaking records and I think it was a Democratic uh congresswoman who just shouted",
+    "start": 503.52,
+    "end": 509.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "into the ether, what does that have to do with any of this? Uh she clearly is keenly aware of the",
+    "start": 509.52,
+    "end": 516.0799999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "audience that she most needs to win over including on the Epstein stuff which exactly I'm sorry to",
+    "start": 516.08,
+    "end": 521.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "interrupt you but we're almost out of time but I want to just pull something out of you which is",
+    "start": 521.2,
+    "end": 526.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "especially on the Epstein stuff because there's a lot of criticism of her the way that they people",
+    "start": 526.08,
+    "end": 532.32,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "believe conservatives believe she believe she bungled the beginning of the administration on",
+    "start": 532.32,
+    "end": 537.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "this right I mean how many times have we played the clip of her talking about this so-c calledled",
+    "start": 537.12,
+    "end": 542.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "called uh client list and saying it's sitting on my desk right now. That sort of set off",
+    "start": 542.4,
+    "end": 546.9599999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "this entire firestorm of controversies and she's not been able to shake that off. And",
+    "start": 546.96,
+    "end": 552,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "uh you know we've wondered Todd Blanch has sort of been the main face of the DOJ when",
+    "start": 552,
+    "end": 556.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it comes to Epstein issues. Is that because uh she bungled it so badly initially uh that she couldn't",
+    "start": 556.64,
+    "end": 561.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "be trusted to be uh the face of this really important and politically uh explosive issue.",
+    "start": 561.84,
+    "end": 567.36,
+    "is_final": true,
+    "speaker_id": 0
+  }
+]

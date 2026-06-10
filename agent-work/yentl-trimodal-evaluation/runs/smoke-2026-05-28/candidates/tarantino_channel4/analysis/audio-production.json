@@ -1,0 +1,21 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 37,
+  "utterancesAnalyzed": 2,
+  "claims": [],
+  "markers": [],
+  "errors": [
+    {
+      "stage": "extract:0",
+      "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+    },
+    {
+      "stage": "extract:36",
+      "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+    },
+    {
+      "stage": "rhetoric:36",
+      "message": "/api/analyze-rhetoric HTTP 500: {\"error\":\"analyze failed\"}"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 "use client";
 import { ulid } from "ulid";
 import type { Session } from "@/lib/types";
+import { sourceDossierStats } from "@/lib/source-evidence";
 
 const DB_NAME = "yentl";
 const DB_VERSION = 1;
@@ -16,6 +17,9 @@ export type SavedSessionMeta = {
   claim_count: number;
   marker_count: number;
   speaker_count: number;
+  source_count: number;
+  source_linked_count: number;
+  high_source_count: number;
   duration_sec: number; // (ended_at - started_at) / 1000, or elapsed at save time
 };
 
@@ -59,11 +63,32 @@ function defaultName(session: Session): string {
   return `Session @ ${ts}`;
 }
 
+function sourceEvidenceMeta(session: Session): Pick<
+  SavedSessionMeta,
+  "source_count" | "source_linked_count" | "high_source_count"
+> {
+  return session.claims.reduce(
+    (acc, claim) => {
+      const stats = sourceDossierStats(claim.sources, claim.claim_text);
+      acc.source_count += claim.sources.length;
+      acc.source_linked_count += stats.claimLinked;
+      acc.high_source_count += stats.high;
+      return acc;
+    },
+    {
+      source_count: 0,
+      source_linked_count: 0,
+      high_source_count: 0,
+    },
+  );
+}
+
 function buildMeta(
   id: string,
   name: string,
   session: Session,
 ): SavedSessionMeta {
+  const sourceEvidence = sourceEvidenceMeta(session);
   return {
     id,
     name,
@@ -74,7 +99,15 @@ function buildMeta(
     claim_count: session.claims.length,
     marker_count: session.markers.length,
     speaker_count: session.speakers.length,
+    ...sourceEvidence,
     duration_sec: durationSec(session),
+  };
+}
+
+function normalizeSavedSession(record: SavedSession): SavedSession {
+  return {
+    ...record,
+    ...sourceEvidenceMeta(record.session),
   };
 }
 
@@ -113,7 +146,10 @@ export async function listSessions(): Promise<SavedSessionMeta[]> {
       const all: SavedSession[] = req.result;
       const meta: SavedSessionMeta[] = all.map(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ({ session: _session, ...m }) => m,
+        (record) => {
+          const { session: _session, ...m } = normalizeSavedSession(record);
+          return m;
+        },
       );
       meta.sort((a, b) => (a.saved_at > b.saved_at ? -1 : 1));
       resolve(meta);
@@ -134,7 +170,7 @@ export async function loadSession(id: string): Promise<SavedSession> {
       if (req.result == null) {
         reject(new Error(`Session not found: ${id}`));
       } else {
-        resolve(req.result as SavedSession);
+        resolve(normalizeSavedSession(req.result as SavedSession));
       }
     };
     req.onerror = () => reject(req.error);

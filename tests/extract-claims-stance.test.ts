@@ -1,30 +1,58 @@
-import { describe, it, expect } from "vitest";
-import { EXTRACT_CLAIMS_SCHEMA, EXTRACT_CLAIMS_SYSTEM } from "@/lib/prompts/extract-claims";
+import { describe, expect, it } from "vitest";
+import { ExtractClaimsResponse, STANCE_VALUES, SYSTEM } from "@/lib/prompts/extract-claims";
 
-describe("extract-claims schema (Phase 1a — stance)", () => {
-  it("includes stance enum in the claim schema", () => {
-    const claimShape = EXTRACT_CLAIMS_SCHEMA.shape.claims.element.shape;
+describe("extract-claims schema (Phase 1a stance)", () => {
+  it("includes the full claim stance enum", () => {
+    const claimShape = ExtractClaimsResponse.shape.claims.element.shape;
     expect(claimShape.stance).toBeDefined();
-    // z.enum(...).default(...) wraps in ZodDefault; options live on the inner ZodEnum
-    const stanceField = claimShape.stance as { options?: string[]; _def?: { innerType?: { options?: string[] } } };
-    const stanceOptions = stanceField.options ?? stanceField._def?.innerType?.options;
-    expect(stanceOptions).toEqual(
-      expect.arrayContaining([
-        "asserted",
-        "denied",
-        "quoted",
-        "reported",
-        "mocked",
-        "questioned",
-        "corrected",
-        "hedged",
-        "unclear",
-      ]),
-    );
+    expect(STANCE_VALUES).toEqual([
+      "asserted",
+      "denied",
+      "quoted",
+      "reported",
+      "mocked",
+      "questioned",
+      "corrected",
+      "hedged",
+      "unclear",
+    ]);
+  });
+
+  it("defaults stance to asserted for backward compatibility", () => {
+    const parsed = ExtractClaimsResponse.parse({
+      claims: [
+        {
+          claim_text: "The city approved a $42 million school repair bond in 2024.",
+          utterance_start: 0,
+          utterance_end: 5,
+          topic: "Politics",
+          topic_secondary: null,
+        },
+      ],
+    });
+
+    expect(parsed.claims[0].stance).toBe("asserted");
+  });
+
+  it("accepts non-asserted claim stances", () => {
+    const parsed = ExtractClaimsResponse.parse({
+      claims: [
+        {
+          claim_text: "The prior speaker said the audit was hidden.",
+          utterance_start: 1,
+          utterance_end: 3,
+          topic: "Law",
+          topic_secondary: null,
+          stance: "quoted",
+        },
+      ],
+    });
+
+    expect(parsed.claims[0].stance).toBe("quoted");
   });
 
   it("system prompt instructs the model to populate stance", () => {
-    expect(EXTRACT_CLAIMS_SYSTEM.toLowerCase()).toContain("stance");
-    expect(EXTRACT_CLAIMS_SYSTEM).toMatch(/asserted|quoted|hedged/i);
+    expect(SYSTEM.toLowerCase()).toContain("stance");
+    expect(SYSTEM).toMatch(/asserted|quoted|hedged/i);
   });
 });

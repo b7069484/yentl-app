@@ -1,0 +1,79 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 26,
+  "utterancesAnalyzed": 8,
+  "claims": [],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "it's like asking Judd Apatow why do you like making comedies",
+      "start_time": 163,
+      "end_time": 175,
+      "severity": "clear",
+      "explanation": "Tarantino deflects a substantive question about his preference for violence by comparing it to asking a comedy director about comedy, treating the two as equivalent when violence raises distinct ethical questions comedy does not."
+    },
+    {
+      "type": "fallacy",
+      "name": "circular_reasoning",
+      "display": "Circular Reasoning",
+      "excerpt": "I think it's good cinema I consider a good cinema",
+      "start_time": 185,
+      "end_time": 192,
+      "severity": "subtle",
+      "explanation": "He justifies making violent films by asserting it's 'good cinema' because he considers it good cinema — restating the conclusion as its own premise."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "there was two Holocaust in America... the Auschwitz nyan house aspects of the slave trade",
+      "start_time": 215,
+      "end_time": 230,
+      "severity": "clear",
+      "explanation": "Invoking 'Holocaust' and 'Auschwitz' is emotionally charged framing designed to elevate the moral weight of his film's subject matter and preempt criticism of its violence."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "there's two types of violence in this movie there's the there's the brutality... put upon the slaves",
+      "start_time": 195,
+      "end_time": 215,
+      "severity": "clear",
+      "explanation": "Asked why he personally enjoys making violent movies, he pivots to distinguishing types of violence in the film and to historical slavery, diverting from the personal question posed."
+    },
+    {
+      "type": "rhetoric",
+      "name": "false_urgency",
+      "display": "False Urgency",
+      "excerpt": "I'm shutting your butt down",
+      "start_time": 440,
+      "end_time": 445,
+      "severity": "subtle",
+      "explanation": "Tarantino's refusal framing (referenced in title and continued here with 'I am refusing') applies a forceful conversational shutdown rather than engaging with the substantive question, a rhetorical move to end discussion."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "do you want me to do what I've already done before and I am refusing",
+      "start_time": 446,
+      "end_time": 454,
+      "severity": "clear",
+      "explanation": "Rather than addressing the interviewer's question about serious themes, Tarantino deflects by reframing the question as a demand to repeat himself, diverting from the actual topic."
+    },
+    {
+      "type": "fallacy",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "filmmaking doctors are like boxers they have the time they have the time",
+      "start_time": 488,
+      "end_time": 498,
+      "severity": "subtle",
+      "explanation": "Comparing filmmakers to boxers (whose decline is physical) is a loose analogy; creative decline and athletic decline operate on different mechanisms, making the comparison rhetorically vivid but logically weak."
+    }
+  ],
+  "errors": []
+}

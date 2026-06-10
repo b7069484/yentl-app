@@ -12,6 +12,8 @@ import {
   ArrowLeft,
   AlertCircle,
   CheckCircle2,
+  ClipboardPaste,
+  ListChecks,
   Loader2,
   MonitorPlay,
   Play,
@@ -20,6 +22,7 @@ import {
   StopCircle,
   Video,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { SaveSessionDialog } from "@/components/session/SaveSessionDialog";
 import {
   LiveMetricExpander,
@@ -38,9 +41,11 @@ import {
   type DisplayAudioCaptureHandle,
 } from "@/lib/client/display-audio-capture";
 import { onFinalUtterance, runSynthesisNow } from "@/lib/client/orchestrator";
+import { bulkIngest } from "@/lib/client/ingest-orchestrator";
 import { friendlyApiErrorMessage } from "@/lib/client/api-errors";
+import { readUrlFromClipboard } from "@/lib/client/clipboard-url";
 import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
-import type { TranscriptSegment } from "@/lib/types";
+import type { Speaker, TranscriptSegment } from "@/lib/types";
 
 /**
  * Lightweight client-side YouTube URL check.
@@ -256,6 +261,7 @@ type Phase =
   | { kind: "idle" }
   | { kind: "checking" }
   | { kind: "launching" }
+  | { kind: "importing"; total: number }
   | { kind: "armed"; total: number }
   | { kind: "live"; released: number; total: number }
   | { kind: "error"; code: string; message: string };
@@ -319,6 +325,8 @@ type RailFocus = "transcript" | "findings";
 type SignalMetric = LiveSignalMetric<MetricKey>;
 type YentlReadSignal = LiveReadSignal;
 type YentlReadTone = LiveReadTone;
+
+const VALIDATION_YOUTUBE_URL = "https://www.youtube.com/watch?v=fTznEIZRkLg";
 
 const READ_TONE_VISUALS: Record<
   YentlReadTone,
@@ -474,6 +482,14 @@ function getYentlReadSignal({
     });
   }
 
+  if (phase.kind === "importing") {
+    return createReadSignal("productive", {
+      label: "Caption import",
+      headline: "Yentl is loading the caption track into Watch.",
+      body: `${phase.total} timed caption line${phase.total === 1 ? "" : "s"} are becoming the transcript now, with claim and rhetoric analysis dispatched in the background.`,
+    });
+  }
+
   if (phase.kind === "checking") {
     return createReadSignal("contentious", {
       label: "Checking source",
@@ -520,7 +536,10 @@ function buildSignalMetrics({
   markersCount: number;
   tabAudioCapture: TabAudioCaptureState;
 }): SignalMetric[] {
-  const isLive = phase.kind === "live" || tabAudioCapture.kind === "capturing";
+  const isLive =
+    phase.kind === "live" ||
+    phase.kind === "importing" ||
+    tabAudioCapture.kind === "capturing";
   const transcriptCount = transcriptLines.length;
   const heatRising = markersCount > 0 || claimsCount > 0 || isLive;
   const evidenceQueued = claimsCount > 0 || transcriptCount > 0;
@@ -592,6 +611,7 @@ export function YoutubeIngestPane({
 }: {
   initialUrlOverride?: string;
 } = {}) {
+  const router = useRouter();
   const reset = useSession((s) => s.reset);
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setRecording = useSession((s) => s.setRecording);
@@ -606,6 +626,7 @@ export function YoutubeIngestPane({
 
   const [url, setUrl] = useState(initialUrl);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  const [clipboardStatus, setClipboardStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
   const [preview, setPreview] = useState<PreviewState>({ kind: "idle" });
   const [playerReady, setPlayerReady] = useState(false);
   const [playbackAttention, setPlaybackAttention] = useState(false);
@@ -652,7 +673,11 @@ export function YoutubeIngestPane({
       tabAudioCapture.kind !== "idle" ||
       (phase.kind === "error" && phase.code !== "INVALID_URL"));
   const captionsArmed = phase.kind === "armed" || phase.kind === "live";
-  const isBusy = phase.kind === "checking" || phase.kind === "launching" || isTabAudioActive;
+  const isBusy =
+    phase.kind === "checking" ||
+    phase.kind === "launching" ||
+    phase.kind === "importing" ||
+    isTabAudioActive;
   const isStartDisabled = !isValidUrl || isBusy || captionsArmed;
   const activePreview = youtubePreviewForVideo(preview, videoId);
   const readyPreview = activePreview.kind === "ready" ? activePreview.data : null;
@@ -833,8 +858,9 @@ export function YoutubeIngestPane({
     return () => window.clearTimeout(timer);
   }, [currentTime, phase.kind, playerReady, videoId]);
 
-  const handleStartLiveAnalysis = useCallback(async () => {
-    if (isStartDisabled) return;
+  const handleStartLiveAnalysis = useCallback(async (urlOverride?: string) => {
+    const analysisUrl = (urlOverride ?? trimmedUrl).trim();
+    if (!parseYouTubeUrlClient(analysisUrl) || isBusy || captionsArmed) return;
 
     const ac = new AbortController();
     abortRef.current = ac;
@@ -848,7 +874,7 @@ export function YoutubeIngestPane({
           "Content-Type": "application/json",
           ...sourceAnalysisConsentHeaders(),
         },
-        body: JSON.stringify({ url: trimmedUrl }),
+        body: JSON.stringify({ url: analysisUrl }),
         signal: ac.signal,
       });
 
@@ -883,7 +909,7 @@ export function YoutubeIngestPane({
       setSource({
         kind: "youtube",
         video_id: data.video_id,
-        url: trimmedUrl,
+        url: analysisUrl,
         ...(data.title ? { title: data.title } : {}),
         ...(data.channel ? { channel: data.channel } : {}),
       });
@@ -906,8 +932,9 @@ export function YoutubeIngestPane({
       setPhase({ kind: "error", code: "NETWORK_ERROR", message });
     }
   }, [
+    captionsArmed,
     clearCaptionRelease,
-    isStartDisabled,
+    isBusy,
     reset,
     setInterim,
     setRecording,
@@ -915,6 +942,48 @@ export function YoutubeIngestPane({
     setSource,
     trimmedUrl,
   ]);
+
+  const handleLoadValidationYouTube = useCallback(async () => {
+    if (isBusy || captionsArmed) return;
+    setClipboardStatus(null);
+    setUrl(VALIDATION_YOUTUBE_URL);
+    clearCaptionRelease();
+    if (phase.kind === "error") {
+      setPhase({ kind: "idle" });
+    }
+    await handleStartLiveAnalysis(VALIDATION_YOUTUBE_URL);
+  }, [captionsArmed, clearCaptionRelease, handleStartLiveAnalysis, isBusy, phase.kind]);
+
+  const handleAnalyzeCaptionTrack = useCallback(async () => {
+    const segments = captionSegmentsRef.current;
+    if (!captionsArmedRef.current || segments.length === 0 || isBusy) return;
+
+    const ac = new AbortController();
+    abortRef.current = ac;
+    handoffRef.current = true;
+    setPhase({ kind: "importing", total: segments.length });
+    setPlaybackAttention(false);
+    setRecording(false);
+    setInterim("");
+    setCaptionTranscript(segments);
+
+    try {
+      const speakers: Speaker[] = speakerLabels.map((label) => ({
+        id: label.id,
+        label: label.name,
+      }));
+      await bulkIngest(segments, { signal: ac.signal, speakers });
+      if (ac.signal.aborted) return;
+      captionsArmedRef.current = false;
+      setPhase({ kind: "live", released: segments.length, total: segments.length });
+      router.push("/session?view=watch");
+    } catch (error) {
+      handoffRef.current = false;
+      if ((error as Error).name === "AbortError") return;
+      const message = error instanceof Error ? error.message : String(error);
+      setPhase({ kind: "error", code: "CAPTION_IMPORT_FAILED", message });
+    }
+  }, [isBusy, router, setInterim, setRecording, speakerLabels]);
 
   const handleBack = useCallback(() => {
     abortRef.current?.abort();
@@ -924,8 +993,24 @@ export function YoutubeIngestPane({
 
   const handleUrlChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setUrl(e.target.value);
+    setClipboardStatus(null);
     clearCaptionRelease();
-    if (phase.kind === "error" || phase.kind === "armed" || phase.kind === "live" || phase.kind === "launching") {
+    if (phase.kind === "error" || phase.kind === "armed" || phase.kind === "live" || phase.kind === "launching" || phase.kind === "importing") {
+      setPhase({ kind: "idle" });
+    }
+  }, [clearCaptionRelease, phase.kind]);
+
+  const handlePasteFromClipboard = useCallback(async () => {
+    const result = await readUrlFromClipboard();
+    if (!result.ok) {
+      setClipboardStatus({ kind: "error", message: result.message });
+      return;
+    }
+
+    setUrl(result.url);
+    setClipboardStatus({ kind: "success", message: "URL pasted from clipboard." });
+    clearCaptionRelease();
+    if (phase.kind === "error" || phase.kind === "armed" || phase.kind === "live" || phase.kind === "launching" || phase.kind === "importing") {
       setPhase({ kind: "idle" });
     }
   }, [clearCaptionRelease, phase.kind]);
@@ -1066,57 +1151,108 @@ export function YoutubeIngestPane({
             type="button"
             onClick={handleBack}
             aria-label="Back to sources"
-            className="yentl-action-button inline-flex min-h-9 w-auto items-center gap-1.5 justify-self-start rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-3 transition-all hover:-translate-y-0.5 hover:text-ink-2 active:translate-y-0 active:scale-[0.98]"
+            className="yentl-action-button inline-flex min-h-11 w-auto items-center gap-1.5 justify-self-start rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-3 transition-all hover:-translate-y-0.5 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30 active:translate-y-0 active:scale-[0.98]"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Sources
           </button>
 
-          <div className="min-w-0 sm:w-[min(44vw,520px)]">
+          <div className="min-w-0 sm:w-[min(44vw,560px)]">
             <label htmlFor="youtube-url" className="sr-only">
               YouTube URL
             </label>
-            <div className="relative">
-              <input
-                id="youtube-url"
-                type="url"
-                value={url}
-                onChange={handleUrlChange}
-                placeholder="youtube.com/watch?v=..."
-                disabled={isBusy}
-                className="min-h-11 w-full rounded-full border border-ink-5 bg-paper py-2 pl-4 pr-32 text-[13px] text-ink shadow-sm placeholder:text-ink-4 focus:border-ink-3 focus:outline-none focus:ring-2 focus:ring-ink/20 disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="YouTube URL"
-              />
+            <div className="flex gap-2">
+              <div className="relative min-w-0 flex-1">
+                <input
+                  id="youtube-url"
+                  type="url"
+                  value={url}
+                  onChange={handleUrlChange}
+                  placeholder="youtube.com/watch?v=..."
+                  disabled={isBusy}
+                  className="min-h-[52px] w-full rounded-full border border-ink-5 bg-paper py-2 pl-4 pr-32 text-[13px] text-ink shadow-sm placeholder:text-ink-4 focus:border-ink-3 focus:outline-none focus:ring-2 focus:ring-ink/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="YouTube URL"
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleStartLiveAnalysis()}
+                  disabled={isStartDisabled}
+	                  aria-label={
+	                    phase.kind === "checking"
+	                      ? "Checking YouTube captions"
+	                      : phase.kind === "launching"
+	                        ? "Opening live analysis"
+	                        : phase.kind === "importing"
+	                          ? "Importing caption track"
+	                          : phase.kind === "armed" || phase.kind === "live"
+	                            ? "Live analysis running"
+	                            : "Start live analysis"
+	                  }
+                  className="yentl-action-button absolute right-1 top-1/2 inline-flex min-h-11 -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[12px] font-semibold text-white shadow-sm transition-all hover:bg-ink/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  {isBusy && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />}
+	                  {phase.kind === "checking"
+	                    ? "Checking"
+	                    : phase.kind === "launching"
+	                      ? "Opening"
+	                      : phase.kind === "importing"
+	                        ? "Importing"
+	                        : phase.kind === "armed" || phase.kind === "live"
+	                          ? "Running"
+	                          : videoId
+	                            ? "Start"
+	                            : "Start"}
+                </button>
+              </div>
               <button
                 type="button"
-                onClick={handleStartLiveAnalysis}
-                disabled={isStartDisabled}
-                aria-label={
-                  phase.kind === "checking"
-                    ? "Checking YouTube captions"
-                    : phase.kind === "launching"
-                      ? "Opening live analysis"
-                      : phase.kind === "armed" || phase.kind === "live"
-                        ? "Live analysis running"
-                        : "Start live analysis"
-                }
-                className="yentl-action-button absolute right-1.5 top-1/2 inline-flex min-h-8 -translate-y-1/2 items-center justify-center gap-1.5 rounded-full bg-ink px-4 text-[12px] font-semibold text-white shadow-sm transition-all hover:bg-ink/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+                onClick={handlePasteFromClipboard}
+                disabled={isBusy}
+                aria-label="Paste YouTube URL from clipboard"
+                className="yentl-action-button inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border border-line bg-cream text-ink-2 transition-all hover:-translate-y-0.5 hover:bg-cream-2 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
               >
-                {isBusy && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />}
-                {phase.kind === "checking"
-                  ? "Checking"
-                  : phase.kind === "launching"
-                    ? "Opening"
-                    : phase.kind === "armed" || phase.kind === "live"
-                      ? "Running"
-                      : videoId
-                        ? "Start"
-                        : "Start"}
+                <ClipboardPaste className="h-4 w-4" aria-hidden />
               </button>
             </div>
+            {validationDemoEnabled() && !isBusy && !captionsArmed && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => void handleLoadValidationYouTube()}
+                  className="yentl-action-button inline-flex min-h-11 items-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-3 text-[12.5px] font-semibold text-teal transition-colors hover:bg-teal/10 active:scale-[0.98]"
+                >
+                  <Play className="h-4 w-4" aria-hidden />
+                  Load validation YouTube
+                </button>
+              </div>
+            )}
+            {clipboardStatus && (
+              <div
+                role="status"
+                className={[
+                  "mt-2 rounded-lg border px-3 py-2 text-[12px]",
+                  clipboardStatus.kind === "success"
+                    ? "border-green/25 bg-green-soft text-green"
+                    : "border-amber/40 bg-amber-soft text-amber-2",
+                ].join(" ")}
+              >
+                {clipboardStatus.message}
+              </div>
+            )}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            {showFallbackActions && (
+	          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+	            {captionsArmed && captionSegments.length > 0 && (
+	              <button
+	                type="button"
+	                onClick={() => void handleAnalyzeCaptionTrack()}
+	                disabled={isBusy}
+	                className="yentl-action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-green/25 bg-green-soft px-3.5 text-[11.5px] font-semibold text-green shadow-sm transition-all hover:-translate-y-0.5 hover:bg-green-soft/80 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+	              >
+	                <ListChecks className="h-3.5 w-3.5" aria-hidden />
+	                Analyze caption track
+	              </button>
+	            )}
+	            {showFallbackActions && (
               <YoutubeHeaderFallbackActions
                 videoId={videoId}
                 tabAudioCapture={tabAudioCapture}
@@ -1130,7 +1266,7 @@ export function YoutubeIngestPane({
           <button
             type="button"
             onClick={() => setSaveOpen(true)}
-            className="yentl-action-button hidden min-h-9 items-center gap-1.5 justify-self-end rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.98] sm:inline-flex"
+            className="yentl-action-button hidden min-h-11 items-center gap-1.5 justify-self-end rounded-md border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.98] sm:inline-flex"
           >
             <Save className="h-3.5 w-3.5" aria-hidden />
             Save snapshot
@@ -1285,17 +1421,19 @@ function YentlWatchPreviewPanel({
         ? "Opening audio share"
         : phase.kind === "live"
           ? "Live analysis running"
+          : phase.kind === "importing"
+            ? "Importing captions"
           : phase.kind === "armed"
             ? "Press play to analyze"
-        : phase.kind === "launching"
-          ? "Syncing captions"
-          : phase.kind === "checking"
-            ? "Checking captions"
-            : noCaptions
-              ? "Needs tab audio"
-              : videoId
-                ? "Ready"
-                : "Waiting";
+            : phase.kind === "launching"
+              ? "Syncing captions"
+              : phase.kind === "checking"
+                ? "Checking captions"
+                : noCaptions
+                  ? "Needs tab audio"
+                  : videoId
+                    ? "Ready"
+                    : "Waiting";
 
   const [expandedMetric, setExpandedMetric] = useState<MetricKey | null>(null);
   const [focus, setFocus] = useState<RailFocus>("transcript");
@@ -1387,7 +1525,7 @@ function YoutubeHeaderFallbackActions({
         type="button"
         onClick={isCapturing ? onStopTabAudioCapture : onStartTabAudioCapture}
         disabled={!videoId || isStarting}
-        className="yentl-action-button inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-ink px-3.5 text-[11.5px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        className="yentl-action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-ink px-3.5 text-[11.5px] font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-ink/90 active:translate-y-0 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       >
         {isStarting ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
@@ -1401,7 +1539,7 @@ function YoutubeHeaderFallbackActions({
       <button
         type="button"
         onClick={onBrowserTab}
-        className="yentl-action-button inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-line bg-cream px-3.5 text-[11.5px] font-semibold text-ink-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.98]"
+        className="yentl-action-button inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line bg-cream px-3.5 text-[11.5px] font-semibold text-ink-2 shadow-sm transition-all hover:-translate-y-0.5 hover:border-teal/40 hover:bg-teal-soft/70 active:translate-y-0 active:scale-[0.98]"
       >
         <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
         Use extension
@@ -1466,7 +1604,7 @@ function RailDetailTabs({
         <button
           type="button"
           onClick={() => onFocusChange("transcript")}
-          className={`yentl-action-button min-h-9 rounded-md text-[12px] font-bold transition-all ${
+          className={`yentl-action-button min-h-11 rounded-md text-[12px] font-bold transition-all ${
             focus === "transcript"
               ? "bg-ink text-white shadow-sm"
               : "bg-cream text-ink-3 hover:bg-teal-soft hover:text-teal"
@@ -1477,7 +1615,7 @@ function RailDetailTabs({
         <button
           type="button"
           onClick={() => onFocusChange("findings")}
-          className={`yentl-action-button min-h-9 rounded-md text-[12px] font-bold transition-all ${
+          className={`yentl-action-button min-h-11 rounded-md text-[12px] font-bold transition-all ${
             focus === "findings"
               ? "bg-ink text-white shadow-sm"
               : "bg-cream text-ink-3 hover:bg-teal-soft hover:text-teal"
@@ -1558,6 +1696,10 @@ function TranscriptPanel({
         ) : phase.kind === "armed" ? (
           <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] text-teal">
             Press play if the YouTube controls are visible. Yentl will release {captionTotal} timed caption line{captionTotal === 1 ? "" : "s"} here as the video clock advances.
+          </div>
+        ) : phase.kind === "importing" ? (
+          <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] text-teal">
+            Loading {captionTotal} timed caption line{captionTotal === 1 ? "" : "s"} into Watch...
           </div>
         ) : phase.kind === "checking" || phase.kind === "launching" ? (
           <div className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-[12px] text-teal">
@@ -1738,13 +1880,13 @@ function UrlReadiness({
 }
 
 function FetchProgress({ phase }: { phase: Phase }) {
-  if (phase.kind !== "checking" && phase.kind !== "launching") return null;
+  if (phase.kind !== "checking" && phase.kind !== "launching" && phase.kind !== "importing") return null;
 
   const steps = [
     { label: "Resolve video", state: "done" },
     { label: "Check captions", state: phase.kind === "checking" ? "active" : "done" },
-    { label: "Arm live release", state: phase.kind === "launching" ? "active" : "waiting" },
-    { label: "Keep player and Yentl together", state: phase.kind === "launching" ? "active" : "waiting" },
+    { label: "Arm live release", state: phase.kind === "launching" ? "active" : "done" },
+    { label: "Import caption track", state: phase.kind === "importing" ? "active" : phase.kind === "launching" ? "waiting" : "done" },
   ] as const;
 
   return (
@@ -1808,4 +1950,10 @@ function YoutubeErrorRecovery({ phase }: { phase: Phase }) {
       </div>
     </div>
   );
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
 }

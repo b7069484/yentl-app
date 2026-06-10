@@ -50,12 +50,18 @@ vi.mock("@/components/session/EndSessionDialog", () => ({
   EndSessionDialog: ({
     open,
     onClose,
+    onSaveFirst,
+    onExportFirst,
   }: {
     open: boolean;
     onClose: () => void;
+    onSaveFirst?: () => void;
+    onExportFirst?: () => void;
   }) =>
     open ? (
       <div role="dialog" aria-label="end-session-dialog">
+        <button onClick={onSaveFirst}>Save first</button>
+        <button onClick={onExportFirst}>Export first</button>
         <button onClick={onClose}>Close End</button>
       </div>
     ) : null,
@@ -243,6 +249,8 @@ describe("SessionShell – basic render", () => {
       l.textContent?.includes("yentl"),
     );
     expect(link).toBeTruthy();
+    expect(link?.className).toContain("min-h-11");
+    expect(link?.className).toContain("items-center");
   });
 
   it("renders the live pill", () => {
@@ -289,6 +297,22 @@ describe("SessionShell – basic render", () => {
     expect(screen.getByRole("button", { name: /Pause|Resume/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /End/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Export/ })).toBeTruthy();
+    const roomLink = screen.getByRole("link", { name: /Room/ });
+    expect(roomLink).toHaveAttribute("href", "/tv");
+    expect(roomLink.className).toContain("h-11");
+  });
+
+  it("preserves validation sample context in the room-mode action", () => {
+    mockSearchParamsRaw = new URLSearchParams(
+      "demo=validation&sample=media_playback_sync&view=watch&t=17",
+    );
+    mockStore(makeDefaultStoreState({ source: { kind: "audio_file", blob_url: "", duration_sec: 30, filename: "fixture.wav", mime: "audio/wav" } }));
+    render(<SessionShell>Body</SessionShell>);
+
+    expect(screen.getByRole("link", { name: /Room/ })).toHaveAttribute(
+      "href",
+      "/tv?demo=validation&sample=media_playback_sync",
+    );
   });
 
   it("renders Pause/Resume and End when startedAt is set", () => {
@@ -297,6 +321,20 @@ describe("SessionShell – basic render", () => {
     expect(screen.getByRole("button", { name: /Pause|Resume/ }).className).toContain("h-11");
     expect(screen.getByRole("button", { name: /Export/ }).className).toContain("h-11");
     expect(screen.getByRole("button", { name: /End/ }).className).toContain("h-11");
+  });
+
+  it("keeps active-session actions thumb-reachable in a mobile bottom bar", () => {
+    mockStore(makeDefaultStoreState({ startedAt: new Date().toISOString() }));
+    const { container } = render(<SessionShell>Body</SessionShell>);
+    const toolbar = screen.getByRole("toolbar", { name: /Session actions/i });
+    const main = container.querySelector("main");
+
+    expect(toolbar.className).toContain("fixed");
+    expect(toolbar.className).toContain("bottom-0");
+    expect(toolbar.className).toContain("env(safe-area-inset-bottom)");
+    expect(toolbar.className).toContain("sm:static");
+    expect(main?.className).toContain("env(safe-area-inset-bottom)");
+    expect(main?.className).toContain("sm:pb-0");
   });
 });
 
@@ -413,6 +451,53 @@ describe("SessionShell – tab active state", () => {
       (a) => a.textContent === "Transcript",
     );
     expect(transcriptLink?.className).toContain("bg-cream-2");
+  });
+
+  it("shows and activates the Source tab for text document sessions", () => {
+    mockSearchParamsRaw = new URLSearchParams("demo=validation&sample=source_quote_anchors&view=source");
+    mockStore(
+      makeDefaultStoreState({
+        source: {
+          kind: "text_doc",
+          filename: "Article",
+          mime: "text/plain",
+          byte_count: 20,
+          initial_text: "A source paragraph.",
+        },
+      }),
+    );
+    const { container } = render(<SessionShell>Body</SessionShell>);
+    const sourceLink = Array.from(container.querySelectorAll("a")).find(
+      (a) => a.textContent === "Source",
+    );
+    expect(sourceLink?.getAttribute("href")).toBe(
+      "/session?demo=validation&sample=source_quote_anchors&view=source",
+    );
+    expect(sourceLink?.className).toContain("bg-cream-2");
+  });
+
+  it("preserves validation and share context when switching session tabs", () => {
+    mockSearchParamsRaw = new URLSearchParams(
+      "demo=validation&sample=media_playback_sync&title=Fixture%20clip&view=watch&t=17",
+    );
+    mockStore(makeDefaultStoreState({ source: { kind: "audio_file", blob_url: "", duration_sec: 30, filename: "fixture.wav", mime: "audio/wav" } }));
+    render(<SessionShell>Body</SessionShell>);
+
+    expect(screen.getByRole("link", { name: "Transcript" })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=media_playback_sync&title=Fixture+clip&view=transcript&t=17",
+    );
+    expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=media_playback_sync&title=Fixture+clip&view=overview&t=17",
+    );
+  });
+
+  it("does not show the Source tab for microphone sessions", () => {
+    mockSearchParamsRaw = new URLSearchParams("");
+    mockStore(makeDefaultStoreState({ source: { kind: "mic" } }));
+    render(<SessionShell>Body</SessionShell>);
+    expect(screen.queryByRole("link", { name: "Source" })).toBeNull();
   });
 
   it("does not expose the project UX flow atlas in the user session nav", () => {
@@ -552,6 +637,38 @@ describe("SessionShell – EndSessionDialog", () => {
     render(<SessionShell>Body</SessionShell>);
     const btn = screen.getByRole("button", { name: /End/ });
     expect(btn).toBeDisabled();
+  });
+
+  it("Save first from the end dialog opens the save dialog without ending", () => {
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: new Date().toISOString(),
+        transcript: [makeSegment()],
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /End/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Save first" }));
+
+    expect(screen.getByRole("dialog", { name: "save-session-dialog" })).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "end-session-dialog" })).toBeNull();
+  });
+
+  it("Export first from the end dialog opens export without ending", () => {
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: new Date().toISOString(),
+        claims: [makeClaim()],
+      }),
+    );
+    render(<SessionShell>Body</SessionShell>);
+
+    fireEvent.click(screen.getByRole("button", { name: /End/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Export first" }));
+
+    expect(screen.getByRole("dialog", { name: "export-dialog" })).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "end-session-dialog" })).toBeNull();
   });
 });
 

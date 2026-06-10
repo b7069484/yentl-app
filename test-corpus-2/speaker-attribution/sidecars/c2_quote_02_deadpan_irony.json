@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_quote_02_deadpan_irony",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_quote_02",
+  "start_s": 0,
+  "end_s": 90,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Obviously, we have a lot going on as well because they're they're balancing Super Tuesday with rightfully so with coronavirus. Yes. You did a coronavirus piece. Yes. You turned it around very quickly. I Yeah. Personally, there was more information in that than I've been getting a lot of other places. Okay. When did you make the decision to do coronavirus deep dive because you didn't have a lot of planning? So, yeah, the I guess the answer to that is it was it was atypical for us because we we decided relatively early in our week. And we did have something else else planned. There there occasionally, there are weeks when if we have something very timeless and maybe dry that we've been working on, like something like we've done, like, mobile home financing in the past, there are certain weeks, like, I don't know, this week, where it's a little harder to say. I know that, you know, coronavirus is spreading across the world in borderline pandemic fashion, but I really need to talk about mobile home financing. It's a really hard sell to me. Need to? You need to or you want to in a needlessly contrarian manner. So, yeah, we we so we decided and at the start of our working week, and so we crashed it pretty quickly from there. And how do you feel right now? Do you think that we are suitably panicked? Do you think we're over panicked? As people? Yeah. It's on a person to person basis. Yeah. Yeah. It depends, Like, on scale of one to 10, it depends what your regular level of panic is on a good day. Yeah. Me, I'm at a regular six or seven. Yeah. So so this, you probably have to go, like, up a notch from wherever you were. Gotcha. But not too much. That's the thing. You you",
+    "turns": [
+      {
+        "id": "c2-quote-02-host-setup-1",
+        "start_s": 0.08,
+        "end_s": 7.52,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-guest-brief-1",
+        "start_s": 7.52,
+        "end_s": 7.76,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-host-followup-1",
+        "start_s": 7.76,
+        "end_s": 12.48,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-guest-brief-2",
+        "start_s": 12.48,
+        "end_s": 12.72,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-host-question-1",
+        "start_s": 13.38,
+        "end_s": 17.93,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-guest-answer-1",
+        "start_s": 17.93,
+        "end_s": 64.76,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-host-panic-question-1",
+        "start_s": 64.76,
+        "end_s": 70.68,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-guest-panic-answer-1",
+        "start_s": 70.68,
+        "end_s": 78.7,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-host-backchannel-1",
+        "start_s": 78.7,
+        "end_s": 79.98,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-quote-02-guest-panic-answer-2",
+        "start_s": 80.14,
+        "end_s": 90.01,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-quote-02-claim-1",
+        "start_s": 0.08,
+        "end_s": 6.96,
+        "owner_speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-2",
+        "start_s": 7.76,
+        "end_s": 12.48,
+        "owner_speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-3",
+        "start_s": 17.93,
+        "end_s": 33.0,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-4",
+        "start_s": 33.0,
+        "end_s": 44.4,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-5",
+        "start_s": 44.4,
+        "end_s": 56.6,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "mocked",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-6",
+        "start_s": 56.6,
+        "end_s": 64.76,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-7",
+        "start_s": 64.76,
+        "end_s": 70.68,
+        "owner_speaker_id": "host",
+        "expected_provider_speaker_id": 0,
+        "stance": "questioned",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-8",
+        "start_s": 70.68,
+        "end_s": 78.7,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-02-claim-9",
+        "start_s": 80.14,
+        "end_s": 90.01,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

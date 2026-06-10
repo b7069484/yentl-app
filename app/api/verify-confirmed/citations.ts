@@ -131,9 +131,10 @@ export function mergeStanceWithCitations(
 
     let matched = refsByKey.get(citKey);
     if (!matched) {
-      // Tolerant fallback: refKey or citKey is a prefix of the other (handles
-      // trailing-content corruption on either side).
-      const looseKey = refKeys.find((rk) => rk.startsWith(citKey) || citKey.startsWith(rk));
+      // Tolerant fallback for harmless URL variants such as query/hash
+      // differences. Do not broad-prefix match sibling paths, because that can
+      // attach a stance for /article-10 to the citation /article-1.
+      const looseKey = refKeys.find((rk) => safeLooseUrlMatch(rk, citKey));
       if (looseKey) matched = refsByKey.get(looseKey);
     }
 
@@ -146,6 +147,14 @@ export function mergeStanceWithCitations(
     });
   }
   return out;
+}
+
+function safeLooseUrlMatch(a: string, b: string): boolean {
+  if (a === b) return true;
+  const [shorter, longer] = a.length < b.length ? [a, b] : [b, a];
+  if (!longer.startsWith(shorter)) return false;
+  const next = longer[shorter.length];
+  return next === "?" || next === "#";
 }
 
 function safeDomain(u: string): string {

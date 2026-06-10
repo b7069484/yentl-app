@@ -69,6 +69,11 @@ describe("SynthesisCard – fresh state", () => {
     ).toBeTruthy();
   });
 
+  it("labels the card as Yentl Opinion", () => {
+    render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
+    expect(screen.getByText(/Yentl Opinion/)).toBeTruthy();
+  });
+
   it("renders 3 headline buttons", () => {
     render(
       <SynthesisCard
@@ -153,6 +158,27 @@ describe("SynthesisCard – refreshing state", () => {
     expect(
       screen.getByText("Yentl sees a pattern of misdirection here."),
     ).toBeTruthy();
+  });
+
+  it("marks the meta-read as updating while checking when verdicts exist", () => {
+    render(
+      <SynthesisCard
+        synthesis={{
+          ...synthesis,
+          per_speaker_verdicts: [
+            {
+              speaker_id: 0,
+              label: "Alice",
+              factual_grade: "mostly_factual",
+              faith_grade: "good_faith",
+              one_liner: "Alice stays close to the sourced claims.",
+            },
+          ],
+        }}
+        onHeadlineClick={noop}
+      />,
+    );
+    expect(screen.getByText("Updating while checking")).toBeTruthy();
   });
 });
 
@@ -280,6 +306,11 @@ describe("SynthesisCard – per_speaker_verdicts absent", () => {
     render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
     expect(screen.queryByTestId("per-speaker-verdicts")).toBeNull();
   });
+
+  it("renders no meta-read panel when per_speaker_verdicts is undefined", () => {
+    render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
+    expect(screen.queryByTestId("synthesis-meta-read")).toBeNull();
+  });
 });
 
 // ─── 13. per_speaker_verdicts: empty array → no per-speaker block ─────────────
@@ -347,6 +378,14 @@ describe("SynthesisCard – per_speaker_verdicts single speaker", () => {
     render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
     expect(screen.getByText("Alice made well-sourced, accurate claims throughout.")).toBeTruthy();
   });
+
+  it("renders a good-faith meta-read with caveat language", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByTestId("synthesis-meta-read")).toBeTruthy();
+    expect(screen.getByText("Good-faith read")).toBeTruthy();
+    expect(screen.getByText("Good-faith: 1")).toBeTruthy();
+    expect(screen.getByText(/Keep checking source-backed claims/)).toBeTruthy();
+  });
 });
 
 // ─── 15. per_speaker_verdicts: 2 speakers ────────────────────────────────────
@@ -407,9 +446,57 @@ describe("SynthesisCard – per_speaker_verdicts two speakers", () => {
     const greenChips = card0.querySelectorAll("span.bg-green-soft");
     expect(greenChips.length).toBe(2);
   });
+
+  it("summarizes the mixed speaker set as a mixed-faith read", () => {
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Mixed-faith read")).toBeTruthy();
+    expect(screen.getByText("Good-faith: 1")).toBeTruthy();
+    expect(screen.getByText("Bad-faith risk: 1")).toBeTruthy();
+    expect(screen.getByText(/Review the speaker cards/)).toBeTruthy();
+  });
 });
 
-// ─── 16. grade chip colors for all grades ────────────────────────────────────
+// ─── 16. bad-faith meta-read ─────────────────────────────────────────────────
+
+describe("SynthesisCard – bad-faith meta-read", () => {
+  it("summarizes a bad-faith majority without claiming final intent", () => {
+    const synthesis: SynthesisState = {
+      state: "fresh",
+      text: "Text.",
+      headlines: HEADLINES,
+      per_speaker_verdicts: [
+        {
+          speaker_id: 0,
+          label: "A",
+          factual_grade: "mostly_inaccurate",
+          faith_grade: "bad_faith",
+          one_liner: "A leans on unsupported framing.",
+        },
+        {
+          speaker_id: 1,
+          label: "B",
+          factual_grade: "mixed",
+          faith_grade: "bad_faith",
+          one_liner: "B repeatedly evades the direct question.",
+        },
+        {
+          speaker_id: 2,
+          label: "C",
+          factual_grade: "mixed",
+          faith_grade: "mixed",
+          one_liner: "C has mixed evidence and rhetoric.",
+        },
+      ],
+      at: Date.now(),
+    };
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByText("Bad-faith risk")).toBeTruthy();
+    expect(screen.getByText("Bad-faith risk: 2")).toBeTruthy();
+    expect(screen.getByText(/not a final judgment about intent/)).toBeTruthy();
+  });
+});
+
+// ─── 17. grade chip colors for all grades ────────────────────────────────────
 
 describe("SynthesisCard – grade chip colors", () => {
   function renderSingleVerdict(

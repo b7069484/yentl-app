@@ -6,6 +6,7 @@ import {
   ArrowRight,
   AlertCircle,
   CheckCircle2,
+  ClipboardPaste,
   Globe2,
   Link as LinkIcon,
   Loader2,
@@ -16,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
 import { friendlyApiErrorMessage } from "@/lib/client/api-errors";
+import { readUrlFromClipboard } from "@/lib/client/clipboard-url";
 import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 import type { TranscriptSegment, Speaker } from "@/lib/types";
 
@@ -40,6 +42,8 @@ interface MediaIngestResponse {
   mime?: string;
   error?: { code: string; message: string };
 }
+
+const VALIDATION_MEDIA_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,6 +139,7 @@ export function MediaUrlIngestPane() {
 
   const [url, setUrl] = useState(initialUrl);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  const [clipboardStatus, setClipboardStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const handoffRef = useRef(false);
 
@@ -147,8 +152,9 @@ export function MediaUrlIngestPane() {
   const isBusy = phase.kind === "processing" || phase.kind === "ingesting";
   const readiness = mediaUrlReadiness(url);
 
-  const handleProcess = useCallback(async () => {
-    if (!isValidUrl || isBusy) return;
+  const handleProcess = useCallback(async (urlOverride?: string) => {
+    const mediaUrl = (urlOverride ?? url).trim();
+    if (!isValidUrlFormat(mediaUrl) || isBusy) return;
 
     const ac = new AbortController();
     abortRef.current = ac;
@@ -161,7 +167,7 @@ export function MediaUrlIngestPane() {
           "Content-Type": "application/json",
           ...sourceAnalysisConsentHeaders(),
         },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: mediaUrl }),
         signal: ac.signal,
       });
 
@@ -193,12 +199,12 @@ export function MediaUrlIngestPane() {
       }
 
       // Set session source
-      setSource({ kind: "media_url", url: url.trim() });
+      setSource({ kind: "media_url", url: mediaUrl });
 
       // Bulk ingest
       setPhase({ kind: "ingesting" });
       handoffRef.current = true;
-      await bulkIngest(data.utterances, { signal: ac.signal });
+      await bulkIngest(data.utterances, { signal: ac.signal, speakers: data.speakers });
 
       if (!ac.signal.aborted) {
         setPhase({ kind: "done" });
@@ -210,7 +216,15 @@ export function MediaUrlIngestPane() {
       const message = e instanceof Error ? e.message : String(e);
       setPhase({ kind: "error", code: "NETWORK_ERROR", message });
     }
-  }, [url, isValidUrl, isBusy, setSource, router]);
+  }, [url, isBusy, setSource, router]);
+
+  const handleLoadValidationMedia = useCallback(async () => {
+    if (isBusy) return;
+    setClipboardStatus(null);
+    setUrl(VALIDATION_MEDIA_URL);
+    if (phase.kind === "error") setPhase({ kind: "idle" });
+    await handleProcess(VALIDATION_MEDIA_URL);
+  }, [handleProcess, isBusy, phase.kind]);
 
   const handleBack = useCallback(() => {
     abortRef.current?.abort();
@@ -226,11 +240,24 @@ export function MediaUrlIngestPane() {
   const handleUrlChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setUrl(e.target.value);
+      setClipboardStatus(null);
       // Clear error when user edits URL
       if (phase.kind === "error") setPhase({ kind: "idle" });
     },
     [phase.kind],
   );
+
+  const handlePasteFromClipboard = useCallback(async () => {
+    const result = await readUrlFromClipboard();
+    if (!result.ok) {
+      setClipboardStatus({ kind: "error", message: result.message });
+      return;
+    }
+
+    setUrl(result.url);
+    setClipboardStatus({ kind: "success", message: "URL pasted from clipboard." });
+    if (phase.kind === "error") setPhase({ kind: "idle" });
+  }, [phase.kind]);
 
   return (
     <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 md:px-8">
@@ -238,7 +265,7 @@ export function MediaUrlIngestPane() {
       <button
         type="button"
         onClick={handleBack}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
+        className="mb-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
       </button>
@@ -277,7 +304,7 @@ export function MediaUrlIngestPane() {
               />
               <button
                 type="button"
-                onClick={handleProcess}
+                onClick={() => void handleProcess()}
                 disabled={!isValidUrl || isBusy || phase.kind === "done"}
                 className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-ink px-5 py-2 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -288,8 +315,45 @@ export function MediaUrlIngestPane() {
                 )}
                 Process
               </button>
+              <button
+                type="button"
+                onClick={handlePasteFromClipboard}
+                disabled={isBusy || phase.kind === "done"}
+                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-line bg-cream px-4 py-2 text-[13px] font-medium text-ink-2 transition-colors hover:bg-cream-2 disabled:cursor-not-allowed disabled:opacity-45"
+                aria-label="Paste media URL from clipboard"
+              >
+                <ClipboardPaste className="h-4 w-4" aria-hidden />
+                Paste
+              </button>
             </div>
           </div>
+
+          {validationDemoEnabled() && !isBusy && phase.kind !== "done" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => void handleLoadValidationMedia()}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-3 text-[12.5px] font-semibold text-teal transition-colors hover:bg-teal/10"
+              >
+                <LinkIcon className="h-4 w-4" aria-hidden />
+                Load validation media URL
+              </button>
+            </div>
+          )}
+
+          {clipboardStatus && (
+            <div
+              role="status"
+              className={[
+                "mt-3 rounded-lg border px-4 py-2 text-[12.5px]",
+                clipboardStatus.kind === "success"
+                  ? "border-green/25 bg-green-soft text-green"
+                  : "border-amber/40 bg-amber-soft text-amber-2",
+              ].join(" ")}
+            >
+              {clipboardStatus.message}
+            </div>
+          )}
 
           <UrlReadinessCard readiness={readiness} onBrowserTab={switchToBrowserTab} />
 
@@ -340,7 +404,7 @@ export function MediaUrlIngestPane() {
             <button
               type="button"
               onClick={switchToBrowserTab}
-              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2.5 text-[13px] font-medium text-ink-2 hover:bg-cream-2"
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-line bg-cream px-3 py-2.5 text-[13px] font-medium text-ink-2 hover:bg-cream-2"
             >
               Use browser tab instead
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -403,7 +467,7 @@ function UrlReadinessCard({
       <button
         type="button"
         onClick={onBrowserTab}
-        className="mt-3 inline-flex items-center gap-2 rounded-md border border-teal/25 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 hover:border-teal/40"
+        className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-md border border-teal/25 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 hover:border-teal/40"
       >
         Switch to browser tab
         <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -458,4 +522,10 @@ function MediaStep({ label, body }: { label: string; body: string }) {
       <div className="mt-0.5 text-[12px] leading-snug text-ink-3">{body}</div>
     </div>
   );
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
 }

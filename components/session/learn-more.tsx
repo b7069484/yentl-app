@@ -21,7 +21,8 @@ function NotFound({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-1.5 mt-5 px-4 py-2 text-[12px] bg-paper border border-line rounded-lg hover:bg-cream-2 transition-colors"
+        data-testid="learn-notfound-back-btn"
+        className="inline-flex min-h-11 items-center gap-1.5 mt-5 px-4 py-2 text-[12px] bg-paper border border-line rounded-lg hover:bg-cream-2 transition-colors"
       >
         ← Go back
       </button>

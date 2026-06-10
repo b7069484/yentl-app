@@ -1,0 +1,185 @@
+{
+  "runDir": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28",
+  "results": [
+    {
+      "candidate": {
+        "id": "tarantino_channel4",
+        "group": "primary",
+        "url": "https://www.youtube.com/watch?v=GrsJDy8VjZk",
+        "videoId": "GrsJDy8VjZk",
+        "expectedSpeakers": 2,
+        "reason": "Adversarial two-speaker interview, loaded-question/refusal boundary."
+      },
+      "title": "Quentin Tarantino interview: 'I'm shutting your butt down!'",
+      "channel": "Channel 4 News",
+      "durationS": 516,
+      "captionSource": {
+        "kind": "manual",
+        "lang": "en-GB"
+      },
+      "paths": {
+        "srt": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28/candidates/tarantino_channel4/source.en-GB.srt",
+        "audio": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28/candidates/tarantino_channel4/audio.opus",
+        "urlCaptions": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28/candidates/tarantino_channel4/url-captions.json",
+        "audioProductionTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28/candidates/tarantino_channel4/audio-production-deepgram.json",
+        "audioDiagnosticTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/smoke-2026-05-28/candidates/tarantino_channel4/audio-diagnostic-diarized-deepgram.json"
+      },
+      "transcriptStats": {
+        "srt": {
+          "segmentCount": 162,
+          "wordCount": 1562,
+          "firstStart": 3.3890000000000002,
+          "lastEnd": 514.689,
+          "observedSpeakers": 1,
+          "dominantSpeakerShare": 1,
+          "avgWordConfidence": null,
+          "avgSpeakerConfidence": null
+        },
+        "youtube_url": {
+          "segmentCount": 234,
+          "wordCount": 1723,
+          "firstStart": 2.98,
+          "lastEnd": 516.5989999999999,
+          "observedSpeakers": 1,
+          "dominantSpeakerShare": 1,
+          "avgWordConfidence": null,
+          "avgSpeakerConfidence": null
+        },
+        "audio_production": {
+          "segmentCount": 74,
+          "wordCount": 1764,
+          "firstStart": 3.1999998,
+          "lastEnd": 514.78,
+          "observedSpeakers": 1,
+          "dominantSpeakerShare": 1,
+          "avgWordConfidence": 0.9444871474532015,
+          "avgSpeakerConfidence": null
+        },
+        "audio_diagnostic_diarized": {
+          "segmentCount": 74,
+          "wordCount": 1763,
+          "firstStart": 3.1999998,
+          "lastEnd": 514.78,
+          "observedSpeakers": 2,
+          "dominantSpeakerShare": 0.7305728871242201,
+          "avgWordConfidence": 0.9443988097162286,
+          "avgSpeakerConfidence": 0.5926903355970509
+        }
+      },
+      "comparisons": {
+        "youtubeUrlVsSrt": {
+          "wer": 0.2323943661971831,
+          "substitutions": 128,
+          "deletions": 37,
+          "insertions": 198,
+          "hits": 1397,
+          "refLen": 1562,
+          "hypLen": 1723
+        },
+        "audioProductionVsSrt": {
+          "wer": 0.23047375160051217,
+          "substitutions": 78,
+          "deletions": 40,
+          "insertions": 242,
+          "hits": 1444,
+          "refLen": 1562,
+          "hypLen": 1764
+        },
+        "audioDiagnosticVsSrt": {
+          "wer": 0.23111395646606914,
+          "substitutions": 78,
+          "deletions": 41,
+          "insertions": 242,
+          "hits": 1443,
+          "refLen": 1562,
+          "hypLen": 1763
+        },
+        "youtubeTimingDriftS": 0.5989999999999327
+      },
+      "analysis": {
+        "srt": {
+          "mode": "srt",
+          "utterancesAvailable": 61,
+          "utterancesAnalyzed": 2,
+          "claims": [],
+          "markers": [],
+          "errors": [
+            {
+              "stage": "extract:0",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "extract:60",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "rhetoric:60",
+              "message": "/api/analyze-rhetoric HTTP 500: {\"error\":\"analyze failed\"}"
+            }
+          ]
+        },
+        "youtube_url": {
+          "mode": "youtube_url",
+          "utterancesAvailable": 26,
+          "utterancesAnalyzed": 2,
+          "claims": [],
+          "markers": [],
+          "errors": [
+            {
+              "stage": "extract:0",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "extract:25",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "rhetoric:25",
+              "message": "/api/analyze-rhetoric HTTP 500: {\"error\":\"analyze failed\"}"
+            }
+          ]
+        },
+        "audio_production": {
+          "mode": "audio_production",
+          "utterancesAvailable": 37,
+          "utterancesAnalyzed": 2,
+          "claims": [],
+          "markers": [],
+          "errors": [
+            {
+              "stage": "extract:0",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "extract:36",
+              "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+            },
+            {
+              "stage": "rhetoric:36",
+              "message": "/api/analyze-rhetoric HTTP 500: {\"error\":\"analyze failed\"}"
+            }
+          ]
+        }
+      },
+      "crossMode": {
+        "claimJaccard": {
+          "srt_vs_youtube_url": 1,
+          "srt_vs_audio_production": 1,
+          "youtube_url_vs_audio_production": 1
+        },
+        "provisionalDisagreements": [],
+        "markerNameOverlap": {
+          "srt_vs_youtube_url": 1,
+          "srt_vs_audio_production": 1,
+          "youtube_url_vs_audio_production": 1
+        },
+        "explicitRevisionEvents": 0
+      },
+      "warnings": [
+        "URL captions diverged from SRT baseline (WER 23.2%).",
+        "Production-like audio transcription collapsed speakers to one speaker.",
+        "No explicit later-context revision events were emitted; current output schema does not expose reopen/merge/supersede behavior."
+      ]
+    }
+  ]
+}

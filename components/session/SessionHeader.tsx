@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { Volume2 } from "lucide-react";
 import { AudioMeter } from "@/components/session/AudioMeter";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/lib/client/session-store";
 import { recordRmsSample } from "@/lib/client/orchestrator";
+import { useSession } from "@/lib/client/session-store";
 import { paletteFor } from "@/lib/client/speaker-palette";
 
 export function SessionHeader({

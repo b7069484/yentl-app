@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicInfoPage } from "@/components/public-info-page";
 
 export const metadata: Metadata = {
   title: "About — Yentl",
@@ -8,9 +9,12 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 space-y-10">
-      <h1 className="text-3xl font-bold">About Yentl</h1>
-
+    <PublicInfoPage
+      currentPath="/about"
+      eyebrow="About"
+      title="About Yentl"
+      description="What Yentl is, what it checks, what it stores locally, and what it does not claim to be."
+    >
       <section aria-labelledby="what-yentl-does">
         <h2 id="what-yentl-does" className="text-xl font-semibold mb-3">
           What Yentl does
@@ -31,11 +35,11 @@ export default function AboutPage() {
           Accounts and saved sessions
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          The current v1 experience is guest-first. Saved sessions are stored in
-          this browser so you can return to work on the same device. Account
-          sign-in and cross-device session sync are not part of this v1 save
-          story unless a deployment explicitly enables them and updates the
-          product copy to say so.
+          The current v1 experience is guest-first. Saved sessions are stored
+          in this browser first so guests can return to work on the same
+          device. Deployments with Clerk and the Yentl database configured can
+          also sync saved sessions to a signed-in account for restore, rename,
+          delete, and export on another device.
         </p>
       </section>
 
@@ -131,10 +135,11 @@ export default function AboutPage() {
           European Accessibility Act, enforcement date 28 June 2025).
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
-          <strong>Current status:</strong> Substantial compliance — skip-to-content navigation,
-          focus ring tokens meeting ≥3:1 contrast, 44×44 px touch targets, prefers-reduced-motion
-          support, and aria-live transcript regions are implemented as of 2026-05-18. Full
-          automated axe-core + Lighthouse audits are run in CI.
+          <strong>Current status:</strong> Automated checks on <code>/</code> and{" "}
+          <code>/session</code> as of 2026-05-18 support the documented implementation work:
+          skip-to-content navigation, focus ring tokens, mobile-sized primary touch targets,
+          prefers-reduced-motion support, and aria-live transcript regions. This is not a
+          full-product or manual assistive-technology conformance claim.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
           <strong>Known gaps:</strong> Audio playback controls are not yet implemented (v1 does
@@ -142,7 +147,8 @@ export default function AboutPage() {
           additional table/chart accessibility work.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
-          <strong>Date of last audit:</strong> 2026-05-18.
+          <strong>Date of last documented audit:</strong> 2026-05-18. The CI workflow defines
+          an axe-core audit step that runs when <code>RUN_A11Y_AUDIT</code> is enabled.
         </p>
         <p className="text-muted-foreground leading-relaxed mt-2">
           <strong>Contact for accessibility issues:</strong>{" "}
@@ -150,6 +156,6 @@ export default function AboutPage() {
           for barriers, assistive-technology bugs, or accommodation requests.
         </p>
       </section>
-    </main>
+    </PublicInfoPage>
   );
 }

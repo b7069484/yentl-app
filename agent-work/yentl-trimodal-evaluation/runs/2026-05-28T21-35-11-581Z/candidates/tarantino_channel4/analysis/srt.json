@@ -1,0 +1,49 @@
+{
+  "mode": "srt",
+  "utterancesAvailable": 61,
+  "utterancesAnalyzed": 8,
+  "claims": [],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "there was two holocausts in America... the holocaustic aspects, the Auschwitzian aspects of the slave trade",
+      "start_time": 215,
+      "end_time": 238,
+      "severity": "subtle",
+      "explanation": "Tarantino draws a direct equivalence between slavery and the Holocaust/Auschwitz. While both involve mass atrocity, conflating distinct historical events as analogous can be a rhetorical false analogy used to dramatize a point."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the holocaustic aspects, the Auschwitzian aspects of the slave trade in America",
+      "start_time": 230,
+      "end_time": 238,
+      "severity": "clear",
+      "explanation": "Using emotionally charged terms like 'holocaustic' and 'Auschwitzian' to frame the subject matter loads the discussion with strong affective weight beyond descriptive accuracy."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "you go and you watch a Kung-Fu movie and one guy takes on a hundred people in a restaurant",
+      "start_time": 265,
+      "end_time": 272,
+      "severity": "subtle",
+      "explanation": "When asked why non-violent people enjoy movie violence, Tarantino pivots to a kung-fu movie example rather than addressing the psychological question, deflecting from the substance of the inquiry."
+    },
+    {
+      "type": "rhetoric",
+      "name": "false_analogy",
+      "display": "False Analogy",
+      "excerpt": "filmmaking directors are like boxers. They have their time.",
+      "start_time": 486,
+      "end_time": 505,
+      "severity": "subtle",
+      "explanation": "Tarantino compares directors to boxers to argue both decline with age. While evocative, the analogy equates physical athletic decline with creative/artistic decline, which are not obviously comparable domains."
+    }
+  ],
+  "errors": []
+}

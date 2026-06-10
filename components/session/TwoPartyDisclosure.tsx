@@ -57,7 +57,7 @@ export function TwoPartyDisclosure() {
         <button
           onClick={dismiss}
           aria-label="Dismiss consent reminder"
-          className="shrink-0 rounded p-0.5 hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-700"
+          className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-700"
         >
           <X className="size-4" aria-hidden="true" />
         </button>

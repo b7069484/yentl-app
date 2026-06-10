@@ -1,7 +1,7 @@
 import { Output } from "ai";
-import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import {
   AnalyzeRhetoricResponse,
   SYSTEM_PREFIX,
@@ -9,6 +9,8 @@ import {
 } from "@/lib/prompts/analyze-rhetoric";
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { youtubeValidationAnalyzeRhetoricFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
+import { documentValidationAnalyzeRhetoricFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -45,20 +47,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid request" }, { status: 400 });
   }
 
+  const validationFixture = youtubeValidationAnalyzeRhetoricFixture(parsed.data);
+  if (validationFixture) {
+    return NextResponse.json(validationFixture);
+  }
+  const documentValidationFixture = documentValidationAnalyzeRhetoricFixture(parsed.data);
+  if (documentValidationFixture) {
+    return NextResponse.json(documentValidationFixture);
+  }
+
   try {
     // Use top-level `system` (not messages[] role:"system") to avoid the AI SDK
-    // prompt-injection warning. SYSTEM_PREFIX is module-constant text, so
-    // explicit `cache_control` would still be nice — but the messages-form
-    // marker triggered a security warning on every call, polluting logs.
-    // Anthropic's automatic prefix-cache still catches the static SYSTEM_PREFIX
-    // when the same content is repeated, just without an explicit hint.
+    // prompt-injection warning. Use the gateway-supported ephemeral cache hint;
+    // the previous persistent value is rejected by the current Anthropic schema.
     const { output } = await generateText({
       model: opus,
       output: Output.object({ schema: AnalyzeRhetoricResponse }),
       system: SYSTEM_PREFIX,
       prompt: userPrompt(parsed.data),
       providerOptions: {
-        anthropic: { cacheControl: { type: "persistent" } },
+        anthropic: { cacheControl: { type: "ephemeral" } },
       },
     });
     return NextResponse.json(output);

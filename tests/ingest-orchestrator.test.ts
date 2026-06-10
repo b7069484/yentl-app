@@ -7,12 +7,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const {
   mockStartSession,
   mockAppendFinal,
+  mockEnsureSpeaker,
+  mockRenameSpeaker,
   mockOnFinalUtterance,
   mockRunSynthesisNow,
   sessionState,
 } = vi.hoisted(() => {
   const mockStartSession = vi.fn();
   const mockAppendFinal = vi.fn();
+  const mockEnsureSpeaker = vi.fn();
+  const mockRenameSpeaker = vi.fn();
   const mockOnFinalUtterance = vi.fn().mockResolvedValue(undefined);
   const mockRunSynthesisNow = vi.fn().mockResolvedValue(undefined);
 
@@ -20,9 +24,19 @@ const {
     startedAt: null as string | null,
     startSession: mockStartSession,
     appendFinal: mockAppendFinal,
+    ensureSpeaker: mockEnsureSpeaker,
+    renameSpeaker: mockRenameSpeaker,
   };
 
-  return { mockStartSession, mockAppendFinal, mockOnFinalUtterance, mockRunSynthesisNow, sessionState };
+  return {
+    mockStartSession,
+    mockAppendFinal,
+    mockEnsureSpeaker,
+    mockRenameSpeaker,
+    mockOnFinalUtterance,
+    mockRunSynthesisNow,
+    sessionState,
+  };
 });
 
 vi.mock("@/lib/client/session-store", () => ({
@@ -59,6 +73,8 @@ beforeEach(() => {
   // Re-attach after clearAllMocks clears mock implementations
   mockStartSession.mockImplementation(() => undefined);
   mockAppendFinal.mockImplementation(() => undefined);
+  mockEnsureSpeaker.mockImplementation(() => undefined);
+  mockRenameSpeaker.mockImplementation(() => undefined);
   mockOnFinalUtterance.mockResolvedValue(undefined);
   mockRunSynthesisNow.mockResolvedValue(undefined);
 });
@@ -87,6 +103,32 @@ describe("bulkIngest — segment processing", () => {
     expect(mockAppendFinal).toHaveBeenNthCalledWith(1, segs[0]);
     expect(mockAppendFinal).toHaveBeenNthCalledWith(2, segs[1]);
     expect(mockAppendFinal).toHaveBeenNthCalledWith(3, segs[2]);
+  });
+
+  it("registers and labels provider-detected speakers before appending transcript", async () => {
+    const calls: string[] = [];
+    mockEnsureSpeaker.mockImplementation((id) => calls.push(`ensure:${id}`));
+    mockRenameSpeaker.mockImplementation((id, label) => calls.push(`rename:${id}:${label}`));
+    mockAppendFinal.mockImplementation(() => calls.push("appendFinal"));
+
+    await bulkIngest([makeSeg("Hello.", 0)], {
+      speakers: [
+        { id: 0, label: "Mira" },
+        { id: 1, label: "Jordan" },
+      ],
+    });
+
+    expect(mockEnsureSpeaker).toHaveBeenCalledWith(0);
+    expect(mockRenameSpeaker).toHaveBeenCalledWith(0, "Mira");
+    expect(mockEnsureSpeaker).toHaveBeenCalledWith(1);
+    expect(mockRenameSpeaker).toHaveBeenCalledWith(1, "Jordan");
+    expect(calls).toEqual([
+      "ensure:0",
+      "rename:0:Mira",
+      "ensure:1",
+      "rename:1:Jordan",
+      "appendFinal",
+    ]);
   });
 
   it("eventually calls onFinalUtterance() for each segment (parallel, background)", async () => {

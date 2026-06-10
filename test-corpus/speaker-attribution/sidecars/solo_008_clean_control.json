@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "window_id": "solo_008_clean_control",
+  "corpus_id": "test-corpus",
+  "source_id": "solo_008",
+  "start_s": 120,
+  "end_s": 150,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "three times the amount of people as one in Vermont. And that makes each individual person's vote in Vermont a lot more influential. The electoral college creates discrepancies like this all over the country. A voter in Wyoming is worth three and a half times as much as a voter in California. And the winner of the presidential election is the candidate who gets 270 or more of these electoral college votes. These are the results of the twenty sixteen election by",
+    "turns": [
+      {
+        "id": "solo-008-turn-1",
+        "start_s": 120,
+        "end_s": 150,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "solo-008-claim-1",
+        "start_s": 120,
+        "end_s": 150,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

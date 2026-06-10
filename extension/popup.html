@@ -14,7 +14,7 @@
 
       body {
         box-sizing: border-box;
-        width: 286px;
+        width: 320px;
         margin: 0;
         padding: 16px;
         background: #fffdf8;
@@ -45,10 +45,42 @@
         line-height: 1.45;
       }
 
+      .panel {
+        display: grid;
+        gap: 8px;
+        margin: 0 0 12px;
+        padding: 10px;
+        border: 1px solid #e5dcc8;
+        border-radius: 10px;
+        background: #f8f3e9;
+      }
+
+      .label {
+        color: #767b8f;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .value {
+        overflow: hidden;
+        color: #1d1d24;
+        font-size: 12px;
+        line-height: 1.35;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+      }
+
       button {
-        width: 100%;
         min-height: 44px;
-        border: 0;
+        border: 1px solid transparent;
         border-radius: 10px;
         background: #19191f;
         color: #fff;
@@ -71,9 +103,17 @@
       }
 
       button:disabled {
-        cursor: progress;
+        cursor: not-allowed;
         opacity: 0.72;
         transform: none;
+      }
+
+      .secondary {
+        width: 44px;
+        border-color: #d8cfb4;
+        background: #fffaf0;
+        color: #34343c;
+        font-size: 18px;
       }
 
       #status {
@@ -88,7 +128,20 @@
   <body>
     <div class="brand" aria-hidden="true">yentl<span class="dot"></span></div>
     <p class="copy">Open Yentl beside this page and listen to the tab audio.</p>
-    <button id="start" type="button">Start live analysis</button>
+    <div class="panel" aria-label="Capture target">
+      <div>
+        <div class="label">Current tab</div>
+        <div id="tab-title" class="value">Checking active tab...</div>
+      </div>
+      <div>
+        <div class="label">Yentl app</div>
+        <div id="app-origin" class="value">Checking origin...</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="start" type="button">Start live analysis</button>
+      <button id="settings" class="secondary" type="button" title="Extension settings" aria-label="Open extension settings">⚙</button>
+    </div>
     <p id="status" role="status"></p>
     <script src="popup.js"></script>
   </body>

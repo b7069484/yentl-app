@@ -56,6 +56,16 @@ export type BrowserTabCaptureStatus = {
   updatedAt?: number;
 };
 
+export type SpeakerCorrectionSnapshot = {
+  kind: "reassign" | "split";
+  summary: string;
+  at: number;
+  previousTranscript: TranscriptSegment[];
+  previousClaims: ClaimCard[];
+  previousMarkers: RhetoricMarker[];
+  previousSpeakers: Speaker[];
+};
+
 type State = {
   title: string;
   startedAt: string | null;
@@ -77,6 +87,8 @@ type State = {
   prerecordStage: "picker" | "selected";
   browserTabStatus: BrowserTabCaptureStatus;
   pendingYouTubeCaptions: TranscriptSegment[];
+  pendingLaunchFile: File | null;
+  lastSpeakerCorrection: SpeakerCorrectionSnapshot | null;
 
   // actions
   startSession: (title?: string) => void;
@@ -86,6 +98,7 @@ type State = {
   addClaim: (c: ClaimCard) => void;
   updateClaim: (id: string, patch: Partial<ClaimCard>) => void;
   addMarker: (m: RhetoricMarker) => void;
+  updateMarker: (id: string, patch: Partial<RhetoricMarker>) => void;
   ensureSpeaker: (id: SpeakerId) => void;
   renameSpeaker: (id: SpeakerId, label: string) => void;
   setSource: (source: SessionSource) => void;
@@ -101,6 +114,8 @@ type State = {
   setBrowserTabStatus: (status: BrowserTabCaptureStatus) => void;
   setPendingYouTubeCaptions: (segments: TranscriptSegment[]) => void;
   clearPendingYouTubeCaptions: () => void;
+  setPendingLaunchFile: (file: File | null) => void;
+  clearPendingLaunchFile: () => void;
   restoreSession: (session: Session) => void;
   toSession: () => Session;
   reset: () => void;
@@ -112,6 +127,7 @@ type State = {
    * No-ops when index is out of bounds or speaker is already assigned.
    */
   reassignUtterance: (transcriptIndex: number, newSpeakerId: SpeakerId) => void;
+  undoLastSpeakerCorrection: () => void;
   /**
    * Creates the next speaker (max existing id + 1), registers it, and
    * returns its id. Useful for the "Add new speaker" affordance.
@@ -136,18 +152,39 @@ type State = {
   splitSegmentAt: (index: number, splitTime: number, newSpeakerId: SpeakerId) => void;
 };
 
+function speakerLabelFor(speakers: Speaker[], speakerId: SpeakerId | null): string {
+  if (speakerId === null) return "Unknown";
+  return speakers.find((sp) => sp.id === speakerId)?.label ?? `Speaker ${speakerId + 1}`;
+}
+
+function snapshotSpeakerCorrection(
+  state: Pick<State, "transcript" | "claims" | "markers" | "speakers">,
+  kind: SpeakerCorrectionSnapshot["kind"],
+  summary: string,
+): SpeakerCorrectionSnapshot {
+  return {
+    kind,
+    summary,
+    at: Date.now(),
+    previousTranscript: state.transcript,
+    previousClaims: state.claims,
+    previousMarkers: state.markers,
+    previousSpeakers: state.speakers,
+  };
+}
+
 const DEFAULT_SOURCE: SessionSource = { kind: "mic" };
 
 // Single source of truth for non-action state. Spread into startSession + reset
 // so they can't drift apart silently. TypeScript enforces completeness via `State`.
 const initialState: Omit<State,
   | "startSession" | "endSession" | "setInterim" | "appendFinal"
-  | "addClaim" | "updateClaim" | "addMarker"
+  | "addClaim" | "updateClaim" | "addMarker" | "updateMarker"
   | "ensureSpeaker" | "renameSpeaker" | "setSource" | "setSpeakersMode"
   | "toggleMode" | "setRecording" | "setSynthesis" | "setMicStream" | "setMicDeviceId"
   | "setMicConsentAccepted" | "setDevilAdvocate" | "setPrerecordStage" | "setBrowserTabStatus" | "restoreSession" | "toSession" | "reset"
-  | "setPendingYouTubeCaptions" | "clearPendingYouTubeCaptions"
-  | "reassignUtterance" | "addNewSpeaker" | "splitSegmentAt"
+  | "setPendingYouTubeCaptions" | "clearPendingYouTubeCaptions" | "setPendingLaunchFile" | "clearPendingLaunchFile"
+  | "reassignUtterance" | "undoLastSpeakerCorrection" | "addNewSpeaker" | "splitSegmentAt"
 > = {
   title: "",
   startedAt: null,
@@ -169,6 +206,8 @@ const initialState: Omit<State,
   prerecordStage: "picker",
   browserTabStatus: { phase: "idle" },
   pendingYouTubeCaptions: [],
+  pendingLaunchFile: null,
+  lastSpeakerCorrection: null,
 };
 
 export const useSession = create<State>((set, get) => ({
@@ -220,21 +259,29 @@ export const useSession = create<State>((set, get) => ({
       transcript: [...s.transcript, segment],
       interim: "",
       speakers,
+      lastSpeakerCorrection: null,
     };
   }),
 
-  addClaim: (c) => set((s) => ({ claims: [...s.claims, c] })),
+  addClaim: (c) => set((s) => ({ claims: [...s.claims, c], lastSpeakerCorrection: null })),
 
   updateClaim: (id, patch) => set((s) => ({
     claims: s.claims.map((c) => (c.id === id ? { ...c, ...patch } : c)),
+    lastSpeakerCorrection: null,
   })),
 
-  addMarker: (m) => set((s) => ({ markers: [...s.markers, m] })),
+  addMarker: (m) => set((s) => ({ markers: [...s.markers, m], lastSpeakerCorrection: null })),
+
+  updateMarker: (id, patch) => set((s) => ({
+    markers: s.markers.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+    lastSpeakerCorrection: null,
+  })),
 
   ensureSpeaker: (id) => set((s) => {
     if (s.speakers.some((sp) => sp.id === id)) return s;
     return {
       speakers: [...s.speakers, { id, label: `Speaker ${id + 1}` }],
+      lastSpeakerCorrection: null,
     };
   }),
 
@@ -245,6 +292,7 @@ export const useSession = create<State>((set, get) => ({
       speakers: s.speakers.map((sp) =>
         sp.id === id ? { ...sp, label: finalLabel } : sp,
       ),
+      lastSpeakerCorrection: null,
     };
   }),
 
@@ -257,6 +305,10 @@ export const useSession = create<State>((set, get) => ({
   setPendingYouTubeCaptions: (segments) => set({ pendingYouTubeCaptions: segments }),
 
   clearPendingYouTubeCaptions: () => set({ pendingYouTubeCaptions: [] }),
+
+  setPendingLaunchFile: (file) => set({ pendingLaunchFile: file }),
+
+  clearPendingLaunchFile: () => set({ pendingLaunchFile: null }),
 
   setSpeakersMode: (b) => set({ speakersMode: b }),
 
@@ -310,6 +362,8 @@ export const useSession = create<State>((set, get) => ({
     micConsentAccepted: false,
     browserTabStatus: { phase: "idle" },
     pendingYouTubeCaptions: [],
+    pendingLaunchFile: null,
+    lastSpeakerCorrection: null,
   }),
 
   toSession: () => {
@@ -351,6 +405,8 @@ export const useSession = create<State>((set, get) => ({
     if (transcriptIndex < 0 || transcriptIndex >= s.transcript.length) return s;
     const target = s.transcript[transcriptIndex];
     if (target.speaker_id === newSpeakerId) return s;
+    const fromLabel = speakerLabelFor(s.speakers, target.speaker_id);
+    const toLabel = speakerLabelFor(s.speakers, newSpeakerId);
 
     // Update the transcript segment
     const newTranscript = s.transcript.slice();
@@ -373,7 +429,29 @@ export const useSession = create<State>((set, get) => ({
       ? s.speakers
       : [...s.speakers, { id: newSpeakerId, label: `Speaker ${newSpeakerId + 1}` }];
 
-    return { transcript: newTranscript, claims: newClaims, markers: newMarkers, speakers };
+    return {
+      transcript: newTranscript,
+      claims: newClaims,
+      markers: newMarkers,
+      speakers,
+      lastSpeakerCorrection: snapshotSpeakerCorrection(
+        s,
+        "reassign",
+        `Reassigned one transcript line from ${fromLabel} to ${toLabel}.`,
+      ),
+    };
+  }),
+
+  undoLastSpeakerCorrection: () => set((s) => {
+    const snapshot = s.lastSpeakerCorrection;
+    if (!snapshot) return s;
+    return {
+      transcript: snapshot.previousTranscript,
+      claims: snapshot.previousClaims,
+      markers: snapshot.previousMarkers,
+      speakers: snapshot.previousSpeakers,
+      lastSpeakerCorrection: null,
+    };
   }),
 
   addNewSpeaker: () => {
@@ -479,7 +557,19 @@ export const useSession = create<State>((set, get) => ({
       ? s.speakers
       : [...s.speakers, { id: newSpeakerId, label: `Speaker ${newSpeakerId + 1}` }];
 
-    return { transcript: newTranscript, claims: newClaims, markers: newMarkers, speakers };
+    const toLabel = speakerLabelFor(s.speakers, newSpeakerId);
+
+    return {
+      transcript: newTranscript,
+      claims: newClaims,
+      markers: newMarkers,
+      speakers,
+      lastSpeakerCorrection: snapshotSpeakerCorrection(
+        s,
+        "split",
+        `Split one transcript line and assigned the later phrase to ${toLabel}.`,
+      ),
+    };
   }),
 }));
 

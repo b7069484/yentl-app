@@ -26,7 +26,7 @@ import { paletteFor } from "@/lib/client/speaker-palette";
 import { DropdownMenu } from "radix-ui";
 import type { SpeakerId } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { PlusIcon, ScissorsIcon, ChevronRightIcon, ArrowLeftIcon } from "lucide-react";
+import { PlusIcon, ScissorsIcon, ChevronRightIcon, ArrowLeftIcon, RotateCcwIcon } from "lucide-react";
 export { computeSplitTime } from "@/lib/client/utterance-split";
 import { computeSplitTime } from "@/lib/client/utterance-split";
 
@@ -45,8 +45,9 @@ export function ReassignSpeakerMenu({
   const speakers = useSession((s) => s.speakers);
   const transcript = useSession((s) => s.transcript);
   const reassignUtterance = useSession((s) => s.reassignUtterance);
-  const addNewSpeaker = useSession((s) => s.addNewSpeaker);
   const splitSegmentAt = useSession((s) => s.splitSegmentAt);
+  const lastSpeakerCorrection = useSession((s) => s.lastSpeakerCorrection);
+  const undoLastSpeakerCorrection = useSession((s) => s.undoLastSpeakerCorrection);
 
   // The segment we're operating on (may be undefined if transcript hasn't loaded yet)
   const segment = transcript[transcriptIndex];
@@ -70,9 +71,12 @@ export function ReassignSpeakerMenu({
     reassignUtterance(transcriptIndex, id);
   }
 
+  const nextSpeakerId = useCallback((): SpeakerId => {
+    return speakers.reduce((max, sp) => Math.max(max, sp.id), -1) + 1;
+  }, [speakers]);
+
   function handleAddNew() {
-    const newId = addNewSpeaker();
-    reassignUtterance(transcriptIndex, newId);
+    reassignUtterance(transcriptIndex, nextSpeakerId());
   }
 
   const handleWordPick = useCallback((e: Event, wordIdx: number) => {
@@ -93,9 +97,8 @@ export function ReassignSpeakerMenu({
   }, [splitWordIndex, segment, splitSegmentAt, transcriptIndex]);
 
   const handleSplitAddNew = useCallback(() => {
-    const newId = addNewSpeaker();
-    handleSplitSpeakerSelect(newId);
-  }, [addNewSpeaker, handleSplitSpeakerSelect]);
+    handleSplitSpeakerSelect(nextSpeakerId());
+  }, [handleSplitSpeakerSelect, nextSpeakerId]);
 
   function handleSplitSubOpenChange(open: boolean) {
     if (!open) setSplitWordIndex(null);
@@ -115,6 +118,7 @@ export function ReassignSpeakerMenu({
           className={cn(
             "inline-flex items-center gap-1 rounded-full border border-border/50 bg-background px-1.5 py-0.5",
             "text-[10px] font-medium text-foreground/80 cursor-pointer",
+            "min-h-11 sm:min-h-0 min-w-11 sm:min-w-0",
             "hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "transition-colors select-none",
             className,
@@ -133,6 +137,7 @@ export function ReassignSpeakerMenu({
           sideOffset={4}
           className={cn(
             "z-50 min-w-[160px] rounded-lg border border-line bg-popover p-1",
+            "w-[min(calc(100vw-2rem),24rem)] sm:w-auto",
             "shadow-md text-[12px] text-foreground",
             "animate-in fade-in-0 zoom-in-95",
           )}
@@ -150,7 +155,7 @@ export function ReassignSpeakerMenu({
                 data-testid={`reassign-option-${sp.id}`}
                 onSelect={() => handleSelect(sp.id)}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+                  "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
                   "hover:bg-muted focus:bg-muted transition-colors",
                   isActive && "font-semibold",
                 )}
@@ -172,7 +177,7 @@ export function ReassignSpeakerMenu({
             data-testid="reassign-add-new"
             onSelect={handleAddNew}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+              "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
               "hover:bg-muted focus:bg-muted transition-colors text-ink-3",
             )}
           >
@@ -188,7 +193,7 @@ export function ReassignSpeakerMenu({
               <DropdownMenu.SubTrigger
                 data-testid="split-reassign-trigger"
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+                  "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
                   "hover:bg-muted focus:bg-muted transition-colors text-ink-3",
                 )}
               >
@@ -201,6 +206,7 @@ export function ReassignSpeakerMenu({
                   sideOffset={2}
                   className={cn(
                     "z-50 min-w-[200px] rounded-lg border border-line bg-popover p-2",
+                    "w-[min(calc(100vw-2rem),24rem)] sm:w-auto",
                     "shadow-md text-[12px] text-foreground",
                     "animate-in fade-in-0 zoom-in-95",
                   )}
@@ -219,7 +225,7 @@ export function ReassignSpeakerMenu({
                             data-testid={`split-word-${idx}`}
                             onSelect={(e) => handleWordPick(e, idx)}
                             className={cn(
-                              "rounded border border-border/60 bg-muted/60 px-1.5 py-0.5",
+                              "min-h-11 sm:min-h-0 rounded border border-border/60 bg-muted/60 px-2 py-1 sm:px-1.5 sm:py-0.5",
                               "text-[10px] cursor-pointer outline-none",
                               "hover:bg-muted focus:bg-muted transition-colors",
                             )}
@@ -240,7 +246,7 @@ export function ReassignSpeakerMenu({
                           type="button"
                           data-testid="split-back-button"
                           onClick={() => setSplitWordIndex(null)}
-                          className="rounded p-0.5 hover:bg-muted text-ink-4 outline-none"
+                          className="min-h-11 min-w-11 rounded p-0.5 text-ink-4 outline-none hover:bg-muted sm:min-h-0 sm:min-w-0"
                           aria-label="Back to word selection"
                         >
                           <ArrowLeftIcon className="h-3 w-3" aria-hidden />
@@ -257,7 +263,7 @@ export function ReassignSpeakerMenu({
                             data-testid={`split-speaker-option-${sp.id}`}
                             onSelect={() => handleSplitSpeakerSelect(sp.id)}
                             className={cn(
-                              "flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+                              "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
                               "hover:bg-muted focus:bg-muted transition-colors",
                             )}
                           >
@@ -273,7 +279,7 @@ export function ReassignSpeakerMenu({
                         data-testid="split-add-new-speaker"
                         onSelect={handleSplitAddNew}
                         className={cn(
-                          "flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+                          "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
                           "hover:bg-muted focus:bg-muted transition-colors text-ink-3",
                         )}
                       >
@@ -291,13 +297,37 @@ export function ReassignSpeakerMenu({
               disabled
               data-testid="split-reassign-disabled"
               className={cn(
-                "flex items-center gap-2 rounded-md px-2 py-1.5 outline-none",
+                "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 outline-none",
                 "text-ink-4 opacity-50 cursor-not-allowed",
               )}
             >
               <ScissorsIcon className="h-3 w-3 flex-shrink-0" aria-hidden />
               <span>Split &amp; reassign…</span>
             </DropdownMenu.Item>
+          )}
+          {lastSpeakerCorrection && (
+            <>
+              <DropdownMenu.Separator className="my-1 h-px bg-line" />
+              <div
+                data-testid="speaker-correction-note"
+                role="status"
+                aria-live="polite"
+                className="rounded-md bg-muted/50 px-2 py-1.5 text-[11px] leading-snug text-ink-3"
+              >
+                {lastSpeakerCorrection.summary}
+              </div>
+              <DropdownMenu.Item
+                data-testid="speaker-correction-undo"
+                onSelect={undoLastSpeakerCorrection}
+                className={cn(
+                  "flex min-h-11 sm:min-h-0 items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer outline-none",
+                  "hover:bg-muted focus:bg-muted transition-colors text-ink-3",
+                )}
+              >
+                <RotateCcwIcon className="h-3 w-3 flex-shrink-0" aria-hidden />
+                <span>Undo last correction</span>
+              </DropdownMenu.Item>
+            </>
           )}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

@@ -72,7 +72,7 @@ function makeMarker(overrides: Partial<RhetoricMarker> = {}): RhetoricMarker {
   return {
     id: "marker-1",
     type: "rhetoric",
-    name: "loaded-language",
+    name: "loaded_language",
     display: "Loaded language",
     excerpt: "reckless officials hid the truth",
     speaker_id: 0,
@@ -117,7 +117,7 @@ describe("ExtensionPanelView", () => {
     expect(within(read).getByText("Yentl's Read")).toBeTruthy();
     const metrics = screen.getByTestId("extension-metric-expander");
     expect(within(metrics).getByText("Claims")).toBeTruthy();
-    expect(within(metrics).getByText("Heat")).toBeTruthy();
+    expect(within(metrics).getByText("Language")).toBeTruthy();
     expect(within(metrics).getByText("Evidence")).toBeTruthy();
     expect(within(metrics).getByText("Pulse")).toBeTruthy();
     expect(screen.queryByText(/How would you like to fact-check/i)).toBeNull();
@@ -200,9 +200,31 @@ describe("ExtensionPanelView", () => {
       expect.objectContaining({ title: "Browser tab: Council hearing" }),
       "report",
     );
+    fireEvent.click(screen.getByText("Export files"));
+    fireEvent.click(screen.getByRole("button", { name: "Transcript" }));
+    expect(mocks.exportSession).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Browser tab: Council hearing" }),
+      "transcript",
+    );
 
     expect(screen.getByText("1 markers · 1 clear/blatant")).toBeTruthy();
     expect(screen.getByText("Loaded language")).toBeTruthy();
+    expect(screen.getByTitle("Loaded language marker icon")).toBeTruthy();
+    expect(screen.getByTestId("extension-marker-learning-cue").textContent).toContain(
+      "Word choice carries strong emotional charge beyond neutral description.",
+    );
+    expect(screen.getByRole("link", { name: "Open detail" })).toHaveAttribute(
+      "href",
+      "/session/detail/marker/marker-1",
+    );
+    expect(screen.getByRole("link", { name: "Learn pattern" })).toHaveAttribute(
+      "href",
+      "/session/learn/marker/loaded_language",
+    );
+    expect(screen.getByRole("link", { name: "Pejorative Framing" })).toHaveAttribute(
+      "href",
+      "/session/learn/marker/pejorative_framing",
+    );
     expect(screen.queryByText("Overview")).toBeNull();
   });
 

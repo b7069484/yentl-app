@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { generateText, Output } from "ai";
+import { Output } from "ai";
 import {
   ClaimScopeResponse,
   SYSTEM as CLAIM_SCOPE_SYSTEM,
   userPrompt as claimScopePrompt,
 } from "@/lib/prompts/claim-scope";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { opus } from "@/lib/server/anthropic";
 import { emitSecurityEvent, routeForRequest } from "@/lib/server/security-events";
 

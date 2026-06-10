@@ -42,6 +42,30 @@ describe("mergeIntoUtterances — basic cases", () => {
     expect(result[0].start).toBe(0);
     expect(result[0].end).toBe(6.0);
   });
+
+  it("merged imported text keeps source kind and first document anchor", () => {
+    const segs: TranscriptSegment[] = [
+      {
+        ...makeSeg("The imported article says", 0, 1.0, 0),
+        source_audio_kind: "text_import",
+        document_anchor: { kind: "paragraph", block_index: 0, paragraph_index: 0, line_start: 1, line_end: 1 },
+      },
+      {
+        ...makeSeg("the repairs were delayed.", 1.2, 2.4, 0),
+        source_audio_kind: "text_import",
+        document_anchor: { kind: "paragraph", block_index: 1, paragraph_index: 1, line_start: 3, line_end: 3 },
+      },
+    ];
+
+    const result = mergeIntoUtterances(segs);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      text: "The imported article says the repairs were delayed.",
+      source_audio_kind: "text_import",
+      document_anchor: { kind: "paragraph", block_index: 0, paragraph_index: 0, line_start: 1, line_end: 1 },
+    });
+  });
 });
 
 describe("mergeIntoUtterances — flush conditions", () => {

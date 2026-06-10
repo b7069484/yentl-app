@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo, type DragEvent, type ChangeEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  FileSearch,
   FileText,
   ListChecks,
   Loader2,
@@ -12,9 +13,15 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
-import { parsePlainText, parseDocx, parsePdf, parseTimedText } from "@/lib/client/text-ingest";
+import {
+  buildDocumentOutline,
+  parsePlainText,
+  parseDocx,
+  parsePdfWithMetadata,
+  parseTimedText,
+} from "@/lib/client/text-ingest";
 import { bulkIngest } from "@/lib/client/ingest-orchestrator";
-import type { TranscriptSegment } from "@/lib/types";
+import type { TextDocumentMeta, TextDocumentOutlineItem, TranscriptSegment } from "@/lib/types";
 
 const MAX_TEXT_BYTES = 1_048_576; // 1 MB of extracted text
 const MAX_FILE_BYTES = 25 * 1024 * 1024; // PDF/text container cap
@@ -30,6 +37,59 @@ const ACCEPTED_MIME = [
 ];
 
 const FILE_INPUT_ID = "text-ingest-file-input";
+const VALIDATION_TEXT_FIXTURES = [
+  {
+    label: "Load validation TXT",
+    path: "/validation/yentl-synthetic-transcript.txt",
+    filename: "yentl-synthetic-transcript.txt",
+    mime: "text/plain",
+    responseType: "text",
+  },
+  {
+    label: "Load validation MD",
+    path: "/validation/yentl-synthetic-transcript.md",
+    filename: "yentl-synthetic-transcript.md",
+    mime: "text/markdown",
+    responseType: "text",
+  },
+  {
+    label: "Load validation DOCX",
+    path: "/validation/yentl-small-brief.docx",
+    filename: "yentl-small-brief.docx",
+    mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    responseType: "arrayBuffer",
+  },
+  {
+    label: "Load validation PDF",
+    path: "/validation/yentl-small-text-layer.pdf",
+    filename: "yentl-small-text-layer.pdf",
+    mime: "application/pdf",
+    responseType: "arrayBuffer",
+  },
+  {
+    label: "Load validation VTT",
+    path: "/validation/yentl-synthetic-captions.vtt",
+    filename: "yentl-synthetic-captions.vtt",
+    mime: "text/vtt",
+    responseType: "text",
+  },
+  {
+    label: "Load validation SRT",
+    path: "/validation/yentl-synthetic-captions.srt",
+    filename: "yentl-synthetic-captions.srt",
+    mime: "application/x-subrip",
+    responseType: "text",
+  },
+] as const;
+
+type LoadedTextFile = {
+  name: string;
+  mime: string;
+  size: number;
+  extractionKind: TextDocumentMeta["extraction_kind"];
+  pageCount?: number;
+  outline: TextDocumentOutlineItem[];
+};
 
 function isSupportedFile(file: File): boolean {
   const name = file.name.toLowerCase();
@@ -39,18 +99,23 @@ function isSupportedFile(file: File): boolean {
 function textStructure(text: string) {
   const trimmed = text.trim();
   if (!trimmed) {
-    return { speakers: 0, lines: 0, paragraphs: 0 };
+    return { speakers: 0, speakerTurns: 0, lines: 0, paragraphs: 0 };
   }
 
   const nonEmptyLines = trimmed.split(/\r?\n/).filter((line) => line.trim().length > 0);
   const speakerLabels = new Set<string>();
+  let speakerTurns = 0;
   for (const line of nonEmptyLines) {
-    const match = line.trim().match(/^([A-Z][\w .'-]{0,30}):\s+/);
-    if (match?.[1]) speakerLabels.add(match[1]);
+    const match = line.trim().match(/^(?:\[[^\]]{1,16}\]\s*)?([A-Z][\w .'-]{1,30})\s*[:—–]\s+/);
+    if (match?.[1]) {
+      speakerLabels.add(match[1]);
+      speakerTurns += 1;
+    }
   }
 
   return {
     speakers: speakerLabels.size,
+    speakerTurns,
     lines: nonEmptyLines.length,
     paragraphs: trimmed.split(/\n\s*\n/).filter((part) => part.trim().length > 0).length,
   };
@@ -60,15 +125,18 @@ export function TextIngestPane() {
   const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setSource = useSession((s) => s.setSource);
+  const pendingLaunchFile = useSession((s) => s.pendingLaunchFile);
+  const clearPendingLaunchFile = useSession((s) => s.clearPendingLaunchFile);
   const initialText = useSession((s) =>
     s.source.kind === "text_doc" ? s.source.initial_text ?? "" : "",
   );
 
   const [text, setText] = useState(initialText);
-  const [loadedFile, setLoadedFile] = useState<{ name: string; mime: string; size: number } | null>(null);
+  const [loadedFile, setLoadedFile] = useState<LoadedTextFile | null>(null);
   const [timedSegments, setTimedSegments] = useState<TranscriptSegment[] | null>(null);
   const [withSpeakers, setWithSpeakers] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [filePhase, setFilePhase] = useState<{ label: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -87,6 +155,15 @@ export function TextIngestPane() {
   const charCount = text.length;
   const tokenEst = Math.ceil(charCount / 4);
   const structure = textStructure(text);
+  const reviewAnchorCount = timedSegments
+    ? timedSegments.length
+    : withSpeakers && structure.speakerTurns > 0
+      ? structure.speakerTurns
+      : structure.paragraphs;
+  const documentOutline = useMemo(
+    () => loadedFile?.outline ?? (text.trim() ? buildDocumentOutline(text, { maxItems: 5 }) : []),
+    [loadedFile, text],
+  );
 
   // ── text change ─────────────────────────────────────────────────────────────
   const handleTextChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -100,12 +177,15 @@ export function TextIngestPane() {
     setError(null);
     setLoadedFile(null);
     setTimedSegments(null);
+    setFilePhase(null);
     setText(val);
   }, []);
 
   // ── file reading ─────────────────────────────────────────────────────────────
   const loadFile = useCallback(async (file: File) => {
     setError(null);
+    setLoadedFile(null);
+    setTimedSegments(null);
 
     if (!isSupportedFile(file)) {
       setError("Only .txt, .md, .docx, .pdf, .srt, and .vtt files are supported.");
@@ -119,14 +199,26 @@ export function TextIngestPane() {
 
     try {
       let content: string;
+      let extractionKind: TextDocumentMeta["extraction_kind"] = "plain_text";
+      let pageCount: number | undefined;
+      let outline: TextDocumentOutlineItem[] = [];
       const lowerName = file.name.toLowerCase();
       if (lowerName.endsWith(".docx")) {
+        setFilePhase({ label: "Extracting Word document text" });
         content = await parseDocx(file);
+        extractionKind = "docx_text";
+        outline = buildDocumentOutline(content);
         setTimedSegments(null);
       } else if (lowerName.endsWith(".pdf")) {
-        content = await parsePdf(file);
+        setFilePhase({ label: "Extracting selectable PDF text" });
+        const result = await parsePdfWithMetadata(file);
+        content = result.text;
+        extractionKind = "pdf_text_layer";
+        pageCount = result.pageCount;
+        outline = result.outline;
         setTimedSegments(null);
       } else if (lowerName.endsWith(".srt") || lowerName.endsWith(".vtt")) {
+        setFilePhase({ label: "Parsing caption cues" });
         const raw = await file.text();
         const segments = parseTimedText(raw, lowerName.endsWith(".srt") ? "srt" : "vtt");
         if (segments.length === 0) {
@@ -136,20 +228,50 @@ export function TextIngestPane() {
         content = segments
           .map((segment) => `${formatClock(segment.start)} ${segment.text}`)
           .join("\n");
+        extractionKind = "timed_text";
+        outline = buildDocumentOutline(content);
       } else {
+        setFilePhase({ label: "Reading text file" });
         content = await file.text();
+        outline = buildDocumentOutline(content);
         setTimedSegments(null);
       }
       if (content.length > MAX_TEXT_BYTES) {
         setError("Transcript is too large (max 1 MB). Please trim it and try again.");
         return;
       }
-      setLoadedFile({ name: file.name, mime: file.type || guessMimeFromName(file.name), size: file.size });
+      setLoadedFile({
+        name: file.name,
+        mime: file.type || guessMimeFromName(file.name),
+        size: file.size,
+        extractionKind,
+        pageCount,
+        outline,
+      });
       setText(content);
     } catch (e) {
       setError(`Failed to read file: ${String(e)}`);
+    } finally {
+      setFilePhase(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (!pendingLaunchFile) return;
+
+    let cancelled = false;
+    const file = pendingLaunchFile;
+
+    void Promise.resolve()
+      .then(() => loadFile(file))
+      .finally(() => {
+        if (!cancelled) clearPendingLaunchFile();
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clearPendingLaunchFile, loadFile, pendingLaunchFile]);
 
   // ── file input (keyboard a11y) ────────────────────────────────────────────
   const handleFileInputChange = useCallback(
@@ -189,6 +311,26 @@ export function TextIngestPane() {
     [loadFile],
   );
 
+  const handleLoadValidationFixture = useCallback(async (fixture: typeof VALIDATION_TEXT_FIXTURES[number]) => {
+    if (isProcessing || filePhase) return;
+
+    try {
+      const res = await fetch(fixture.path);
+      if (!res.ok) {
+        throw new Error(`Could not load validation text (${res.status}).`);
+      }
+      const content = fixture.responseType === "arrayBuffer"
+        ? await res.arrayBuffer()
+        : await res.text();
+      const file = new File([content], fixture.filename, {
+        type: fixture.mime,
+      });
+      await loadFile(file);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  }, [filePhase, isProcessing, loadFile]);
+
   // ── process ──────────────────────────────────────────────────────────────────
   const handleProcess = useCallback(async () => {
     if (!text.trim() || isProcessing) return;
@@ -208,6 +350,12 @@ export function TextIngestPane() {
         mime: loadedFile?.mime || "text/plain",
         byte_count: loadedFile?.size ?? text.length,
         initial_text: text,
+        intent: "document",
+        document_meta: {
+          extraction_kind: loadedFile?.extractionKind ?? (timedSegments ? "timed_text" : "plain_text"),
+          page_count: loadedFile?.pageCount,
+          outline: documentOutline,
+        },
       });
       handoffRef.current = true;
       await bulkIngest(segments, { signal: controller.signal });
@@ -220,7 +368,7 @@ export function TextIngestPane() {
     } finally {
       setIsProcessing(false);
     }
-  }, [loadedFile, setSource, text, timedSegments, withSpeakers, isProcessing, router]);
+  }, [documentOutline, loadedFile, setSource, text, timedSegments, withSpeakers, isProcessing, router]);
 
   // ── back navigation ────────────────────────────────────────────────────────
   const handleBack = useCallback(() => {
@@ -228,7 +376,7 @@ export function TextIngestPane() {
     setPrerecordStage("picker");
   }, [setPrerecordStage]);
 
-  const canProcess = text.trim().length > 0 && !isProcessing;
+  const canProcess = text.trim().length > 0 && !isProcessing && !filePhase;
 
   return (
     <div className="mx-auto w-full max-w-[1180px] px-4 pb-12 pt-6 sm:px-6 md:px-8">
@@ -236,7 +384,7 @@ export function TextIngestPane() {
       <button
         type="button"
         onClick={handleBack}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
+        className="mb-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
       </button>
@@ -268,7 +416,7 @@ export function TextIngestPane() {
               className="sr-only"
               aria-label="Choose a transcript file"
               onChange={handleFileInputChange}
-              disabled={isProcessing}
+              disabled={isProcessing || Boolean(filePhase)}
             />
             <div
               data-testid="drop-zone"
@@ -287,6 +435,17 @@ export function TextIngestPane() {
                   <span className="text-[14px] font-medium text-teal">Drop file here</span>
                 </div>
               )}
+              {filePhase && (
+                <div
+                  role="status"
+                  className="absolute inset-0 z-20 flex items-center justify-center rounded-lg border border-teal/30 bg-paper/90"
+                >
+                  <span className="inline-flex items-center gap-2 text-[13px] font-medium text-teal">
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    {filePhase.label}
+                  </span>
+                </div>
+              )}
               <textarea
                 ref={textareaRef}
                 value={text}
@@ -298,7 +457,7 @@ export function TextIngestPane() {
                   "font-mono text-[13px] leading-relaxed text-ink placeholder:text-ink-3",
                   "focus:outline-none focus:ring-2 focus:ring-teal/40",
                 ].join(" ")}
-                disabled={isProcessing}
+                disabled={isProcessing || Boolean(filePhase)}
               />
             </div>
           </label>
@@ -316,7 +475,46 @@ export function TextIngestPane() {
                 <span>{timedSegments.length.toLocaleString()} timed cues</span>
               </>
             )}
+            {loadedFile?.pageCount && (
+              <>
+                <span className="opacity-40">·</span>
+                <span>{loadedFile.pageCount.toLocaleString()} PDF pages</span>
+              </>
+            )}
           </div>
+
+          {loadedFile && (
+            <div className="mt-3 rounded-lg border border-teal/20 bg-teal-soft px-3 py-3 text-[12.5px] leading-relaxed text-ink-3">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium text-teal">
+                <FileSearch className="h-3.5 w-3.5" aria-hidden />
+                <span>{loadedFile.name}</span>
+                <span className="text-teal/60">·</span>
+                <span>{fileExtractionLabel(loadedFile.extractionKind)}</span>
+                <span className="text-teal/60">·</span>
+                <span>{formatBytes(loadedFile.size)}</span>
+              </div>
+              {loadedFile.pageCount && (
+                <div className="mt-1 text-ink-3">
+                  Selectable text extracted from {loadedFile.pageCount.toLocaleString()} PDF pages.
+                </div>
+              )}
+            </div>
+          )}
+
+          {validationDemoEnabled() && !isProcessing && !filePhase && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {VALIDATION_TEXT_FIXTURES.map((fixture) => (
+                <button
+                  key={fixture.path}
+                  type="button"
+                  onClick={() => void handleLoadValidationFixture(fixture)}
+                  className="inline-flex min-h-11 items-center justify-center rounded-lg border border-teal/25 bg-teal-soft px-3 text-[12.5px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  {fixture.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Error message */}
           {error && (
@@ -375,10 +573,37 @@ export function TextIngestPane() {
                 <StructureStat label="Speaker labels" value={withSpeakers ? structure.speakers : 0} />
                 <StructureStat label="Paragraph blocks" value={structure.paragraphs} />
                 <StructureStat label="Transcript lines" value={structure.lines} />
+                {loadedFile?.pageCount && (
+                  <StructureStat label="PDF pages" value={loadedFile.pageCount} />
+                )}
+                <StructureStat label="Review anchors" value={reviewAnchorCount} />
               </div>
             ) : (
               <div className="rounded-md border border-line bg-paper px-3 py-3 text-[12.5px] leading-relaxed text-ink-3">
                 Paste transcript text to preview speaker labels, paragraph blocks, and line count before processing.
+              </div>
+            )}
+          </section>
+
+          <section className="rounded-lg border border-line bg-paper p-5">
+            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-4">
+              <FileSearch className="h-3.5 w-3.5" aria-hidden />
+              Document outline
+            </div>
+            {documentOutline.length > 0 ? (
+              <ol className="grid gap-2">
+                {documentOutline.slice(0, 5).map((item, index) => (
+                  <li key={`${item.kind}-${item.line_start ?? item.paragraph_index ?? index}`} className="rounded-md border border-line bg-cream px-3 py-2">
+                    <div className="text-[12.5px] font-semibold text-ink-2">{item.label}</div>
+                    {item.preview && (
+                      <div className="mt-0.5 line-clamp-2 text-[12px] leading-snug text-ink-3">{item.preview}</div>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="rounded-md border border-line bg-cream px-3 py-3 text-[12.5px] leading-relaxed text-ink-3">
+                Yentl will build an outline from headings or opening paragraphs once text is loaded.
               </div>
             )}
           </section>
@@ -390,6 +615,7 @@ export function TextIngestPane() {
             </div>
             <div className="grid gap-2">
               <TextStep label="Parse" body="Speaker-prefixed lines become timed transcript segments." />
+              <TextStep label="Anchor" body="Document sections and paragraph positions stay attached to findings." />
               <TextStep label="Analyze" body="Yentl extracts checkable claims and rhetorical markers." />
               <TextStep label="Review" body="The workspace opens with transcript context intact." />
             </div>
@@ -424,6 +650,32 @@ function TextStep({ label, body }: { label: string; body: string }) {
       <div className="mt-0.5 text-[12px] leading-snug text-ink-3">{body}</div>
     </div>
   );
+}
+
+function fileExtractionLabel(kind: TextDocumentMeta["extraction_kind"]) {
+  switch (kind) {
+    case "pdf_text_layer":
+      return "PDF text layer";
+    case "docx_text":
+      return "Word text";
+    case "timed_text":
+      return "Timed captions";
+    case "plain_text":
+    default:
+      return "Plain text";
+  }
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function formatClock(seconds: number) {

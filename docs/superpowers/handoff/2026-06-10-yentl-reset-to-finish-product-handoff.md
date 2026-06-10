@@ -203,8 +203,8 @@ Latest result summary:
 
 ## Started But Not Verified
 
-The file below was added just before this handoff request and has **not** yet
-been wired into `package.json`, guarded by a test, or run:
+The file below was added just before this handoff request and was not yet
+wired into `package.json` or guarded by a test:
 
 - `scripts/validation/prove-text-document-fixtures.ts`
 
@@ -218,19 +218,28 @@ Intent of that unfinished script:
 - prove SRT/VTT timed-caption parsing from
   `public/validation/yentl-synthetic-captions.srt` and `.vtt`
 
+Post-PR integration update:
+
+- A local proof artifact now exists at
+  `docs/superpowers/validation/text-document-fixtures-proof.json`.
+- That artifact is **not green**: TXT, Markdown, SRT, and VTT passed, but DOCX
+  failed with `mammoth.extractRawText failed: Error: Could not find file in options`.
+- Treat this as useful failure evidence, not completion evidence.
+
 Recommended next pickup for ingestion:
 
 1. Add a static test like `tests/text-document-fixtures-proof-script.test.ts`.
 2. Wire the script into `package.json`, either as
    `ingestion:proof:text-docs` or as the second half of
    `ingestion:proof:local`.
-3. Run the script with `npx tsx scripts/validation/prove-text-document-fixtures.ts`.
-4. If it passes, add/update an evidence note for M2 ingestion completeness.
+3. Fix the DOCX Mammoth invocation and rerun
+   `npx tsx scripts/validation/prove-text-document-fixtures.ts`.
+4. If all formats pass, add/update an evidence note for M2 ingestion completeness.
 5. Then rerun `npx tsc --noEmit`, focused tests, `npm run test:run`, and
    `npm run build:automation`.
 
-Do not claim TXT/MD/DOCX/SRT/VTT fixture proof complete until that script is
-run or equivalent current evidence exists.
+Do not claim TXT/MD/DOCX/SRT/VTT fixture proof complete until the DOCX failure
+is fixed and equivalent current green evidence exists.
 
 ## Files Touched In The Latest Product-Proof Passes
 
@@ -256,6 +265,8 @@ Proof/evidence outputs:
 - `docs/superpowers/validation/installed-extension-local-proof.json`
 - `docs/superpowers/validation/mobile-pwa-local-proof.json`
 - `docs/superpowers/validation/ingestion-local-proof.json`
+- `docs/superpowers/validation/text-document-fixtures-proof.json` (currently
+  failing DOCX)
 - `docs/superpowers/validation/screenshots/installed-extension-local-fixture.png`
 - `docs/superpowers/validation/screenshots/route-mobile.png`
 - `docs/superpowers/validation/screenshots/route-mobile-mobile.png`
@@ -270,7 +281,7 @@ Proof/evidence outputs:
 |---|---:|---|---|
 | M0 Stabilize | Mostly green locally | `tsc`, full tests, lint, automation build passed | Dirty tree still needs packaging/commit discipline later |
 | M1 Core Session UX | Partial | many focused tests and existing screenshots | deeper browser walkthroughs of every session tab/detail/export/end flow |
-| M2 Ingestion Completeness | Improved | API proof now covers consent/article/media/PDF/YouTube | finish TXT/MD/DOCX/SRT/VTT fixture proof, upload/audio edge proof, real external article/media proof |
+| M2 Ingestion Completeness | Improved | API proof now covers consent/article/media/PDF/YouTube; text-document proof currently passes TXT/MD/SRT/VTT but fails DOCX | fix DOCX fixture proof, upload/audio edge proof, real external article/media proof |
 | M3 Analysis Intelligence | Partial | ownership/attribution tests and prior evidence notes | corpus/eval replay, sharper uncertainty/meta-read proof, source evidence scoring review |
 | M4 Mobile/PWA Polish | Improved | `mobile:proof:local`, `/mobile` screenshots | more source-specific mobile bottom sheets and auth recovery captures |
 | M5 Cloud Sync | Partial | cloud/local saved-session code and tests exist | real configured auth/database proof across devices |
@@ -294,8 +305,10 @@ cleaned before launch if the goal is a quiet CI surface.
 The fastest path from here is:
 
 1. Finish the text/document fixture proof.
-   - Wire/run `scripts/validation/prove-text-document-fixtures.ts`.
-   - Prove TXT, Markdown, DOCX, SRT, and VTT from actual validation files.
+   - Fix the DOCX Mammoth extraction failure in
+     `scripts/validation/prove-text-document-fixtures.ts`.
+   - Prove TXT, Markdown, DOCX, SRT, and VTT from actual validation files with a
+     green `docs/superpowers/validation/text-document-fixtures-proof.json`.
 
 2. Expand ingestion proof to real external targets.
    - Add one real external article URL proof.
@@ -358,7 +371,7 @@ npm run build:automation
 - Do not mutate permanent automations.
 - Do not stage/commit/push/deploy without explicit approval.
 - Do not call the whole app complete based only on local fixture proof.
-- Do not treat the new text-document fixture script as verified until it runs.
+- Do not treat the new text-document fixture script as complete until DOCX is green.
 - Do not claim native iOS/Android shells exist; current mobile target is
   honest mobile-web/PWA/share/import support.
 

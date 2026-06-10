@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   CheckCircle2,
   ChevronRight,
@@ -42,6 +43,30 @@ function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
+function initialPlayheadForSource(
+  source: SessionSource,
+  transcript: TranscriptSegment[],
+  routePlayhead: number | null,
+): number {
+  if (routePlayhead !== null) return routePlayhead;
+  if (source.kind !== "youtube") return 0;
+  if (!validationReplayRoute()) return 0;
+  const value = transcript[0]?.start;
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function playheadFromRouteParam(raw: string | null): number | null {
+  if (raw === null) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function validationReplayRoute(): boolean {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get("demo") === "validation" && Boolean(params.get("sample"));
 }
 
 // ── Annotation row (claim or marker rendered under a transcript line) ─────────
@@ -89,6 +114,51 @@ function sourceDisplay(source: SessionSource): { label: string; title: string; m
         meta: source.mime || "Pasted text",
       };
   }
+}
+
+function watchFallbackSynthesis({
+  source,
+  claims,
+  markers,
+  transcriptCount,
+}: {
+  source: SessionSource;
+  claims: ClaimCard[];
+  markers: RhetoricMarker[];
+  transcriptCount: number;
+}): string | null {
+  if (transcriptCount === 0) return null;
+  if (claims.length + markers.length === 0) return null;
+
+  const display = sourceDisplay(source);
+  const confirmed = claims.filter((claim) => claim.status === "confirmed").length;
+  const cited = claims.filter((claim) => claim.sources.length > 0).length;
+  const trueish = claims.filter((claim) =>
+    claim.primary_label === "TRUE" || claim.primary_label === "MOSTLY_TRUE"
+  ).length;
+  const partial = claims.filter((claim) =>
+    claim.primary_label === "PARTIAL" ||
+    claim.primary_label === "MISLEADING" ||
+    claim.primary_label === "OMISSION"
+  ).length;
+  const falseish = claims.filter((claim) => claim.primary_label === "FALSE").length;
+
+  const verdictParts = [
+    trueish > 0 ? `${trueish} mostly supported` : "",
+    partial > 0 ? `${partial} needs context` : "",
+    falseish > 0 ? `${falseish} contradicted` : "",
+  ].filter(Boolean);
+  const verdictLine = verdictParts.length > 0
+    ? verdictParts.join(", ")
+    : "verdicts are still forming";
+  const evidenceLine = cited > 0
+    ? `${cited} ${cited === 1 ? "claim has" : "claims have"} source evidence`
+    : "source evidence is still being gathered";
+  const markerLine = markers.length > 0
+    ? `${markers.length} rhetoric ${markers.length === 1 ? "marker" : "markers"} surfaced`
+    : "no rhetoric markers surfaced yet";
+
+  return `${display.title} has ${claims.length} checkable ${claims.length === 1 ? "claim" : "claims"} across ${transcriptCount} transcript lines. ${confirmed} ${confirmed === 1 ? "claim is" : "claims are"} past first-pass checking: ${verdictLine}; ${evidenceLine}; ${markerLine}. Treat this as the live meta-read until Yentl's fuller synthesis refreshes.`;
 }
 
 function MetricPill({
@@ -295,7 +365,7 @@ function AnnotationRow({
       <button
         type="button"
         onClick={() => onSeek(ts)}
-        className="flex-shrink-0 cursor-pointer"
+        className="flex min-h-11 min-w-11 flex-shrink-0 cursor-pointer items-center justify-center"
         data-testid="annotation-chip-btn"
       >
         {annotation.kind === "claim" ? (
@@ -315,7 +385,7 @@ function AnnotationRow({
       {/* Quote text + chevron: navigate to L3 detail */}
       <Link
         href={detailHref}
-        className="flex items-center gap-0.5 flex-1 min-w-0 group/link"
+        className="flex min-h-11 flex-1 min-w-0 items-center gap-0.5 group/link"
         data-testid="annotation-detail-link"
       >
         <span className="font-serif italic text-[11px] text-ink-3 truncate flex-1 min-w-0 group-hover/link:underline group-hover/link:text-ink-2 transition-colors">
@@ -360,7 +430,7 @@ function TranscriptLine({
         ref={lineRef}
         onClick={() => onSeek(segment.start)}
         className={[
-          "w-full text-left flex items-start gap-2.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer",
+          "w-full min-h-11 text-left flex items-start gap-2.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer",
           isCurrent
             ? "ring-2 ring-teal/50 bg-teal-soft"
             : "hover:bg-paper-2",
@@ -430,6 +500,7 @@ function TranscriptLine({
 // ── WatchView ─────────────────────────────────────────────────────────────────
 
 export function WatchView() {
+  const searchParams = useSearchParams();
   const source = useSession((s) => s.source);
   const claims = useSession((s) => s.claims);
   const markers = useSession((s) => s.markers);
@@ -462,16 +533,39 @@ export function WatchView() {
   const nextYouTubeCaptionIndexRef = useRef(0);
   const releasedYouTubeCaptionKeysRef = useRef<Set<string>>(new Set());
   const synthesisTimerRef = useRef<number | null>(null);
+  const importedSourceSynthesisTimerRef = useRef<number | null>(null);
+  const routePlayheadSec = playheadFromRouteParam(searchParams?.get("t") ?? null);
+  const initialPlayheadSec = initialPlayheadForSource(source, transcript, routePlayheadSec);
+  const hasReadableSynthesis = Boolean(
+    synthesis &&
+      "text" in synthesis &&
+      typeof synthesis.text === "string" &&
+      synthesis.text.trim().length > 0,
+  );
+  const fallbackSynthesisText = useMemo(() => watchFallbackSynthesis({
+    source,
+    claims,
+    markers,
+    transcriptCount: transcript.length,
+  }), [claims, markers, source, transcript.length]);
+  const synthesisText =
+    synthesis && "text" in synthesis && typeof synthesis.text === "string" && synthesis.text.trim().length > 0
+      ? synthesis.text
+      : fallbackSynthesisText;
 
   // Derive the "source key" to re-mount the adapter only when the actual
   // media changes (not on every render).
   const sourceKey = useMemo(() => {
-    if (source.kind === "youtube") return `youtube:${source.video_id}`;
+    if (source.kind === "youtube") {
+      return `youtube:${source.video_id}:${initialPlayheadSec}`;
+    }
     if (source.kind === "audio_file") return `audio_file:${source.blob_url}`;
     if (source.kind === "media_url") return `media_url:${source.url}`;
     return source.kind;
-  }, [source]);
-  const currentTime = playerState.sourceKey === sourceKey ? playerState.currentTime : 0;
+  }, [initialPlayheadSec, source]);
+  const currentTime = playerState.sourceKey === sourceKey
+    ? playerState.currentTime
+    : initialPlayheadSec;
   const ready = playerState.sourceKey === sourceKey && playerState.ready;
   const playbackStarted =
     playerState.sourceKey === sourceKey && playerState.playbackStarted;
@@ -507,10 +601,14 @@ export function WatchView() {
               if (!cancelled) {
                 setPlayerState((state) => ({
                   sourceKey,
-                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  currentTime: state.sourceKey === sourceKey
+                    ? state.currentTime
+                    : initialPlayheadSec,
                   ready: true,
                   playbackStarted:
-                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                    state.sourceKey === sourceKey
+                      ? state.playbackStarted
+                      : initialPlayheadSec > 0,
                 }));
               }
             },
@@ -536,10 +634,10 @@ export function WatchView() {
               if (!cancelled) {
                 setPlayerState((state) => ({
                   sourceKey,
-                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  currentTime: state.sourceKey === sourceKey ? state.currentTime : initialPlayheadSec,
                   ready: true,
                   playbackStarted:
-                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                    state.sourceKey === sourceKey ? state.playbackStarted : initialPlayheadSec > 0,
                 }));
               }
             },
@@ -565,10 +663,10 @@ export function WatchView() {
               if (!cancelled) {
                 setPlayerState((state) => ({
                   sourceKey,
-                  currentTime: state.sourceKey === sourceKey ? state.currentTime : 0,
+                  currentTime: state.sourceKey === sourceKey ? state.currentTime : initialPlayheadSec,
                   ready: true,
                   playbackStarted:
-                    state.sourceKey === sourceKey ? state.playbackStarted : false,
+                    state.sourceKey === sourceKey ? state.playbackStarted : initialPlayheadSec > 0,
                 }));
               }
             },
@@ -579,6 +677,9 @@ export function WatchView() {
           localAdapter?.destroy();
         } else {
           adapterRef.current = localAdapter;
+          if (initialPlayheadSec > 0) {
+            localAdapter?.seekTo(initialPlayheadSec);
+          }
         }
       } catch (e) {
         console.error("WatchView adapter setup failed", e);
@@ -604,6 +705,36 @@ export function WatchView() {
       synthesisTimerRef.current = null;
     }
   }, [sourceKey]);
+
+  useEffect(() => {
+    if (source.kind === "mic") return;
+    if (transcript.length === 0) return;
+    if (claims.length + markers.length === 0) return;
+    if (hasReadableSynthesis) return;
+
+    if (importedSourceSynthesisTimerRef.current !== null) {
+      window.clearTimeout(importedSourceSynthesisTimerRef.current);
+    }
+
+    importedSourceSynthesisTimerRef.current = window.setTimeout(() => {
+      importedSourceSynthesisTimerRef.current = null;
+      void runSynthesisNow();
+    }, 1200);
+
+    return () => {
+      if (importedSourceSynthesisTimerRef.current !== null) {
+        window.clearTimeout(importedSourceSynthesisTimerRef.current);
+        importedSourceSynthesisTimerRef.current = null;
+      }
+    };
+  }, [
+    claims.length,
+    hasReadableSynthesis,
+    markers.length,
+    source.kind,
+    sourceKey,
+    transcript.length,
+  ]);
 
   useEffect(() => {
     if (source.kind !== "youtube") return;
@@ -656,6 +787,9 @@ export function WatchView() {
   useEffect(() => () => {
     if (synthesisTimerRef.current !== null) {
       window.clearTimeout(synthesisTimerRef.current);
+    }
+    if (importedSourceSynthesisTimerRef.current !== null) {
+      window.clearTimeout(importedSourceSynthesisTimerRef.current);
     }
   }, []);
 
@@ -857,7 +991,7 @@ export function WatchView() {
         <div className="flex min-h-0 flex-col gap-4">
 
           {/* Synthesis card */}
-          {synthesis && "text" in synthesis && (
+          {synthesisText && (
             <div
               className="rounded-lg border border-line bg-paper p-4 shadow-sm"
               data-testid="synthesis-card"
@@ -866,7 +1000,7 @@ export function WatchView() {
                 Yentl&rsquo;s read
               </div>
               <p className="text-[13.5px] text-ink-2 leading-relaxed">
-                {synthesis.text}
+                {synthesisText}
               </p>
             </div>
           )}

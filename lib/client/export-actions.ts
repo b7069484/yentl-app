@@ -3,9 +3,10 @@
 import { toJSON } from "@/lib/export/json";
 import { toMarkdown } from "@/lib/export/markdown";
 import { toReport } from "@/lib/export/report";
+import { toTranscriptText } from "@/lib/export/transcript";
 import type { Session } from "@/lib/types";
 
-export type SessionExportKind = "report" | "markdown" | "json";
+export type SessionExportKind = "report" | "markdown" | "json" | "transcript";
 
 export function fileSafe(value: string) {
   return (value || "yentl-session").replace(/[^\w-]+/g, "_").slice(0, 60);
@@ -40,6 +41,8 @@ export function exportSession(session: Session, kind: SessionExportKind) {
     openReport(session);
   } else if (kind === "markdown") {
     downloadFile(`${stem}.md`, toMarkdown(session), "text/markdown");
+  } else if (kind === "transcript") {
+    downloadFile(`${stem}-transcript.txt`, toTranscriptText(session), "text/plain");
   } else {
     downloadFile(`${stem}.json`, toJSON(session), "application/json");
   }

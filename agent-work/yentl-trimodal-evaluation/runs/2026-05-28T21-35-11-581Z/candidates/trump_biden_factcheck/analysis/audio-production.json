@@ -1,0 +1,203 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 38,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Under President Trump, the United States pulled out of almost every international organization.",
+      "utterance_start": 4.4,
+      "utterance_end": 21.074999,
+      "topic": "Politics",
+      "topic_secondary": "Defense",
+      "id": "trump_biden_factcheck-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "FALSE",
+        "score": 15,
+        "annotations": [
+          "exaggeration",
+          "hyperbole",
+          "imprecise quantifier"
+        ],
+        "explanation": "While the Trump administration withdrew from or announced withdrawal from several international agreements and organizations (Paris Climate Accord, WHO, Iran nuclear deal, UNESCO, UN Human Rights Council, INF Treaty, Open Skies Treaty, TPP), the US remained in the vast majority of international organizations including the UN, NATO, IMF, World Bank, WTO, G7, G20, OAS, and many others. 'Almost every' is a significant overstatement."
+      }
+    },
+    {
+      "claim_text": "President Trump's town hall lasted one hour",
+      "utterance_start": 83.170006,
+      "utterance_end": 101.135,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "lacks context",
+          "specific duration claim"
+        ],
+        "explanation": "Without knowing which specific town hall is being referenced, I cannot verify the exact duration. Trump participated in multiple town halls during the 2020 campaign, and while an NBC town hall on October 15, 2020 (the one that replaced a debate with Biden) lasted approximately one hour, I cannot confirm this is the event referenced without more context."
+      }
+    },
+    {
+      "claim_text": "Savannah Guthrie is an NBC moderator",
+      "utterance_start": 160.615,
+      "utterance_end": 177.48,
+      "topic": "Politics",
+      "topic_secondary": "Culture",
+      "id": "trump_biden_factcheck-audio_production-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "At the first presidential debate, Donald Trump was asked to denounce white supremacy",
+      "utterance_start": 160.615,
+      "utterance_end": 177.48,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Donald Trump previously said the Senate should wait until the next president to fill a Supreme Court seat and let that president pick the nominee.",
+      "utterance_start": 239.605,
+      "utterance_end": 254.005,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-audio_production-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Supreme Court confirmation vote is expected to happen days before the 2020 election.",
+      "utterance_start": 239.605,
+      "utterance_end": 254.005,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-audio_production-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Joe Biden has refused to take a stance on whether he will expand the Supreme Court.",
+      "utterance_start": 239.605,
+      "utterance_end": 254.005,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-audio_production-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "By April 2020, 440,000 black-owned businesses in the US had closed, a decrease of more than 40% from February 2020",
+      "utterance_start": 312.485,
+      "utterance_end": 325.97,
+      "topic": "Economy",
+      "topic_secondary": "Society",
+      "id": "trump_biden_factcheck-audio_production-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "President Trump claimed at the town hall that original projections for coronavirus deaths in the US would be around 2,200,000 people",
+      "utterance_start": 312.485,
+      "utterance_end": 325.97,
+      "topic": "Politics",
+      "topic_secondary": "Healthcare",
+      "id": "trump_biden_factcheck-audio_production-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Leroy Garcia is the Colorado Senate president and a Democrat.",
+      "utterance_start": 388.345,
+      "utterance_end": 395.705,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Joe Biden leads Donald Trump 53% to 41% among registered voters nationwide.",
+      "utterance_start": 472.175,
+      "utterance_end": 492.47003,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-11",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden and Trump are tied at 48% among male registered voters.",
+      "utterance_start": 472.175,
+      "utterance_end": 492.47003,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-12",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the latest ABC News/Washington Post poll, Biden leads Trump 59% to 36% among female registered voters.",
+      "utterance_start": 472.175,
+      "utterance_end": 492.47003,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-13",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado has thousands of ballot drop boxes located across the state, and the Colorado Secretary of State's office maintains a statewide list of them.",
+      "utterance_start": 546.04,
+      "utterance_end": 570.6101,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-14",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In Colorado, voters can register to vote until 7PM on election day.",
+      "utterance_start": 546.04,
+      "utterance_end": 570.6101,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "trump_biden_factcheck-audio_production-claim-15",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Colorado voters can use a system called BallotTrax to track their ballot from when it is sent to when it is accepted at a processing facility.",
+      "utterance_start": 546.04,
+      "utterance_end": 570.6101,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "trump_biden_factcheck-audio_production-claim-16",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "absolutism",
+      "display": "Absolutism",
+      "excerpt": "I have never seen any human being... treated so badly with false accusations",
+      "start_time": 239,
+      "end_time": 250,
+      "severity": "clear",
+      "explanation": "Trump uses absolutist language ('never seen any human being') to dramatize the claim about Kavanaugh's treatment, framing it as unprecedented without evidence."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "The whole ballgame changed when I saw the way they treated justice Kavanaugh",
+      "start_time": 230,
+      "end_time": 242,
+      "severity": "clear",
+      "explanation": "When asked why he reversed his stance on filling a Supreme Court seat before an election, Trump pivots to Kavanaugh's treatment rather than addressing the inconsistency."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "treated so badly with false accusations",
+      "start_time": 244,
+      "end_time": 250,
+      "severity": "subtle",
+      "explanation": "Characterizing accusations as definitively 'false' is emotionally loaded language that presumes a contested conclusion."
+    }
+  ],
+  "errors": []
+}

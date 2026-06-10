@@ -1,0 +1,197 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 39,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Attorney General Pam Bondi testified before the House Judiciary Committee in a congressional hearing.",
+      "utterance_start": 0,
+      "utterance_end": 20.875,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 92,
+        "annotations": [
+          "public hearing",
+          "on-record testimony"
+        ],
+        "explanation": "Pam Bondi, as U.S. Attorney General, did testify before the House Judiciary Committee in a publicly reported hearing concerning the Epstein files and other matters. This is consistent with the source context describing a combative hearing involving Bondi and Democrats."
+      }
+    },
+    {
+      "claim_text": "The Justice Department under Attorney General Pam Bondi released the Jeffrey Epstein files.",
+      "utterance_start": 0,
+      "utterance_end": 20.875,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-audio_production-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "PARTIAL",
+        "score": 40,
+        "annotations": [
+          "partial release",
+          "contested completeness"
+        ],
+        "explanation": "The DOJ under AG Pam Bondi did release some Epstein-related materials in early 2025, but the release was widely criticized as incomplete, containing largely already-public information, and the administration later resisted releasing additional files. Characterizing it as 'released the Epstein files' overstates the scope of what was disclosed."
+      }
+    },
+    {
+      "claim_text": "Congresswoman Pramila Jayapal asked Jeffrey Epstein survivors present at the House Judiciary Committee hearing to raise their hands if they had not been able to meet with the Justice Department, and every one of them raised their hands.",
+      "utterance_start": 69.65501,
+      "utterance_end": 85.87,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Attorney General Pam Bondi acknowledged the victims in her opening statement at the House Judiciary Committee hearing.",
+      "utterance_start": 69.65501,
+      "utterance_end": 85.87,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Wexner's name was added back into the released Epstein files within 40 minutes of being questioned, according to a member of the House Judiciary Committee questioning Attorney General Pam Bondi",
+      "utterance_start": 140.17,
+      "utterance_end": 155.975,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "There was one redaction out of over 100 in the Epstein files released by the Justice Department under Attorney General Pam Bondi",
+      "utterance_start": 140.17,
+      "utterance_end": 155.975,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-audio_production-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The DOJ released the evidence used to obtain a search warrant in Fulton County, Georgia.",
+      "utterance_start": 382.36502,
+      "utterance_end": 401.66,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-audio_production-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "A magistrate judge approved a search warrant in Fulton County, Georgia based on evidence submitted by the DOJ.",
+      "utterance_start": 382.36502,
+      "utterance_end": 401.66,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-audio_production-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The DOJ is involved in a lawsuit with about 24 states seeking sensitive personal voter information.",
+      "utterance_start": 382.36502,
+      "utterance_end": 401.66,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-audio_production-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Blanche has been the main public face of the DOJ on Jeffrey Epstein-related issues",
+      "utterance_start": 548.70996,
+      "utterance_end": 567.365,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Attorney General Pam Bondi stated that Jeffrey Epstein's client list was sitting on her desk",
+      "utterance_start": 548.70996,
+      "utterance_end": 567.365,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-audio_production-claim-11",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "ad_hominem",
+      "display": "Ad Hominem",
+      "excerpt": "This guy has Trump derangement syndrome. Needs to get you're a failed politician.",
+      "start_time": 156,
+      "end_time": 163,
+      "severity": "blatant",
+      "explanation": "Bondi attacks the questioner's character/mental state and political career rather than engaging with the substantive question about redactions."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the opposite of a washed up loser lawyer",
+      "start_time": 165,
+      "end_time": 172,
+      "severity": "clear",
+      "explanation": "The CNN host uses emotionally charged pejorative framing to characterize Bondi's target, coloring the audience's perception before analysis begins."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "Within 40 minutes... Within 40 minutes... Within 40 minutes of me catching you red handed",
+      "start_time": 140,
+      "end_time": 156,
+      "severity": "clear",
+      "explanation": "The speaker repeats the '40 minutes' phrase three times to dramatize and emphasize alleged wrongdoing rather than provide additional substance."
+    },
+    {
+      "type": "rhetoric",
+      "name": "pejorative_framing",
+      "display": "Pejorative Framing",
+      "excerpt": "failed politician",
+      "start_time": 160,
+      "end_time": 163,
+      "severity": "clear",
+      "explanation": "Bondi dismisses the questioner by labeling him a 'failed politician,' framing him pejoratively to undermine credibility rather than respond to the substance."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "she bungled it so badly initially, that she couldn't be trusted",
+      "start_time": 548,
+      "end_time": 560,
+      "severity": "clear",
+      "explanation": "The word 'bungled' is emotionally loaded language framing Bondi's handling as incompetent rather than offering neutral description."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "set off this entire firestorm of controversies",
+      "start_time": 540,
+      "end_time": 549,
+      "severity": "subtle",
+      "explanation": "'Firestorm' is dramatic, emotionally charged language used to amplify the magnitude of the controversy."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "brought up the Dow breaking records... what does that have to do with any of this?",
+      "start_time": 497,
+      "end_time": 513,
+      "severity": "clear",
+      "explanation": "The anchor describes Bondi pivoting from Epstein questions to the Dow's performance — a classic diversion away from the topic at hand."
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,144 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 34,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Maajid Nawaz authored the piece under discussion on the BBC Newsnight panel.",
+      "utterance_start": 3.04,
+      "utterance_end": 19.315,
+      "topic": "Politics",
+      "topic_secondary": "Culture",
+      "id": "maajid_mehdi_bbc-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "insufficient detail",
+          "ambiguous referent"
+        ],
+        "explanation": "Without knowing which specific article or piece is being discussed on the panel, I cannot confirm Nawaz's authorship. Nawaz has written many pieces on Islam and extremism, but the claim's referent is unclear from available knowledge."
+      }
+    },
+    {
+      "claim_text": "Mehdi Hasan is the political director of the Huffington Post UK.",
+      "utterance_start": 3.04,
+      "utterance_end": 19.315,
+      "topic": "Politics",
+      "topic_secondary": null,
+      "id": "maajid_mehdi_bbc-audio_production-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "MOSTLY_TRUE",
+        "score": 80,
+        "annotations": [
+          "time-sensitive role",
+          "title may vary"
+        ],
+        "explanation": "Mehdi Hasan served as political director (and editor-in-chief) of HuffPost UK during the mid-2010s, which aligns with the era of this BBC Newsnight panel. The exact title at the moment of broadcast may have been political director or similar, so the claim is broadly accurate for that period."
+      }
+    },
+    {
+      "claim_text": "A number of Muslim commentators declined to take part in the BBC Newsnight debate because they did not want to share a platform with Maajid Nawaz.",
+      "utterance_start": 3.04,
+      "utterance_end": 19.315,
+      "topic": "Politics",
+      "topic_secondary": "Society",
+      "id": "maajid_mehdi_bbc-audio_production-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The speaker (Mo Ansar) has been advocating for gay rights and working with the transgender community for over 15 years.",
+      "utterance_start": 545.17004,
+      "utterance_end": 579.015,
+      "topic": "Society",
+      "topic_secondary": "Culture",
+      "id": "maajid_mehdi_bbc-audio_production-claim-4",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "speak up on principle for the minorities within the minorities",
+      "start_time": 151,
+      "end_time": 160,
+      "severity": "subtle",
+      "explanation": "Nawaz frames his action in vague, virtuous terms ('minorities within the minorities,' 'principle') that sound noble but obscure the specific contested act under discussion."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "Speaking out against racism offends some people, Mahdi. Speaking out against homophobia offends.",
+      "start_time": 192,
+      "end_time": 200,
+      "severity": "clear",
+      "explanation": "When challenged about tweeting something gratuitously offensive, he pivots to the unrelated topics of racism and homophobia, deflecting from the specific criticism."
+    },
+    {
+      "type": "fallacy",
+      "name": "straw_man",
+      "display": "Straw Man",
+      "excerpt": "to paint yourself in exactly the guys in which you're attacking... I don't represent anyone",
+      "start_time": 175,
+      "end_time": 185,
+      "severity": "subtle",
+      "explanation": "Hassan reframes Nawaz's claim of 'speaking up' as 'representing,' a stronger position Nawaz didn't take, making it easier to attack."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "silenced by voices that claim to speak in the name of authenticity and tradition",
+      "start_time": 162,
+      "end_time": 170,
+      "severity": "subtle",
+      "explanation": "Charged phrasing ('silenced,' 'claim to speak') casts opponents in a villainous light without naming or substantiating specific actors."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "a media goes to a mainstream media a mainstream media once again, a mainstream media commentator",
+      "start_time": 540,
+      "end_time": 548,
+      "severity": "clear",
+      "explanation": "The speaker repeats 'mainstream media' multiple times in quick succession to amplify the rhetorical weight of his critique rather than advancing new content."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "a mainstream media commentator attacked me this weekend on Twitter cause he believed me to have homophobic views",
+      "start_time": 545,
+      "end_time": 560,
+      "severity": "clear",
+      "explanation": "Mo Ansar uses a personal Twitter anecdote about himself being mischaracterized as evidence for a broader claim about how the media abuses Muslim voices, generalizing from a single incident."
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "Tonight, you have a Muslim debate with 3 male Muslim panelists. Where is the woman?",
+      "start_time": 493,
+      "end_time": 502,
+      "severity": "subtle",
+      "explanation": "In response to a question about self-appointed Muslim spokesmen, the speaker pivots to the unrelated issue of female panel representation, diverting from the original question."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "if that's how we use and abuse the Muslim voice in this country",
+      "start_time": 562,
+      "end_time": 567,
+      "severity": "subtle",
+      "explanation": "The phrase 'use and abuse' is emotionally charged language framing media behavior in a maximally negative way without specifying conduct."
+    }
+  ],
+  "errors": []
+}

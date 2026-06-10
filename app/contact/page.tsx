@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PublicInfoPage } from "@/components/public-info-page";
 import { contactEmails, mailto } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -8,9 +9,12 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 space-y-10">
-      <h1 className="text-3xl font-bold">Contact Yentl</h1>
-
+    <PublicInfoPage
+      currentPath="/contact"
+      eyebrow="Contact"
+      title="Contact Yentl"
+      description="Support, privacy, and accessibility routes for practical product questions and review requests."
+    >
       <section aria-labelledby="support">
         <h2 id="support" className="text-xl font-semibold mb-3">Support</h2>
         <p className="text-muted-foreground leading-relaxed">
@@ -60,6 +64,6 @@ export default function ContactPage() {
           device, and the task that was blocked.
         </p>
       </section>
-    </main>
+    </PublicInfoPage>
   );
 }

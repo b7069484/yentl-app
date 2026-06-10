@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/client/session-store";
 import { saveSession } from "@/lib/client/session-storage";
+import { saveCloudSession } from "@/lib/client/session-sync";
 
 export function SaveSessionDialog({
   open,
@@ -30,6 +31,7 @@ export function SaveSessionDialog({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [syncNote, setSyncNote] = useState<string | null>(null);
   const hasSynthesis =
     synthesis?.state === "fresh" ||
     synthesis?.state === "refreshing" ||
@@ -56,6 +58,7 @@ export function SaveSessionDialog({
       setName(defaultName);
       setSaved(false);
       setError(null);
+      setSyncNote(null);
     }
     if (!isOpen) onClose();
   };
@@ -65,13 +68,23 @@ export function SaveSessionDialog({
     setError(null);
     try {
       const session = useSession.getState().toSession();
-      await saveSession(session, { name: name.trim() || defaultName });
+      const localMeta = await saveSession(session, { name: name.trim() || defaultName });
+      const cloudResult = await saveCloudSession(session, {
+        id: localMeta.id,
+        name: localMeta.name,
+      });
+      setSyncNote(
+        cloudResult.ok
+          ? "Saved locally and synced to your account."
+          : `Saved locally. ${cloudResult.message}`,
+      );
       setSaved(true);
       setTimeout(() => {
         setSaved(false);
         setName("");
+        setSyncNote(null);
         onClose();
-      }, 800);
+      }, 1200);
     } catch (err) {
       setError(
         err instanceof Error
@@ -87,11 +100,11 @@ export function SaveSessionDialog({
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Save local snapshot</DialogTitle>
+          <DialogTitle>Save session snapshot</DialogTitle>
           <DialogDescription>
-            Saves stay in this browser&apos;s local library. They survive page
-            reloads, but they do not sync to another device and can be removed
-            if you clear browser data.
+            Yentl saves a browser-local copy first. If you are signed in and
+            account sync is configured, the same snapshot also syncs to your
+            account for another device.
           </DialogDescription>
         </DialogHeader>
 
@@ -134,6 +147,11 @@ export function SaveSessionDialog({
           {error && (
             <p role="alert" className="rounded-md border border-red-soft bg-red-soft px-3 py-2 text-sm text-red">
               {error}
+            </p>
+          )}
+          {syncNote && !error && (
+            <p className="rounded-md border border-line bg-cream-2 px-3 py-2 text-sm text-ink-3">
+              {syncNote}
             </p>
           )}
         </div>

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "window_id": "interview_003_clean_control",
+  "corpus_id": "test-corpus",
+  "source_id": "interview_003",
+  "start_s": 120,
+  "end_s": 150,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Lehrer records, what you do is you destroy their ability to be taken over by later malware And it's so irreverent, so witty, so clever, so obscene that it destroys the ability to lead a normal life for many people. So if I meet somebody who's usually really shifted from any kind of neurotypical presentation, I'll often ask them, are you a Tom Lehrer",
+    "turns": [
+      {
+        "id": "interview-003-guest-1",
+        "start_s": 120,
+        "end_s": 150,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "interview-003-claim-1",
+        "start_s": 120,
+        "end_s": 150,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

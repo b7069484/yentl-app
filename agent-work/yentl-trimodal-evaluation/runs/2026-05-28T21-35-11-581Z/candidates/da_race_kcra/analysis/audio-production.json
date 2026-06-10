@@ -1,0 +1,175 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 20,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "For the first time in 20 years, the race for County District Attorney (referenced in KCRA 3 coverage) is being contested.",
+      "utterance_start": 6.48,
+      "utterance_end": 18.415,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 50,
+        "annotations": [
+          "local race specifics",
+          "insufficient knowledge"
+        ],
+        "explanation": "This claim refers to a specific local district attorney race covered by KCRA 3 (Sacramento area). Without access to detailed local electoral history, I cannot confirm whether this particular DA race has gone uncontested for 20 years. The framing is plausible for an incumbent-dominated county office, but the specific 20-year figure cannot be verified from general knowledge."
+      }
+    },
+    {
+      "claim_text": "Three candidates are running to replace the outgoing five-term incumbent County District Attorney (referenced in KCRA 3 coverage).",
+      "utterance_start": 6.48,
+      "utterance_end": 18.415,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "local race specifics",
+          "insufficient knowledge"
+        ],
+        "explanation": "This claim references specific details of a local Sacramento-area district attorney race covered by KCRA 3. Without access to the video or reliable local election records in my training data, I cannot confirm the number of candidates, the incumbent's tenure (five terms), or whether they are outgoing."
+      }
+    },
+    {
+      "claim_text": "The outgoing County District Attorney (referenced in KCRA 3 coverage) has served five terms.",
+      "utterance_start": 6.48,
+      "utterance_end": 18.415,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Anne Marie Schubert, candidate for County District Attorney covered by KCRA 3, has been a prosecutor in the District Attorney's office for 24 years.",
+      "utterance_start": 41.945,
+      "utterance_end": 86.47,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Anne Marie Schubert, Deputy District Attorney and DA candidate covered by KCRA 3, is a veteran of over 100 trials.",
+      "utterance_start": 41.945,
+      "utterance_end": 86.47,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "da_race_kcra-audio_production-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Anne Marie Schubert, candidate for District Attorney covered by KCRA 3, has the endorsement of statewide law enforcement organizations.",
+      "utterance_start": 91.19,
+      "utterance_end": 127.770004,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Anne Marie Schubert, candidate for District Attorney covered by KCRA 3, has been a prosecutor for 24 years.",
+      "utterance_start": 91.19,
+      "utterance_end": 127.770004,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "da_race_kcra-audio_production-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Maggie Krell is a Deputy Attorney General and a candidate for county District Attorney in the race covered by KCRA 3.",
+      "utterance_start": 233.57,
+      "utterance_end": 241.615,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Maggie Krell, Deputy Attorney General and candidate for Sacramento County District Attorney, prosecutes human trafficking cases on a statewide basis.",
+      "utterance_start": 258.78998,
+      "utterance_end": 270.31,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "da_race_kcra-audio_production-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the Sacramento County District Attorney race covered by KCRA 3, a candidate needs 50% plus one vote to win outright and avoid a runoff.",
+      "utterance_start": 295.34003,
+      "utterance_end": 328.14,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-10",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Larris, a candidate in the Sacramento County District Attorney race covered by KCRA 3, is a private practice attorney.",
+      "utterance_start": 295.34003,
+      "utterance_end": 328.14,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-11",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Larris, candidate for Sacramento County District Attorney, previously worked as a prosecutor for the California Attorney General.",
+      "utterance_start": 295.34003,
+      "utterance_end": 328.14,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-12",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Larris, candidate for Sacramento County District Attorney, previously worked as a prosecutor for the Sacramento County District Attorney's office.",
+      "utterance_start": 295.34003,
+      "utterance_end": 328.14,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "da_race_kcra-audio_production-claim-13",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "loaded_question",
+      "display": "Loaded Question",
+      "excerpt": "have you reacted to the fact that you're almost running against the Brown administration?",
+      "start_time": 86,
+      "end_time": 95,
+      "severity": "clear",
+      "explanation": "The interviewer's question embeds a contested premise ('you're almost running against the Brown administration') as if it were established fact, pressuring the candidate to accept the framing before answering."
+    },
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "I have been an advocate for public safety my entire life",
+      "start_time": 118,
+      "end_time": 127,
+      "severity": "subtle",
+      "explanation": "The candidate uses vague, virtuous-sounding language ('advocate for public safety') without specific substance, a classic campaign rhetorical move designed to evoke positive feelings."
+    },
+    {
+      "type": "rhetoric",
+      "name": "absolutism",
+      "display": "Absolutism",
+      "excerpt": "I have absolutely no doubt that if this decision for people to vote is based on merit, then I win hands down",
+      "start_time": 99,
+      "end_time": 108,
+      "severity": "subtle",
+      "explanation": "The candidate frames the outcome in absolute terms ('absolutely no doubt,' 'hands down'), removing nuance and presenting certainty where political contests are inherently uncertain."
+    }
+  ],
+  "errors": []
+}

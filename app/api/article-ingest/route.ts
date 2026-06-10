@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { assertSafeUrl } from "@/lib/server/ssrf-guard";
+import {
+  isSyntheticArticleValidationUrl,
+  loadSyntheticArticleValidationFixture,
+} from "@/lib/server/validation-article-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -21,6 +25,8 @@ type ArticleIngestResponse =
       word_count: number;
       source_word_count: number;
       truncated: boolean;
+      validation_fixture?: true;
+      validation_fixture_id?: string;
     }
   | {
       error: { code: string; message: string };
@@ -50,11 +56,13 @@ export async function POST(req: NextRequest): Promise<NextResponse<ArticleIngest
   }
 
   const initialUrl = url.trim();
-  try {
-    await assertSafeUrl(initialUrl);
-  } catch (error) {
-    const err = error as Error & { code?: string };
-    return jsonError(err.code === "SSRF_BLOCKED" ? "SSRF_BLOCKED" : "INVALID_URL", err.message, 400);
+  if (!isSyntheticArticleValidationUrl(initialUrl)) {
+    try {
+      await assertSafeUrl(initialUrl);
+    } catch (error) {
+      const err = error as Error & { code?: string };
+      return jsonError(err.code === "SSRF_BLOCKED" ? "SSRF_BLOCKED" : "INVALID_URL", err.message, 400);
+    }
   }
 
   let fetched: FetchedPage;
@@ -98,6 +106,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<ArticleIngest
     word_count: wordCount(limitedText),
     source_word_count: sourceWordCount,
     truncated: sourceWordCount > wordCount(limitedText),
+    ...(fetched.validation_fixture
+      ? {
+          validation_fixture: true as const,
+          validation_fixture_id: fetched.validation_fixture_id,
+        }
+      : {}),
   });
 }
 
@@ -105,12 +119,17 @@ type FetchedPage = {
   html: string;
   finalUrl: string;
   contentType: string;
+  validation_fixture?: true;
+  validation_fixture_id?: string;
 };
 
 async function fetchReadablePage(url: string, redirectCount = 0): Promise<FetchedPage> {
   if (redirectCount > MAX_REDIRECTS) {
     throw new Error("Too many redirects while fetching this page.");
   }
+
+  const validationFixture = await loadSyntheticArticleValidationFixture(url);
+  if (validationFixture) return validationFixture;
 
   await assertSafeUrl(url);
 

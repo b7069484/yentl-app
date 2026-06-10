@@ -108,6 +108,13 @@ describe("restoreSession", () => {
     expect(useSession.getState().micStream).toBeNull();
   });
 
+  it("clears any pending launched file while restoring a saved session", () => {
+    const file = new File(["Shared transcript"], "launch.txt", { type: "text/plain" });
+    useSession.getState().setPendingLaunchFile(file);
+    useSession.getState().restoreSession(makeSessionFixture());
+    expect(useSession.getState().pendingLaunchFile).toBeNull();
+  });
+
   it("does not leak prior state into restored session", () => {
     // Set some prior-session data first
     useSession.getState().startSession("Old session");

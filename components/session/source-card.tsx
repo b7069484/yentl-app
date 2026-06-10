@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink, ImageOff, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import type { Source, SourcePreview, Stance, ReputationTier } from "@/lib/types";
 import { isValidatedSourceImage, sourceImageTrustLabel } from "@/lib/client/source-preview";
 
@@ -56,7 +57,13 @@ function hostLabel(source: Source): string {
 
 // ─── SourceCard ───────────────────────────────────────────────────────────────
 
-export function SourceCard({ source }: { source: Source }) {
+export function SourceCard({
+  source,
+  detailHref,
+}: {
+  source: Source;
+  detailHref?: string;
+}) {
   const initial = source.domain[0]?.toUpperCase() ?? "?";
   const preview = source.preview;
   const hasThumbnail = isValidatedSourceImage(preview);
@@ -68,7 +75,10 @@ export function SourceCard({ source }: { source: Source }) {
   ].filter(Boolean);
 
   return (
-    <div className="flex gap-3 rounded-[10px] border border-line-soft bg-cream-2 p-3">
+    <div
+      data-testid="source-card"
+      className="flex w-full min-w-0 gap-3 rounded-[10px] border border-line-soft bg-cream-2 p-3"
+    >
       <div className="w-24 flex-shrink-0">
         {hasThumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -89,15 +99,16 @@ export function SourceCard({ source }: { source: Source }) {
           </div>
         )}
       </div>
-      <div className="min-w-0 flex-1">
+      <div data-testid="source-card-body" className="min-w-0 flex-1">
         <a
+          data-testid="source-open-link"
           href={source.url}
           target="_blank"
           rel="noreferrer"
-          className="group inline-flex max-w-full items-start gap-1.5 text-[13px] font-semibold leading-snug tracking-tight text-ink hover:text-teal"
+          className="group inline-flex min-h-11 max-w-full items-center gap-1.5 text-[13px] font-semibold leading-snug tracking-tight text-ink hover:text-teal"
         >
           <span className="truncate">{source.title}</span>
-          <ExternalLink className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-45 group-hover:opacity-80" aria-hidden />
+          <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-45 group-hover:opacity-80" aria-hidden />
           <span className="sr-only">Open source</span>
         </a>
         <div className="mt-0.5 truncate text-[11px] text-ink-4">
@@ -119,6 +130,15 @@ export function SourceCard({ source }: { source: Source }) {
           <div className="font-serif italic text-[12px] text-ink-3 mt-1.5 pl-2 border-l-2 border-line line-clamp-3">
             {source.excerpt}
           </div>
+        )}
+        {detailHref && (
+          <Link
+            href={detailHref}
+            data-testid="source-detail-link"
+            className="mt-2 inline-flex min-h-11 items-center rounded-lg border border-line bg-paper px-3 text-[11px] font-semibold uppercase tracking-wide text-ink-3 transition-colors hover:bg-cream hover:text-ink-2"
+          >
+            Source detail
+          </Link>
         )}
         <div className="mt-2 rounded-md border border-line bg-paper px-2 py-1.5 text-[10.5px] leading-snug text-ink-4">
           <div className="flex items-start gap-1.5">

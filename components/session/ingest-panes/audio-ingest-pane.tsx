@@ -41,6 +41,9 @@ const ACCEPT_ATTR =
 
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB
 const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
+const VALIDATION_AUDIO_PATH = "/validation/yentl-synthetic-panel.wav";
+const VALIDATION_AUDIO_FILENAME = "yentl-synthetic-panel.wav";
+const VALIDATION_AUDIO_MIME = "audio/wav";
 
 type Phase =
   | { kind: "idle" }
@@ -65,6 +68,8 @@ export function AudioIngestPane() {
   const router = useRouter();
   const setPrerecordStage = useSession((s) => s.setPrerecordStage);
   const setSource = useSession((s) => s.setSource);
+  const pendingLaunchFile = useSession((s) => s.pendingLaunchFile);
+  const clearPendingLaunchFile = useSession((s) => s.clearPendingLaunchFile);
 
   const [staged, setStaged] = useState<StagedFile | null>(null);
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
@@ -111,6 +116,23 @@ export function AudioIngestPane() {
     setStaged({ file, duration });
     setPhase({ kind: "idle" });
   }, []);
+
+  useEffect(() => {
+    if (!pendingLaunchFile) return;
+
+    let cancelled = false;
+    const file = pendingLaunchFile;
+
+    void Promise.resolve()
+      .then(() => handleFile(file))
+      .finally(() => {
+        if (!cancelled) clearPendingLaunchFile();
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clearPendingLaunchFile, handleFile, pendingLaunchFile]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +215,7 @@ export function AudioIngestPane() {
       // 3 — Bulk ingest
       setPhase({ kind: "ingesting" });
       handoffRef.current = true;
-      await bulkIngest(data.utterances, { signal: ac.signal });
+      await bulkIngest(data.utterances, { signal: ac.signal, speakers: data.speakers });
 
       if (!ac.signal.aborted) {
         setPhase({ kind: "done" });
@@ -214,6 +236,25 @@ export function AudioIngestPane() {
     setPhase({ kind: "idle" });
   }, []);
 
+  const handleLoadValidationAudio = useCallback(async () => {
+    if (phase.kind === "done") return;
+
+    try {
+      const res = await fetch(VALIDATION_AUDIO_PATH);
+      if (!res.ok) {
+        throw new Error(`Could not load validation audio (${res.status}).`);
+      }
+      const blob = await res.blob();
+      const file = new File([blob], VALIDATION_AUDIO_FILENAME, {
+        type: blob.type || VALIDATION_AUDIO_MIME,
+      });
+      await handleFile(file);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      setPhase({ kind: "error", message });
+    }
+  }, [handleFile, phase.kind]);
+
   const isProcessing =
     phase.kind === "uploading" ||
     phase.kind === "processing" ||
@@ -226,7 +267,7 @@ export function AudioIngestPane() {
       <button
         type="button"
         onClick={() => setPrerecordStage("picker")}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
+        className="mb-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="w-3.5 h-3.5" /> Back to sources
       </button>
@@ -293,6 +334,17 @@ export function AudioIngestPane() {
                 aria-label="Select audio file"
               />
             </label>
+          )}
+
+          {validationDemoEnabled() && !staged && !isProcessing && phase.kind !== "done" && (
+            <button
+              type="button"
+              onClick={handleLoadValidationAudio}
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-4 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <FileAudio className="h-4 w-4" aria-hidden />
+              Load validation WAV
+            </button>
           )}
 
           {/* Staged file preview card */}
@@ -447,6 +499,12 @@ function AudioStep({ label, body }: { label: string; body: string }) {
       <div className="mt-0.5 text-[12px] leading-snug text-ink-3">{body}</div>
     </div>
   );
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
 }
 
 /** Guess MIME type from file extension when file.type is empty. */

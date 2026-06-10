@@ -4,6 +4,18 @@ import { z } from "zod";
 // Request schema
 // ---------------------------------------------------------------------------
 
+const ClaimSummarySchema = z.object({
+  text: z.string(),
+  verdict: z.string(),
+  score: z.number().optional(),
+  speaker_id: z.number().nullable(),
+  topic: z.string().nullable().optional(),
+  stance: z.string().optional(),
+  attribution_status: z.string().optional(),
+  attribution_reasons: z.array(z.string()).default([]),
+  explanation: z.string().optional(),
+});
+
 export const SynthesizeRequest = z.object({
   utterances: z.array(
     z.object({
@@ -11,6 +23,8 @@ export const SynthesizeRequest = z.object({
       text: z.string(),
       start: z.number(),
       end: z.number(),
+      source_audio_kind: z.string().optional(),
+      anchor: z.string().optional(),
     }),
   ),
   counters: z.object({
@@ -28,6 +42,8 @@ export const SynthesizeRequest = z.object({
       label: z.string(),
     }),
   ),
+  claims: z.array(ClaimSummarySchema).default([]),
+  source_context: z.string().max(12_000).default(""),
 });
 
 // ---------------------------------------------------------------------------
@@ -62,6 +78,8 @@ export const SYSTEM_PREFIX = `You are Yentl, a live fact-check synthesizer. You 
 
 Given:
 - The last N utterances (with [Speaker X] prefixes)
+- Source context when available, including document overview and article/page metadata
+- Recent claim summaries with verdicts, owners, stance, attribution status, and topics
 - Running counters: total claims, false/partial/true breakdown, fallacy/bias/rhetoric counts
 - Speaker labels
 
@@ -71,8 +89,8 @@ Produce JSON with three fields:
 
 2. \`headlines\`: EXACTLY 3 one-line insights, each ≤80 chars. Each headline derives from the counters/speakers, never from raw transcript:
    - Headline 1 — speaker fallacy attribution: if any speaker has ≥2 markers, call out the count and (if they share archetype) the archetype. Else: skip with a fallback like "No fallacies attributed to any single speaker yet."
-   - Headline 2 — verdict ratio: if any speaker has ≥2 claims all of the same verdict family, call it out ("Mira's claims: 4/4 verified"). Else: a topic-aware fallback ("Mixed verdicts across both speakers so far").
-   - Headline 3 — topic concentration: if any topic appears in ≥40% of claims, call it out ("Climate: 62% of claims"). Else: ("Topics spread across science, politics, and culture").
+   - Headline 2 — verdict ratio: use CLAIMS, not counters alone. If any confident owner has ≥2 claims all of the same verdict family, call it out ("Mira's claims: 4/4 verified"). Else: a topic-aware fallback ("Mixed verdicts across both speakers so far").
+   - Headline 3 — topic concentration: use CLAIMS topics. If any topic appears in ≥40% of claims, call it out ("Climate: 62% of claims"). Else: ("Topics spread across science, politics, and culture").
 
 3. \`per_speaker_verdicts\`: ONE entry per speaker listed in SPEAKERS. Each entry has:
    - \`speaker_id\`: the speaker's numeric id
@@ -91,9 +109,12 @@ Produce JSON with three fields:
 
 Rules for per_speaker_verdicts:
 - Produce exactly one entry per speaker in SPEAKERS (even if they have no claims yet — use "insufficient" for both grades).
+- Use CLAIMS for speaker factual grades. Do not infer per-speaker claim ratios from aggregate counters.
+- Do not count null-owner, uncertain, unsafe_overlap, quote_or_clip, quoted, reported, mocked, or questioned claims as clean assertions by that speaker. Mention uncertainty when it matters.
 - Be conservative: use "insufficient" when data is thin. Do NOT infer bad faith from a single weak signal; require a pattern.
 - The one_liner must be ≤16 words, plain prose, no markdown.
 - Do NOT repeat the grade labels verbatim in the one_liner.
+- Use SOURCE_CONTEXT and utterance anchors for orientation only. Do not treat them as evidence for factual verdicts.
 
 Be terse. Do NOT editorialize. Do NOT add advice. Do NOT mention yourself.`;
 
@@ -102,9 +123,18 @@ Be terse. Do NOT editorialize. Do NOT add advice. Do NOT mention yourself.`;
 // ---------------------------------------------------------------------------
 
 export function userPrompt(args: {
-  utterances: Array<{ speaker_id: number | null; text: string; start: number; end: number }>;
+  utterances: Array<{
+    speaker_id: number | null;
+    text: string;
+    start: number;
+    end: number;
+    source_audio_kind?: string;
+    anchor?: string;
+  }>;
   counters: { claims: number; false: number; partial: number; true: number; fallacy: number; bias: number; rhetoric: number };
   speakers: Array<{ id: number; label: string }>;
+  claims?: z.infer<typeof ClaimSummarySchema>[];
+  source_context?: string;
 }): string {
   const speakerMap = new Map(args.speakers.map((s) => [s.id, s.label]));
 
@@ -114,15 +144,40 @@ export function userPrompt(args: {
         u.speaker_id !== null
           ? (speakerMap.get(u.speaker_id) ?? `Speaker ${u.speaker_id}`)
           : "Unknown";
-      return `[${label}] ${u.text}`;
+      const anchor = u.anchor ? `[${u.anchor}] ` : "";
+      const sourceKind = u.source_audio_kind ? `[source=${u.source_audio_kind}] ` : "";
+      return `${anchor}${sourceKind}[${label}] ${u.text}`;
     })
     .join("\n");
 
   const { counters } = args;
   const speakerLabels = args.speakers.map((s) => `${s.id}: ${s.label}`).join(", ") || "(none)";
+  const claimsText = (args.claims ?? []).length > 0
+    ? (args.claims ?? [])
+        .map((claim, index) => {
+          const owner =
+            claim.speaker_id !== null
+              ? (speakerMap.get(claim.speaker_id) ?? `Speaker ${claim.speaker_id}`)
+              : "Unknown owner";
+          const score = typeof claim.score === "number" ? ` score=${claim.score}` : "";
+          const topic = claim.topic ? ` topic=${claim.topic}` : "";
+          const stance = claim.stance ? ` stance=${claim.stance}` : "";
+          const attribution = claim.attribution_status ? ` attribution=${claim.attribution_status}` : "";
+          const reasons = claim.attribution_reasons.length > 0
+            ? ` reasons=${claim.attribution_reasons.join(",")}`
+            : "";
+          return `${index + 1}. [${owner}] verdict=${claim.verdict}${score}${topic}${stance}${attribution}${reasons}: ${claim.text}`;
+        })
+        .join("\n")
+    : "(none yet)";
 
-  return `UTTERANCES:
+  const sourceContext = args.source_context?.trim();
+
+  return `${sourceContext ? `SOURCE_CONTEXT:\n${sourceContext}\n\n` : ""}UTTERANCES:
 ${utterancesText || "(none)"}
+
+CLAIMS:
+${claimsText}
 
 COUNTERS:
 total_claims=${counters.claims} false=${counters.false} partial=${counters.partial} true=${counters.true} fallacy=${counters.fallacy} bias=${counters.bias} rhetoric=${counters.rhetoric}

@@ -16,6 +16,38 @@ function source(overrides: Partial<Source> = {}): Source {
 }
 
 describe("SourceCard", () => {
+  it("keeps the primary source link at the mobile tap-target minimum", () => {
+    render(<SourceCard source={source()} />);
+
+    const link = screen.getByTestId("source-open-link");
+    expect(link.className).toContain("min-h-11");
+    expect(link.className).toContain("items-center");
+  });
+
+  it("renders an optional source detail link at the mobile tap-target minimum", () => {
+    render(<SourceCard source={source()} detailHref="/session/detail/source/c-1__source__0" />);
+
+    const detailLink = screen.getByTestId("source-detail-link");
+    expect(detailLink).toHaveAttribute("href", "/session/detail/source/c-1__source__0");
+    expect(detailLink.className).toContain("min-h-11");
+    expect(detailLink.textContent).toContain("Source detail");
+  });
+
+  it("keeps the card layout bounded for narrow mobile detail and learn routes", () => {
+    render(
+      <SourceCard
+        source={source({
+          title: "An unusually long source title that should not force horizontal scrolling in the mobile evidence card layout",
+          domain: "very-long-source-domain.example",
+        })}
+      />,
+    );
+
+    expect(screen.getByTestId("source-card").className).toContain("min-w-0");
+    expect(screen.getByTestId("source-card-body").className).toContain("min-w-0");
+    expect(screen.getByTestId("source-open-link").className).toContain("max-w-full");
+  });
+
   it("renders a validated source-provided thumbnail with provenance", () => {
     render(
       <SourceCard

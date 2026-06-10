@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/corpus-sample/route";
+import type { ClaimCard, RhetoricMarker, TranscriptSegment } from "@/lib/types";
 
 function makeRequest(id: string): Request {
   return new Request(`http://localhost/api/corpus-sample?id=${id}`);
@@ -21,6 +22,26 @@ describe("GET /api/corpus-sample", () => {
     expect(json.segments.length).toBeGreaterThan(0);
     expect(json.claims).toHaveLength(1);
     expect(json.markers).toHaveLength(6);
+    expect(json.synthesis.text).toContain("Validation replay");
+    expect(json.synthesis.headlines).toHaveLength(3);
+    expect(json.synthesis.per_speaker_verdicts.length).toBeGreaterThan(0);
+    expect(json.synthesis.per_speaker_verdicts[0]).toEqual(
+      expect.objectContaining({
+        label: "Speaker 1",
+        factual_grade: expect.any(String),
+        faith_grade: expect.any(String),
+      }),
+    );
+    const segments = json.segments as TranscriptSegment[];
+    const findings = [...json.claims, ...json.markers] as Array<ClaimCard | RhetoricMarker>;
+    expect(
+      findings.some((item) => {
+        const time = "utterance_start" in item ? item.utterance_start : item.start_time;
+        return segments.some(
+          (segment) => segment.start <= time && time <= segment.end + 1,
+        );
+      }),
+    ).toBe(true);
     expect(json.replay.errors).toEqual([]);
   });
 
@@ -47,6 +68,73 @@ describe("GET /api/corpus-sample", () => {
     expect(json.markers.length).toBe(4);
   });
 
+  it("returns a Source Review text sample with persisted quote anchors", async () => {
+    const res = await GET(makeRequest("source_quote_anchors") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.id).toBe("source_quote_anchors");
+    expect(json.category).toBe("source_review");
+    expect(json.source.kind).toBe("text_doc");
+    expect(json.source.initial_text).toContain("Yentl source review proof");
+    expect(json.segments).toHaveLength(3);
+    expect(json.claims).toHaveLength(3);
+    expect(json.markers).toHaveLength(0);
+    expect(json.url).toBe("/session?demo=validation&sample=source_quote_anchors&view=source");
+
+    const auditClaim = json.claims.find(
+      (claim: ClaimCard) => claim.id === "source-quote-claim-audit",
+    ) as ClaimCard | undefined;
+    expect(auditClaim?.document_anchor).toMatchObject({
+      kind: "paragraph",
+      block_index: 1,
+      paragraph_index: 1,
+      quote_text: "The audit timeline showed the report was added to the public archive before the meeting started.",
+    });
+    expect(auditClaim?.document_anchor?.char_start).toBeGreaterThan(0);
+    expect(auditClaim?.document_anchor?.char_end).toBeGreaterThan(auditClaim?.document_anchor?.char_start ?? 0);
+    expect(json.synthesis.headlines).toContain("Persisted quote offsets available");
+    expect(json.devil_advocate).toMatchObject({
+      stance: expect.stringContaining("hidden-report claim"),
+      weakest_assumption: expect.stringContaining("whole public-access timeline"),
+      confidence: "medium",
+    });
+    expect(json.devil_advocate.strongest_counterarguments).toHaveLength(3);
+    expect(json.devil_advocate.questions).toHaveLength(2);
+  });
+
+  it("returns a media playback sync sample with timed claims and markers", async () => {
+    const res = await GET(makeRequest("media_playback_sync") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.id).toBe("media_playback_sync");
+    expect(json.category).toBe("media_playback");
+    expect(json.url).toBe("/session?demo=validation&sample=media_playback_sync&view=watch");
+    expect(json.source).toMatchObject({
+      kind: "audio_file",
+      blob_url: "/validation/yentl-synthetic-panel.wav",
+      filename: "yentl-synthetic-panel.wav",
+      mime: "audio/wav",
+    });
+    expect(json.segments).toHaveLength(5);
+    expect(json.segments.map((segment: TranscriptSegment) => segment.start)).toEqual([0, 4, 10, 17, 25]);
+    expect(json.claims).toHaveLength(2);
+    expect(json.markers).toHaveLength(1);
+    expect(json.claims[1]).toMatchObject({
+      id: "media-sync-claim-platform-collapse",
+      utterance_start: 17,
+      primary_label: "MISLEADING",
+      status: "provisional",
+    });
+    expect(json.markers[0]).toMatchObject({
+      id: "media-sync-marker-slippery-slope",
+      start_time: 17,
+      severity: "clear",
+    });
+    expect(json.synthesis.headlines).toContain("Claims and markers seek to exact audio moments");
+  });
+
   it("rejects unknown sample ids", async () => {
     const res = await GET(makeRequest("unknown") as never);
     const json = await res.json();
@@ -56,6 +144,16 @@ describe("GET /api/corpus-sample", () => {
   });
 
   it("stays disabled when validation demos are not enabled for the environment", async () => {
+    vi.stubEnv("YENTL_DISABLE_VALIDATION_DEMO", "1");
+    const res = await GET(makeRequest("solo_005") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(json.error.code).toBe("VALIDATION_DEMO_DISABLED");
+  });
+
+  it("lets the validation demo kill switch override an explicit enable flag", async () => {
+    vi.stubEnv("YENTL_ENABLE_VALIDATION_DEMO", "1");
     vi.stubEnv("YENTL_DISABLE_VALIDATION_DEMO", "1");
     const res = await GET(makeRequest("solo_005") as never);
     const json = await res.json();

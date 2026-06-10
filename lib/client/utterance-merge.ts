@@ -37,12 +37,32 @@ export function mergeIntoUtterances(segments: TranscriptSegment[]): TranscriptSe
     const text = pending.map((s) => s.text).join(" ").replace(/\s+/g, " ").trim();
 
     if (text.length > 0) {
+      const merged: TranscriptSegment = pending.length === 1
+        ? { ...first }
+        : {
+            text,
+            start: first.start,
+            end: last.end,
+            is_final: last.is_final,
+            speaker_id: first.speaker_id,
+            source_audio_kind: commonValue(pending, (s) => s.source_audio_kind),
+            provider: commonValue(pending, (s) => s.provider),
+            document_anchor: first.document_anchor,
+            attribution_status: commonValue(pending, (s) => s.attribution_status),
+            attribution_reasons: uniqueValues(pending.flatMap((s) => s.attribution_reasons ?? [])),
+            overlap_class:
+              pending.find((s) => s.overlap_class && s.overlap_class !== "none")?.overlap_class ??
+              commonValue(pending, (s) => s.overlap_class),
+            turn_id: commonValue(pending, (s) => s.turn_id),
+            latent_boundary: pending.some((s) => s.latent_boundary) || undefined,
+          };
+      merged.text = text;
+      merged.start = first.start;
+      merged.end = last.end;
+      merged.is_final = last.is_final;
+      merged.speaker_id = first.speaker_id;
       result.push({
-        text,
-        start: first.start,
-        end: last.end,
-        is_final: last.is_final,
-        speaker_id: first.speaker_id,
+        ...merged,
       });
     }
 
@@ -101,4 +121,15 @@ export function mergeIntoUtterances(segments: TranscriptSegment[]): TranscriptSe
 
   flush();
   return result;
+}
+
+function commonValue<T>(segments: TranscriptSegment[], read: (segment: TranscriptSegment) => T | null | undefined): T | undefined {
+  const first = read(segments[0]);
+  if (first === undefined || first === null) return undefined;
+  return segments.every((segment) => read(segment) === first) ? first : undefined;
+}
+
+function uniqueValues<T>(values: T[]): T[] | undefined {
+  const unique = Array.from(new Set(values));
+  return unique.length > 0 ? unique : undefined;
 }

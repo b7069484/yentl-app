@@ -8,10 +8,22 @@ describe("ProjectValidationPage", () => {
 
     expect(screen.getByText("Yentl source validation lab")).toBeTruthy();
     expect(screen.getAllByText("Hans Rosling population box talk").length).toBeGreaterThan(0);
+    expect(screen.getByText("Open /session?source=youtube and click Load validation YouTube")).toBeTruthy();
     expect(screen.getByText("Synthetic spoken WAV")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=audio-file and click Load validation WAV")).toBeTruthy();
     expect(screen.getByText("Synthetic two-speaker transcript")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=text-doc and click Load validation TXT")).toBeTruthy();
+    expect(screen.getByText("Small DOCX validation brief")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=text-doc and click Load validation DOCX")).toBeTruthy();
+    expect(screen.getByText("Small selectable-text PDF")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=text-doc and click Load validation PDF")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=text-doc and click Load validation VTT")).toBeTruthy();
+    expect(screen.getByText("Local validation article")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=web-url and click Load validation article")).toBeTruthy();
     expect(screen.getByText("Local same-page media fixture")).toBeTruthy();
     expect(screen.getByText("Mozilla DeepSpeech smoke-test WAV")).toBeTruthy();
+    expect(screen.getByText("Local validation WAV transcription")).toBeTruthy();
+    expect(screen.getByText("Open /session?source=media-url and click Load validation media URL")).toBeTruthy();
     expect(screen.getByText("100-video corpus proof, wired into Watch")).toBeTruthy();
     expect(screen.getByText("Cable crosstalk rhetoric stress sample")).toBeTruthy();
   });

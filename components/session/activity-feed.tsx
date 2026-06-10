@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { VerdictChip } from "./chips";
 import { MarkerChip } from "./chips";
+import { sessionViewHref } from "@/lib/client/session-route";
 import type { PrimaryLabel, MarkerType, MarkerSeverity, SpeakerId } from "@/lib/types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -121,10 +122,12 @@ export function ActivityFeed({
   events,
   buildClaimHref,
   buildMarkerHref,
+  transcriptHref = sessionViewHref(null, "transcript"),
 }: {
   events: ActivityEvent[];  // already sorted desc, pre-limited by caller
   buildClaimHref: (id: string) => string;
   buildMarkerHref: (id: string) => string;
+  transcriptHref?: string;
 }) {
   return (
     <div>
@@ -134,8 +137,8 @@ export function ActivityFeed({
           Recent activity
         </div>
         <Link
-          href="/session?view=transcript"
-          className="text-[11px] text-ink-3 hover:text-ink-2 transition-colors"
+          href={transcriptHref}
+          className="inline-flex min-h-11 items-center rounded-lg px-1 text-[11px] text-ink-3 transition-colors hover:text-ink-2"
         >
           See full transcript &rarr;
         </Link>

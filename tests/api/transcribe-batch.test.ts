@@ -26,6 +26,7 @@ const VALID_UTTERANCES = [
 ];
 
 const VALID_SPEAKERS = [{ id: 0, label: "Speaker 1" }];
+const LOCAL_VALIDATION_WAV_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -107,6 +108,33 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     const json = await res.json();
     expect(json.utterances).toEqual(VALID_UTTERANCES);
     expect(json.speakers).toEqual(VALID_SPEAKERS);
+  });
+
+  it("returns the deterministic local WAV validation transcript for the JSON url path", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeJsonRequest({ url: LOCAL_VALIDATION_WAV_URL, duration_sec: 31.953 });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.validation_fixture).toBe(true);
+    expect(json.validation_fixture_id).toBe("yentl_synthetic_panel_wav");
+    expect(json.utterances).toHaveLength(5);
+    expect(json.utterances.map((segment: { start: number }) => segment.start)).toEqual([0, 4, 10, 17, 25]);
+    expect(json.utterances[0]).toMatchObject({
+      provider: "validation_fixture",
+      speaker_id: 0,
+      attribution_status: "confident",
+      source_audio_kind: "audio_file",
+    });
+    expect(json.utterances.map((segment: { speaker_id: number | null }) => segment.speaker_id)).toEqual([0, 0, 1, 0, 1]);
+    expect(json.speakers).toEqual([
+      { id: 0, label: "Moderator" },
+      { id: 1, label: "Analyst" },
+    ]);
+    expect(mockTranscribeUrl).not.toHaveBeenCalled();
+    expect(mockTranscribeStream).not.toHaveBeenCalled();
+    expect(mockBlobGet).not.toHaveBeenCalled();
   });
 
   it("requires source analysis consent before transcription", async () => {
@@ -316,6 +344,32 @@ describe("POST /api/transcribe-batch — multipart/form-data path", () => {
     const json = await res.json();
     expect(json.utterances).toEqual(VALID_UTTERANCES);
     expect(json.speakers).toEqual(VALID_SPEAKERS);
+  });
+
+  it("returns the deterministic local WAV validation transcript for the multipart file path", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const file = makeAudioFile("yentl-synthetic-panel.wav", "audio/wav");
+    const req = makeMultipartRequest({ file, duration_sec: "31.953" });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.validation_fixture).toBe(true);
+    expect(json.validation_fixture_id).toBe("yentl_synthetic_panel_wav");
+    expect(json.utterances).toHaveLength(5);
+    expect(json.utterances[3]).toMatchObject({
+      start: 17,
+      provider: "validation_fixture",
+      speaker_id: 0,
+      attribution_status: "confident",
+    });
+    expect(json.utterances.map((segment: { speaker_id: number | null }) => segment.speaker_id)).toEqual([0, 0, 1, 0, 1]);
+    expect(json.speakers).toEqual([
+      { id: 0, label: "Moderator" },
+      { id: 1, label: "Analyst" },
+    ]);
+    expect(mockTranscribeFile).not.toHaveBeenCalled();
+    expect(mockTranscribeStream).not.toHaveBeenCalled();
   });
 
   it("calls transcribeFile (not transcribeUrl) for multipart requests", async () => {

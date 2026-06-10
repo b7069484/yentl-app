@@ -1,0 +1,304 @@
+{
+  "candidate": {
+    "id": "tarantino_channel4",
+    "group": "primary",
+    "url": "https://www.youtube.com/watch?v=GrsJDy8VjZk",
+    "videoId": "GrsJDy8VjZk",
+    "expectedSpeakers": 2,
+    "reason": "Adversarial two-speaker interview, loaded-question/refusal boundary."
+  },
+  "title": "Quentin Tarantino interview: 'I'm shutting your butt down!'",
+  "channel": "Channel 4 News",
+  "durationS": 516,
+  "captionSource": {
+    "kind": "manual",
+    "lang": "en-GB"
+  },
+  "paths": {
+    "srt": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/tarantino_channel4/source.en-GB.srt",
+    "audio": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/tarantino_channel4/audio.opus",
+    "urlCaptions": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/tarantino_channel4/url-captions.json",
+    "audioProductionTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/tarantino_channel4/audio-production-deepgram.json",
+    "audioDiagnosticTranscript": "/Users/israelbitton/Live FactCheck/agent-work/yentl-trimodal-evaluation/runs/2026-05-28T21-35-11-581Z/candidates/tarantino_channel4/audio-diagnostic-diarized-deepgram.json"
+  },
+  "transcriptStats": {
+    "srt": {
+      "segmentCount": 162,
+      "wordCount": 1562,
+      "firstStart": 3.3890000000000002,
+      "lastEnd": 514.689,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": null,
+      "avgSpeakerConfidence": null
+    },
+    "youtube_url": {
+      "segmentCount": 234,
+      "wordCount": 1723,
+      "firstStart": 2.98,
+      "lastEnd": 516.5989999999999,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": null,
+      "avgSpeakerConfidence": null
+    },
+    "audio_production": {
+      "segmentCount": 74,
+      "wordCount": 1766,
+      "firstStart": 3.1999998,
+      "lastEnd": 514.78,
+      "observedSpeakers": 1,
+      "dominantSpeakerShare": 1,
+      "avgWordConfidence": 0.9441865552464563,
+      "avgSpeakerConfidence": null
+    },
+    "audio_diagnostic_diarized": {
+      "segmentCount": 74,
+      "wordCount": 1766,
+      "firstStart": 3.1999998,
+      "lastEnd": 514.78,
+      "observedSpeakers": 2,
+      "dominantSpeakerShare": 0.731030577576444,
+      "avgWordConfidence": 0.9442394004475887,
+      "avgSpeakerConfidence": 0.5854218210288971
+    }
+  },
+  "comparisons": {
+    "youtubeUrlVsSrt": {
+      "wer": 0.2323943661971831,
+      "substitutions": 128,
+      "deletions": 37,
+      "insertions": 198,
+      "hits": 1397,
+      "refLen": 1562,
+      "hypLen": 1723
+    },
+    "audioProductionVsSrt": {
+      "wer": 0.23111395646606914,
+      "substitutions": 77,
+      "deletions": 40,
+      "insertions": 244,
+      "hits": 1445,
+      "refLen": 1562,
+      "hypLen": 1766
+    },
+    "audioDiagnosticVsSrt": {
+      "wer": 0.23111395646606914,
+      "substitutions": 77,
+      "deletions": 40,
+      "insertions": 244,
+      "hits": 1445,
+      "refLen": 1562,
+      "hypLen": 1766
+    },
+    "youtubeTimingDriftS": 0.5989999999999327
+  },
+  "analysis": {
+    "srt": {
+      "mode": "srt",
+      "utterancesAvailable": 61,
+      "utterancesAnalyzed": 8,
+      "claims": [],
+      "markers": [
+        {
+          "type": "fallacy",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "there was two holocausts in America... the holocaustic aspects, the Auschwitzian aspects of the slave trade",
+          "start_time": 215,
+          "end_time": 238,
+          "severity": "subtle",
+          "explanation": "Tarantino draws a direct equivalence between slavery and the Holocaust/Auschwitz. While both involve mass atrocity, conflating distinct historical events as analogous can be a rhetorical false analogy used to dramatize a point."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "the holocaustic aspects, the Auschwitzian aspects of the slave trade in America",
+          "start_time": 230,
+          "end_time": 238,
+          "severity": "clear",
+          "explanation": "Using emotionally charged terms like 'holocaustic' and 'Auschwitzian' to frame the subject matter loads the discussion with strong affective weight beyond descriptive accuracy."
+        },
+        {
+          "type": "fallacy",
+          "name": "red_herring",
+          "display": "Red Herring",
+          "excerpt": "you go and you watch a Kung-Fu movie and one guy takes on a hundred people in a restaurant",
+          "start_time": 265,
+          "end_time": 272,
+          "severity": "subtle",
+          "explanation": "When asked why non-violent people enjoy movie violence, Tarantino pivots to a kung-fu movie example rather than addressing the psychological question, deflecting from the substance of the inquiry."
+        },
+        {
+          "type": "rhetoric",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "filmmaking directors are like boxers. They have their time.",
+          "start_time": 486,
+          "end_time": 505,
+          "severity": "subtle",
+          "explanation": "Tarantino compares directors to boxers to argue both decline with age. While evocative, the analogy equates physical athletic decline with creative/artistic decline, which are not obviously comparable domains."
+        }
+      ],
+      "errors": []
+    },
+    "youtube_url": {
+      "mode": "youtube_url",
+      "utterancesAvailable": 26,
+      "utterancesAnalyzed": 8,
+      "claims": [],
+      "markers": [
+        {
+          "type": "fallacy",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "it's like asking Judd Apatow why do you like making comedies",
+          "start_time": 163,
+          "end_time": 175,
+          "severity": "clear",
+          "explanation": "Tarantino deflects a substantive question about his preference for violence by comparing it to asking a comedy director about comedy, treating the two as equivalent when violence raises distinct ethical questions comedy does not."
+        },
+        {
+          "type": "fallacy",
+          "name": "circular_reasoning",
+          "display": "Circular Reasoning",
+          "excerpt": "I think it's good cinema I consider a good cinema",
+          "start_time": 185,
+          "end_time": 192,
+          "severity": "subtle",
+          "explanation": "He justifies making violent films by asserting it's 'good cinema' because he considers it good cinema — restating the conclusion as its own premise."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "there was two Holocaust in America... the Auschwitz nyan house aspects of the slave trade",
+          "start_time": 215,
+          "end_time": 230,
+          "severity": "clear",
+          "explanation": "Invoking 'Holocaust' and 'Auschwitz' is emotionally charged framing designed to elevate the moral weight of his film's subject matter and preempt criticism of its violence."
+        },
+        {
+          "type": "fallacy",
+          "name": "red_herring",
+          "display": "Red Herring",
+          "excerpt": "there's two types of violence in this movie there's the there's the brutality... put upon the slaves",
+          "start_time": 195,
+          "end_time": 215,
+          "severity": "clear",
+          "explanation": "Asked why he personally enjoys making violent movies, he pivots to distinguishing types of violence in the film and to historical slavery, diverting from the personal question posed."
+        },
+        {
+          "type": "rhetoric",
+          "name": "false_urgency",
+          "display": "False Urgency",
+          "excerpt": "I'm shutting your butt down",
+          "start_time": 440,
+          "end_time": 445,
+          "severity": "subtle",
+          "explanation": "Tarantino's refusal framing (referenced in title and continued here with 'I am refusing') applies a forceful conversational shutdown rather than engaging with the substantive question, a rhetorical move to end discussion."
+        },
+        {
+          "type": "fallacy",
+          "name": "red_herring",
+          "display": "Red Herring",
+          "excerpt": "do you want me to do what I've already done before and I am refusing",
+          "start_time": 446,
+          "end_time": 454,
+          "severity": "clear",
+          "explanation": "Rather than addressing the interviewer's question about serious themes, Tarantino deflects by reframing the question as a demand to repeat himself, diverting from the actual topic."
+        },
+        {
+          "type": "fallacy",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "filmmaking doctors are like boxers they have the time they have the time",
+          "start_time": 488,
+          "end_time": 498,
+          "severity": "subtle",
+          "explanation": "Comparing filmmakers to boxers (whose decline is physical) is a loose analogy; creative decline and athletic decline operate on different mechanisms, making the comparison rhetorically vivid but logically weak."
+        }
+      ],
+      "errors": []
+    },
+    "audio_production": {
+      "mode": "audio_production",
+      "utterancesAvailable": 37,
+      "utterancesAnalyzed": 8,
+      "claims": [],
+      "markers": [
+        {
+          "type": "fallacy",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "it's like asking Judd Apatow, why do you like making comedies?",
+          "start_time": 174,
+          "end_time": 180,
+          "severity": "subtle",
+          "explanation": "Tarantino equates questions about depicting graphic violence in a slavery film with asking a comedy director why he likes comedy. The moral and artistic stakes differ substantially, making the analogy misleading."
+        },
+        {
+          "type": "rhetoric",
+          "name": "loaded_language",
+          "display": "Loaded Language",
+          "excerpt": "the holocaustic aspects, the Auschwitzian aspects of the slave trade in America",
+          "start_time": 232,
+          "end_time": 240,
+          "severity": "clear",
+          "explanation": "Invoking 'holocaust' and 'Auschwitz' is emotionally charged framing designed to elevate the moral weight of his film's subject matter rather than make an argument."
+        },
+        {
+          "type": "fallacy",
+          "name": "proof_by_assertion",
+          "display": "Proof by Assertion",
+          "excerpt": "I think it's good cinema. I consider it good cinema.",
+          "start_time": 188,
+          "end_time": 196,
+          "severity": "subtle",
+          "explanation": "Rather than supporting the claim, Tarantino simply restates that it is good cinema, asserting the conclusion in place of justifying it."
+        },
+        {
+          "type": "fallacy",
+          "name": "special_pleading",
+          "display": "Special Pleading",
+          "excerpt": "That hasn't been dealt with in America to the extent that I deal with it",
+          "start_time": 217,
+          "end_time": 224,
+          "severity": "subtle",
+          "explanation": "He carves out a unique justification for his own treatment of the subject, implying his work is exempt from criticism because no one else has tackled it as he has."
+        },
+        {
+          "type": "fallacy",
+          "name": "false_analogy",
+          "display": "False Analogy",
+          "excerpt": "directors are like boxers. They have their time.",
+          "start_time": 486,
+          "end_time": 502,
+          "severity": "subtle",
+          "explanation": "Tarantino compares film directors to boxers to support the claim that directors decline with age. The analogy is rhetorically vivid but logically weak — the skills, physical demands, and career arcs of boxers differ substantially from those of directors."
+        }
+      ],
+      "errors": []
+    }
+  },
+  "crossMode": {
+    "claimJaccard": {
+      "srt_vs_youtube_url": 1,
+      "srt_vs_audio_production": 1,
+      "youtube_url_vs_audio_production": 1
+    },
+    "provisionalDisagreements": [],
+    "markerNameOverlap": {
+      "srt_vs_youtube_url": 0.6,
+      "srt_vs_audio_production": 0.4,
+      "youtube_url_vs_audio_production": 0.2857142857142857
+    },
+    "explicitRevisionEvents": 0
+  },
+  "warnings": [
+    "URL captions diverged from SRT baseline (WER 23.2%).",
+    "Production-like audio transcription collapsed speakers to one speaker.",
+    "No explicit later-context revision events were emitted; current output schema does not expose reopen/merge/supersede behavior."
+  ]
+}

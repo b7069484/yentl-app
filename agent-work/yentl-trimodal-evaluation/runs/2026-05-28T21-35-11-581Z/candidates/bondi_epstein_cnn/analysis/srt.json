@@ -1,0 +1,197 @@
+{
+  "mode": "srt",
+  "utterancesAvailable": 33,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Pam Bondi serves as U.S. Attorney General.",
+      "utterance_start": 0.08,
+      "utterance_end": 21.04,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-srt-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "public record",
+          "current officeholder"
+        ],
+        "explanation": "Pam Bondi was nominated by President Trump and confirmed by the Senate as U.S. Attorney General in early 2025, and has been serving in that role."
+      },
+      "confirmed": {
+        "primary_label": "TRUE",
+        "score": 98,
+        "annotations": [
+          "Pam Bondi was confirmed as U.S. Attorney General in February 2025"
+        ],
+        "explanation": "Pam Bondi was nominated by President Trump and confirmed by the U.S. Senate on February 4, 2025, as the 87th U.S. Attorney General. She has been serving in that role since. Multiple authoritative sources, including the Department of Justice's official website, confirm this.",
+        "sources": []
+      }
+    },
+    {
+      "claim_text": "U.S. Attorney General Pam Bondi testified before the House Judiciary Committee.",
+      "utterance_start": 0.08,
+      "utterance_end": 21.04,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-srt-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 85,
+        "annotations": [
+          "public hearing",
+          "consistent with title"
+        ],
+        "explanation": "Pam Bondi serves as U.S. Attorney General in the Trump administration, and AGs routinely testify before the House Judiciary Committee. The source context references a combative hearing involving Bondi and Democrats over the Epstein files, consistent with such testimony."
+      }
+    },
+    {
+      "claim_text": "The U.S. Justice Department has released Jeffrey Epstein files.",
+      "utterance_start": 0.08,
+      "utterance_end": 21.04,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-srt-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Robert Mueller's investigation found no evidence of foreign interference in the 2016 US election.",
+      "utterance_start": 102.16,
+      "utterance_end": 121.44,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-srt-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Robert F. Kennedy Sr. served as U.S. Attorney General",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-srt-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Elliot Richardson served as U.S. Attorney General",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-srt-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Janet Reno served as U.S. Attorney General",
+      "utterance_start": 256.88,
+      "utterance_end": 270.16,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "bondi_epstein_cnn-srt-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The US Department of Justice released the evidence used to obtain a search warrant in Fulton County, Georgia.",
+      "utterance_start": 399.84,
+      "utterance_end": 422.88,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-srt-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The US Department of Justice is involved in a lawsuit with about 24 states seeking sensitive personal information about voters.",
+      "utterance_start": 399.84,
+      "utterance_end": 422.88,
+      "topic": "Law",
+      "topic_secondary": "Politics",
+      "id": "bondi_epstein_cnn-srt-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Todd Blanche has been the main public face of the DOJ on Epstein-related matters",
+      "utterance_start": 556.64,
+      "utterance_end": 567.36,
+      "topic": "Politics",
+      "topic_secondary": "Law",
+      "id": "bondi_epstein_cnn-srt-claim-10",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "This is a fiasco",
+      "start_time": 215,
+      "end_time": 219,
+      "severity": "clear",
+      "explanation": "The commentator uses emotionally charged language ('fiasco') to frame the hearing negatively rather than offering neutral description."
+    },
+    {
+      "type": "rhetoric",
+      "name": "pejorative_framing",
+      "display": "Pejorative Framing",
+      "excerpt": "name calling, you're a loser, lawyer, this and that",
+      "start_time": 241,
+      "end_time": 248,
+      "severity": "clear",
+      "explanation": "The speaker characterizes Bondi's conduct in pejorative shorthand to frame her behavior as unserious and beneath the office."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_authority",
+      "display": "Appeal to Authority",
+      "excerpt": "the same job that was once held by Robert F. Kennedy, senior, by Elliot Richardson, by Janet Reno",
+      "start_time": 225,
+      "end_time": 238,
+      "severity": "subtle",
+      "explanation": "Invoking past prestigious holders of the AG office is used to imply Bondi falls short by association rather than via substantive argument about her actions."
+    },
+    {
+      "type": "fallacy",
+      "name": "loaded_question",
+      "display": "Loaded Question",
+      "excerpt": "did we get any meaningful clarity on the Epstein investigations, on the Epstein files?",
+      "start_time": 248,
+      "end_time": 255,
+      "severity": "subtle",
+      "explanation": "The rhetorical question presupposes the hearing failed to provide clarity, leading the audience to the desired conclusion rather than examining evidence."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "she bungled it so badly initially",
+      "start_time": 556,
+      "end_time": 562,
+      "severity": "clear",
+      "explanation": "The word 'bungled' is emotionally charged and pejorative, framing Bondi's handling negatively rather than describing it neutrally."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "set off this entire firestorm of controversies",
+      "start_time": 542,
+      "end_time": 548,
+      "severity": "subtle",
+      "explanation": "'Firestorm' is dramatic, emotionally loaded language used to amplify the perceived severity of the controversy."
+    },
+    {
+      "type": "bias",
+      "name": "confirmation_bias",
+      "display": "Confirmation Bias",
+      "excerpt": "she clearly is keenly aware of the audience that she most needs to win over",
+      "start_time": 509,
+      "end_time": 518,
+      "severity": "subtle",
+      "explanation": "The commentator interprets Bondi's unprompted praise of the president as confirmation of a predetermined narrative about her motives, rather than considering alternatives."
+    }
+  ],
+  "errors": []
+}

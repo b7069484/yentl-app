@@ -1,0 +1,77 @@
+{
+  "runId": "smoke-2026-05-28",
+  "baseUrl": "http://localhost:3000",
+  "maxAnalysisUtterances": 2,
+  "maxVerifyPerMode": 0,
+  "maxConfirmedPerSrt": 0,
+  "includeStress": true,
+  "onlyIds": [
+    "tarantino_channel4"
+  ],
+  "candidates": [
+    {
+      "id": "tarantino_channel4",
+      "group": "primary",
+      "url": "https://www.youtube.com/watch?v=GrsJDy8VjZk",
+      "videoId": "GrsJDy8VjZk",
+      "expectedSpeakers": 2,
+      "reason": "Adversarial two-speaker interview, loaded-question/refusal boundary."
+    },
+    {
+      "id": "bondi_epstein_cnn",
+      "group": "primary",
+      "url": "https://www.youtube.com/watch?v=RhdgXhIF_CM",
+      "videoId": "RhdgXhIF_CM",
+      "expectedSpeakers": 4,
+      "reason": "Combative legal/procedural hearing with allegations and crosstalk."
+    },
+    {
+      "id": "vance_walz_debate",
+      "group": "primary",
+      "url": "https://www.youtube.com/watch?v=XocmI6WyoE8",
+      "videoId": "XocmI6WyoE8",
+      "expectedSpeakers": 3,
+      "reason": "Moderated political debate with direct factual claims and evasive answers."
+    },
+    {
+      "id": "da_race_kcra",
+      "group": "primary",
+      "url": "https://www.youtube.com/watch?v=8VzPtnT6yF8",
+      "videoId": "8VzPtnT6yF8",
+      "expectedSpeakers": 2,
+      "reason": "Loaded-premise local-news interview and URL-caption timing stress."
+    },
+    {
+      "id": "vaccine_delay_rciscience",
+      "group": "primary",
+      "url": "https://www.youtube.com/watch?v=N9kMkLSsOjo",
+      "videoId": "N9kMkLSsOjo",
+      "expectedSpeakers": 4,
+      "reason": "Science/medical uncertainty and risk-benefit claims."
+    },
+    {
+      "id": "maajid_mehdi_bbc",
+      "group": "stress",
+      "url": "https://www.youtube.com/watch?v=noOPNkxQE9M",
+      "videoId": "noOPNkxQE9M",
+      "expectedSpeakers": 4,
+      "reason": "Heated religion/politics panel; auto-caption stress reserve."
+    },
+    {
+      "id": "hitchens_mcgrath",
+      "group": "stress",
+      "url": "https://www.youtube.com/watch?v=NX_LM7WZc9A",
+      "videoId": "NX_LM7WZc9A",
+      "expectedSpeakers": 4,
+      "reason": "Philosophical debate; auto-caption stress reserve."
+    },
+    {
+      "id": "trump_biden_factcheck",
+      "group": "stress",
+      "url": "https://www.youtube.com/watch?v=Mczxmex4LNw",
+      "videoId": "Mczxmex4LNw",
+      "expectedSpeakers": 3,
+      "reason": "Fact-checking commentary source; auto-caption stress reserve."
+    }
+  ]
+}

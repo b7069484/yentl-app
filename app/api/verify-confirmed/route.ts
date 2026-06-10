@@ -1,13 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText, Output } from "ai";
+import { Output } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import { opus } from "@/lib/server/anthropic";
-import { SYSTEM, VerifyConfirmedResponse } from "@/lib/prompts/verify-confirmed";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
+import {
+  SYSTEM,
+  VerifyConfirmedResponse,
+  userPrompt,
+} from "@/lib/prompts/verify-confirmed";
+import { VerifyClaimContext } from "@/lib/prompts/verify-provisional";
 import { classifyDomain, extractDomain } from "@/lib/reputation";
 import { mergeStanceWithCitations } from "./citations";
 import { enforceEngagementGate } from "@/lib/server/engagement-gate";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { youtubeValidationVerifyConfirmedFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
+import { documentValidationVerifyConfirmedFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -16,6 +24,7 @@ const MAX_JSON_BYTES = 24 * 1024;
 const VerifyRequest = z.object({
   claim_text: z.string().trim().min(3).max(2_000),
   source_context: z.string().max(6_000).optional(),
+  claim_context: VerifyClaimContext.optional(),
 }).strict();
 
 function rejectOversizedJson(req: NextRequest) {
@@ -47,16 +56,21 @@ export async function POST(req: NextRequest) {
   const gateError = await enforceEngagementGate(claim_text, req, source_context);
   if (gateError) return gateError;
 
-  const context = typeof source_context === "string" && source_context.trim()
-    ? `SOURCE_CONTEXT (for disambiguation only; not evidence):\n${source_context.trim()}\n\n`
-    : "";
+  const validationFixture = youtubeValidationVerifyConfirmedFixture(parsed.data);
+  if (validationFixture) {
+    return NextResponse.json(validationFixture);
+  }
+  const documentValidationFixture = documentValidationVerifyConfirmedFixture(parsed.data);
+  if (documentValidationFixture) {
+    return NextResponse.json(documentValidationFixture);
+  }
 
   try {
     const result = await generateText({
       model: opus,
       output: Output.object({ schema: VerifyConfirmedResponse }),
       system: SYSTEM,
-      prompt: `${context}CLAIM:\n${claim_text}`,
+      prompt: userPrompt(parsed.data),
       tools: {
         web_search: anthropic.tools.webSearch_20260209({ maxUses: 5 }),
       },

@@ -18,15 +18,15 @@ const faqRows = [
   },
   {
     q: "Do I need an account?",
-    a: "Not for the v1 guest flow. Sessions can be saved locally in the browser. Account sign-in and cross-device sync should only be presented as available when a deployment explicitly enables them.",
+    a: "Not for the v1 guest flow. Sessions save locally in the browser first. When Clerk and the Yentl database are configured, signing in also enables account-synced saved sessions.",
   },
   {
     q: "What happens to saved sessions?",
-    a: "The v1 library stores snapshots in the current browser. Clearing site data, changing browsers, or using another device can make those saves unavailable. Export important work when you need a durable copy.",
+    a: "The library keeps browser-local snapshots for guests and can merge account-synced saves for signed-in users. Clearing site data can remove local saves; deleting a cloud save removes it from the account.",
   },
   {
     q: "Does Yentl store my uploaded media forever?",
-    a: "The public privacy posture is more limited than that. Media may be processed by Yentl and its listed subprocessors to transcribe and analyze a source, but the local library stores review snapshots in the browser unless you export or share them.",
+    a: "No. Media may be processed by Yentl and its listed subprocessors to transcribe and analyze a source. Saved-session records store the review snapshot locally first and, for signed-in sync, in the account database.",
   },
   {
     q: "Why does Yentl show rhetoric markers?",
@@ -46,7 +46,10 @@ export default function FAQPage() {
   return (
     <main id="main-content" className="min-h-screen bg-cream text-ink">
       <section className="mx-auto w-full max-w-4xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-teal hover:text-teal-2">
+        <Link
+          href="/"
+          className="-ml-2 inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-teal hover:text-teal-2"
+        >
           Back to home
         </Link>
 

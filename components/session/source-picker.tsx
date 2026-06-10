@@ -384,7 +384,7 @@ function SourceChoiceCard({
         disabled={disabled}
         aria-disabled={disabled}
         className={[
-          "yentl-action-button min-w-0 rounded-lg border bg-paper p-4 text-left shadow-sm transition-all",
+          "yentl-action-button min-h-11 min-w-0 rounded-lg border bg-paper p-4 text-left shadow-sm transition-all",
           "h-full w-full focus:outline-none focus:ring-2 focus:ring-ink/20",
           disabled
             ? "cursor-not-allowed border-line-soft opacity-70"

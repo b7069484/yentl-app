@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "window_id": "interview_002_clean_control",
+  "corpus_id": "test-corpus",
+  "source_id": "interview_002",
+  "start_s": 30,
+  "end_s": 60,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "to paper was to give black American males a western hero. Give them a cool folkloric hero that could actually be empowering and actually pay back blood for blood. And that's the revenge bit? I mean, is is that essential Mhmm. To making hero? Well, this well, in in the case of in in the case of laying waste to a genocidal white racist class in in the institution of slavery,",
+    "turns": [
+      {
+        "id": "interview-002-guest-1",
+        "start_s": 30,
+        "end_s": 41.38,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "interview-002-interviewer-1",
+        "start_s": 41.76,
+        "end_s": 46.48,
+        "speaker_id": "interviewer",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "interview-002-guest-2",
+        "start_s": 46.48,
+        "end_s": 60,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "interview-002-claim-1",
+        "start_s": 30,
+        "end_s": 41.38,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "interview-002-claim-2",
+        "start_s": 46.48,
+        "end_s": 60,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

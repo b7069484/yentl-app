@@ -1,0 +1,87 @@
+{
+  "mode": "audio_production",
+  "utterancesAvailable": 39,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "In October 2006, a gunman broke into an Amish schoolhouse in the United States and shot 10 Amish schoolgirls, of whom 5 died.",
+      "utterance_start": 454.58,
+      "utterance_end": 467.48502,
+      "topic": "History",
+      "topic_secondary": "Society",
+      "id": "hitchens_mcgrath-audio_production-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "well-documented event"
+        ],
+        "explanation": "The Nickel Mines shooting occurred on October 2, 2006, in Pennsylvania, when Charles Roberts entered an Amish schoolhouse and shot 10 girls, killing 5. The details in the claim match the widely reported facts."
+      }
+    }
+  ],
+  "markers": [
+    {
+      "type": "fallacy",
+      "name": "cherry_picking",
+      "display": "Cherry Picking",
+      "excerpt": "We see this in the Soviet Union... Lenin having said... authorize the protracted use of brutality against religious believers",
+      "start_time": 141,
+      "end_time": 162,
+      "severity": "subtle",
+      "explanation": "The speaker selects specific historical examples (Lenin, Stalin) of atheist regimes committing violence to suggest a pattern about atheist worldviews, while not engaging with counter-examples or broader data."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "an ideology, a world view, which basically is sanctioning violence, in this case, anti religious violence",
+      "start_time": 163,
+      "end_time": 172,
+      "severity": "subtle",
+      "explanation": "Framing atheism as an 'ideology sanctioning violence' uses emotionally charged language to color the audience's perception before any argument is made."
+    },
+    {
+      "type": "rhetoric",
+      "name": "hedge_words",
+      "display": "Hedge Words",
+      "excerpt": "I would not argue from that that this shows that atheism in general or atheists in particular are violent people",
+      "start_time": 173,
+      "end_time": 182,
+      "severity": "clear",
+      "explanation": "After making the implication that atheist worldviews lead to violence, the speaker hedges to avoid directly owning the claim, preserving plausible deniability while leaving the impression intact."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "The Amish, as I'm sure you all know, are a very conservative protestant sect... they also regard the ethical example of Jesus as absolutely normative.",
+      "start_time": 468,
+      "end_time": 502,
+      "severity": "clear",
+      "explanation": "McGrath uses the single example of the Amish to argue that Christianity contains a self-correcting ethical norm, generalizing from one isolated sect to defend religion broadly."
+    },
+    {
+      "type": "fallacy",
+      "name": "no_true_scotsman",
+      "display": "No True Scotsman",
+      "excerpt": "This is not the way God is. This is not the way we should be behaving, and I fully concede there are those who fail to live up to that",
+      "start_time": 511,
+      "end_time": 525,
+      "severity": "subtle",
+      "explanation": "By framing violent religious behavior as a failure to live up to the 'true' norm of what God wants, McGrath subtly excludes counterexamples from counting against his thesis."
+    },
+    {
+      "type": "fallacy",
+      "name": "cherry_picking",
+      "display": "Cherry Picking",
+      "excerpt": "The cycle of violence was broken instantly because for them, Christ ordered them, commanded them to show forgiveness.",
+      "start_time": 487,
+      "end_time": 502,
+      "severity": "subtle",
+      "explanation": "Selecting the Amish forgiveness narrative as evidence for religion's self-corrective capacity while ignoring contrary cases within the same tradition."
+    }
+  ],
+  "errors": []
+}

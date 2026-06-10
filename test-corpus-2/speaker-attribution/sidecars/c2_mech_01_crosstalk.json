@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_mech_01_crosstalk",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_mech_01",
+  "start_s": 0,
+  "end_s": 90,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "CNN's Caitlin Collins is the center of a firestorm of controversy surrounding former president Trump's appearance on the network this week. The host of ABC's The View had this to say about Collins' performance. That was an hour in. I I I don't It was an hour. That she was, I don't think that she was, prepared. I don't think he should have been given a platform. I know. I was wondering when he was going to be fact checked in real time. She did on the very first question. Well, I think she needed a producer in her ear and I think we needed a Chiron. This is a lie. This is a lie. This is a lie. This is a lie. That is That's right. What the media's job is. The media's job is to hold their feet to the fire and to get at the truth. Now Colin facing backlash online after users pulled some of her old social media posts and media appearances. Here is Caitlin Collins back from when she worked for the daily caller. Okay. So George Soros is this foreign born left wing guy who essentially wants to change the nature of our country and in this data dump one of the memos was about the refugee crisis and they made three points. They think that they've been successful at influencing immigration policy across the world. They think that the refugee crisis is an opportunity to continue doing so and they think the refugee crisis",
+    "turns": [
+      {
+        "id": "c2-mech-01-narrator-setup-1",
+        "start_s": 5.04,
+        "end_s": 16.825,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-mech-01-panel-discussion-1",
+        "start_s": 17.065,
+        "end_s": 52.265,
+        "speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "crosstalk"
+      },
+      {
+        "id": "c2-mech-01-narrator-setup-2",
+        "start_s": 54.38,
+        "end_s": 66.3,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-mech-01-daily-caller-clip-1",
+        "start_s": 66.45,
+        "end_s": 90.31,
+        "speaker_id": "daily_caller_clip",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "clip"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-mech-01-claim-1",
+        "start_s": 5.04,
+        "end_s": 11.92,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-01-claim-2",
+        "start_s": 12.265,
+        "end_s": 16.825,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-01-claim-3",
+        "start_s": 17.065,
+        "end_s": 23.865,
+        "owner_speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-01-claim-4",
+        "start_s": 24.905,
+        "end_s": 27.225,
+        "owner_speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-01-claim-5",
+        "start_s": 27.75,
+        "end_s": 33.51,
+        "owner_speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-01-claim-6",
+        "start_s": 34.47,
+        "end_s": 38.07,
+        "owner_speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-01-claim-7",
+        "start_s": 38.07,
+        "end_s": 52.265,
+        "owner_speaker_id": "panel_discussion",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-01-claim-8",
+        "start_s": 54.38,
+        "end_s": 66.3,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-01-claim-9",
+        "start_s": 66.45,
+        "end_s": 76.765,
+        "owner_speaker_id": "daily_caller_clip",
+        "expected_provider_speaker_id": 3,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-01-claim-10",
+        "start_s": 76.765,
+        "end_s": 90.31,
+        "owner_speaker_id": "daily_caller_clip",
+        "expected_provider_speaker_id": 3,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": [
+      {
+        "id": "c2-mech-01-unsafe-1",
+        "start_s": 17.065,
+        "end_s": 52.265,
+        "reason": "low-confidence crosstalk panel discussion should not be flattened into a precise single-speaker claim owner"
+      }
+    ]
+  }
+}

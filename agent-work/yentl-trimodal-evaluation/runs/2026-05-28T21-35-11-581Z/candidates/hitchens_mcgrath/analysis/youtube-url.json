@@ -1,0 +1,178 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 21,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Michael Shermer is president of the Skeptics Society",
+      "utterance_start": 81.88,
+      "utterance_end": 109.36,
+      "topic": "Society",
+      "topic_secondary": "Science",
+      "id": "hitchens_mcgrath-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 98,
+        "annotations": [
+          "well-established fact"
+        ],
+        "explanation": "Michael Shermer founded the Skeptics Society in 1992 and serves as its president. He is also the publisher of Skeptic magazine."
+      }
+    },
+    {
+      "claim_text": "Michael Shermer wrote in his book 'How We Believe' that for every religious atrocity there are 10,000 unreported acts of kindness and generosity arising from religious commitment",
+      "utterance_start": 81.88,
+      "utterance_end": 109.36,
+      "topic": "Culture",
+      "topic_secondary": "Society",
+      "id": "hitchens_mcgrath-youtube_url-claim-2",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "UNVERIFIABLE",
+        "score": 40,
+        "annotations": [
+          "specific attribution",
+          "exact ratio uncertain",
+          "paraphrase possible"
+        ],
+        "explanation": "Michael Shermer did write 'How We Believe' (2000) and discussed the positive social effects of religion alongside its harms, arguing that everyday acts of religious kindness vastly outnumber atrocities. However, I cannot confirm the precise '10,000 to 1' ratio or that this exact phrasing appears in the book; it may be a paraphrase or approximation."
+      }
+    },
+    {
+      "claim_text": "Lenin authorized the protracted use of brutality against religious believers, stating there is no higher authority by which he may be judged.",
+      "utterance_start": 158.8,
+      "utterance_end": 188.319,
+      "topic": "History",
+      "topic_secondary": "Politics",
+      "id": "hitchens_mcgrath-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Madame Roland was brought to the guillotine on trumped up charges in 1793 during the French Revolution",
+      "utterance_start": 238.56,
+      "utterance_end": 266.04,
+      "topic": "History",
+      "topic_secondary": null,
+      "id": "hitchens_mcgrath-youtube_url-claim-4",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "As she was led to the guillotine, Madame Roland pointed to a statue of Liberty and said 'Liberty, what crimes are committed in your name'",
+      "utterance_start": 238.56,
+      "utterance_end": 266.04,
+      "topic": "History",
+      "topic_secondary": null,
+      "id": "hitchens_mcgrath-youtube_url-claim-5",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The French Revolution degenerated into the Reign of Terror by 1793",
+      "utterance_start": 238.56,
+      "utterance_end": 266.04,
+      "topic": "History",
+      "topic_secondary": "Politics",
+      "id": "hitchens_mcgrath-youtube_url-claim-6",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the Gethsemane account, Jesus told his followers to put down their swords when they sought to defend him before his betrayal.",
+      "utterance_start": 372.68,
+      "utterance_end": 402.599,
+      "topic": "Culture",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-youtube_url-claim-7",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Amish Schoolhouse killings occurred in October 2006.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-youtube_url-claim-8",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "In the Amish Schoolhouse killings, a gunman broke into an Amish schoolhouse and shot approximately 10 Amish school girls, of whom five died.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-youtube_url-claim-9",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "The Amish are a conservative Protestant sect.",
+      "utterance_start": 447.96,
+      "utterance_end": 476.36,
+      "topic": "Culture",
+      "topic_secondary": "History",
+      "id": "hitchens_mcgrath-youtube_url-claim-10",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "the most Dreadful acts of violence",
+      "start_time": 225,
+      "end_time": 235,
+      "severity": "subtle",
+      "explanation": "Emotionally charged phrasing ('Dreadful acts of violence') is used to amplify the moral weight of the French Revolution example beyond neutral description."
+    },
+    {
+      "type": "fallacy",
+      "name": "false_cause",
+      "display": "False Cause",
+      "excerpt": "World Views that may well have begun with great excitement... but something happens and they go wrong",
+      "start_time": 200,
+      "end_time": 220,
+      "severity": "subtle",
+      "explanation": "The speaker implies that worldviews/ideologies themselves cause atrocities like Stalinism and the Terror, attributing causation to the belief system without establishing the actual causal mechanism."
+    },
+    {
+      "type": "fallacy",
+      "name": "anecdotal_fallacy",
+      "display": "Anecdotal Fallacy",
+      "excerpt": "many of you will know the tragic story of Madame Roland who was brought to the guillotine on trumped up charges",
+      "start_time": 220,
+      "end_time": 240,
+      "severity": "clear",
+      "explanation": "A single dramatic personal story (Madame Roland's execution) is used to support a broad claim about how worldviews degenerate, substituting an emotive anecdote for systematic argument."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_emotion",
+      "display": "Appeal to Emotion",
+      "excerpt": "Liberty what crimes are committed in your name",
+      "start_time": 238,
+      "end_time": 250,
+      "severity": "clear",
+      "explanation": "The quoted dying words of Madame Roland are deployed for dramatic emotional impact to persuade the audience that secular worldviews lead to atrocity, rather than offering analytical evidence."
+    },
+    {
+      "type": "fallacy",
+      "name": "no_true_scotsman",
+      "display": "No True Scotsman",
+      "excerpt": "I fully concede there are those who fail to live up to that but there is a challenge that can be issued to them",
+      "start_time": 515,
+      "end_time": 525,
+      "severity": "subtle",
+      "explanation": "McGrath implicitly suggests that Christians who commit violence are failing to live up to the 'true' Christian norm exemplified by the Amish, deflecting criticism of religion by defining authentic believers as only those who behave well."
+    },
+    {
+      "type": "fallacy",
+      "name": "cherry_picking",
+      "display": "Cherry Picking",
+      "excerpt": "they also regard the ethical example of Jesus as absolutely normative for them there will be no retribution of any kind",
+      "start_time": 475,
+      "end_time": 488,
+      "severity": "clear",
+      "explanation": "Selecting the Amish forgiveness example as representative of Christianity's capacity for self-criticism, while setting aside contrary examples, to make the broader argument about religion."
+    }
+  ],
+  "errors": []
+}

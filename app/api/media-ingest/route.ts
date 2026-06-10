@@ -4,6 +4,11 @@ import { checkMediaMime } from "@/lib/server/media-mime";
 import { transcribeUrl } from "@/lib/server/deepgram-batch";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import {
+  isSyntheticPanelValidationUrl,
+  SYNTHETIC_PANEL_MEDIA_MIME,
+  syntheticPanelTranscriptionFixture,
+} from "@/lib/server/validation-media-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes
@@ -42,6 +47,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   const trimmedUrl = url.trim();
+
+  if (isSyntheticPanelValidationUrl(trimmedUrl)) {
+    return NextResponse.json({
+      ...syntheticPanelTranscriptionFixture(),
+      mime: SYNTHETIC_PANEL_MEDIA_MIME,
+    });
+  }
 
   // 2. SSRF guard
   try {

@@ -1,6 +1,7 @@
 import type {
   ClaimCard,
   RhetoricMarker,
+  SessionSource,
   Speaker,
   TranscriptSegment,
 } from "@/lib/types";
@@ -326,4 +327,140 @@ export function recentActivityEvents(
   // Sort descending by ts, then slice
   events.sort((a, b) => b.ts - a.ts);
   return events.slice(0, limit);
+}
+
+// ─── Source health ───────────────────────────────────────────────────────────
+
+export type SourceHealthTone = "good" | "active" | "warning" | "idle";
+
+export type SourceHealth = {
+  sourceType: string;
+  title: string;
+  subtitle: string;
+  statusLabel: string;
+  tone: SourceHealthTone;
+  transcriptCount: number;
+  terminalClaimCount: number;
+  checkingClaimCount: number;
+  sourceBackedClaimCount: number;
+  uniqueSourceCount: number;
+  highReputationSourceCount: number;
+};
+
+export function sourceHealthSummary({
+  source,
+  transcript,
+  claims,
+}: {
+  source: SessionSource;
+  transcript: TranscriptSegment[];
+  claims: ClaimCard[];
+}): SourceHealth {
+  const terminalClaims = claims.filter((claim) => claim.status !== "checking");
+  const checkingClaimCount = claims.length - terminalClaims.length;
+  const sourceBackedClaims = terminalClaims.filter((claim) => claim.sources.length > 0);
+  const uniqueSourceUrls = new Set<string>();
+  const highReputationSourceUrls = new Set<string>();
+
+  for (const claim of terminalClaims) {
+    for (const sourceItem of claim.sources) {
+      uniqueSourceUrls.add(sourceItem.url);
+      if (sourceItem.reputation_tier === "high") {
+        highReputationSourceUrls.add(sourceItem.url);
+      }
+    }
+  }
+
+  return {
+    ...sourceIdentity(source),
+    ...sourceStatus({
+      transcriptCount: transcript.length,
+      terminalClaimCount: terminalClaims.length,
+      checkingClaimCount,
+      sourceBackedClaimCount: sourceBackedClaims.length,
+    }),
+    transcriptCount: transcript.length,
+    terminalClaimCount: terminalClaims.length,
+    checkingClaimCount,
+    sourceBackedClaimCount: sourceBackedClaims.length,
+    uniqueSourceCount: uniqueSourceUrls.size,
+    highReputationSourceCount: highReputationSourceUrls.size,
+  };
+}
+
+function sourceStatus({
+  transcriptCount,
+  terminalClaimCount,
+  checkingClaimCount,
+  sourceBackedClaimCount,
+}: {
+  transcriptCount: number;
+  terminalClaimCount: number;
+  checkingClaimCount: number;
+  sourceBackedClaimCount: number;
+}): Pick<SourceHealth, "statusLabel" | "tone"> {
+  if (transcriptCount === 0) {
+    return { statusLabel: "Waiting for transcript", tone: "idle" };
+  }
+  if (checkingClaimCount > 0) {
+    return { statusLabel: "Checking sources", tone: "active" };
+  }
+  if (sourceBackedClaimCount > 0) {
+    return { statusLabel: "Source-backed", tone: "good" };
+  }
+  if (terminalClaimCount > 0) {
+    return { statusLabel: "Needs source pass", tone: "warning" };
+  }
+  return { statusLabel: "Transcript ready", tone: "active" };
+}
+
+function sourceIdentity(source: SessionSource): Pick<SourceHealth, "sourceType" | "title" | "subtitle"> {
+  switch (source.kind) {
+    case "youtube":
+      return {
+        sourceType: "YouTube",
+        title: source.title?.trim() || hostFromUrl(source.url) || "YouTube video",
+        subtitle: source.channel?.trim() || source.url,
+      };
+    case "browser_tab":
+      return {
+        sourceType: "Browser tab",
+        title: source.title?.trim() || source.context?.page_title?.trim() || "Browser audio",
+        subtitle: source.context?.site_name?.trim() || hostFromUrl(source.url) || source.url || "Extension capture",
+      };
+    case "audio_file":
+      return {
+        sourceType: "Audio file",
+        title: source.filename || "Uploaded audio",
+        subtitle: source.mime || "Local file",
+      };
+    case "text_doc":
+      return {
+        sourceType: source.intent === "claim_only" ? "Quick check" : source.intent === "web_url" ? "Web text" : "Document",
+        title: source.filename || hostFromUrl(source.source_url) || "Imported text",
+        subtitle: source.source_url || source.mime || `${source.byte_count} bytes`,
+      };
+    case "media_url":
+      return {
+        sourceType: "Media URL",
+        title: hostFromUrl(source.url) || "Remote media",
+        subtitle: source.url,
+      };
+    case "mic":
+    default:
+      return {
+        sourceType: "Microphone",
+        title: "Live microphone",
+        subtitle: "Local live session",
+      };
+  }
+}
+
+function hostFromUrl(value?: string): string | null {
+  if (!value) return null;
+  try {
+    return new URL(value).host.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
 }

@@ -99,4 +99,49 @@ describe("MicPreRecordPane", () => {
 
     expect(mockSetMicDeviceId).toHaveBeenCalledWith("usb-mic");
   });
+
+  it("announces when microphone device choices are unavailable", async () => {
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: {},
+    });
+
+    render(<MicPreRecordPane />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Microphone choices are not available in this browser.",
+    );
+  });
+
+  it("recovers the microphone list after permission is allowed", async () => {
+    const enumerateDevices = vi.fn()
+      .mockRejectedValueOnce(new Error("Permission denied"))
+      .mockResolvedValueOnce([
+        { kind: "audioinput", deviceId: "allowed-mic", label: "Allowed microphone" },
+      ]);
+
+    Object.defineProperty(globalThis, "navigator", {
+      configurable: true,
+      value: {
+        mediaDevices: {
+          enumerateDevices,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        },
+      },
+    });
+
+    render(<MicPreRecordPane />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Microphone choices will appear after browser permission is allowed.",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Refresh microphone list/i }));
+
+    expect(await screen.findByRole("option", { name: "Allowed microphone" })).toBeTruthy();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Choose a specific input if the browser default is wrong.",
+    );
+  });
 });

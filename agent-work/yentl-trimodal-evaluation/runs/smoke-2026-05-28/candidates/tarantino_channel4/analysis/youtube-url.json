@@ -1,0 +1,21 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 26,
+  "utterancesAnalyzed": 2,
+  "claims": [],
+  "markers": [],
+  "errors": [
+    {
+      "stage": "extract:0",
+      "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+    },
+    {
+      "stage": "extract:25",
+      "message": "/api/extract-claims HTTP 500: {\"error\":\"extraction failed\"}"
+    },
+    {
+      "stage": "rhetoric:25",
+      "message": "/api/analyze-rhetoric HTTP 500: {\"error\":\"analyze failed\"}"
+    }
+  ]
+}

@@ -19,11 +19,12 @@ const {
   mockDeepgramSend,
   mockDeepgramClose,
   mockDeepgramEvents,
-  mockStartDisplayAudioCapture,
-  mockDisplayCaptureStop,
-  mockOnFinalUtterance,
-  mockRunSynthesisNow,
-} = vi.hoisted(() => ({
+	  mockStartDisplayAudioCapture,
+	  mockDisplayCaptureStop,
+	  mockOnFinalUtterance,
+	  mockRunSynthesisNow,
+	  mockBulkIngest,
+	} = vi.hoisted(() => ({
   mockReset: vi.fn(),
   mockSetPrerecordStage: vi.fn(),
   mockSetRecording: vi.fn(),
@@ -50,10 +51,11 @@ const {
     onClose: () => void;
   } },
   mockStartDisplayAudioCapture: vi.fn(),
-  mockDisplayCaptureStop: vi.fn(),
-  mockOnFinalUtterance: vi.fn(),
-  mockRunSynthesisNow: vi.fn(),
-}));
+	  mockDisplayCaptureStop: vi.fn(),
+	  mockOnFinalUtterance: vi.fn(),
+	  mockRunSynthesisNow: vi.fn(),
+	  mockBulkIngest: vi.fn(),
+	}));
 
 let mockSource: { kind: string; video_id: string; url: string } = {
   kind: "youtube",
@@ -106,11 +108,17 @@ vi.mock("@/lib/client/orchestrator", () => ({
   runSynthesisNow: (...args: unknown[]) => mockRunSynthesisNow(...args),
 }));
 
+vi.mock("@/lib/client/ingest-orchestrator", () => ({
+  bulkIngest: (...args: unknown[]) => mockBulkIngest(...args),
+}));
+
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
+let mockClipboardReadText = vi.fn();
 
 const VALID_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 const INVALID_URL = "https://vimeo.com/123456";
+const VALIDATION_URL = "https://www.youtube.com/watch?v=fTznEIZRkLg";
 const VIDEO_ID = "dQw4w9WgXcQ";
 
 const SAMPLE_SEGMENTS = [
@@ -191,9 +199,17 @@ beforeEach(() => {
     recorder: {},
     stop: mockDisplayCaptureStop,
   });
-  mockOnFinalUtterance.mockResolvedValue(undefined);
-  mockRunSynthesisNow.mockResolvedValue(undefined);
-  mockFetchByRoute("success");
+	  mockOnFinalUtterance.mockResolvedValue(undefined);
+	  mockRunSynthesisNow.mockResolvedValue(undefined);
+	  mockBulkIngest.mockResolvedValue(undefined);
+	  mockFetchByRoute("success");
+  mockClipboardReadText = vi.fn();
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      readText: mockClipboardReadText,
+    },
+  });
 });
 
 describe("YoutubeIngestPane - live watch UI", () => {
@@ -213,6 +229,8 @@ describe("YoutubeIngestPane - live watch UI", () => {
     const input = screen.getByPlaceholderText(/youtube\.com\/watch/i);
     expect(input.tagName.toLowerCase()).toBe("input");
     expect(screen.getByRole("button", { name: /Start live analysis/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Paste YouTube URL from clipboard" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Load validation YouTube" })).toBeTruthy();
   });
 
   it("keeps metric explanations collapsed until a metric is selected", () => {
@@ -247,6 +265,61 @@ describe("YoutubeIngestPane - live watch UI", () => {
     expect(screen.getByRole("button", { name: /Start live analysis/i })).toBeDisabled();
     fireEvent.change(input, { target: { value: VALID_URL } });
     expect(screen.getByRole("button", { name: /Start live analysis/i })).not.toBeDisabled();
+  });
+
+  it("pastes the first copied URL into the YouTube field", async () => {
+    mockClipboardReadText.mockResolvedValue(`Watch this: ${VALID_URL}.`);
+
+    render(<YoutubeIngestPane />);
+    fireEvent.click(screen.getByRole("button", { name: "Paste YouTube URL from clipboard" }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("YouTube URL")).toHaveValue(VALID_URL);
+      expect(screen.getByText("URL pasted from clipboard.")).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Start live analysis/i })).not.toBeDisabled();
+    });
+  });
+
+  it("loads the deterministic validation YouTube URL and starts caption ingest", async () => {
+    render(<YoutubeIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation YouTube" }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("YouTube URL")).toHaveValue(VALIDATION_URL);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/api/youtube-ingest",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "x-yentl-source-consent": "source-analysis-v1",
+          }),
+          body: JSON.stringify({ url: VALIDATION_URL }),
+        }),
+      );
+      expect(mockSetSource).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: "youtube",
+          video_id: VIDEO_ID,
+          url: VALIDATION_URL,
+        }),
+      );
+      expect(screen.getByText(/Press play if the YouTube controls are visible/i)).toBeTruthy();
+    });
+  });
+
+  it("shows a clipboard error when copied text has no URL", async () => {
+    mockClipboardReadText.mockResolvedValue("no video link");
+
+    render(<YoutubeIngestPane />);
+    fireEvent.click(screen.getByRole("button", { name: "Paste YouTube URL from clipboard" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Clipboard did not contain an http or https URL.")).toBeTruthy();
+    });
   });
 
   it("loads a real player in the left-side YouTube surface when a valid URL is entered", async () => {
@@ -326,6 +399,31 @@ describe("YoutubeIngestPane - synced caption handoff", () => {
       );
       expect(screen.getByTestId("youtube-caption-transcript").textContent).toContain("Hello.");
       expect(screen.getByRole("button", { name: /Live analysis running/i })).toBeDisabled();
+    });
+  });
+
+  it("imports the armed caption track into Watch when playback is stuck", async () => {
+    await enterUrlAndStart();
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Analyze caption track" })).toBeTruthy();
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Analyze caption track" }));
+    });
+
+    await waitFor(() => {
+      expect(mockBulkIngest).toHaveBeenCalledWith(
+        SAMPLE_SEGMENTS,
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          speakers: expect.arrayContaining([
+            expect.objectContaining({ id: 0 }),
+          ]),
+        }),
+      );
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
     });
   });
 

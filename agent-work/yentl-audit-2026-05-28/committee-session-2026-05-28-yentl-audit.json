@@ -1,0 +1,59 @@
+{
+  "version": "2.0",
+  "session_id": "committee-2026-05-28-yentl-audit",
+  "created_at": "2026-05-28T19:20:00Z",
+  "updated_at": "2026-05-28T19:45:00Z",
+  "phase_cursor": "synthesis_complete",
+  "mode": "standard",
+  "deliverable_summary": "Full-stack audit of Yentl (yentl.it) — version state, UI consistency, backend pipeline wiring, trimodal eval findings, 7-phase fix path. Goal: critique audit + drive Yentl to ship browser+extension ASAP, AI Act deadline 2026-08-02.",
+  "roster": {
+    "members": [
+      { "id": "apple-uiux-head", "name": "Head of UI/UX at Apple", "tier": "full", "model": "sonnet", "archetype": "domain-expert", "source": "pinned", "status": "complete" },
+      { "id": "anthropic-claude-code-head", "name": "Head of Claude Code at Anthropic", "tier": "full", "model": "sonnet", "archetype": "domain-expert", "source": "pinned", "status": "complete" },
+      { "id": "stripe-engineering-head", "name": "Head of Engineering at Stripe", "tier": "full", "model": "sonnet", "archetype": "domain-expert", "source": "pinned", "status": "complete" },
+      { "id": "data-scientist-metrics", "name": "Data Scientist / Metrics Lead", "tier": "full", "model": "sonnet", "archetype": "generalist", "source": "pinned", "status": "complete" },
+      { "id": "startup-founder-scrappy", "name": "Scrappy Startup Founder", "tier": "full", "model": "sonnet", "archetype": "operator", "source": "pinned", "status": "complete" },
+      { "id": "assemblyai-speech-head", "name": "Head of Speech AI at AssemblyAI", "tier": "full", "model": "sonnet", "archetype": "domain-expert", "source": "dynamic", "status": "complete" },
+      { "id": "politifact-editor-head", "name": "Editor-in-Chief at PolitiFact", "tier": "full", "model": "sonnet", "archetype": "operator", "source": "dynamic", "status": "complete" },
+      { "id": "crowdstrike-security-head", "name": "Head of Threat Intelligence at CrowdStrike", "tier": "focused", "model": "sonnet", "archetype": "domain-expert", "source": "pinned", "status": "complete" },
+      { "id": "regulatory-compliance", "name": "Regulatory & Compliance Officer", "tier": "focused", "model": "sonnet", "archetype": "adversarial", "source": "dynamic", "status": "complete" },
+      { "id": "skeptic-end-user", "name": "Skeptic End User", "tier": "focused", "model": "sonnet", "archetype": "adversarial", "source": "pinned", "status": "complete" }
+    ],
+    "blind_spots_offered": ["Chrome Web Store distribution / Manifest V3 — suggested: Head of Browser Platform at Mozilla"],
+    "blind_spots_accepted": []
+  },
+  "preliminary_answers": {},
+  "agenda": [],
+  "reports": {
+    "apple-uiux-head": { "status": "complete", "summary": "Live workspace has no dominant hierarchy; consent gate is checklist anti-pattern; verdict has no shareable URL; heat signal is theater without prosody. Ship: collapse to single-signal primary + sequential consent flow + verdict-as-shareable URL.", "full_text_ref": "committee-review §3.1 #1" },
+    "anthropic-claude-code-head": { "status": "complete", "summary": "AI architecture is sound but phase ordering is wrong. AudioMeter is separate from speaker attribution. Gateway SPOF needs Phase A fallback (20 lines). Ephemeral cache costs money - switch to prefix. Ship 2-week Phase A: types fix + prefix cache + gateway fallback + ClaimStance schema.", "full_text_ref": "committee-review §3.1 #2" },
+    "stripe-engineering-head": { "status": "complete", "summary": "P0 DISCOVERY: persistence layer does not exist. db client never imported outside its schema. Sessions only in Zustand memory. Paywall missing. Gateway SPOF. Extension monolith 1324 LOC. Ship: persistence wire + Stripe Checkout in a week.", "full_text_ref": "committee-review §3.1 #3" },
+    "data-scientist-metrics": { "status": "complete", "summary": "N=8 is exploratory not validating. Need N≈60-96 stratified for statistical validation. 80%/90%/95% gates unanchored vs DIHARD field benchmarks. No launch metrics defined. Prosody/ASR experiments confounded. Ship: 5-metric dashboard + 60-window stratified corpus + pre-registered phase criteria.", "full_text_ref": "committee-review §3.1 #4" },
+    "startup-founder-scrappy": { "status": "complete", "summary": "Won't ship in 9 weeks at this pace. Over-engineering invisible problem. 14 agent streams is bloat. AI Act is not THE deadline. Cut Phase E and G entirely. Ship 3 phases: paywall+verdict URL+hygiene weeks 1-2, types fix weeks 3-5, AI Act polish weeks 6-8, buffer week 9.", "full_text_ref": "committee-review §3.1 #5" },
+    "assemblyai-speech-head": { "status": "complete", "summary": "Phase 0 before Phase 1 is wrong order. 3-line fix in deepgram-batch.ts preserves words[]+confidence and stops speaker_id=0 lie. dominantSpeaker by word count is wrong - use confidence-weighted duration. Tab capture architecturally incompatible with cloud diarization. OverlapClass missing latent_overlap. Run diarize_model=latest on corpus (no consent needed) + benchmark AssemblyAI/Soniox on 8 candidates.", "full_text_ref": "committee-review §3.1 #6" },
+    "politifact-editor-head": { "status": "complete", "summary": "8 labels need comprehension bridge - mandatory why-this-not-adjacent sentence. Source reputation 3-tier hardcoded list fails IFCN Principle 4 - need 4 tiers + primary_document flag. No verdict URL = no correction/retraction loop. Algorithmic claim selection makes editorial decisions without accountability - need rejected_claims log. Ship: 4-field ClaimCard + /verdict/[id] + /dispute + /corrections + What-Yentl-Doesnt-Fact-Check methodology + marker taxonomy provenance note.", "full_text_ref": "committee-review §3.1 #7" },
+    "crowdstrike-security-head": { "status": "complete", "summary": "Two P0 launch blockers: (1) Unauthenticated AI route cost exfiltration - no rate limit, ~30 min to drain $1K Gateway balance. OWASP API6:2023. (2) ConsentGate localStorage tampering - any attacker can forge consent. Bypasses BIPA/AI Act. OWASP A04:2021. Ship: Cloudflare WAF + token-bucket scoped to Clerk JWT + server-side consent records to Neon.", "full_text_ref": "committee-review §3.2 #8" },
+    "regulatory-compliance": { "status": "complete", "summary": "BIPA voiceprint exposure $1K-5K per violation strict liability - cannot enable diarize:true for any real user before BIPA-specific written release + DELETE /api/biometric ship. AI Act Art 50 needs machine-readable disclosure on verdict surface - verdict URL gap is product+compliance gap simultaneously. Ship Phase B+C as single regulatory sprint by 2026-07-01.", "full_text_ref": "committee-review §3.2 #9" },
+    "skeptic-end-user": { "status": "complete", "summary": "Closes tab in 30 seconds. Consent gate fires before earning any reason to care. Don't argue Yentl it lands weird for strangers. Ship: one real pre-run verdict before signup - Netflix trailer-before-paywall pattern.", "full_text_ref": "committee-review §3.2 #10" }
+  },
+  "running_summary": "10/10 quorum. Standard mode. Reports synthesized. Key consensus: persistence layer is P0 (Stripe discovery), verdict URL ships pre-launch, paywall ships pre-launch, Gateway fallback collapses to Phase A, prefix cache 1-line win, stop speaker_id=0 lie, server-side consent, Cloudflare WAF rate limit. Key tensions: foundation-first WHICH foundation, Phase G timing (cut/collapse/benchmark-first), BIPA timing, landing-page first-impression, Phase E prosody (defer/cut/30-line patch).",
+  "debate_rounds": [],
+  "decisions": {
+    "confirmed": [
+      "10-member tech-product-review roster locked",
+      "Standard mode (no debate, single confirmation gate)",
+      "Blind-spot Mozilla declined",
+      "Synthesis written + saved to disk"
+    ],
+    "open": [
+      "Tension #1: Full audit Phase A-G vs Scrappy 3-phase MVP",
+      "Tension #2: Phase G timing (cut vs collapse vs benchmark-first)",
+      "Tension #5: Phase E prosody (defer vs cut vs 30-line patch)",
+      "Tension #4: Landing-page strategy (demo vs onboarding vs revenue-funnel)"
+    ],
+    "contentious": [
+      "Scrappy's cut-Phase-E and cut-Phase-G positions vs the rest"
+    ]
+  },
+  "cost_estimate": { "sub_agent_tokens": 545931, "main_context_tokens": 8000 }
+}

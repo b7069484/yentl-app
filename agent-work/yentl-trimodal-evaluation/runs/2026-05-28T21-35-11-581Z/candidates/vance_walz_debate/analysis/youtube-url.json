@@ -1,0 +1,141 @@
+{
+  "mode": "youtube_url",
+  "utterancesAvailable": 83,
+  "utterancesAnalyzed": 8,
+  "claims": [
+    {
+      "claim_text": "Donald Trump lost the 2020 presidential election.",
+      "utterance_start": 41,
+      "utterance_end": 11.011,
+      "topic": "Politics",
+      "topic_secondary": "History",
+      "id": "vance_walz_debate-youtube_url-claim-1",
+      "speaker_id": 0,
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 99,
+        "annotations": [
+          "well-established fact",
+          "certified election results"
+        ],
+        "explanation": "Joe Biden won the 2020 presidential election with 306 electoral votes to Trump's 232, and the results were certified by all 50 states and Congress. Numerous court cases, recounts, and audits affirmed the outcome."
+      }
+    },
+    {
+      "claim_text": "Kamala Harris censored Americans from speaking their mind in the wake of the 2020 Covid situation.",
+      "utterance_start": 41,
+      "utterance_end": 11.011,
+      "topic": "Politics",
+      "topic_secondary": "Healthcare",
+      "id": "vance_walz_debate-youtube_url-claim-2",
+      "speaker_id": 0,
+      "error": "provisional: /api/verify-provisional HTTP 500: {\"error\":\"verify failed\"}"
+    },
+    {
+      "claim_text": "For 40 years, experts said that shipping the US manufacturing base to China would result in cheaper goods.",
+      "utterance_start": 519.894,
+      "utterance_end": 528.069,
+      "topic": "Economy",
+      "topic_secondary": "Politics",
+      "id": "vance_walz_debate-youtube_url-claim-3",
+      "speaker_id": 0
+    },
+    {
+      "claim_text": "Under Kamala Harris's tenure as Vice President, gas, groceries, and housing have become unaffordable for American citizens.",
+      "utterance_start": 603.06,
+      "utterance_end": 612.028,
+      "topic": "Economy",
+      "topic_secondary": "Politics",
+      "id": "vance_walz_debate-youtube_url-claim-4",
+      "speaker_id": 0
+    }
+  ],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "That is a threat to democracy that will long outlive this present political moment.",
+      "start_time": 41,
+      "end_time": 45,
+      "severity": "clear",
+      "explanation": "The phrase 'threat to democracy' is emotionally charged language designed to evoke alarm rather than make a specific, falsifiable claim."
+    },
+    {
+      "type": "rhetoric",
+      "name": "glittering_generalities",
+      "display": "Glittering Generalities",
+      "excerpt": "we had the fairest and the toughest bill on immigration that this nation's seen",
+      "start_time": 201,
+      "end_time": 210,
+      "severity": "clear",
+      "explanation": "Vague superlatives ('fairest', 'toughest', 'nation's seen') are used to praise the bill without specifics, a classic glittering generality."
+    },
+    {
+      "type": "fallacy",
+      "name": "single_cause_fallacy",
+      "display": "Single Cause Fallacy",
+      "excerpt": "We could come together and solve this if we didn't let Donald Trump continue to make it an issue.",
+      "start_time": 236,
+      "end_time": 245,
+      "severity": "clear",
+      "explanation": "Walz reduces a complex immigration policy failure to a single cause—Donald Trump's interference—ignoring other structural and political factors."
+    },
+    {
+      "type": "fallacy",
+      "name": "appeal_to_fear",
+      "display": "Appeal to Fear",
+      "excerpt": "the governor had to send state law enforcement to escort kindergartners to school",
+      "start_time": 246,
+      "end_time": 252,
+      "severity": "subtle",
+      "explanation": "Invoking the image of kindergartners needing police escorts is designed to provoke fear and emotional response rather than analyze the policy issue."
+    },
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries and housing unaffordable",
+      "start_time": 603,
+      "end_time": 612,
+      "severity": "clear",
+      "explanation": "Vance uses emotionally charged words like 'atrocious' to frame Harris's record negatively rather than presenting neutral evidence."
+    },
+    {
+      "type": "rhetoric",
+      "name": "repetition_emphasis",
+      "display": "Repetition for Emphasis",
+      "excerpt": "You've got to pretend that Donald Trump didn't deliver rising take home pay... You've got to pretend that Donald Trump didn't deliver lower inflation",
+      "start_time": 593,
+      "end_time": 603,
+      "severity": "clear",
+      "explanation": "Vance uses the parallel repetition of 'You've got to pretend' to drive home his point rhetorically rather than through additional evidence."
+    },
+    {
+      "type": "fallacy",
+      "name": "straw_man",
+      "display": "Straw Man",
+      "excerpt": "You've got to pretend that Donald Trump didn't deliver rising take home pay, which of course he did",
+      "start_time": 593,
+      "end_time": 598,
+      "severity": "subtle",
+      "explanation": "Vance characterizes Walz's argument as 'pretending' Trump didn't deliver positive outcomes, reframing Walz's position into something easier to attack."
+    },
+    {
+      "type": "fallacy",
+      "name": "single_cause_fallacy",
+      "display": "Single Cause Fallacy",
+      "excerpt": "defend Kamala Harris's atrocious economic record, which has made gas, groceries and housing unaffordable for American citizens",
+      "start_time": 603,
+      "end_time": 612,
+      "severity": "clear",
+      "explanation": "Vance attributes complex economic conditions (inflation, housing costs) to a single cause—Harris's record—ignoring numerous other factors."
+    }
+  ],
+  "errors": [
+    {
+      "stage": "verify-provisional:1",
+      "message": "/api/verify-provisional HTTP 500: {\"error\":\"verify failed\"}"
+    }
+  ]
+}

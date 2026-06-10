@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "window_id": "solo_003_smoke_single_speaker",
+  "corpus_id": "test-corpus",
+  "source_id": "solo_003",
+  "start_s": 30,
+  "end_s": 60,
+  "reviewer": "codex-smoke",
+  "review_date": "2026-06-08",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Helping a fund steal billions of dollars from the country. Now Goldman has denied any wrongdoing, but in The US, the bank is under criminal investigation as we speak, and the Justice Department reportedly wants any settlement to include a guilty plea. That would be unprecedented. Just so you know, Goldman Sachs has never once pled guilty in one hundred and fifty years, which is shocking when you look at all the shady shit they've been accused of. Price manipulation, insider trading, gender discrimination, securities fraud.",
+    "turns": [
+      {
+        "id": "solo-003-turn-1",
+        "start_s": 30,
+        "end_s": 60,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "solo-003-claim-1",
+        "start_s": 30,
+        "end_s": 60,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

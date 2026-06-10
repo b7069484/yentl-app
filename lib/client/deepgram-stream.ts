@@ -1,4 +1,4 @@
-import type { TranscriptSegment } from "@/lib/types";
+import type { ASRWord, AttributionReason, TranscriptSegment } from "@/lib/types";
 import { getDeepgramWsUrl } from "@/lib/client/deepgram-endpoint";
 import { sourceAnalysisConsentHeaders } from "@/lib/source-consent";
 
@@ -10,21 +10,69 @@ export type DGEvents = {
 };
 
 export type DeepgramWord = {
-  word: string;
-  start: number;
-  end: number;
-  speaker?: number;
+  word?: string;
+  text?: string;
+  start?: number;
+  end?: number;
+  confidence?: number;
+  speaker?: number | null;
+  speaker_confidence?: number;
 };
 
-export function dominantSpeaker(words: DeepgramWord[]): number | null {
+const LOW_SPEAKER_MARGIN_RATIO = 0.1;
+const LATENT_BOUNDARY_MS = 300;
+
+export function dominantSpeaker(words: ASRWord[] | undefined): number | null {
   if (!words || words.length === 0) return null;
-  const counts = new Map<number, number>();
+  const scores = new Map<number, number>();
   for (const w of words) {
     if (typeof w.speaker !== "number") continue;
-    counts.set(w.speaker, (counts.get(w.speaker) ?? 0) + 1);
+    const duration = Math.max(0, w.end - w.start);
+    const speakerConfidence =
+      typeof w.speaker_confidence === "number" ? w.speaker_confidence : w.confidence;
+    const score = duration * Math.max(0, speakerConfidence);
+    if (!Number.isFinite(score) || score <= 0) continue;
+    scores.set(w.speaker, (scores.get(w.speaker) ?? 0) + score);
   }
-  if (counts.size === 0) return null;
-  return [...counts.entries()].reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+  if (scores.size === 0) return null;
+
+  const ranked = [...scores.entries()].sort((a, b) => b[1] - a[1]);
+  const [topSpeaker, topScore] = ranked[0];
+  const runnerScore = ranked[1]?.[1] ?? 0;
+  const totalScore = ranked.reduce((sum, [, score]) => sum + score, 0);
+  if (
+    runnerScore > 0 &&
+    totalScore > 0 &&
+    (topScore - runnerScore) / totalScore < LOW_SPEAKER_MARGIN_RATIO
+  ) {
+    return null;
+  }
+
+  return topSpeaker;
+}
+
+export function isLatentBoundary(
+  segment: { start: number },
+  prior: { end: number } | undefined,
+): boolean {
+  if (!prior) return false;
+  const deltaMs = (segment.start - prior.end) * 1000;
+  return deltaMs >= 0 && deltaMs < LATENT_BOUNDARY_MS;
+}
+
+function normalizeWords(rawWords: DeepgramWord[] | undefined): ASRWord[] {
+  return (rawWords ?? []).map((word) => {
+    const start = typeof word.start === "number" ? word.start : 0;
+    const end = typeof word.end === "number" ? word.end : start;
+    return {
+      text: word.text ?? word.word ?? "",
+      start,
+      end,
+      confidence: typeof word.confidence === "number" ? word.confidence : 0,
+      speaker: typeof word.speaker === "number" ? word.speaker : null,
+      speaker_confidence: word.speaker_confidence,
+    };
+  });
 }
 
 const REFRESH_LEAD_MS = 30_000;
@@ -163,6 +211,9 @@ function openSocket(
 }
 
 function attachMessageHandlers(ws: WebSocket, events: DGEvents, counters: SpeakerCounters) {
+  let priorSegment: TranscriptSegment | undefined;
+  let segmentIndex = 0;
+
   ws.onmessage = (ev) => {
     try {
       const msg = JSON.parse(ev.data);
@@ -172,7 +223,7 @@ function attachMessageHandlers(ws: WebSocket, events: DGEvents, counters: Speake
       const text = alt.transcript as string;
       if (!text) return;
       if (msg.is_final) {
-        const words = (alt.words as DeepgramWord[] | undefined) ?? [];
+        const words = normalizeWords(alt.words as DeepgramWord[] | undefined);
         const speakerId = dominantSpeaker(words);
         if (speakerId === null) {
           counters.consecutive += 1;
@@ -185,13 +236,43 @@ function attachMessageHandlers(ws: WebSocket, events: DGEvents, counters: Speake
         } else {
           counters.consecutive = 0;
         }
-        events.onFinal({
+        const start = (msg.start as number) ?? 0;
+        const end = start + ((msg.duration as number) ?? 0);
+        const hasSpeakerInfo = words.some((word) => typeof word.speaker === "number");
+        const attributionReasons: AttributionReason[] = [];
+        const segment: TranscriptSegment = {
+          id: `dg-stream-${Date.now()}-${segmentIndex}`,
+          provider: "deepgram",
           text,
-          start: (msg.start as number) ?? 0,
-          end: ((msg.start as number) ?? 0) + ((msg.duration as number) ?? 0),
+          start,
+          end,
           is_final: true,
           speaker_id: speakerId,
-        });
+          words: words.length > 0 ? words : undefined,
+          source_audio_kind: "mic",
+        };
+        segmentIndex += 1;
+
+        if (segment.speaker_id === null && hasSpeakerInfo) {
+          segment.attribution_status = "uncertain";
+          attributionReasons.push("dominant_speaker_low_margin");
+        } else if (segment.speaker_id === null) {
+          segment.attribution_status = "not_available";
+          attributionReasons.push("provider_missing_speaker");
+        }
+
+        if (isLatentBoundary(segment, priorSegment)) {
+          segment.attribution_status = "uncertain";
+          segment.latent_boundary = true;
+          attributionReasons.push("speaker_change_mid_segment");
+        }
+
+        if (attributionReasons.length > 0) {
+          segment.attribution_reasons = [...new Set(attributionReasons)];
+        }
+
+        priorSegment = segment;
+        events.onFinal(segment);
       } else {
         events.onInterim(text);
       }

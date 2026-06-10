@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateText } from "ai";
 import { grok } from "@/lib/server/grok";
+import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import {
   DevilAdvocateRequest,
   SYSTEM,
@@ -8,19 +8,42 @@ import {
   userPrompt,
 } from "@/lib/prompts/devil-advocate";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { documentValidationDevilAdvocateFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+const MAX_JSON_BYTES = 64 * 1024;
+
+function rejectOversizedJson(req: NextRequest) {
+  const contentLength = Number(req.headers.get("content-length") ?? 0);
+  return Number.isFinite(contentLength) && contentLength > MAX_JSON_BYTES;
+}
 
 export async function POST(req: NextRequest) {
   const limited = await enforceRateLimit(req, RATE_LIMITS.model);
   if (limited) return limited;
 
-  const body = await req.json();
+  if (rejectOversizedJson(req)) {
+    return NextResponse.json({ error: "request body too large" }, { status: 413 });
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
+  }
+
   const parsed = DevilAdvocateRequest.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  }
+
+  const documentValidationFixture = documentValidationDevilAdvocateFixture(parsed.data);
+  if (documentValidationFixture) {
+    return NextResponse.json(documentValidationFixture);
   }
 
   try {

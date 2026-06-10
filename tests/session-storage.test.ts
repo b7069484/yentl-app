@@ -144,6 +144,50 @@ describe("saveSession", () => {
     const meta = await saveSession(session);
     expect(meta.speaker_count).toBe(session.speakers.length);
   });
+
+  it("derives source evidence counts from saved claims", async () => {
+    const session = makeSession({
+      claims: [
+        {
+          id: "claim-with-sources",
+          claim_text: "The audit was hidden.",
+          utterance_start: 0,
+          utterance_end: 2,
+          speaker_id: 0,
+          topic: "accountability",
+          topic_secondary: null,
+          primary_label: "UNVERIFIABLE",
+          score: 40,
+          annotations: [],
+          explanation: "Needs source-backed verification.",
+          status: "confirmed",
+          sources: [
+            {
+              url: "https://audit.example/report",
+              domain: "audit.example",
+              title: "Audit Report",
+              reputation_tier: "high",
+              stance: "supports",
+              excerpt: "The audit was hidden from the public file.",
+            },
+            {
+              url: "https://blog.example/no-excerpt",
+              domain: "blog.example",
+              title: "No Excerpt Blog",
+              reputation_tier: "low",
+              stance: "mixed",
+            },
+          ],
+        },
+      ],
+    });
+
+    const meta = await saveSession(session);
+
+    expect(meta.source_count).toBe(2);
+    expect(meta.source_linked_count).toBe(1);
+    expect(meta.high_source_count).toBe(1);
+  });
 });
 
 // ─── listSessions ─────────────────────────────────────────────────────────────
@@ -161,6 +205,43 @@ describe("listSessions", () => {
     // The SavedSessionMeta type does not have a `session` field
     // but TypeScript alone won't prevent runtime presence; verify it's absent:
     expect((list[0] as Record<string, unknown>)["session"]).toBeUndefined();
+  });
+
+  it("enriches listed metadata with source evidence counts", async () => {
+    await saveSession(makeSession({
+      claims: [
+        {
+          id: "claim-with-source",
+          claim_text: "The sun is the central star in the solar system.",
+          utterance_start: 0,
+          utterance_end: 2,
+          speaker_id: 0,
+          topic: "science",
+          topic_secondary: null,
+          primary_label: "TRUE",
+          score: 99,
+          annotations: [],
+          explanation: "Yes.",
+          status: "confirmed",
+          sources: [
+            {
+              url: "https://nasa.gov/sun",
+              domain: "nasa.gov",
+              title: "NASA Sun",
+              reputation_tier: "high",
+              stance: "supports",
+              excerpt: "The sun is a star at the center of the solar system.",
+            },
+          ],
+        },
+      ],
+    }));
+
+    const list = await listSessions();
+
+    expect(list[0].source_count).toBe(1);
+    expect(list[0].source_linked_count).toBe(1);
+    expect(list[0].high_source_count).toBe(1);
   });
 
   it("returns desc-by-saved_at order", async () => {

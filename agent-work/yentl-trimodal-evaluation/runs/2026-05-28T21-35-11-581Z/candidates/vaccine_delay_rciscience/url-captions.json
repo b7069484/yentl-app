@@ -1,0 +1,1437 @@
+[
+  {
+    "text": "a really common question we're getting",
+    "start": 80,
+    "end": 83.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in the chat",
+    "start": 2.08,
+    "end": 6.399,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "is about the decision in canada to delay",
+    "start": 3.84,
+    "end": 7.759,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the second dose",
+    "start": 6.399,
+    "end": 10.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "up to four months um this was based off",
+    "start": 7.759,
+    "end": 13.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a recommendation from the from nasty the",
+    "start": 10.8,
+    "end": 14.48,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "national advisory committee for",
+    "start": 13.2,
+    "end": 15.518999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "immunizations",
+    "start": 14.48,
+    "end": 17.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i think that's the whole the full",
+    "start": 15.519,
+    "end": 18.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "acronym",
+    "start": 17.68,
+    "end": 21.92,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "um dr sharma can i can i get your",
+    "start": 18.64,
+    "end": 23.119,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "insights on this one",
+    "start": 21.92,
+    "end": 26.48,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "um sure so i mean the first part of it",
+    "start": 23.119,
+    "end": 27.198999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "is that that",
+    "start": 26.48,
+    "end": 29.679000000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "nasty is as i said in my presentation",
+    "start": 27.199,
+    "end": 30.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "independent",
+    "start": 29.679,
+    "end": 32.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "um and it's not part of health canada",
+    "start": 30.8,
+    "end": 34,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i'm getting a lot of emails",
+    "start": 32.64,
+    "end": 35.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "um telling me that i shouldn't have made",
+    "start": 34,
+    "end": 37.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that decision i didn't um just to be",
+    "start": 35.28,
+    "end": 38.160000000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "clear",
+    "start": 37.68,
+    "end": 40.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the health canada position is what's in",
+    "start": 38.16,
+    "end": 42.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the product monograph so we still from",
+    "start": 40.16,
+    "end": 44.31999999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the health canada perspective are saying",
+    "start": 42.16,
+    "end": 45.919999999999995,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a 21 day interval for pfizer",
+    "start": 44.32,
+    "end": 49.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "28 day for moderna and then between",
+    "start": 45.92,
+    "end": 52.239000000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "four weeks and 12 weeks for astrazeneca",
+    "start": 49.2,
+    "end": 54.480000000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and what nasty does though is give those",
+    "start": 52.239,
+    "end": 56.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "recommendations on how best to use",
+    "start": 54.48,
+    "end": 58.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the the vaccines and when they look at",
+    "start": 56.8,
+    "end": 60,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "them they looked at obviously the",
+    "start": 58.8,
+    "end": 60.959999999999994,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "clinical trials",
+    "start": 60,
+    "end": 64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "data they looked at real world data",
+    "start": 60.96,
+    "end": 66.799,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "we have uh data from other countries",
+    "start": 64,
+    "end": 68.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that have actually used a longer dosing",
+    "start": 66.799,
+    "end": 69.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "interval",
+    "start": 68.96,
+    "end": 70.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "at the time that they looked at it there",
+    "start": 69.68,
+    "end": 73.119,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "was a lot of data around an eight week",
+    "start": 70.96,
+    "end": 74.64,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "interval between the first and second",
+    "start": 73.119,
+    "end": 77.439,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "doses of the of the mrna vaccines and",
+    "start": 74.64,
+    "end": 79.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "of course for astrazeneca we already",
+    "start": 77.439,
+    "end": 81.27999999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "have that kind of longer interval in the",
+    "start": 79.28,
+    "end": 82.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "clinical trials",
+    "start": 81.28,
+    "end": 84.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "they were also looking at what they knew",
+    "start": 82.56,
+    "end": 85.60000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "about",
+    "start": 84.24,
+    "end": 87.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccines in general and we know that",
+    "start": 85.6,
+    "end": 89.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "when you have immunity especially at",
+    "start": 87.52,
+    "end": 89.92,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "these high",
+    "start": 89.36,
+    "end": 92.32,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "high levels that dr government uh talked",
+    "start": 89.92,
+    "end": 93.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "about they don't just immediately sort",
+    "start": 92.32,
+    "end": 94.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "of fall off a cliff",
+    "start": 93.84,
+    "end": 97.60000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "all of a sudden so we you know they we",
+    "start": 94.88,
+    "end": 99.67999999999999,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "don't know how long they last we do",
+    "start": 97.6,
+    "end": 101.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "we are getting more information on how",
+    "start": 99.68,
+    "end": 103.2,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "sustained that immune response is",
+    "start": 101.28,
+    "end": 104.96000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "but we do know that you've already got a",
+    "start": 103.2,
+    "end": 106.799,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "high level it's not going to drop off",
+    "start": 104.96,
+    "end": 109.439,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "very quickly so they use that along with",
+    "start": 106.799,
+    "end": 110.47900000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "some modeling",
+    "start": 109.439,
+    "end": 112.32,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and then this is the important part and",
+    "start": 110.479,
+    "end": 114,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "look at what the supply situation",
+    "start": 112.32,
+    "end": 116.479,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "would be in canada so this is the part",
+    "start": 114,
+    "end": 117.119,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that's a bit",
+    "start": 116.479,
+    "end": 119.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i think challenging for people so we",
+    "start": 117.119,
+    "end": 120.479,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "actually looked they",
+    "start": 119.28,
+    "end": 122.96000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "took a look at what the benefits were of",
+    "start": 120.479,
+    "end": 124.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "getting first doses into as many people",
+    "start": 122.96,
+    "end": 126.079,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "as possible",
+    "start": 124.96,
+    "end": 129.51999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "versus sticking to a shorter interval",
+    "start": 126.079,
+    "end": 132.319,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and potentially then having more people",
+    "start": 129.52,
+    "end": 133.59900000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "having completed",
+    "start": 132.319,
+    "end": 136.39999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccination schedules versus and having",
+    "start": 133.599,
+    "end": 137.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "some people that",
+    "start": 136.4,
+    "end": 139.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that don't and so their recommendation",
+    "start": 137.44,
+    "end": 141.599,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "was that you could go",
+    "start": 139.52,
+    "end": 144.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "up to and i'll just say that again up to",
+    "start": 141.599,
+    "end": 146.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "four months in their opinion",
+    "start": 144.56,
+    "end": 148.879,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "without compromising the immune response",
+    "start": 146.56,
+    "end": 149.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "they didn't say that you",
+    "start": 148.879,
+    "end": 152.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "have to so i know a lot of places are",
+    "start": 149.84,
+    "end": 153.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "automatically giving that second",
+    "start": 152.16,
+    "end": 157.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and you know second um uh a second",
+    "start": 153.68,
+    "end": 159.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccination dose exactly four months",
+    "start": 157.44,
+    "end": 160.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "later that's not what they said they",
+    "start": 159.44,
+    "end": 162.239,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "were saying you could",
+    "start": 160.8,
+    "end": 163.76000000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "if it's for you know in your best",
+    "start": 162.239,
+    "end": 166,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "interest to get more people vaccinated",
+    "start": 163.76,
+    "end": 168.319,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you could go up to four months now what",
+    "start": 166,
+    "end": 169.92,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "they're doing is that they're also",
+    "start": 168.319,
+    "end": 170.39999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "looking",
+    "start": 169.92,
+    "end": 172.879,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "at new data that's come out that's",
+    "start": 170.4,
+    "end": 174.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "showing that potentially there might be",
+    "start": 172.879,
+    "end": 175.51899999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "some differences",
+    "start": 174.4,
+    "end": 178.159,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in some of the subgroups so people that",
+    "start": 175.519,
+    "end": 179.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "might have a bit of a",
+    "start": 178.159,
+    "end": 181.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "compromised immune system such as people",
+    "start": 179.36,
+    "end": 183.44000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that had cancer and received treatment",
+    "start": 181.12,
+    "end": 185.519,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "whether or not in the elderly population",
+    "start": 183.44,
+    "end": 187.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "so 70 and older",
+    "start": 185.519,
+    "end": 189.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "older 80 and older older maybe their",
+    "start": 187.28,
+    "end": 191.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "immunity drops off a bit quicker than",
+    "start": 189.44,
+    "end": 192.239,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "other groups",
+    "start": 191.36,
+    "end": 193.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "so they're actually in the process of",
+    "start": 192.239,
+    "end": 195.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "looking at that as well",
+    "start": 193.68,
+    "end": 198.64000000000001,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "now and to see if they need to um update",
+    "start": 195.36,
+    "end": 200.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that recommendation in any way so",
+    "start": 198.64,
+    "end": 203.67999999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it really you know it it's we've got the",
+    "start": 200.56,
+    "end": 204.72,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "health canada sort of",
+    "start": 203.68,
+    "end": 206.799,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "strict interpretation of the data uh",
+    "start": 204.72,
+    "end": 208,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "whether it's clinical trial or real",
+    "start": 206.799,
+    "end": 209.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "world evidence and then we have this",
+    "start": 208,
+    "end": 210.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "like how",
+    "start": 209.36,
+    "end": 213.44000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "how do we best use these vaccines",
+    "start": 210.4,
+    "end": 217.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in canada to protect us all in the best",
+    "start": 213.44,
+    "end": 218.319,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "way so we can get",
+    "start": 217.04,
+    "end": 221.28,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you know back to some state of normality",
+    "start": 218.319,
+    "end": 222.79899999999998,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "as quickly as possible",
+    "start": 221.28,
+    "end": 224.159,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "so that's where that came from but again",
+    "start": 222.799,
+    "end": 225.92000000000002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i just wanted to underscore that it's up",
+    "start": 224.159,
+    "end": 227.04,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to four months",
+    "start": 225.92,
+    "end": 228.95899999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it's really dependent on availability of",
+    "start": 227.04,
+    "end": 231.44,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccines and it might change based on",
+    "start": 228.959,
+    "end": 233.36,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "evidence which you know is challenging",
+    "start": 231.44,
+    "end": 234.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in and of itself when we change",
+    "start": 233.36,
+    "end": 235.519,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "recommendations",
+    "start": 234.4,
+    "end": 236.799,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "but just to say that that's what they're",
+    "start": 235.519,
+    "end": 238.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "looking at when they're giving their",
+    "start": 236.799,
+    "end": 239.519,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "their recommendations to the provinces",
+    "start": 238.08,
+    "end": 240.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and territories",
+    "start": 239.519,
+    "end": 242.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "dr richardson do you have anything to",
+    "start": 240.56,
+    "end": 244.959,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "add on on that topic especially from",
+    "start": 242.08,
+    "end": 248.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a health equity perspective yeah i think",
+    "start": 244.959,
+    "end": 250,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i really like what you were just saying",
+    "start": 248.56,
+    "end": 250.72,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "sam",
+    "start": 250,
+    "end": 253.76,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "about this idea of the collective versus",
+    "start": 250.72,
+    "end": 254,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the",
+    "start": 253.76,
+    "end": 256.15999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "individual we are used to healthcare in",
+    "start": 254,
+    "end": 258.799,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "canada being entirely focused on our",
+    "start": 256.16,
+    "end": 261.6,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "individual access apart from of course",
+    "start": 258.799,
+    "end": 263.35999999999996,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the small group of people who practice",
+    "start": 261.6,
+    "end": 264.47900000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "public health and",
+    "start": 263.36,
+    "end": 266.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "how can we actually start to understand",
+    "start": 264.479,
+    "end": 268.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that thinking around",
+    "start": 266.8,
+    "end": 271.199,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the collective actually not only is a",
+    "start": 268.08,
+    "end": 273.84,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "morally just thing to do because it",
+    "start": 271.199,
+    "end": 274.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "actually",
+    "start": 273.84,
+    "end": 277.919,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "uh makes sure that vaccine access goes",
+    "start": 274.56,
+    "end": 280.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to those who will benefit more from it",
+    "start": 277.919,
+    "end": 282.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it will help get us out of the situation",
+    "start": 280.08,
+    "end": 283.199,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that we're in",
+    "start": 282.4,
+    "end": 285.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "more quickly so how do we actually",
+    "start": 283.199,
+    "end": 287.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "ensure that those postal code regions",
+    "start": 285.52,
+    "end": 289.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that i was talking about",
+    "start": 287.68,
+    "end": 290.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that currently in the heat map in",
+    "start": 289.12,
+    "end": 292.639,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "toronto are showing",
+    "start": 290.88,
+    "end": 295.759,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "lower access to vaccines and yet",
+    "start": 292.639,
+    "end": 298.8,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "higher ins higher rates of covet how do",
+    "start": 295.759,
+    "end": 300.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "we ensure that we're getting",
+    "start": 298.8,
+    "end": 302.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "vaccine there quickly i can tell you",
+    "start": 300.16,
+    "end": 304.88000000000005,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that the shortened interval when i",
+    "start": 302.88,
+    "end": 307.919,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "or the the elongated interval i can see",
+    "start": 304.88,
+    "end": 309.039,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "being complex",
+    "start": 307.919,
+    "end": 310.79999999999995,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "for some of the outreach work that i'm",
+    "start": 309.039,
+    "end": 312.88,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "doing when i look at the magnitude of",
+    "start": 310.8,
+    "end": 314.40000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "something called operation remote",
+    "start": 312.88,
+    "end": 316.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "immunity which involved teams of us",
+    "start": 314.4,
+    "end": 316.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "flying",
+    "start": 316.4,
+    "end": 319.039,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "into remote first nations in the north",
+    "start": 316.96,
+    "end": 320.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "of ontario",
+    "start": 319.039,
+    "end": 323.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it was an unbelievable operation that",
+    "start": 320.4,
+    "end": 324.79999999999995,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "would to oversee",
+    "start": 323.52,
+    "end": 327.35999999999996,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "it was it's been done incredibly well",
+    "start": 324.8,
+    "end": 329.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "but to look at having now",
+    "start": 327.36,
+    "end": 332.16,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a gap to actually complete that after",
+    "start": 329.12,
+    "end": 334.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "the logistical infrastructure that went",
+    "start": 332.16,
+    "end": 334.96000000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "in",
+    "start": 334.4,
+    "end": 337.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that's going to be complex when i look",
+    "start": 334.96,
+    "end": 338,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "at vaccinating",
+    "start": 337.12,
+    "end": 340.08,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "people in the park who are experiencing",
+    "start": 338,
+    "end": 341.919,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "homelessness like we were doing last",
+    "start": 340.08,
+    "end": 343.59999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "week here in toronto with anishinaabe",
+    "start": 341.919,
+    "end": 344.79999999999995,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "health",
+    "start": 343.6,
+    "end": 347.91900000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "elongating that time is going to be",
+    "start": 344.8,
+    "end": 349.84000000000003,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "is going to be hard we have outreach",
+    "start": 347.919,
+    "end": 351.12,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "workers who are going",
+    "start": 349.84,
+    "end": 353.75899999999996,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to meet people three weeks four weeks we",
+    "start": 351.12,
+    "end": 355.52,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "can do that reminder we know where",
+    "start": 353.759,
+    "end": 356.96000000000004,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "people are more likely to be",
+    "start": 355.52,
+    "end": 359.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "etc but when we extend that time for",
+    "start": 356.96,
+    "end": 361.919,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "particularly vulnerable groups i do",
+    "start": 359.68,
+    "end": 362.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "worry",
+    "start": 361.919,
+    "end": 364.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "a little bit so i think that's where",
+    "start": 362.56,
+    "end": 366.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "when we start to think from this",
+    "start": 364.24,
+    "end": 368.319,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "collective well-being which actually",
+    "start": 366.24,
+    "end": 369.6,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "will benefit",
+    "start": 368.319,
+    "end": 372.56,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "me as well as an individual because we",
+    "start": 369.6,
+    "end": 374.24,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "will slow the rate of the spread",
+    "start": 372.56,
+    "end": 376.479,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "increase the herd immunity likelihood to",
+    "start": 374.24,
+    "end": 378,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "get to herd immunity",
+    "start": 376.479,
+    "end": 380.4,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "i think we do need to recognize that we",
+    "start": 378,
+    "end": 382.479,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "should be seeing some nuanced approach",
+    "start": 380.4,
+    "end": 384.15999999999997,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "to vaccine distribution",
+    "start": 382.479,
+    "end": 393.89,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and not be angry about that",
+    "start": 384.16,
+    "end": 405.68,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "[Music]",
+    "start": 393.89,
+    "end": 407.759,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "you",
+    "start": 405.68,
+    "end": 407.759,
+    "is_final": true,
+    "speaker_id": 0
+  }
+]

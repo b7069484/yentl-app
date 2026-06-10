@@ -68,7 +68,7 @@ export function MicPreRecordPane() {
       <button
         type="button"
         onClick={() => setPrerecordStage("picker")}
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-ink-3 transition-colors hover:text-ink-2"
+        className="mb-5 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-[12px] font-medium text-ink-3 transition-colors hover:bg-cream-2 hover:text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal/30"
       >
         <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Back to sources
       </button>
@@ -121,7 +121,11 @@ export function MicPreRecordPane() {
                 Refresh
               </button>
             </div>
-            <p className="mt-2 text-[12px] leading-snug text-ink-3">
+            <p
+              role={deviceError ? "alert" : "status"}
+              aria-live="polite"
+              className="mt-2 text-[12px] leading-snug text-ink-3"
+            >
               {deviceError
                 ? deviceError
                 : isLoadingDevices

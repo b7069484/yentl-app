@@ -33,8 +33,26 @@ describe("toMarkdown", () => {
             title: "BLS Report",
             reputation_tier: "high",
             stance: "supports",
+            excerpt: "The unemployment measure is near a 30-year low.",
           },
         ],
+        stance: "reported",
+        ownership: {
+          owner_speaker_id: null,
+          attribution_status: "uncertain",
+          attribution_reasons: ["quoted_or_reported_speech"],
+          stance: "reported",
+          confidence: 0.22,
+          source_turn_ids: ["turn-1"],
+          source_segment_ids: ["seg-1"],
+        },
+        document_anchor: {
+          kind: "paragraph",
+          block_index: 1,
+          paragraph_index: 1,
+          line_start: 4,
+          line_end: 5,
+        },
       },
     ],
     markers: [
@@ -49,6 +67,11 @@ describe("toMarkdown", () => {
         end_time: 1.3,
         severity: "subtle",
         explanation: "...",
+        attribution_status: "unsafe_overlap",
+        attribution_reasons: ["parallel_claim"],
+        overlap_class: "parallel_claim",
+        source_turn_ids: ["turn-a", "turn-b"],
+        source_segment_ids: ["seg-a", "seg-b"],
       },
     ],
     devil_advocate: {
@@ -91,5 +114,32 @@ describe("toMarkdown", () => {
     const md = toMarkdown(session);
     expect(md).toContain("[BLS Report](https://reuters.com/x)");
     expect(md).toContain("reuters.com · high · supports");
+    expect(md).toContain("_Source alignment:_ 1 linked / 0 not direct");
+    expect(md).toContain("score 38");
+    expect(md).toContain("Evidence: high reputation + excerpt + no image");
+    expect(md).toContain("Claim link: unemployment, 30, year");
+    expect(md).toContain('Excerpt: "The unemployment measure is near a 30-year low."');
+  });
+
+  it("renders claim ownership context so exports do not imply direct assertion", () => {
+    const md = toMarkdown(session);
+    expect(md).toContain("**Ownership context:**");
+    expect(md).toContain("stance reported");
+    expect(md).toContain("attribution uncertain");
+    expect(md).toContain("owner unresolved");
+    expect(md).toContain("confidence 22%");
+    expect(md).toContain("quoted or reported speech");
+    expect(md).toContain("source Paragraph 2 · lines 4-5");
+  });
+
+  it("renders marker attribution context so exports do not imply certain marker ownership", () => {
+    const md = toMarkdown(session);
+    expect(md).toContain("**Marker attribution context:**");
+    expect(md).toContain("attribution unsafe overlap");
+    expect(md).toContain("owner unresolved");
+    expect(md).toContain("overlap parallel claim");
+    expect(md).toContain("reasons parallel claim");
+    expect(md).toContain("turns turn-a, turn-b");
+    expect(md).toContain("segments seg-a, seg-b");
   });
 });

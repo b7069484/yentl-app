@@ -4,9 +4,11 @@ import { type ReactNode, useEffect, useState } from "react";
 import { useSession } from "@/lib/client/session-store";
 import type {
   ClaimCard,
+  PersistedDevilAdvocate,
   RhetoricMarker,
   SessionSource,
   Speaker,
+  SpeakerVerdict,
   TranscriptSegment,
 } from "@/lib/types";
 
@@ -22,9 +24,12 @@ export function ValidationSampleHydrator({ sampleId, children }: Props) {
   const startSession = useSession((s) => s.startSession);
   const setRecording = useSession((s) => s.setRecording);
   const ensureSpeaker = useSession((s) => s.ensureSpeaker);
+  const renameSpeaker = useSession((s) => s.renameSpeaker);
   const appendFinal = useSession((s) => s.appendFinal);
   const addClaim = useSession((s) => s.addClaim);
   const addMarker = useSession((s) => s.addMarker);
+  const setSynthesis = useSession((s) => s.setSynthesis);
+  const setDevilAdvocate = useSession((s) => s.setDevilAdvocate);
   const [error, setError] = useState<string | null>(null);
 
   const shouldLoad = validationDemoEnabled() && Boolean(sampleId) && !startedAt;
@@ -48,10 +53,19 @@ export function ValidationSampleHydrator({ sampleId, children }: Props) {
         setSource(data.source);
         startSession(`Validation demo: ${data.title}`);
         setRecording(false);
-        for (const speaker of data.speakers) ensureSpeaker(speaker.id);
+        for (const speaker of data.speakers) {
+          ensureSpeaker(speaker.id);
+          renameSpeaker(speaker.id, speaker.label);
+        }
         for (const segment of data.segments) appendFinal(segment);
         for (const claim of data.claims) addClaim(claim);
         for (const marker of data.markers) addMarker(marker);
+        if (data.synthesis) {
+          setSynthesis({ state: "fresh", ...data.synthesis, at: Date.now() });
+        }
+        if (data.devil_advocate) {
+          setDevilAdvocate({ state: "fresh", brief: data.devil_advocate, at: Date.now() });
+        }
       } catch (loadError) {
         if (cancelled) return;
         setError(loadError instanceof Error ? loadError.message : "Could not load validation demo.");
@@ -68,10 +82,13 @@ export function ValidationSampleHydrator({ sampleId, children }: Props) {
     addMarker,
     appendFinal,
     ensureSpeaker,
+    renameSpeaker,
     reset,
     sampleId,
     setRecording,
+    setDevilAdvocate,
     setSource,
+    setSynthesis,
     shouldLoad,
     startSession,
   ]);
@@ -98,8 +115,8 @@ export function ValidationSampleHydrator({ sampleId, children }: Props) {
 }
 
 function validationDemoEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
   return process.env.NODE_ENV !== "production";
 }
 
@@ -113,6 +130,12 @@ type CorpusSampleResponse = {
   segments: TranscriptSegment[];
   claims: ClaimCard[];
   markers: RhetoricMarker[];
+  synthesis?: {
+    text: string;
+    headlines: string[];
+    per_speaker_verdicts?: SpeakerVerdict[];
+  };
+  devil_advocate?: Omit<PersistedDevilAdvocate, "at">;
 };
 
 type CorpusSampleError = {

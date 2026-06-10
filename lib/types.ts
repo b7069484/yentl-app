@@ -14,6 +14,13 @@ export type ReputationTier = "high" | "mid" | "low";
 
 export type Stance = "supports" | "contradicts" | "mixed";
 
+export type ReviewFlag = {
+  status: "disputed";
+  reason: "user_dispute";
+  note: string;
+  at: number;
+};
+
 export type Source = {
   url: string;
   domain: string;
@@ -38,6 +45,16 @@ export type ClaimCard = {
   explanation: string;
   status: ClaimStatus;
   sources: Source[];
+  /** How the speaker held the claim — extracted by analyze-rhetoric/extract-claims. */
+  stance?: ClaimStance;
+  /** Attribution-aware proposition ownership. Added before claim extraction fills it. */
+  ownership?: ClaimOwnership;
+  /** Per-claim source/disambiguation context, especially for claim-only checks. */
+  source_context?: string;
+  /** Imported document/caption location for source review and export. */
+  document_anchor?: DocumentAnchor;
+  /** Local human-review flag added when a user disputes the result. */
+  review?: ReviewFlag;
 };
 
 export type MarkerType = "fallacy" | "bias" | "rhetoric";
@@ -54,14 +71,61 @@ export type RhetoricMarker = {
   end_time: number;
   severity: MarkerSeverity;
   explanation: string;
+  attribution_status?: AttributionStatus;
+  attribution_reasons?: AttributionReason[];
+  overlap_class?: OverlapClass;
+  source_turn_ids?: string[];
+  source_segment_ids?: string[];
+  /** Local human-review flag added when a user disputes the marker. */
+  review?: ReviewFlag;
 };
 
 export type TranscriptSegment = {
+  /** Stable segment identity for cross-references. Optional for back-compat. */
+  id?: string;
+  /** ASR provider that emitted this segment, e.g. "deepgram". */
+  provider?: string;
+
   text: string;
   start: number;
   end: number;
   is_final: boolean;
+
+  /**
+   * Speaker index when known. NULL when diarization is off or the provider
+   * did not return a speaker for this utterance. Do NOT default to 0.
+   */
   speaker_id: SpeakerId | null;
+
+  /** Word-level ASR evidence — preserved from provider response when present. */
+  words?: ASRWord[];
+
+  /** Per-speaker presence aggregated from words[]. Empty when words[] absent. */
+  speaker_distribution?: SpeakerDistribution[];
+
+  /** Graduated attribution confidence. Defaults to "not_available" when diarize=false. */
+  attribution_status?: AttributionStatus;
+
+  /** Reasons that explain the attribution_status assignment. */
+  attribution_reasons?: AttributionReason[];
+
+  /** Overlap taxonomy from turn-builder (Phase 3 fills this; Phase 1a reserves it). */
+  overlap_class?: OverlapClass;
+
+  /** Identity of the turn this segment belongs to (Phase 3 fills this). */
+  turn_id?: string | null;
+
+  /** True when timing suggests this segment begins near a prior speaker boundary. */
+  latent_boundary?: boolean;
+
+  /** Where the audio came from — drives attribution defaults. */
+  source_audio_kind?: SourceAudioKind;
+
+  /** Original document position for text/article/caption imports. */
+  document_anchor?: DocumentAnchor;
+
+  /** Prosodic features captured at the segment level (Phase 1a: RMS only). */
+  audio_features?: AudioFeatures;
 };
 
 /**
@@ -122,6 +186,184 @@ export type Speaker = {
   label: string;                            // default "Speaker 1", "Speaker 2", ...
 };
 
+/* ── Attribution evidence (Phase 1a — see Speaker Attribution Spec, sections 80 through 200) ── */
+
+/**
+ * A single ASR-decoded word with timing, confidence, and (when diarization is
+ * enabled) per-word speaker assignment. Preserved from Deepgram's
+ * results.channels[0].alternatives[0].words array.
+ */
+export type ASRWord = {
+  text: string;
+  start: number;            // seconds
+  end: number;              // seconds
+  confidence: number;       // 0..1 ASR confidence
+  speaker?: number | null;  // diarized speaker index when available
+  speaker_confidence?: number; // 0..1 when diarized
+};
+
+/**
+ * Aggregated speaker presence within a segment — word-count, total duration,
+ * and mean ASR confidence per detected speaker. Lets the UI surface
+ * "60% Speaker 1, 40% Speaker 2" rather than a single hard label.
+ */
+export type SpeakerDistribution = {
+  speaker_id: number;
+  word_count: number;
+  duration: number;
+  mean_confidence: number;
+};
+
+/**
+ * Graduated attribution confidence. Replaces the binary "speaker_id is set or 0"
+ * model. "confident" means we trust it; "not_available" means we did not run
+ * diarization (or it returned no speaker); "unsafe_overlap" means substantive
+ * crosstalk made attribution unsafe.
+ */
+export type AttributionStatus =
+  | "confident"
+  | "probable"
+  | "uncertain"
+  | "unsafe_overlap"
+  | "quote_or_clip"
+  | "manual_corrected"
+  | "not_available";
+
+/**
+ * Why a segment landed at the attribution_status it did. Multiple reasons may
+ * co-apply, e.g. dominant_speaker_low_margin plus speaker_change_mid_segment.
+ */
+export type AttributionReason =
+  | "single_speaker_high_confidence"
+  | "dominant_speaker_low_margin"
+  | "speaker_change_mid_segment"
+  | "short_backchannel"
+  | "competitive_interruption"
+  | "parallel_claim"
+  | "crowd_or_bleed"
+  | "quoted_or_reported_speech"
+  | "provider_missing_speaker"
+  | "manual_user_action";
+
+/**
+ * Conversational overlap taxonomy. Used by the turn-builder layer in Phase 3
+ * but reserved here so segment shapes stay stable across phases.
+ */
+export type OverlapClass =
+  | "none"
+  | "backchannel_continuer"
+  | "collaborative_completion"
+  | "competitive_interruption"
+  | "repair_initiation"
+  | "parallel_claim"
+  | "crowd_or_bleed"
+  | "unknown_overlap";
+
+/**
+ * Attribution turn record. Transcript segments remain the display units; turns
+ * are the safer ownership units produced by later turn-builder work.
+ */
+export type ConversationTurn = {
+  id: string;
+  start: number;
+  end: number;
+  speaker_id: SpeakerId | null;
+  attribution_status: AttributionStatus;
+  attribution_reasons: AttributionReason[];
+  overlap_class: OverlapClass;
+  segment_ids: string[];
+  word_range: { start_index: number; end_index: number } | null;
+};
+
+/**
+ * Where the audio for this segment came from. Drives attribution defaults —
+ * e.g., browser_tab audio is mixed-mono and attribution should default to
+ * "uncertain" regardless of what diarization returns.
+ */
+export type SourceAudioKind =
+  | "mic"
+  | "browser_tab"
+  | "audio_file"
+  | "youtube_caption"
+  | "srt_vtt"
+  | "text_import"
+  | "diagnostic_corpus";
+
+export type DocumentAnchorKind = "paragraph" | "speaker_turn" | "caption_cue" | "article_chunk";
+
+/**
+ * Stable provenance for imported text so review UI can point back to the
+ * original paragraph, speaker turn, article chunk, or caption cue.
+ */
+export type DocumentAnchor = {
+  kind: DocumentAnchorKind;
+  block_index: number;
+  paragraph_index?: number;
+  line_start?: number;
+  line_end?: number;
+  cue_index?: number;
+  speaker_label?: string;
+  /** Block-relative source-text offsets for the exact quote behind this item. */
+  char_start?: number;
+  char_end?: number;
+  /** Exact quote text captured at ingestion/extraction time for durable review. */
+  quote_text?: string;
+};
+
+export type TextDocumentOutlineItem = {
+  kind: "heading" | "paragraph";
+  label: string;
+  preview: string;
+  paragraph_index?: number;
+  line_start?: number;
+};
+
+export type TextDocumentMeta = {
+  extraction_kind: "plain_text" | "docx_text" | "pdf_text_layer" | "timed_text";
+  page_count?: number;
+  outline?: TextDocumentOutlineItem[];
+};
+
+/**
+ * Prosodic / energy features captured at the segment level. Phase 1a persists
+ * RMS only. Pitch, rate, and pause features land later.
+ */
+export type AudioFeatures = {
+  rms?: number;        // mean RMS amplitude during segment, 0..1 normalized
+  peak_rms?: number;   // maximum RMS observed during segment
+};
+
+/**
+ * How the speaker holds the claim — asserted as their own truth, denied,
+ * quoted from someone else, mocked, hedged, etc. Phase 1a captures stance
+ * at extraction time so the verdict layer does not have to re-infer it.
+ */
+export type ClaimStance =
+  | "asserted"
+  | "denied"
+  | "quoted"
+  | "reported"
+  | "mocked"
+  | "questioned"
+  | "corrected"
+  | "hedged"
+  | "unclear";
+
+/**
+ * Claim ownership answers who is responsible for the proposition being
+ * checked. It can differ from raw ASR speaker_id when speech is quoted,
+ * reported, denied, interrupted, or unsafe due to overlap.
+ */
+export type ClaimOwnership = {
+  owner_speaker_id: SpeakerId | null;
+  attribution_status: AttributionStatus;
+  attribution_reasons: AttributionReason[];
+  stance: ClaimStance;
+  confidence: number;
+  source_turn_ids: string[];
+  source_segment_ids: string[];
+};
+
 /* ── Source preview (added in Sprint 1) ────────────────────────── */
 
 export type SourcePreview = {
@@ -167,6 +409,14 @@ export type SessionSource =
       intent?: "document" | "claim_only" | "web_url";
       initial_text?: string;
       source_url?: string;
+      document_meta?: TextDocumentMeta;
     }
-  | { kind: "youtube"; video_id: string; url: string; title?: string; channel?: string; duration_sec?: number }
+  | {
+      kind: "youtube";
+      video_id: string;
+      url: string;
+      title?: string;
+      channel?: string;
+      duration_sec?: number;
+    }
   | { kind: "media_url"; url: string };

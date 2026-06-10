@@ -1,10 +1,11 @@
 {
-  "name": "factify-scaffold",
+  "name": "yentl-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:automation": "next build --webpack",
     "vercel-build": "mkdir -p bin && curl -sSL -o bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux && chmod +x bin/yt-dlp && next build",
     "start": "next start",
     "lint": "eslint",
@@ -22,6 +23,8 @@
     "corpus2:captions": "YENTL_CORPUS_DIR=test-corpus-2 tsx --env-file=.env.local scripts/test-corpus/fetch-ground-truth.ts",
     "corpus2:score-wer": "YENTL_CORPUS_DIR=test-corpus-2 tsx --env-file=.env.local scripts/test-corpus/score-wer.ts",
     "corpus2:replay": "YENTL_CORPUS_DIR=test-corpus-2 tsx --env-file=.env.local scripts/test-corpus/replay.ts",
+    "speaker-attribution:score": "tsx scripts/test-corpus/score-speaker-attribution.ts",
+    "speaker-attribution:report": "tsx scripts/test-corpus/report-speaker-attribution.ts",
     "ingest:taxonomy": "tsx --env-file=.env.local scripts/ingest-taxonomy-pdf.ts",
     "tag:archetypes": "tsx --env-file=.env.local scripts/tag-archetypes.ts",
     "apply:archetypes": "tsx scripts/apply-archetypes.ts",
@@ -29,6 +32,10 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "extension:check": "node scripts/validation/check-extension-package.mjs",
+    "extension:proof:local": "node scripts/validation/prove-installed-extension-local.mjs",
+    "ingestion:proof:local": "node scripts/validation/prove-ingestion-local.mjs",
+    "mobile:proof:local": "node scripts/validation/prove-mobile-pwa-local.mjs",
     "smoke:launch": "tsx scripts/launch-smoke.ts"
   },
   "dependencies": {

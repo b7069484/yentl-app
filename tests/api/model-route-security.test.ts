@@ -61,6 +61,63 @@ describe("model route request security guards", () => {
     expect(aiMocks.generateText).not.toHaveBeenCalled();
   });
 
+  it("accepts extract-claims document anchors and forwards them to the prompt", async () => {
+    aiMocks.generateText.mockResolvedValue({ output: { claims: [] } });
+    const { POST } = await import("@/app/api/extract-claims/route");
+
+    const res = await POST(jsonRequest("/api/extract-claims", {
+      utterance: "The article says the repair was delayed.",
+      utterance_start: 0,
+      utterance_end: 3,
+      context: "CURRENT_DOCUMENT_POSITION:\nlabel: Paragraph 2",
+      recent_hashes: [],
+      source_audio_kind: "text_import",
+      document_anchor: {
+        kind: "paragraph",
+        block_index: 1,
+        paragraph_index: 1,
+        line_start: 4,
+        line_end: 4,
+      },
+    }));
+
+    expect(res.status).toBe(200);
+    const prompt = aiMocks.generateText.mock.calls[0][0].prompt as string;
+    expect(prompt).toContain("document_anchor: paragraph 2");
+    expect(prompt).toContain("source_audio_kind: text_import");
+  });
+
+  it("serves the local YouTube validation claim fixture without a model call", async () => {
+    const { POST } = await import("@/app/api/extract-claims/route");
+
+    const res = await POST(jsonRequest("/api/extract-claims", {
+      utterance:
+        "The world population had become three billion people, and that was in 1960.",
+      utterance_start: 21,
+      utterance_end: 28,
+      context: "SOURCE_CONTEXT:\nsource type: YouTube\nvideo id: fTznEIZRkLg\ntitle: Hans Rosling: Global population growth, box by box",
+      recent_hashes: [],
+      speaker_id: 0,
+      segment_id: "seg-1960",
+      turn_id: "turn-1960",
+      source_audio_kind: "youtube_caption",
+    }));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.claims[0]).toMatchObject({
+      claim_text: "The world population reached about three billion people in 1960.",
+      topic: "Science",
+      topic_secondary: "History",
+      ownership: {
+        owner_speaker_id: 0,
+        source_segment_ids: ["seg-1960"],
+        source_turn_ids: ["turn-1960"],
+      },
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
   it("rejects analyze-rhetoric transcript windows over the cap", async () => {
     const { POST } = await import("@/app/api/analyze-rhetoric/route");
 
@@ -74,6 +131,27 @@ describe("model route request security guards", () => {
     expect(aiMocks.generateText).not.toHaveBeenCalled();
   });
 
+  it("serves the local YouTube validation rhetoric fixture without a model call", async () => {
+    const { POST } = await import("@/app/api/analyze-rhetoric/route");
+
+    const res = await POST(jsonRequest("/api/analyze-rhetoric", {
+      transcript_window:
+        "[145s] speaker=Speaker 0 attribution=confident overlap=none :: is that a staggering four billion people have been added to the world population.",
+      recent_hashes: [],
+      source_context: "source type: YouTube\nvideo id: fTznEIZRkLg",
+    }));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.markers[0]).toMatchObject({
+      type: "rhetoric",
+      name: "loaded_language",
+      display: "Loaded Language",
+      excerpt: "a staggering four billion people",
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
   it("rejects verify-confirmed claim payloads over the cap", async () => {
     const { POST } = await import("@/app/api/verify-confirmed/route");
 
@@ -83,6 +161,260 @@ describe("model route request security guards", () => {
     }));
 
     expect(res.status).toBe(400);
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local YouTube validation provisional verdict without a model call", async () => {
+    const { POST } = await import("@/app/api/verify-provisional/route");
+
+    const res = await POST(jsonRequest(
+      "/api/verify-provisional",
+      {
+        claim_text: "Between 1960 and 2010, about four billion people were added to the world population.",
+        source_context: "source type: YouTube\nvideo id: fTznEIZRkLg",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.primary_label).toBe("MOSTLY_TRUE");
+    expect(json.annotations).toContain("rounded 1960-2010 growth");
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local YouTube validation confirmed verdict with sources without web search", async () => {
+    const { POST } = await import("@/app/api/verify-confirmed/route");
+
+    const res = await POST(jsonRequest(
+      "/api/verify-confirmed",
+      {
+        claim_text: "Rosling says improved child survival is central to stopping population growth.",
+        source_context: "source type: YouTube\nvideo id: fTznEIZRkLg",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.primary_label).toBe("PARTIAL");
+    expect(json.sources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          domain: "ted.com",
+          stance: "supports",
+        }),
+      ]),
+    );
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local YouTube validation synthesis without a model call", async () => {
+    const { POST } = await import("@/app/api/synthesize/route");
+
+    const res = await POST(jsonRequest(
+      "/api/synthesize",
+      {
+        utterances: [
+          {
+            speaker_id: 0,
+            text: "Child survival is the new green.",
+            start: 528,
+            end: 531,
+          },
+        ],
+        counters: { claims: 3, false: 0, partial: 1, true: 2, fallacy: 0, bias: 1, rhetoric: 2 },
+        speakers: [{ id: 0, label: "Hans Rosling" }],
+        claims: [],
+        source_context: "source type: YouTube\nvideo id: fTznEIZRkLg",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toContain("Hans Rosling");
+    expect(json.headlines).toHaveLength(3);
+    expect(json.per_speaker_verdicts[0]).toMatchObject({
+      label: "Hans Rosling",
+      factual_grade: "mostly_factual",
+      faith_grade: "good_faith",
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation claim fixture without a model call", async () => {
+    const { POST } = await import("@/app/api/extract-claims/route");
+
+    const res = await POST(jsonRequest("/api/extract-claims", {
+      utterance:
+        "Speaker A: City spending rose by twelve percent this year without raising taxes.",
+      utterance_start: 0,
+      utterance_end: 7,
+      context:
+        "SOURCE_CONTEXT:\nsource type: text_doc\nfilename: yentl-small-brief.docx\ndocument overview: Yentl document validation brief",
+      recent_hashes: [],
+      speaker_id: 0,
+      segment_id: "doc-seg-1",
+      turn_id: "doc-turn-1",
+      source_audio_kind: "text_import",
+      document_anchor: {
+        kind: "speaker_turn",
+        block_index: 1,
+        paragraph_index: 1,
+        speaker_label: "Speaker A",
+      },
+    }));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.claims[0]).toMatchObject({
+      claim_text: "City spending rose by twelve percent this year without raising taxes.",
+      topic: "Economy",
+      topic_secondary: "Politics",
+      ownership: {
+        owner_speaker_id: 0,
+        source_segment_ids: ["doc-seg-1"],
+        source_turn_ids: ["doc-turn-1"],
+      },
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation rhetoric fixture without a model call", async () => {
+    const { POST } = await import("@/app/api/analyze-rhetoric/route");
+
+    const res = await POST(jsonRequest("/api/analyze-rhetoric", {
+      transcript_window:
+        "[18s] speaker=Speaker 0 attribution=confident overlap=none :: The mayor's office released a summary, but the exact document still needs to be named.",
+      recent_hashes: [],
+      source_context: "source type: text_doc\nfilename: yentl-small-text-layer.pdf",
+    }));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.markers[0]).toMatchObject({
+      type: "rhetoric",
+      name: "vagueness",
+      display: "Vagueness / Hand-waving",
+      excerpt: "the exact document still needs to be named",
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation provisional verdict without a model call", async () => {
+    const { POST } = await import("@/app/api/verify-provisional/route");
+
+    const res = await POST(jsonRequest(
+      "/api/verify-provisional",
+      {
+        claim_text: "City spending rose by twelve percent this year without raising taxes.",
+        source_context: "source type: text_doc\nfilename: yentl-small-brief.docx",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.primary_label).toBe("UNVERIFIABLE");
+    expect(json.annotations).toContain("missing baseline year");
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation confirmed verdict with source-trail evidence", async () => {
+    const { POST } = await import("@/app/api/verify-confirmed/route");
+
+    const res = await POST(jsonRequest(
+      "/api/verify-confirmed",
+      {
+        claim_text: "The mayor's office released a summary about the spending increase.",
+        source_context: "source type: text_doc\nfilename: yentl-small-text-layer.pdf",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.primary_label).toBe("UNVERIFIABLE");
+    expect(json.sources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          domain: "localhost",
+          stance: "mixed",
+        }),
+      ]),
+    );
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation synthesis without a model call", async () => {
+    const { POST } = await import("@/app/api/synthesize/route");
+
+    const res = await POST(jsonRequest(
+      "/api/synthesize",
+      {
+        utterances: [
+          {
+            speaker_id: 0,
+            text: "City spending rose by twelve percent this year without raising taxes.",
+            start: 0,
+            end: 7,
+          },
+          {
+            speaker_id: 1,
+            text: "What is the source for that number, and what baseline year are you using?",
+            start: 7,
+            end: 14,
+          },
+        ],
+        counters: { claims: 2, false: 0, partial: 0, true: 0, fallacy: 0, bias: 0, rhetoric: 1 },
+        speakers: [{ id: 0, label: "Speaker 1" }, { id: 1, label: "Speaker 2" }],
+        claims: [],
+        source_context: "source type: text_doc\nfilename: yentl-small-brief.docx",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toContain("source-quality review");
+    expect(json.headlines).toEqual([
+      "Budget claim remains source-trail dependent",
+      "Baseline year and named document are missing",
+      "The conversation correctly preserves uncertainty",
+    ]);
+    expect(json.per_speaker_verdicts[1]).toMatchObject({
+      label: "Speaker 2",
+      faith_grade: "good_faith",
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("serves the local document validation devil's advocate without a model call", async () => {
+    const { POST } = await import("@/app/api/devil-advocate/route");
+
+    const res = await POST(jsonRequest(
+      "/api/devil-advocate",
+      {
+        utterances: [
+          {
+            speaker_id: 0,
+            text: "City spending rose by twelve percent this year without raising taxes.",
+            start: 0,
+            end: 7,
+          },
+          {
+            speaker_id: 1,
+            text: "What is the source for that number, and what baseline year are you using?",
+            start: 7,
+            end: 14,
+          },
+        ],
+        claims: [],
+        markers: [],
+        source_context: "source type: text_doc\nfilename: yentl-small-brief.docx",
+      },
+    ));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.stance).toContain("twelve-percent figure");
+    expect(json.strongest_counterarguments).toHaveLength(3);
+    expect(json.confidence).toBe("high");
     expect(aiMocks.generateText).not.toHaveBeenCalled();
   });
 

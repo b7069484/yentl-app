@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T04:27:44.577Z",
+  "app_origin": "http://127.0.0.1:3000",
+  "validation_urls": {
+    "article": "http://127.0.0.1:3000/validation/yentl-synthetic-article.html",
+    "media": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+    "youtube": "https://www.youtube.com/watch?v=fTznEIZRkLg"
+  },
+  "checks": [
+    {
+      "name": "consent-gate",
+      "ok": true,
+      "elapsed_ms": 33,
+      "status": 428,
+      "error_code": "SOURCE_CONSENT_REQUIRED"
+    },
+    {
+      "name": "article-url-ingest",
+      "ok": true,
+      "elapsed_ms": 12,
+      "status": 200,
+      "title": "Yentl Validation Article",
+      "word_count": 139,
+      "source_word_count": 139,
+      "validation_fixture_id": "yentl_synthetic_article_html"
+    },
+    {
+      "name": "direct-media-url-ingest",
+      "ok": true,
+      "elapsed_ms": 36,
+      "status": 200,
+      "mime": "audio/wav",
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_wav"
+    },
+    {
+      "name": "pdf-document-ingest",
+      "ok": true,
+      "elapsed_ms": 361,
+      "status": 200,
+      "file": "public/validation/yentl-small-text-layer.pdf",
+      "page_count": 1,
+      "byte_count": 1006,
+      "text_chars": 354
+    },
+    {
+      "name": "youtube-caption-ingest",
+      "ok": true,
+      "elapsed_ms": 2486,
+      "status": 200,
+      "video_id": "fTznEIZRkLg",
+      "title": "Hans Rosling: Global population growth, box by box",
+      "channel": "TED",
+      "transcript_segment_count": 241,
+      "validation_fixture": false
+    }
+  ],
+  "failures": []
+}

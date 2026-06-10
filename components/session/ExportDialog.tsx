@@ -1,7 +1,7 @@
 "use client";
 import { type ReactNode, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Braces, Eye, FileCode2, FileText } from "lucide-react";
+import { Braces, Captions, Eye, FileCode2, FileText } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   type SynthesisState,
   useSession,
 } from "@/lib/client/session-store";
-import { exportSession } from "@/lib/client/export-actions";
+import { exportSession, type SessionExportKind } from "@/lib/client/export-actions";
 import type { ClaimCard, PrimaryLabel, RhetoricMarker, SessionSource } from "@/lib/types";
 
 const LABEL_TEXT: Record<PrimaryLabel, string> = {
@@ -51,19 +51,26 @@ export function ExportDialog({
   const synthesis = useSession((s) => s.synthesis);
   const devilAdvocate = useSession((s) => s.devilAdvocate);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const isEmpty =
     transcriptCount === 0 &&
     claims.length === 0 &&
     markers.length === 0;
 
-  const doExport = (kind: "report" | "markdown" | "json") => {
+  const doExport = (kind: SessionExportKind) => {
     setError(null);
+    setSuccess(null);
     try {
       const data = useSession.getState().toSession();
       exportSession(data, kind);
-      onClose();
+      setSuccess(successMessage(kind));
+      setTimeout(() => {
+        setSuccess(null);
+        onClose();
+      }, 800);
     } catch (err) {
+      setSuccess(null);
       setError(
         err instanceof Error
           ? err.message
@@ -123,6 +130,12 @@ export function ExportDialog({
               onClick={() => doExport("markdown")}
             />
             <FormatRow
+              label="Transcript file"
+              hint="Timed plain-text transcript with speakers and source anchors."
+              icon={Captions}
+              onClick={() => doExport("transcript")}
+            />
+            <FormatRow
               label="JSON file"
               hint="Raw structured data for scripting, archiving, or analysis."
               icon={Braces}
@@ -134,6 +147,12 @@ export function ExportDialog({
         {error && (
           <p role="alert" className="rounded-md border border-red-soft bg-red-soft px-3 py-2 text-sm text-red">
             {error}
+          </p>
+        )}
+
+        {success && (
+          <p role="status" aria-live="polite" className="rounded-md border border-teal/20 bg-teal-soft px-3 py-2 text-sm text-teal">
+            {success}
           </p>
         )}
 
@@ -355,4 +374,17 @@ function sourceLabel(source: SessionSource): string {
 function trimPreview(text: string, max: number): string {
   const trimmed = text.replace(/\s+/g, " ").trim();
   return trimmed.length > max ? `${trimmed.slice(0, max - 1)}…` : trimmed;
+}
+
+function successMessage(kind: SessionExportKind): string {
+  switch (kind) {
+    case "report":
+      return "Report export started.";
+    case "markdown":
+      return "Markdown export started.";
+    case "transcript":
+      return "Transcript export started.";
+    case "json":
+      return "JSON export started.";
+  }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PublicInfoPage } from "@/components/public-info-page";
 
 export const metadata: Metadata = {
   title: "Methodology — Yentl",
@@ -8,9 +9,12 @@ export const metadata: Metadata = {
 
 export default function MethodologyPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12 space-y-10">
-      <h1 className="text-3xl font-bold">Methodology</h1>
-
+    <PublicInfoPage
+      currentPath="/methodology"
+      eyebrow="Method"
+      title="Methodology"
+      description="How Yentl turns source material into transcripts, claims, evidence, verdicts, and rhetoric markers."
+    >
       <section aria-labelledby="version">
         <h2 id="version" className="text-xl font-semibold mb-3">Version</h2>
         <p className="text-muted-foreground">
@@ -164,6 +168,6 @@ export default function MethodologyPage() {
           </tbody>
         </table>
       </section>
-    </main>
+    </PublicInfoPage>
   );
 }

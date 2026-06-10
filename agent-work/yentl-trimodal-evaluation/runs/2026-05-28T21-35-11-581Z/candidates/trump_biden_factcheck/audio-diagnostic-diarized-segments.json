@@ -1,0 +1,576 @@
+[
+  {
+    "text": "Our economy is going to be phenomenal",
+    "start": 4.4,
+    "end": 6.96,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "next year. You can open businesses and schools if in fact you provide them the guidance that they need as well as the money to be able to do it. Competing for your vote and tonight competing for an audience. He's pulled out of almost every international organization.",
+    "start": 6.96,
+    "end": 21.074999,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "Has your opinion changed on the importance of mask wearing?",
+    "start": 21.075,
+    "end": 24.195,
+    "is_final": true,
+    "speaker_id": 3
+  },
+  {
+    "text": "Nope. Tonight, president Donald Trump and vice president Joe Biden hold dueling town halls. We're taking our political coverage 03:60.",
+    "start": 25.075,
+    "end": 32.809998,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "The questions voters want answered, the coronavirus response, the supreme court. I have not been a fan of Pat,",
+    "start": 32.89,
+    "end": 39.21,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "court packing. I think that she's going to make a great decision. I did not tell her what decision to make. Plus, we're fact checking claims made during both town halls. Our 3 60 team coverage on Denver 7 news at 10 starts right now.",
+    "start": 39.449997,
+    "end": 51.235,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "They were supposed to share a debate stage instead tonight with less than 20 days until the election. President Trump and former vice president Joe Biden held town halls same time, 2 different cities. The president in Miami, Biden in Philadelphia,",
+    "start": 52.675003,
+    "end": 65.43,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "both answering questions from voters on numerous topics with the big focus on the coronavirus response.",
+    "start": 65.43,
+    "end": 70.630005,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Tonight, as part of our 03:60 coverage on these dueling town halls, we have live team coverage. Denver seven's Eddie Guajardo with reaction from both sides of the aisle. First to Denver seven's Gary Bro with a look at highlights from both.",
+    "start": 71.075005,
+    "end": 82.355,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "Hey, Shannon. And these 2 town halls were quite different both in length and in tempo. President Trump's 1 hour town hall was quick. It was concise, but it left a lot of questions unanswered.",
+    "start": 83.170006,
+    "end": 94.450005,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "As for former vice president Joe Biden, his was long and at times his responses",
+    "start": 94.450005,
+    "end": 99.615,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "were long winded.",
+    "start": 99.855,
+    "end": 101.135,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "They touched on topics ranging from COVID, social injustice,",
+    "start": 101.375,
+    "end": 104.895,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "and that open supreme court seat.",
+    "start": 104.975,
+    "end": 107.455,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "In an unprecedented move, 2 presidential candidates to town halls on networks airing at the same time. Do you have any remaining symptoms from COVID? Nothing whatsoever. I'm great. I feel good. The president starting his town hall in Miami addressing his recent bout with COVID and pictures showing he and several leaders not wearing masks days before the president's positive test. Everybody's",
+    "start": 108.255,
+    "end": 130.155,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "tested, and they're tested often.",
+    "start": 130.155,
+    "end": 132.07501,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "And I also knew",
+    "start": 132.315,
+    "end": 133.755,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "that, hey. I'm president. I have to see people. I can't be in a basement. I can't be in a room. I can't be I have to be out. You can see people with a mask, though. Right? I can, but people with masks are catching it all the time. Former vice president Joe Biden at his town hall in Pennsylvania says he wants a mask mandate,",
+    "start": 134.395,
+    "end": 152.61002,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "calling out the president for not wearing his. The words of a president matter.",
+    "start": 152.85,
+    "end": 156.535,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "Absolutely. No matter whether they're good, bad, or indifferent, they matter.",
+    "start": 156.615,
+    "end": 160.375,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "And when a president doesn't wear a mask or makes fun of folks like me when I was wearing a mask for a long time,",
+    "start": 160.615,
+    "end": 166.375,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "then, as you know, people say, well, it mustn't be that important. NBC moderator Savannah Guthrie asks president Trump to clear the air from the first debate where he was asked to denounce white supremacy.",
+    "start": 166.695,
+    "end": 177.48,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "I denounce white supremacy. Okay. And frankly, you wanna know something? I denounce Antifa,",
+    "start": 177.48,
+    "end": 182.92,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "and I denounce these people on the left that are burning down our cities. Vice president Biden changing his stance on a 1994",
+    "start": 183.165,
+    "end": 189.72499,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "violent crime bill that many say incentivized mass incarceration.",
+    "start": 189.72499,
+    "end": 193.885,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "Was it a mistake to support it? Yes. It was. And outlining his new plan to improve criminal justice. You can ban choke holds. You can but but beyond that, you have to teach people how to deescalate circumstances.",
+    "start": 193.885,
+    "end": 206.65001,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "Deescalate.",
+    "start": 206.89001,
+    "end": 207.85,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "So instead of anybody coming at you and the first thing you do is shoot to kill, you shoot them in a leg. There's ways you have to do more background checks in terms of whether or not the person coming in passes certain psychological tests. Simultaneously,",
+    "start": 207.85,
+    "end": 221.375,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "both candidates fielding questions about the supreme court vacancy.",
+    "start": 221.375,
+    "end": 224.495,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "The president asked why he changed his stance on filling the seat before an election. And you said, I think the senate should wait until the next president and let the president pick. The whole ballgame changed",
+    "start": 224.87,
+    "end": 235.91,
+    "is_final": true,
+    "speaker_id": 3
+  },
+  {
+    "text": "when I saw the way they treated justice Kavanaugh.",
+    "start": 236.31,
+    "end": 239.445,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "I have never seen any human being, and I'm not just talking about supreme court, I have never seen a human being treated so badly with false accusations.",
+    "start": 239.605,
+    "end": 248.325,
+    "is_final": true,
+    "speaker_id": 0
+  },
+  {
+    "text": "The vote expected to happen days before the election. Biden refusing to take a stance if he will expand",
+    "start": 248.325,
+    "end": 254.005,
+    "is_final": true,
+    "speaker_id": 5
+  },
+  {
+    "text": "the supreme court. But don't voters have a right to know where you stand? Do have a right to know where I stand, and I'll have a right to know where I stand before they vote.",
+    "start": 254.18001,
+    "end": 260.82,
+    "is_final": true,
+    "speaker_id": 1
+  },
+  {
+    "text": "So you'll come out with a clear position before election day? Yes. Gary Broad, Denver 7. And we continue our 3 60 coverage, fact checking claims made during both town halls tonight focusing on coronavirus.",
+    "start": 261.54,
+    "end": 272.315,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "And we start with the claim made by the president that 85 percent of people who wear masks catch the virus, and this is false,",
+    "start": 272.315,
+    "end": 278.31503,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "and a misunderstanding of the CDC report released last month. The report looked at more than 150",
+    "start": 278.55502,
+    "end": 283.99503,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "people who were symptomatic",
+    "start": 283.99503,
+    "end": 285.355,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "and tested positive.",
+    "start": 285.53,
+    "end": 286.97003,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "85 percent said they had worn a mask either always or often over the 2 week period before they got sick. That's where the 85 percent comes from. Joe Biden claimed tonight that 1 in 5 minority businesses have closed because of COVID 19. This appears to be true, and the numbers actually might even be worse than that. According to a Stanford University study, more than 1,000,000 black owned businesses in The US were opened in February 2020. By April,",
+    "start": 287.45,
+    "end": 312.245,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "440,000",
+    "start": 312.485,
+    "end": 313.845,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "black owned businesses had closed. That's a decrease of more than 40%.",
+    "start": 313.845,
+    "end": 317.97,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "And the president claimed tonight that original projections for coronavirus deaths in The US would be around 2200000",
+    "start": 317.97,
+    "end": 324.37,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "people, and this is misleading.",
+    "start": 324.37,
+    "end": 325.97,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "The president is referring to a model published back in March by Imperial College London, which predicted 2,200,000",
+    "start": 326.37,
+    "end": 332.865,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "people in The US could die from the virus,",
+    "start": 332.865,
+    "end": 335.905,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "but only if no mitigation efforts were in place.",
+    "start": 336.145,
+    "end": 339.425,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "The White House coronavirus task force also said between 1.6 and 2200000 people would die if nothing was done to stop the spread. And Joe Biden slammed the president for not helping Americans have that extra $600 a week in supplemental unemployment benefits, which expired in July. Now this is false. After congressional talks to extend unemployment benefits collapse, the president signed an executive order to use $44,000,000,000",
+    "start": 339.82498,
+    "end": 363.48502,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "in disaster aid to provide $300",
+    "start": 363.48502,
+    "end": 366.20502,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "a week in supplemental benefits.",
+    "start": 366.20502,
+    "end": 368.12503,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "And tonight, people on both sides of the aisle are weighing in. Alright. Our 3 60 team coverage continues with Addie Guajardo.",
+    "start": 368.445,
+    "end": 374.79,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "And, Addie, you're hearing from Colorado Democrats and Republicans tonight.",
+    "start": 374.79,
+    "end": 378.55002,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Well, Shannon and some strong feelings tonight following these dueling town halls tonight. I spoke with Colorado Senate president Leroy Garcia, a democrat.",
+    "start": 379.19,
+    "end": 388.345,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "Garcia tells me he felt encouraged by Joe Biden's performance tonight. He says he showed strength, laid out a vision, and has a plan.",
+    "start": 388.345,
+    "end": 395.705,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "He said I'm going to be a president for everyone. And that is the second time he has said that. He means that. He understands that. He knows what that means. A president who's gonna unite people.",
+    "start": 397.54498,
+    "end": 407.32,
+    "is_final": true,
+    "speaker_id": 8
+  },
+  {
+    "text": "Now when it came to packing the court, Garcia says he supports Biden's plan to wait before making a decision. Now we pushed the Colorado Republican Party for a response tonight, but they just sent us the president's campaign statement,",
+    "start": 407.88,
+    "end": 419.305,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "which states NBC's Savannah Guthrie, a Joe Biden surrogate is what they called her. Now tonight, she corrected the president on several statements, including DACA and pressed for his plan, but he didn't elaborate,",
+    "start": 419.54498,
+    "end": 431.58002,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "only stating that he's working very hard on a DACA plan. Now the statement goes on to say president Trump masterfully",
+    "start": 431.74002,
+    "end": 438.94,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "handled Guthrie's attacks.",
+    "start": 439.1,
+    "end": 440.46002,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "Now it goes on to say again, Americans can see that president Trump is leading the country, has built the economy to the best in the world once,",
+    "start": 440.955,
+    "end": 449.51498,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "and is doing it again, and quite clearly has accomplished more than in 47 months than Biden has in 47 years as a failed Washington",
+    "start": 449.59497,
+    "end": 458.89,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "politician.",
+    "start": 458.97,
+    "end": 460.09,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "Now in just 19 days, voters will have that final decision.",
+    "start": 460.33002,
+    "end": 464.97,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "In the meantime, president Trump is gonna face off with Joe Biden on the debate stage next Thursday, October",
+    "start": 465.05,
+    "end": 471.255,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "22.",
+    "start": 471.255,
+    "end": 472.095,
+    "is_final": true,
+    "speaker_id": 7
+  },
+  {
+    "text": "Reporting live in Denver, Addie Guajardo, Denver 7. Addie, thank you. And nationwide in the latest ABC News Washington Post poll, Biden holds a double digit lead standing at 53% to the president's 41 among registered voters. The race is tied among men at 48%,",
+    "start": 472.175,
+    "end": 487.67,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "while Biden is up 59%",
+    "start": 487.99002,
+    "end": 490.31,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "to 36%",
+    "start": 490.31,
+    "end": 491.43002,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "among women.",
+    "start": 491.43002,
+    "end": 492.47003,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "And that is the widest margin among women for any presidential candidate in exit polls dating back to 1976.",
+    "start": 492.71002,
+    "end": 499.825,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "Well, Colorado voters are really showing up for this election.",
+    "start": 499.825,
+    "end": 503.105,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Early voter turnout has increased nearly 2400%",
+    "start": 503.265,
+    "end": 507.505,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "compared to this time in the 20 16 election.",
+    "start": 507.505,
+    "end": 509.665,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Secretary of state's office says more than 300,000",
+    "start": 510.19998,
+    "end": 512.92,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Coloradans have already returned their ballots. So here we are 19 days out from,",
+    "start": 512.92,
+    "end": 517.56,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "the 20 16 election, only about 12,000",
+    "start": 518.2,
+    "end": 521.4,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Coloradans have cast ballots. And of those 300,000",
+    "start": 521.48,
+    "end": 524.36,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "who have already voted this time around, 46% registered Democrats,",
+    "start": 524.36,
+    "end": 528.74506,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "19% registered Republicans,",
+    "start": 528.905,
+    "end": 530.905,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "and the rest unaffiliated.",
+    "start": 530.98505,
+    "end": 532.66504,
+    "is_final": true,
+    "speaker_id": 4
+  },
+  {
+    "text": "Alright. So some important dates and deadlines to keep in mind as we go forward. Election days, of course, November 3. If you wanna mail in your ballot, you need to do that early by October 26 in order for it to arrive on time for processing.",
+    "start": 532.825,
+    "end": 545.72003,
+    "is_final": true,
+    "speaker_id": 2
+  },
+  {
+    "text": "You can always take it to the thousands of drop boxes that are located all across our state. In fact, the secretary of state's office has a statewide list. And if you still need to register to vote, you can do that until 7PM on election day. And Colorado voters can now use a system called ballot tracks, a system that will allow you to track your ballot from the time you send it to the time it's accepted at a processing facility.",
+    "start": 546.04,
+    "end": 570.6101,
+    "is_final": true,
+    "speaker_id": 2
+  }
+]

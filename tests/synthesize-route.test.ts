@@ -144,6 +144,32 @@ describe("POST /api/synthesize route", () => {
     counters: { claims: 1, false: 1, partial: 0, true: 0, fallacy: 0, bias: 0, rhetoric: 0 },
     speakers: [{ id: 0, label: "Alice" }],
   };
+  const cleanMostlyFactualBody = {
+    ...validBody,
+    counters: { ...validBody.counters, claims: 2, false: 0, true: 2 },
+    claims: [
+      {
+        text: "The city published the audit.",
+        verdict: "TRUE",
+        score: 92,
+        speaker_id: 0,
+        topic: "Law",
+        stance: "asserted",
+        attribution_status: "confident",
+        attribution_reasons: ["single_speaker_high_confidence"],
+      },
+      {
+        text: "The release log was posted Friday.",
+        verdict: "MOSTLY_TRUE",
+        score: 86,
+        speaker_id: 0,
+        topic: "Law",
+        stance: "asserted",
+        attribution_status: "probable",
+        attribution_reasons: ["dominant_speaker_low_margin"],
+      },
+    ],
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -197,7 +223,7 @@ describe("POST /api/synthesize route", () => {
     const req = new Request("http://localhost/api/synthesize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(validBody),
+      body: JSON.stringify(cleanMostlyFactualBody),
     });
 
     const res = await POST(req as never);
@@ -207,6 +233,128 @@ describe("POST /api/synthesize route", () => {
     expect(json.per_speaker_verdicts[0].factual_grade).toBe("mostly_factual");
     expect(json.per_speaker_verdicts[0].faith_grade).toBe("good_faith");
     expect(json.per_speaker_verdicts[0].one_liner).toBe("Alice backed claims with solid evidence.");
+  });
+
+  it("downgrades speaker factual grades when clean owned claims do not support them", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    mockGenerateText.mockResolvedValue({
+      output: {
+        text: "A synthesis paragraph.",
+        headlines: ["Insight one", "Insight two", "Insight three"],
+        per_speaker_verdicts: [
+          {
+            speaker_id: 0,
+            label: "Alice",
+            factual_grade: "mostly_inaccurate",
+            faith_grade: "mixed",
+            one_liner: "Alice repeatedly made claims that were contradicted.",
+          },
+        ],
+      },
+    });
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...validBody,
+        counters: { ...validBody.counters, claims: 2, false: 2 },
+        claims: [
+          {
+            text: "The audit was hidden.",
+            verdict: "FALSE",
+            score: 82,
+            speaker_id: 0,
+            topic: "Law",
+            stance: "reported",
+            attribution_status: "uncertain",
+            attribution_reasons: ["quoted_or_reported_speech"],
+          },
+          {
+            text: "The clerk said nobody saw the file.",
+            verdict: "MISLEADING",
+            score: 70,
+            speaker_id: 0,
+            topic: "Law",
+            stance: "quoted",
+            attribution_status: "quote_or_clip",
+            attribution_reasons: ["quoted_or_reported_speech"],
+          },
+        ],
+      }),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.per_speaker_verdicts[0]).toMatchObject({
+      factual_grade: "insufficient",
+      faith_grade: "mixed",
+      one_liner: "Not enough clean owned claims for a factual read.",
+    });
+  });
+
+  it("recomputes mixed factual grades from clean owned claims", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    mockGenerateText.mockResolvedValue({
+      output: {
+        text: "A synthesis paragraph.",
+        headlines: ["Insight one", "Insight two", "Insight three"],
+        per_speaker_verdicts: [
+          {
+            speaker_id: 0,
+            label: "Alice",
+            factual_grade: "mostly_factual",
+            faith_grade: "good_faith",
+            one_liner: "Alice backed claims with solid evidence.",
+          },
+        ],
+      },
+    });
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...validBody,
+        counters: { ...validBody.counters, claims: 2, false: 1, partial: 0, true: 1 },
+        claims: [
+          {
+            text: "The audit was posted Friday.",
+            verdict: "TRUE",
+            score: 88,
+            speaker_id: 0,
+            topic: "Law",
+            stance: "asserted",
+            attribution_status: "confident",
+            attribution_reasons: ["single_speaker_high_confidence"],
+          },
+          {
+            text: "The budget doubled.",
+            verdict: "FALSE",
+            score: 22,
+            speaker_id: 0,
+            topic: "Budget",
+            stance: "asserted",
+            attribution_status: "confident",
+            attribution_reasons: ["single_speaker_high_confidence"],
+          },
+        ],
+      }),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.per_speaker_verdicts[0]).toMatchObject({
+      factual_grade: "mixed",
+      faith_grade: "good_faith",
+      one_liner: "Clean owned claims point in mixed directions.",
+    });
   });
 
   it("returns 200 when per_speaker_verdicts is absent from model output", async () => {

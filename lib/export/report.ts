@@ -6,6 +6,14 @@ import type {
   Speaker,
   SpeakerId,
 } from "@/lib/types";
+import { documentAnchorDetail } from "@/lib/document-anchor";
+import {
+  sourceClaimOverlap,
+  sourceClaimOverlapTerms,
+  sourceDossierStats,
+  sourceEvidenceBreakdown,
+  sourceEvidenceScore,
+} from "@/lib/source-evidence";
 
 function labelFor(speakers: Speaker[], id: SpeakerId | null): string {
   if (id === null) return "";
@@ -103,15 +111,22 @@ export function toReport(session: Session): string {
   .row .score .of { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-left: 1px; }
   .claim-text { font-size: 15px; font-weight: 600; margin: 12px 0 8px; }
   .explanation { font-size: 14px; color: #334155; margin: 0 0 12px; }
+  .ownership { font-size: 12px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 10px 0 12px; }
+  .ownership strong { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 3px; }
+  .marker-attribution { font-size: 12px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0 6px; }
+  .marker-attribution strong { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 3px; }
   .annotations { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; }
   .annotations span { font-size: 11px; font-style: italic; color: #475569; background: #f8fafc; border: 1px solid var(--line); padding: 2px 8px; border-radius: 9999px; }
   .sources { margin-top: 10px; }
   .sources-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 6px; }
+  .source-summary { font-size: 11px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; }
   .source { font-size: 13px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 6px; }
   .source a { color: inherit; text-decoration: none; font-weight: 600; }
   .source a:hover { text-decoration: underline; }
   .source .meta-row { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .source .claim-link { font-size: 11px; color: #334155; margin-top: 4px; }
   .source .excerpt { font-size: 12px; font-style: italic; color: #475569; margin-top: 6px; }
+  .source-match { background: #fef3c7; color: #0f172a; padding: 0 2px; border-radius: 3px; }
   .summary { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #f8fafc; margin-bottom: 18px; }
   .summary ul { margin: 0 0 12px; padding-left: 18px; }
   .summary p { margin: 0; color: #334155; }
@@ -232,8 +247,14 @@ function renderClaim(c: ClaimCard, speakers: Speaker[]): string {
   const annotations = c.annotations.length
     ? `<div class="annotations">${c.annotations.map((a) => `<span>${escapeHtml(a)}</span>`).join("")}</div>`
     : "";
+  const ownership = renderOwnershipContext(c, speakers);
+  const sourceStats = sourceDossierStats(c.sources, c.claim_text);
+  const sourceSummary = c.sources.length
+    ? `<div class="source-summary">Alignment ${sourceStats.claimLinked} linked / ${sourceStats.claimUnlinked} not direct · Reputation ${sourceStats.high} high / ${sourceStats.mid} mid / ${sourceStats.low} low · Stance ${sourceStats.supports} support / ${sourceStats.contradicts} contradict / ${sourceStats.mixed} mixed</div>`
+    : "";
   const sources = c.sources.length
-    ? `<div class="sources"><div class="sources-label">Sources · ${c.sources.length}</div>${c.sources
+    ? `<div class="sources"><div class="sources-label">Sources · ${c.sources.length}</div>${sourceSummary}${[...c.sources]
+        .sort((a, b) => sourceEvidenceScore(b) - sourceEvidenceScore(a))
         .map((s) => {
           const icon =
             s.stance === "supports"
@@ -241,7 +262,7 @@ function renderClaim(c: ClaimCard, speakers: Speaker[]): string {
               : s.stance === "contradicts"
                 ? `<span class="stance" style="background:#fff1f2;color:#9f1239;">✗</span>`
                 : `<span class="stance" style="background:#fffbeb;color:#92400e;">~</span>`;
-          return `<div class="source">${icon}<a href="${escapeAttr(s.url)}" target="_blank" rel="noreferrer">${escapeHtml(s.title)}</a><div class="meta-row">${escapeHtml(s.domain)} · ${s.reputation_tier} · ${s.stance}</div>${s.excerpt ? `<div class="excerpt">&ldquo;${escapeHtml(s.excerpt)}&rdquo;</div>` : ""}</div>`;
+          return `<div class="source">${icon}<a href="${escapeAttr(s.url)}" target="_blank" rel="noreferrer">${escapeHtml(s.title)}</a><div class="meta-row">${escapeHtml(s.domain)} · ${s.reputation_tier} · ${s.stance} · score ${sourceEvidenceScore(s)}</div><div class="claim-link">Evidence: ${escapeHtml(sourceEvidenceBreakdown(s))} · Claim link: ${escapeHtml(sourceClaimOverlap(c.claim_text, s.excerpt))}</div>${s.excerpt ? `<div class="excerpt">&ldquo;${renderHighlightedSourceExcerpt(s.excerpt, c.claim_text)}&rdquo;</div>` : ""}</div>`;
         })
         .join("")}</div>`
     : "";
@@ -253,10 +274,45 @@ function renderClaim(c: ClaimCard, speakers: Speaker[]): string {
   </div>
   ${speakerTag}
   <div class="claim-text">&ldquo;${escapeHtml(c.claim_text)}&rdquo;</div>
+  ${ownership}
   ${c.explanation ? `<p class="explanation">${escapeHtml(c.explanation)}</p>` : ""}
   ${annotations}
   ${sources}
 </article>`;
+}
+
+function renderOwnershipContext(c: ClaimCard, speakers: Speaker[]): string {
+  const parts: string[] = [];
+  const stance = c.ownership?.stance ?? c.stance;
+  if (stance) parts.push(`stance ${humanize(stance)}`);
+  if (c.ownership) {
+    parts.push(`attribution ${humanize(c.ownership.attribution_status)}`);
+    const owner = labelFor(speakers, c.ownership.owner_speaker_id);
+    parts.push(owner ? `owner ${owner}` : "owner unresolved");
+    parts.push(`confidence ${Math.round(c.ownership.confidence * 100)}%`);
+    if (c.ownership.attribution_reasons.length > 0) {
+      parts.push(
+        `reasons ${c.ownership.attribution_reasons.map(humanize).join(", ")}`,
+      );
+    }
+  }
+  const anchor = documentAnchorDetail(c.document_anchor);
+  if (anchor) parts.push(`source ${anchor}`);
+  if (parts.length === 0) return "";
+  return `<div class="ownership"><strong>Ownership context</strong>${escapeHtml(parts.join("; "))}</div>`;
+}
+
+function renderHighlightedSourceExcerpt(excerpt: string, claimText: string): string {
+  const overlapTerms = new Set(sourceClaimOverlapTerms(claimText, excerpt));
+  return excerpt
+    .split(/([a-z0-9]+)/gi)
+    .map((part) => {
+      const escaped = escapeHtml(part);
+      return overlapTerms.has(part.toLowerCase())
+        ? `<mark class="source-match">${escaped}</mark>`
+        : escaped;
+    })
+    .join("");
 }
 
 function renderMarkerBreakdown(counts: Record<string, number>) {
@@ -269,6 +325,7 @@ function renderMarker(m: RhetoricMarker, speakers: Speaker[]): string {
   const t = TYPE_TONE[m.type];
   const speakerLabel = labelFor(speakers, m.speaker_id);
   const speakerTag = speakerLabel ? `<div class="speaker-tag">— ${escapeHtml(speakerLabel)}</div>` : "";
+  const attribution = renderMarkerAttributionContext(m, speakers);
   return `<article class="marker">
   <span class="stripe" style="background:${t.border};"></span>
   <div class="row">
@@ -278,8 +335,24 @@ function renderMarker(m: RhetoricMarker, speakers: Speaker[]): string {
   ${speakerTag}
   <h3>${escapeHtml(m.display)}</h3>
   <p class="quote">&ldquo;${escapeHtml(m.excerpt)}&rdquo;</p>
+  ${attribution}
   ${m.explanation ? `<p class="exp">${escapeHtml(m.explanation)}</p>` : ""}
 </article>`;
+}
+
+function renderMarkerAttributionContext(m: RhetoricMarker, speakers: Speaker[]): string {
+  const parts: string[] = [];
+  if (m.attribution_status) parts.push(`attribution ${humanize(m.attribution_status)}`);
+  const owner = labelFor(speakers, m.speaker_id);
+  if (m.attribution_status) parts.push(owner ? `owner ${owner}` : "owner unresolved");
+  if (m.overlap_class) parts.push(`overlap ${humanize(m.overlap_class)}`);
+  if (m.attribution_reasons?.length) {
+    parts.push(`reasons ${m.attribution_reasons.map(humanize).join(", ")}`);
+  }
+  if (m.source_turn_ids?.length) parts.push(`turns ${m.source_turn_ids.join(", ")}`);
+  if (m.source_segment_ids?.length) parts.push(`segments ${m.source_segment_ids.join(", ")}`);
+  if (parts.length === 0) return "";
+  return `<div class="marker-attribution"><strong>Marker attribution context</strong>${escapeHtml(parts.join("; "))}</div>`;
 }
 
 function formatDateTime(d: Date) {
@@ -312,4 +385,8 @@ function escapeHtml(s: string) {
 
 function escapeAttr(s: string) {
   return escapeHtml(s);
+}
+
+function humanize(value: string) {
+  return value.replace(/_/g, " ");
 }

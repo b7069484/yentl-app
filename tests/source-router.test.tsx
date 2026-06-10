@@ -120,6 +120,18 @@ describe("SourceRouter – picker stage", () => {
       "https://www.youtube.com/watch?v=IDC8PrZQHts",
     );
   });
+
+  it("renders the blank YouTube pane directly for source=youtube validation links", () => {
+    mockPrerecordStage = "picker";
+    mockSearchParamsRaw = new URLSearchParams("source=youtube");
+
+    render(<SourceRouter />);
+
+    expect(screen.queryByTestId("source-picker")).toBeNull();
+    expect(screen.getByTestId("youtube-ingest-pane")).not.toHaveAttribute(
+      "data-initial-url",
+    );
+  });
 });
 
 // ─── 2. Stage: selected + mic ─────────────────────────────────────────────────

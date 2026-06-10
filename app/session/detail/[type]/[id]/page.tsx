@@ -10,7 +10,7 @@ export default async function DetailPage({
 }) {
   const { type, id } = await params;
   const sampleId = validationSampleId(await searchParams);
-  if (type !== "claim" && type !== "marker") {
+  if (type !== "claim" && type !== "marker" && type !== "source") {
     return <div className="p-8 text-ink-3">Unknown detail type.</div>;
   }
   return (

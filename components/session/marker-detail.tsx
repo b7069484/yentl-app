@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { RhetoricMarker, Speaker, MarkerType, MarkerSeverity } from "@/lib/types";
+import { sessionPathHref } from "@/lib/client/session-route";
+import { useSession } from "@/lib/client/session-store";
+import { attributionStatusLabel, isAttributionStatusResolved, speakerLabelFor } from "./attribution-labels";
 import { ActionButton } from "./claim-detail";
+import { createUserDisputeFlag, ReviewFlagPanel } from "./review-flag-panel";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -11,6 +16,28 @@ function formatTs(seconds: number): string {
   const m = Math.floor(total / 60);
   const s = total % 60;
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function markerAttributionDetail(
+  marker: RhetoricMarker,
+  speakers: Speaker[],
+): { label: string; value: string } {
+  if (
+    marker.speaker_id !== null &&
+    (!marker.attribution_status || isAttributionStatusResolved(marker.attribution_status))
+  ) {
+    return {
+      label: "Said by",
+      value: speakerLabelFor(speakers, marker.speaker_id),
+    };
+  }
+
+  return {
+    label: "Attribution",
+    value: marker.attribution_status
+      ? attributionStatusLabel(marker.attribution_status)
+      : "not available",
+  };
 }
 
 // ─── Marker type + severity theming ──────────────────────────────────────────
@@ -48,14 +75,25 @@ export function MarkerDetail({
   marker: RhetoricMarker;
   speakers: Speaker[];
 }) {
-  const speakerLabel =
-    speakers.find((s) => s.id === marker.speaker_id)?.label ?? "Unknown";
+  const searchParams = useSearchParams();
+  const attributionDetail = markerAttributionDetail(marker, speakers);
+  const updateMarker = useSession((s) => s.updateMarker);
+  const disputed = marker.review?.status === "disputed";
 
   async function onShare() {
-    const url = `${window.location.origin}/session/detail/marker/${marker.id}`;
+    const path = sessionPathHref(searchParams, `/session/detail/marker/${marker.id}`);
+    const url = `${window.location.origin}${path}`;
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(url);
     }
+  }
+
+  function onDispute() {
+    updateMarker(marker.id, {
+      review: createUserDisputeFlag(
+        "User disputed this marker from the detail view. Re-check the excerpt, rhetoric pattern, severity, and surrounding context before relying on it.",
+      ),
+    });
   }
 
   return (
@@ -105,10 +143,12 @@ export function MarkerDetail({
         </div>
       )}
 
+      {marker.review && <ReviewFlagPanel label="Marker" review={marker.review} />}
+
       {/* ── Speaker + time context ─────────────────────────────────── */}
       <div className="text-[12px] text-ink-3">
-        Said by{" "}
-        <b className="text-ink-2 font-semibold">{speakerLabel}</b>
+        {attributionDetail.label}{" "}
+        <b className="text-ink-2 font-semibold">{attributionDetail.value}</b>
         {" · "}
         {formatTs(marker.start_time)}
       </div>
@@ -117,17 +157,23 @@ export function MarkerDetail({
       <div className="flex gap-2 flex-wrap pt-2">
         <ActionButton label="Share" onClick={onShare} />
         <ActionButton
-          label="Dispute · coming soon"
-          disabled
-          tooltip="A dispute workflow is planned for v2."
+          label={disputed ? "Marked for review" : "Dispute"}
+          onClick={onDispute}
+          disabled={disputed}
+          tooltip={
+            disputed
+              ? "This marker is already marked for human review."
+              : "Mark this marker for human review."
+          }
         />
       </div>
 
       {/* ── Footer: Learn more ─────────────────────────────────────── */}
       <div className="flex items-center text-[11px] text-ink-3 pt-3 border-t border-line-soft">
         <Link
-          href={`/session/learn/marker/${marker.name}`}
-          className="hover:text-ink-2 transition-colors"
+          href={sessionPathHref(searchParams, `/session/learn/marker/${marker.name}`)}
+          data-testid="marker-learn-link"
+          className="inline-flex min-h-11 items-center hover:text-ink-2 transition-colors"
         >
           Learn more about {marker.display} →
         </Link>

@@ -7,6 +7,7 @@ import type { TranscriptSegment, Speaker } from "@/lib/types";
 const {
   mockSetPrerecordStage,
   mockSetSource,
+  mockClearPendingLaunchFile,
   mockBulkIngest,
   mockProbeAudioDuration,
   mockTranscribeAudioFile,
@@ -17,6 +18,7 @@ const {
   return {
     mockSetPrerecordStage: vi.fn(),
     mockSetSource: vi.fn(),
+    mockClearPendingLaunchFile: vi.fn(),
     mockBulkIngest: vi.fn().mockResolvedValue(undefined),
     mockProbeAudioDuration: vi.fn().mockResolvedValue(120), // 2 minutes default
     mockTranscribeAudioFile: vi.fn().mockResolvedValue({
@@ -29,6 +31,8 @@ const {
   };
 });
 
+let mockPendingLaunchFile: File | null = null;
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
@@ -38,6 +42,8 @@ vi.mock("@/lib/client/session-store", () => ({
     const state = {
       setPrerecordStage: mockSetPrerecordStage,
       setSource: mockSetSource,
+      clearPendingLaunchFile: mockClearPendingLaunchFile,
+      pendingLaunchFile: mockPendingLaunchFile,
     };
     return selector ? selector(state) : state;
   }),
@@ -95,6 +101,7 @@ beforeEach(() => {
   });
   mockBulkIngest.mockResolvedValue(undefined);
   mockCreateObjectURL.mockReturnValue("blob:mock-url");
+  mockPendingLaunchFile = null;
 });
 
 describe("AudioIngestPane — renders", () => {
@@ -219,6 +226,44 @@ describe("AudioIngestPane — valid file preview", () => {
     });
   });
 
+  it("stages a pending PWA-launched audio file and clears the handoff slot", async () => {
+    mockPendingLaunchFile = makeAudioFile("launch.mp3", "audio/mpeg", 1024 * 1024);
+
+    render(<AudioIngestPane />);
+
+    await waitFor(() => {
+      expect(mockProbeAudioDuration).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "launch.mp3" }),
+      );
+      expect(screen.getByText(/launch\.mp3/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process audio/i })).not.toBeDisabled();
+      expect(mockClearPendingLaunchFile).toHaveBeenCalledOnce();
+    });
+  });
+
+  it("loads the local validation WAV into the same staged-file flow", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(new Blob(["RIFF"], { type: "audio/wav" }), { status: 200 }),
+    );
+
+    render(<AudioIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Load validation WAV/i }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-synthetic-panel.wav");
+      expect(mockProbeAudioDuration).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "yentl-synthetic-panel.wav" }),
+      );
+      expect(screen.getByText(/yentl-synthetic-panel\.wav/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process audio/i })).not.toBeDisabled();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
   it("Process button disabled until valid file staged", () => {
     render(<AudioIngestPane />);
     // Initially no button
@@ -298,7 +343,10 @@ describe("AudioIngestPane — Process flow", () => {
         expect.arrayContaining([
           expect.objectContaining({ text: "Hello.", is_final: true }),
         ]),
-        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          speakers: [{ id: 0, label: "Speaker 1" }],
+        }),
       );
     });
   });

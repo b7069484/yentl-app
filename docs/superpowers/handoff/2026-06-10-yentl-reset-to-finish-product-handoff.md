@@ -43,6 +43,8 @@ Important operating constraints from the reset plan:
 
 **Branch:** `codex/yentl-product-safety-snapshot-2026-06-10`
 
+**Commit:** `a6af86e` — Ship launch proof battery and session UX validation (8.6/10 checkpoint)
+
 **Security gates before push (all green):**
 
 ```bash

@@ -94,7 +94,20 @@ export default function FAQPage() {
           >
             Read methodology <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
+          <Link
+            href="/contact"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-line bg-paper px-4 text-sm font-semibold text-ink-2 hover:bg-cream-2"
+          >
+            Contact page <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
         </div>
+        <p className="mt-6 max-w-3xl text-sm leading-6 text-ink-3">
+          Privacy questions can also go to{" "}
+          <a href="mailto:privacy@yentl.it" className="font-semibold text-teal hover:text-teal-2">
+            privacy@yentl.it
+          </a>
+          .
+        </p>
       </section>
     </main>
   );

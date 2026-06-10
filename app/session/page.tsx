@@ -34,6 +34,7 @@ import type {
 export default function SessionPage() {
   return (
     <div id="main-content" className="flex flex-1 flex-col">
+      <h1 className="sr-only">Yentl session workspace</h1>
       <RecordingBeacon />
       <SessionTimer />
       <PWAFileLaunchHandler />

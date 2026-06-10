@@ -1,0 +1,37 @@
+{
+  "id": "interview_002",
+  "title": "Quentin Tarantino interview: 'I'm shutting your butt down!'",
+  "category": "1on1_interview",
+  "startedAt": "2026-06-10T06:51:37.978Z",
+  "finishedAt": "2026-06-10T06:52:07.957Z",
+  "baseUrl": "https://yentl.it",
+  "verify": "provisional",
+  "utterancesAvailable": 74,
+  "utterancesReplayed": 10,
+  "claims": [],
+  "markers": [
+    {
+      "type": "rhetoric",
+      "name": "loaded_language",
+      "display": "Loaded Language",
+      "excerpt": "laying waste to a genocidal white racist class in the institution of slavery",
+      "start_time": 48,
+      "end_time": 60,
+      "severity": "clear",
+      "explanation": "The speaker uses emotionally charged, morally absolute phrasing ('laying waste,' 'genocidal white racist class') to frame the antagonists, intensifying the rhetorical impact beyond neutral description.",
+      "id": "interview_002-marker-1"
+    },
+    {
+      "type": "rhetoric",
+      "name": "pejorative_framing",
+      "display": "Pejorative Framing",
+      "excerpt": "a genocidal white racist class",
+      "start_time": 52,
+      "end_time": 58,
+      "severity": "subtle",
+      "explanation": "Characterizing the slaveholding class with a stacked pejorative label frames an entire group in the most damning terms, shaping audience perception through wording rather than argument.",
+      "id": "interview_002-marker-2"
+    }
+  ],
+  "errors": []
+}

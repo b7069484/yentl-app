@@ -340,7 +340,12 @@ function compactOutlineText(value: string, maxChars: number) {
 // ─── parseDocx ───────────────────────────────────────────────────────────────
 
 export async function parseDocx(file: File): Promise<string> {
-  let mammoth: { extractRawText: (opts: { arrayBuffer: ArrayBuffer }) => Promise<{ value: string }> };
+  let mammoth: {
+    extractRawText: (opts: {
+      arrayBuffer?: ArrayBuffer;
+      buffer?: Buffer;
+    }) => Promise<{ value: string }>;
+  };
   try {
     // Try the browser-specific path first; fall back to main package
     mammoth = await import("mammoth") as typeof mammoth;
@@ -358,8 +363,17 @@ export async function parseDocx(file: File): Promise<string> {
   let result: { value: string };
   try {
     result = await mammoth.extractRawText({ arrayBuffer: buf });
-  } catch (e) {
-    throw new Error(`mammoth.extractRawText failed: ${String(e)}`);
+  } catch (arrayBufferError) {
+    // Node mammoth expects a Buffer; browser builds accept arrayBuffer.
+    try {
+      result = await mammoth.extractRawText({
+        buffer: Buffer.from(new Uint8Array(buf)),
+      });
+    } catch (nodeError) {
+      throw new Error(
+        `mammoth.extractRawText failed: ${String(arrayBufferError)}; node fallback: ${String(nodeError)}`,
+      );
+    }
   }
 
   return result.value;

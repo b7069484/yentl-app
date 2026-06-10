@@ -198,7 +198,7 @@ export default function Home() {
               Mobile app <Smartphone className="h-4 w-4" aria-hidden />
             </Link>
           </div>
-          <p className="mt-4 text-sm text-ink-4">
+          <p className="mt-4 text-sm text-ink-3">
             Guest-first in v1. Local-first saves with account sync when configured. AI analysis stays reviewable.
           </p>
         </div>
@@ -207,12 +207,12 @@ export default function Home() {
           <div className="rounded-lg border border-line-soft bg-cream p-4">
             <div className="flex items-start justify-between gap-3 border-b border-line pb-4">
               <div>
-                <p className="text-xs font-semibold uppercase text-ink-4">Yentl&apos;s Read</p>
+                <p className="text-xs font-semibold uppercase text-ink-3">Yentl&apos;s Read</p>
                 <h2 className="mt-1 font-serif text-2xl font-medium text-ink">
                   Mixed claims, strong rhetoric, source health still checking.
                 </h2>
               </div>
-              <span className="rounded-lg bg-amber-soft px-2 py-1 text-xs font-semibold text-amber-2">
+              <span className="rounded-lg border border-amber-2/30 bg-amber-soft px-2 py-1 text-xs font-semibold text-ink-2">
                 Live
               </span>
             </div>
@@ -223,7 +223,7 @@ export default function Home() {
                 ["Markers", "9", "Loaded language leads"],
               ].map(([label, value, note]) => (
                 <div key={label} className="rounded-lg border border-line bg-paper p-3">
-                  <p className="text-xs font-semibold uppercase text-ink-4">{label}</p>
+                  <p className="text-xs font-semibold uppercase text-ink-3">{label}</p>
                   <p className="mt-2 font-serif text-3xl font-medium text-ink">{value}</p>
                   <p className="mt-1 text-xs text-ink-3">{note}</p>
                 </div>
@@ -232,7 +232,7 @@ export default function Home() {
             <div className="space-y-3">
               {proofRows.map((row, index) => (
                 <div key={row} className="flex gap-3 rounded-lg border border-line bg-paper p-3">
-                  <span className="mt-0.5 font-mono text-xs text-ink-4">0{index + 1}</span>
+                  <span className="mt-0.5 font-mono text-xs text-ink-3">0{index + 1}</span>
                   <p className="text-sm leading-6 text-ink-3">{row}</p>
                 </div>
               ))}
@@ -308,7 +308,7 @@ export default function Home() {
               "Surface bias, fallacy, and rhetoric markers with quote-level context.",
             ].map((step, index) => (
               <li key={step} className="flex gap-4 rounded-lg border border-line bg-cream p-4">
-                <span className="font-mono text-sm text-ink-4">{String(index + 1).padStart(2, "0")}</span>
+                <span className="font-mono text-sm text-ink-3">{String(index + 1).padStart(2, "0")}</span>
                 <span className="text-sm leading-6 text-ink-3">{step}</span>
               </li>
             ))}

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+import { mkdir, writeFile } from "node:fs/promises";
 import { readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const EXTENSION_DIR = join(ROOT, "extension");
@@ -174,9 +175,29 @@ if (failures.length > 0) {
 }
 
 const checkedFiles = REQUIRED_FILES.map((file) => relative(ROOT, join(EXTENSION_DIR, file)));
-console.log(JSON.stringify({
+const report = {
   ok: true,
-  manifestVersion: manifest?.manifest_version,
-  version: manifest?.version,
-  checkedFiles,
-}, null, 2));
+  generated_at: new Date().toISOString(),
+  production_origin: PRODUCTION_ORIGIN,
+  manifest_version: manifest?.manifest_version ?? null,
+  version: manifest?.version ?? null,
+  minimum_chrome_version: manifest?.minimum_chrome_version ?? null,
+  permissions: manifest?.permissions ?? [],
+  host_permissions: manifest?.host_permissions ?? [],
+  optional_host_permissions: manifest?.optional_host_permissions ?? [],
+  store_readiness: {
+    mv3: manifest?.manifest_version === 3,
+    production_host_permission: manifest?.host_permissions?.includes(`${PRODUCTION_ORIGIN}/*`) ?? false,
+    local_origins_optional_only: LOCAL_ORIGINS.every(
+      (origin) => !manifest?.host_permissions?.includes(origin) && manifest?.optional_host_permissions?.includes(origin),
+    ),
+    popup_controls_documented: popup.includes("status-request") && popup.includes("popup-start-active-tab"),
+    readme_install_docs: readme.includes("Local Validation") && readme.includes("Production Install"),
+  },
+  checked_files: checkedFiles,
+};
+
+const reportPath = join(ROOT, "docs/superpowers/validation/extension-store-readiness.json");
+await mkdir(dirname(reportPath), { recursive: true });
+await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+console.log(JSON.stringify(report, null, 2));

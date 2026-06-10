@@ -65,7 +65,7 @@ export default function PricingPage() {
               </div>
             </div>
             <p className="mt-6 font-serif text-5xl font-medium text-ink">$0</p>
-            <p className="mt-1 text-sm text-ink-4">No card. No account required for the v1 guest flow.</p>
+            <p className="mt-1 text-sm text-ink-3">No card. No account required for the v1 guest flow.</p>
             <ul className="mt-6 space-y-3">
               {previewFeatures.map((feature) => (
                 <li key={feature} className="flex gap-3 text-sm leading-6 text-ink-3">
@@ -84,7 +84,7 @@ export default function PricingPage() {
 
           <section aria-labelledby="partner-plan" className="rounded-lg border border-line bg-paper p-6">
             <div className="flex items-start gap-4">
-              <span className="rounded-lg bg-amber-soft p-3 text-amber-2">
+              <span className="rounded-lg border border-amber-2/30 bg-amber-soft p-3 text-ink-2">
                 <Building2 className="h-5 w-5" aria-hidden />
               </span>
               <div>
@@ -98,7 +98,7 @@ export default function PricingPage() {
               </div>
             </div>
             <p className="mt-6 font-serif text-5xl font-medium text-ink">Contact</p>
-            <p className="mt-1 text-sm text-ink-4">Scope, support, and privacy review depend on the pilot.</p>
+            <p className="mt-1 text-sm text-ink-3">Scope, support, and privacy review depend on the pilot.</p>
             <ul className="mt-6 space-y-3">
               {partnerFeatures.map((feature) => (
                 <li key={feature} className="flex gap-3 text-sm leading-6 text-ink-3">

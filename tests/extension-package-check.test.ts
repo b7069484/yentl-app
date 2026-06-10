@@ -15,8 +15,10 @@ describe("extension package check", () => {
     const report = JSON.parse(output.slice(jsonStart));
 
     expect(report.ok).toBe(true);
-    expect(report.manifestVersion).toBe(3);
-    expect(report.checkedFiles).toContain("extension/manifest.json");
-    expect(report.checkedFiles).toContain("extension/popup.js");
+    expect(report.manifest_version).toBe(3);
+    expect(report.store_readiness.mv3).toBe(true);
+    expect(report.store_readiness.production_host_permission).toBe(true);
+    expect(report.checked_files).toContain("extension/manifest.json");
+    expect(report.checked_files).toContain("extension/popup.js");
   });
 });

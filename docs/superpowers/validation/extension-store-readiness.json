@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T07:13:20.138Z",
+  "production_origin": "https://yentl.it",
+  "manifest_version": 3,
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "activeTab",
+    "offscreen",
+    "scripting",
+    "storage",
+    "tabCapture",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://yentl.it/*",
+    "https://api.deepgram.com/*"
+  ],
+  "optional_host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
+  ],
+  "store_readiness": {
+    "mv3": true,
+    "production_host_permission": true,
+    "local_origins_optional_only": true,
+    "popup_controls_documented": true,
+    "readme_install_docs": true
+  },
+  "checked_files": [
+    "extension/manifest.json",
+    "extension/manifest.local.json",
+    "extension/background.js",
+    "extension/content-script.js",
+    "extension/offscreen.html",
+    "extension/offscreen.js",
+    "extension/options.html",
+    "extension/options.js",
+    "extension/popup.html",
+    "extension/popup.js",
+    "extension/README.md"
+  ]
+}

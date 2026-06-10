@@ -1,0 +1,79 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:28:27.261Z",
+  "app_origin": "http://127.0.0.1:3000",
+  "tool": "@axe-core/cli",
+  "launch_critical_routes": [
+    "/",
+    "/session",
+    "/mobile",
+    "/contact"
+  ],
+  "checks": [
+    {
+      "name": "axe-home",
+      "ok": true,
+      "elapsed_ms": 3462,
+      "path": "/",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-session",
+      "ok": true,
+      "elapsed_ms": 3530,
+      "path": "/session",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-mobile",
+      "ok": true,
+      "elapsed_ms": 3391,
+      "path": "/mobile",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-contact",
+      "ok": true,
+      "elapsed_ms": 3292,
+      "path": "/contact",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-pricing",
+      "ok": true,
+      "elapsed_ms": 3584,
+      "path": "/pricing",
+      "launch_critical": false,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-faq",
+      "ok": true,
+      "elapsed_ms": 3447,
+      "path": "/faq",
+      "launch_critical": false,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "notes": [
+    "Launch-critical routes must report zero axe violations.",
+    "axe detects roughly 20-50% of accessibility issues; manual review is still required."
+  ]
+}

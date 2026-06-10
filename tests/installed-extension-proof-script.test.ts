@@ -36,8 +36,18 @@ describe("installed extension local proof script", () => {
 
   it("has an explicit manual capture mode for the real tabCapture user-gesture gate", () => {
     expect(source).toContain("YENTL_EXTENSION_PROOF_MANUAL_CAPTURE");
+    expect(source).toContain("YENTL_EXTENSION_PROOF_POPUP_AUTOMATION");
+    expect(source).toContain("invokePopupStartButton");
     expect(source).toContain("waitForManualCapture");
+    expect(source).toContain("popup_click_proven");
     expect(source).toContain("Manual capture mode did not observe");
+  });
+
+  it("supports an external real-page proof mode with a separate artifact", () => {
+    expect(source).toContain("YENTL_EXTENSION_PROOF_TARGET_URL");
+    expect(source).toContain("installed-extension-external-proof.json");
+    expect(source).toContain("hasPageTextEvidence");
+    expect(source).toContain("commons.wikimedia.org");
   });
 
   it("probes the panel iframe for known validation transcript evidence", () => {
@@ -46,5 +56,12 @@ describe("installed extension local proof script", () => {
     expect(source).toContain("media_playback_after_capture");
     expect(source).toContain("city library budget increased");
     expect(source).toContain("iframeText");
+  });
+
+  it("records repeatable latency measurements in the proof artifact", () => {
+    expect(source).toContain("buildLatencyMetrics");
+    expect(source).toContain("latency_ms");
+    expect(source).toContain("first_transcript_wait_ms");
+    expect(source).toContain("capture_invocation_ms");
   });
 });

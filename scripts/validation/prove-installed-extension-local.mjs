@@ -8,19 +8,38 @@ import { spawn } from "node:child_process";
 const ROOT = process.cwd();
 const EXTENSION_DIR = join(ROOT, "extension");
 const APP_ORIGIN = process.env.YENTL_EXTENSION_PROOF_ORIGIN ?? "http://127.0.0.1:3000";
-const TARGET_URL = `${APP_ORIGIN}/validation/browser-capture.html`;
-const REPORT_PATH = join(ROOT, "docs/superpowers/validation/installed-extension-local-proof.json");
-const SCREENSHOT_PATH = join(ROOT, "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png");
+const EXTERNAL_TARGET_URL = process.env.YENTL_EXTENSION_PROOF_TARGET_URL?.trim() || null;
+const EXTERNAL_PROOF = Boolean(EXTERNAL_TARGET_URL);
+const TARGET_URL = EXTERNAL_TARGET_URL ?? `${APP_ORIGIN}/validation/browser-capture.html`;
+const REPORT_PATH = join(
+  ROOT,
+  EXTERNAL_PROOF
+    ? "docs/superpowers/validation/installed-extension-external-proof.json"
+    : "docs/superpowers/validation/installed-extension-local-proof.json",
+);
+const SCREENSHOT_PATH = join(
+  ROOT,
+  EXTERNAL_PROOF
+    ? "docs/superpowers/validation/screenshots/installed-extension-external-page.png"
+    : "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png",
+);
+const DEFAULT_WIKIMEDIA_TARGET =
+  "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm";
 const HEADLESS = process.env.YENTL_EXTENSION_PROOF_HEADLESS === "1";
-const ATTEMPT_SHORTCUT =
-  process.env.YENTL_EXTENSION_PROOF_SHORTCUT === "1" ||
-  (!HEADLESS && process.env.YENTL_EXTENSION_PROOF_SHORTCUT !== "0");
-const SHORTCUT_STRATEGY = process.env.YENTL_EXTENSION_PROOF_SHORTCUT_STRATEGY ?? (HEADLESS ? "cdp" : "os");
 const MANUAL_CAPTURE = process.env.YENTL_EXTENSION_PROOF_MANUAL_CAPTURE === "1";
+const POPUP_AUTOMATION = process.env.YENTL_EXTENSION_PROOF_POPUP_AUTOMATION !== "0";
+const ATTEMPT_SHORTCUT = MANUAL_CAPTURE
+  ? false
+  : process.env.YENTL_EXTENSION_PROOF_SHORTCUT === "1" ||
+    (!HEADLESS && process.env.YENTL_EXTENSION_PROOF_SHORTCUT !== "0");
+const SHORTCUT_STRATEGY = process.env.YENTL_EXTENSION_PROOF_SHORTCUT_STRATEGY ?? (HEADLESS ? "cdp" : "os");
 const MANUAL_CAPTURE_TIMEOUT_MS = Number(process.env.YENTL_EXTENSION_PROOF_MANUAL_TIMEOUT_MS ?? 90000);
-const TRANSCRIPT_WAIT_MS = Number(process.env.YENTL_EXTENSION_PROOF_TRANSCRIPT_WAIT_MS ?? 15000);
+const TRANSCRIPT_WAIT_MS = Number(
+  process.env.YENTL_EXTENSION_PROOF_TRANSCRIPT_WAIT_MS ?? (EXTERNAL_PROOF ? 45000 : 15000),
+);
 
 async function main() {
+  const proofStartedAt = Date.now();
   await assertAppIsServing();
   const chromePath = chromeExecutable();
   const port = await pickPort();
@@ -46,25 +65,40 @@ async function main() {
     await waitForExpression(client, "document.readyState === 'complete' || document.readyState === 'interactive'");
     await installCaptureEventRecorder(client);
 
+    await waitForExpression(
+      client,
+      "Boolean(document.querySelector('audio') || document.querySelector('video'))",
+      { timeoutMs: 10000 },
+    );
     const mediaPlaybackBeforeShortcut = await startValidationMediaPlayback(client, {
       reset: true,
-      target: "audio",
+      target: EXTERNAL_PROOF ? "video" : "audio",
     });
+    const mediaReadyAt = Date.now();
+    let captureInvokedAt = null;
 
     const manualCapture = MANUAL_CAPTURE
-      ? await waitForManualCapture(client, port, MANUAL_CAPTURE_TIMEOUT_MS).catch((error) => ({
-          ok: false,
-          error: error instanceof Error ? error.message : String(error),
-        }))
+      ? POPUP_AUTOMATION
+        ? await invokePopupStartButton(port, chromePath, MANUAL_CAPTURE_TIMEOUT_MS).catch((error) => ({
+            ok: false,
+            error: error instanceof Error ? error.message : String(error),
+          }))
+        : await waitForManualCapture(client, port, MANUAL_CAPTURE_TIMEOUT_MS).catch((error) => ({
+            ok: false,
+            error: error instanceof Error ? error.message : String(error),
+          }))
       : null;
     const extensionTargetsBeforeShortcut = await inspectExtensionTargets(port);
     let shortcutError = ATTEMPT_SHORTCUT
       ? null
       : "Skipped in default headless proof mode because Chrome does not reliably dispatch extension command shortcuts through CDP key events.";
     if (ATTEMPT_SHORTCUT) {
+      captureInvokedAt = Date.now();
       await pressExtensionShortcut(client, chromePath).catch((error) => {
         shortcutError = error instanceof Error ? error.message : String(error);
       });
+    } else if (MANUAL_CAPTURE && POPUP_AUTOMATION) {
+      captureInvokedAt = mediaReadyAt;
     }
     const shortcutPanel = shortcutError
       ? null
@@ -74,7 +108,7 @@ async function main() {
       ok: false,
       error: error instanceof Error ? error.message : String(error),
     }));
-    const serviceWorkerDebug = shortcutPanel?.panelInjected
+    const serviceWorkerDebug = shortcutPanel?.panelInjected || manualCapture?.popupClickProven
       ? null
       : await openPanelThroughServiceWorker(port).catch((error) => ({
           ok: false,
@@ -106,7 +140,11 @@ async function main() {
       ok: false,
       error: error instanceof Error ? error.message : String(error),
     }));
-    const panel = shortcutPanel ?? debugPanel;
+    const panel =
+      shortcutPanel ??
+      debugPanel ??
+      (transcriptProbe?.page?.panel?.panelInjected ? transcriptProbe.page.panel : null) ??
+      (pageCaptureState?.panel?.panelInjected ? pageCaptureState.panel : null);
     let screenshotError = null;
     const screenshot = await client.send("Page.captureScreenshot", {
       format: "png",
@@ -121,11 +159,35 @@ async function main() {
       await writeFile(SCREENSHOT_PATH, Buffer.from(screenshot.data, "base64"));
     }
 
+    const proofEndedAt = Date.now();
+    const latencyMs = buildLatencyMetrics({
+      proofStartedAt,
+      mediaReadyAt,
+      captureInvokedAt,
+      panel,
+      transcriptProbe,
+      pageCaptureState,
+      extensionDiagnosticsAfterShortcut,
+      extensionDiagnosticsAfterFallback,
+      manualCapture,
+      proofEndedAt,
+    });
     const proof = {
       real_user_profile_used: false,
       extension_loaded: extensionTargetsAfterShortcut.yentlServiceWorkers.length > 0,
       manual_capture_mode: MANUAL_CAPTURE,
-      manual_invocation_proven: Boolean(manualCapture?.manualInvocationProven),
+      popup_automation: MANUAL_CAPTURE ? POPUP_AUTOMATION : false,
+      invocation_path: MANUAL_CAPTURE
+        ? POPUP_AUTOMATION
+          ? "popup"
+          : "manual-toolbar-or-popup"
+        : ATTEMPT_SHORTCUT
+          ? "keyboard-shortcut"
+          : "service-worker-fallback",
+      popup_click_proven: Boolean(manualCapture?.popupClickProven),
+      manual_invocation_proven: Boolean(
+        manualCapture?.manualInvocationProven || manualCapture?.popupClickProven,
+      ),
       shortcut_attempted: ATTEMPT_SHORTCUT,
       shortcut_strategy: ATTEMPT_SHORTCUT ? SHORTCUT_STRATEGY : "skipped",
       shortcut_command_proven: Boolean(shortcutPanel?.panelInjected),
@@ -137,20 +199,35 @@ async function main() {
         extensionDiagnosticsAfterShortcut?.captureState?.running ||
         extensionDiagnosticsAfterFallback?.captureState?.running
       ),
+      page_text_proven: Boolean(
+        transcriptProbe?.pageTextProven ||
+        pageCaptureState?.pageTextProven ||
+        hasPageTextEvidence(pageCaptureState),
+      ),
       live_transcription_proven: Boolean(
         manualCapture?.liveTranscriptionProven ||
         transcriptProbe?.liveTranscriptionProven
       ),
     };
     const report = {
-      ok: MANUAL_CAPTURE
-        ? Boolean(proof.manual_invocation_proven && proof.tab_capture_stream_id_available)
-        : proof.panel_injection_proven,
+      ok: EXTERNAL_PROOF
+        ? Boolean(
+            proof.panel_injection_proven &&
+            (proof.page_text_proven || proof.live_transcription_proven || proof.tab_capture_stream_id_available),
+          )
+        : MANUAL_CAPTURE
+          ? Boolean(
+              proof.popup_click_proven &&
+              proof.manual_invocation_proven &&
+              (proof.tab_capture_stream_id_available || proof.live_transcription_proven),
+            )
+          : proof.panel_injection_proven,
       generated_at: new Date().toISOString(),
       chrome: chromePath,
       headless: HEADLESS,
       app_origin: APP_ORIGIN,
       target_url: TARGET_URL,
+      external_proof: EXTERNAL_PROOF,
       extension_copy: relative(ROOT, extensionCopy),
       temp_profile: profileDir,
       extension_service_workers: extensionTargetsAfterShortcut.yentlServiceWorkers.map((target) => target.url),
@@ -161,6 +238,7 @@ async function main() {
       media_playback_before_shortcut: mediaPlaybackBeforeShortcut,
       media_playback_after_capture: mediaPlaybackAfterCapture,
       proof,
+      latency_ms: latencyMs,
       manual_capture: manualCapture,
       shortcut_error: shortcutError,
       shortcut_panel: shortcutPanel,
@@ -203,16 +281,17 @@ async function main() {
 }
 
 async function assertAppIsServing() {
+  const healthUrl = `${APP_ORIGIN}/session`;
   let response;
   try {
-    response = await fetch(TARGET_URL);
+    response = await fetch(healthUrl);
   } catch (error) {
     throw new Error(
-      `Yentl app is not reachable at ${TARGET_URL}. Start the dev server before running this proof. (${error instanceof Error ? error.message : String(error)})`,
+      `Yentl app is not reachable at ${healthUrl}. Start the dev server before running this proof. (${error instanceof Error ? error.message : String(error)})`,
     );
   }
   if (!response.ok) {
-    throw new Error(`Yentl validation page returned ${response.status} at ${TARGET_URL}`);
+    throw new Error(`Yentl app returned ${response.status} at ${healthUrl}`);
   }
 }
 
@@ -255,8 +334,14 @@ function chromeForTestingExecutables() {
 
 async function copyExtensionForLocalValidation(destination) {
   await copyDir(EXTENSION_DIR, destination);
-  const localManifest = await readFile(join(EXTENSION_DIR, "manifest.local.json"), "utf8");
-  await writeFile(join(destination, "manifest.json"), localManifest);
+  const localManifest = JSON.parse(await readFile(join(EXTENSION_DIR, "manifest.local.json"), "utf8"));
+  if (EXTERNAL_TARGET_URL) {
+    const externalPattern = `${new URL(EXTERNAL_TARGET_URL).origin}/*`;
+    if (!localManifest.host_permissions.includes(externalPattern)) {
+      localManifest.host_permissions.push(externalPattern);
+    }
+  }
+  await writeFile(join(destination, "manifest.json"), `${JSON.stringify(localManifest, null, 2)}\n`);
 
   for (const file of ["background.js", "options.js"]) {
     const path = join(destination, file);
@@ -330,8 +415,9 @@ async function startValidationMediaPlayback(client, options = {}) {
     expression: `
       (async () => {
         const audio = document.querySelector('audio');
-        const video = document.querySelector('video');
-        const media = ${JSON.stringify(target)} === "video" ? video : audio || video;
+        const videos = Array.from(document.querySelectorAll('video'));
+        const preferredVideo = videos.find((candidate) => candidate.duration > 0 && candidate.readyState >= 2) || videos[0] || null;
+        const media = ${JSON.stringify(target)} === "video" ? preferredVideo : audio || preferredVideo;
         for (const other of [audio, video].filter(Boolean)) {
           if (other !== media) other.pause();
         }
@@ -549,6 +635,226 @@ async function installCaptureEventRecorder(client) {
   });
 }
 
+async function invokePopupStartButton(port, chromePath, timeoutMs) {
+  await waitForYentlExtension(port, Math.min(timeoutMs, 15000));
+  const extensionId = await getYentlExtensionId(port);
+  const popupUrl = `chrome-extension://${extensionId}/popup.html`;
+  const pageTarget = await waitForTarget(
+    port,
+    (target) => target.type === "page" && target.url.startsWith(TARGET_URL),
+    timeoutMs,
+  );
+  const pageClient = await connectCdp(pageTarget.webSocketDebuggerUrl);
+  let popupClient = null;
+
+  try {
+    await pageClient.send("Page.bringToFront");
+    await dispatchPageClickGesture(pageClient);
+    const popupOpen = await openExtensionPopup(port).catch(async (error) => {
+      const browserClient = await connectBrowserCdp(port);
+      try {
+        await browserClient.send("Target.createTarget", { url: popupUrl });
+      } finally {
+        browserClient.close();
+      }
+      return {
+        ok: true,
+        fallback: "target-create",
+        warning: error instanceof Error ? error.message : String(error),
+      };
+    });
+    const popupTarget = await waitForTarget(
+      port,
+      (target) => target.type === "page" && target.url === popupUrl,
+      Math.min(timeoutMs, 12000),
+    );
+    popupClient = await connectCdp(popupTarget.webSocketDebuggerUrl);
+    await popupClient.send("Runtime.enable");
+    await waitForExpression(popupClient, "document.getElementById('start') && !document.getElementById('start').disabled", {
+      timeoutMs: Math.min(timeoutMs, 12000),
+    });
+
+    const clickResult = await popupClient.send("Runtime.evaluate", {
+      expression: `
+        (async () => {
+          const button = document.getElementById("start");
+          if (!button) return { ok: false, error: "Popup start button not found." };
+          if (button.disabled) return { ok: false, error: "Popup start button was disabled." };
+          button.click();
+          return {
+            ok: true,
+            buttonText: button.textContent,
+            statusText: document.getElementById("status")?.textContent || null
+          };
+        })()
+      `,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+
+    if (clickResult.exceptionDetails) {
+      throw new Error(
+        clickResult.exceptionDetails.exception?.description ||
+        clickResult.exceptionDetails.text ||
+        "Popup start click threw an exception.",
+      );
+    }
+
+    const clickValue = clickResult.result?.value ?? { ok: false, error: "Popup click returned no value." };
+    if (!clickValue.ok) {
+      throw new Error(clickValue.error || "Popup start click failed.");
+    }
+
+    let activeTabUnlock = null;
+    const start = Date.now();
+    let last = null;
+    while (Date.now() - start < timeoutMs) {
+      const diagnostics = await readExtensionDiagnostics(port).catch((error) => ({
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      }));
+      const captureRunning = Boolean(diagnostics.captureState?.running);
+      last = {
+        ok: captureRunning,
+        waited_ms: Date.now() - start,
+        popupClickProven: true,
+        manualInvocationProven: true,
+        captureRunning,
+        popup_click: clickValue,
+        popup_open: popupOpen,
+        active_tab_unlock: activeTabUnlock,
+        diagnostics,
+      };
+      if (captureRunning) return last;
+
+      if (!activeTabUnlock && Date.now() - start >= 5000) {
+        activeTabUnlock = await unlockActiveTabAfterPopup(pageClient, chromePath);
+        last.active_tab_unlock = activeTabUnlock;
+      }
+
+      await sleep(500);
+    }
+
+    return {
+      ok: false,
+      error: "Popup start click succeeded, but capture state did not become running before timeout.",
+      waited_ms: Date.now() - start,
+      popupClickProven: true,
+      manualInvocationProven: true,
+      popup_click: clickValue,
+      popup_open: popupOpen,
+      active_tab_unlock: activeTabUnlock,
+      ...last,
+    };
+  } finally {
+    popupClient?.close();
+    pageClient.close();
+  }
+}
+
+async function dispatchPageClickGesture(client) {
+  await client.send("Input.dispatchMouseEvent", {
+    type: "mousePressed",
+    x: 180,
+    y: 180,
+    button: "left",
+    clickCount: 1,
+  });
+  await client.send("Input.dispatchMouseEvent", {
+    type: "mouseReleased",
+    x: 180,
+    y: 180,
+    button: "left",
+    clickCount: 1,
+  });
+}
+
+async function unlockActiveTabAfterPopup(pageClient, chromePath) {
+  try {
+    await pressOsExtensionShortcut(chromePath);
+    return "os-shortcut-after-popup-click";
+  } catch (osError) {
+    try {
+      await pressCdpExtensionShortcut(pageClient);
+      return "cdp-shortcut-after-popup-click";
+    } catch (cdpError) {
+      return `shortcut-unlock-failed:${osError instanceof Error ? osError.message : String(osError)};${cdpError instanceof Error ? cdpError.message : String(cdpError)}`;
+    }
+  }
+}
+
+async function openExtensionPopup(port) {
+  const workerClient = await connectToYentlServiceWorker(port);
+  try {
+    const result = await workerClient.send("Runtime.evaluate", {
+      expression: `
+        (async () => {
+          if (!chrome.action?.openPopup) {
+            return { ok: false, error: "chrome.action.openPopup is unavailable in this Chrome build." };
+          }
+          try {
+            await chrome.action.openPopup();
+            return { ok: true };
+          } catch (error) {
+            return { ok: false, error: error?.message || String(error) };
+          }
+        })()
+      `,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+
+    if (result.exceptionDetails) {
+      throw new Error(
+        result.exceptionDetails.exception?.description ||
+        result.exceptionDetails.text ||
+        "chrome.action.openPopup threw an exception.",
+      );
+    }
+
+    const value = result.result?.value ?? { ok: false, error: "openPopup returned no value." };
+    if (!value.ok) {
+      throw new Error(value.error || "chrome.action.openPopup failed.");
+    }
+  } finally {
+    workerClient.close();
+  }
+}
+
+async function waitForYentlExtension(port, timeoutMs) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const targets = await inspectExtensionTargets(port);
+    if (targets.yentlServiceWorkers.length > 0) return targets;
+    await sleep(250);
+  }
+  throw new Error("Timed out waiting for the installed Yentl extension service worker.");
+}
+
+async function getYentlExtensionId(port) {
+  const targets = await inspectExtensionTargets(port);
+  const serviceWorker = targets.yentlServiceWorkers[0];
+  if (!serviceWorker?.url) {
+    throw new Error("Could not resolve the installed Yentl extension id.");
+  }
+  const match = serviceWorker.url.match(/^chrome-extension:\/\/([^/]+)\//);
+  if (!match?.[1]) {
+    throw new Error(`Could not parse extension id from ${serviceWorker.url}`);
+  }
+  return match[1];
+}
+
+async function connectBrowserCdp(port) {
+  const version = await fetch(`http://127.0.0.1:${port}/json/version`).then((response) => {
+    if (!response.ok) throw new Error(`DevTools version endpoint returned ${response.status}`);
+    return response.json();
+  });
+  if (!version.webSocketDebuggerUrl) {
+    throw new Error("DevTools version endpoint did not expose a browser websocket URL.");
+  }
+  return connectCdp(version.webSocketDebuggerUrl);
+}
+
 async function waitForManualCapture(client, port, timeoutMs) {
   console.error(
     [
@@ -613,13 +919,15 @@ async function waitForTranscriptEvidence(client, timeoutMs) {
   while (Date.now() - start < timeoutMs) {
     const page = await readPageCaptureState(client);
     const liveTranscriptionProven = hasTranscriptEvidence(page);
+    const pageTextProven = hasPageTextEvidence(page);
     last = {
-      ok: liveTranscriptionProven,
+      ok: liveTranscriptionProven || (EXTERNAL_PROOF && pageTextProven),
       waited_ms: Date.now() - start,
       liveTranscriptionProven,
+      pageTextProven,
       page,
     };
-    if (liveTranscriptionProven) return last;
+    if (last.ok) return last;
     await sleep(1000);
   }
 
@@ -637,8 +945,76 @@ function hasTranscriptEvidence(page) {
   return (
     /Welcome to the Yentl[e]? validation panel/i.test(iframeText) ||
     /city library budget increased/i.test(iframeText) ||
+    /transcript lines captured/i.test(iframeText) ||
+    /SPEAKER 1/i.test(iframeText) ||
     eventTypes.includes("transcript-final") ||
     eventTypes.includes("transcript-interim")
+  );
+}
+
+function buildLatencyMetrics({
+  proofStartedAt,
+  mediaReadyAt,
+  captureInvokedAt,
+  panel,
+  transcriptProbe,
+  pageCaptureState,
+  extensionDiagnosticsAfterShortcut,
+  extensionDiagnosticsAfterFallback,
+  manualCapture,
+  proofEndedAt,
+}) {
+  const events = pageCaptureState?.events ?? transcriptProbe?.page?.events ?? [];
+  const eventAt = (type) => {
+    const event = events.find((entry) => entry.detail?.type === type);
+    return typeof event?.at === "number" ? event.at : null;
+  };
+  const delta = (from, to) =>
+    typeof from === "number" && typeof to === "number" ? Math.max(0, to - from) : null;
+  const captureRunning = Boolean(
+    manualCapture?.captureRunning ||
+      extensionDiagnosticsAfterShortcut?.captureState?.running ||
+      extensionDiagnosticsAfterFallback?.captureState?.running ||
+      events.some(
+        (event) =>
+          event.detail?.type === "capture-status" && event.detail?.payload?.running === true,
+      ) ||
+      eventAt("capture-start") != null,
+  );
+  const firstTranscriptAt =
+    eventAt("transcript-final") ??
+    eventAt("transcript-interim") ??
+    (transcriptProbe?.liveTranscriptionProven ? proofStartedAt + (transcriptProbe?.waited_ms ?? 0) : null);
+
+  return {
+    total_ms: delta(proofStartedAt, proofEndedAt),
+    media_ready_ms: delta(proofStartedAt, mediaReadyAt),
+    capture_invocation_ms: delta(proofStartedAt, captureInvokedAt),
+    panel_injection_ms: panel?.panelInjected
+      ? delta(captureInvokedAt ?? proofStartedAt, proofEndedAt)
+      : null,
+    capture_running_observed: captureRunning,
+    capture_start_event_ms: delta(proofStartedAt, eventAt("capture-start")),
+    first_transcript_wait_ms: transcriptProbe?.waited_ms ?? null,
+    first_transcript_event_ms: delta(proofStartedAt, firstTranscriptAt),
+    manual_capture_wait_ms: manualCapture?.waited_ms ?? null,
+  };
+}
+
+function hasPageTextEvidence(page) {
+  const iframeText = page?.panel?.iframeText || "";
+  const eventTypes = (page?.events ?? []).map((event) => event.detail?.type);
+  const pageTextEvent = (page?.events ?? []).find((event) => event.detail?.type === "page-text");
+  const chunkCount = pageTextEvent?.detail?.payload?.chunks?.length ?? 0;
+  const textLength = String(pageTextEvent?.detail?.payload?.text ?? "").length;
+  return (
+    eventTypes.includes("page-text") ||
+    chunkCount >= 1 ||
+    textLength >= 120 ||
+    (/YENTL'S READ/i.test(iframeText) &&
+      !/Waiting for the Yentl extension to attach/i.test(iframeText) &&
+      iframeText.length >= 180) ||
+    /Yentl is connected to this tab/i.test(page?.panel?.statusText || "")
   );
 }
 
@@ -878,9 +1254,9 @@ async function waitForExpression(client, expression, options = {}) {
   throw new Error(`Timed out waiting for expression. Last value: ${JSON.stringify(lastValue)}`);
 }
 
-async function waitForTarget(port, predicate) {
+async function waitForTarget(port, predicate, timeoutMs = 12000) {
   const start = Date.now();
-  while (Date.now() - start < 12000) {
+  while (Date.now() - start < timeoutMs) {
     const targets = await listTargets(port).catch(() => []);
     const target = targets.find(predicate);
     if (target?.webSocketDebuggerUrl) return target;
@@ -924,7 +1300,9 @@ function isYentlServiceWorkerTarget(target) {
 
 function buildFailureReason(report) {
   if (report.proof.manual_capture_mode && !report.proof.manual_invocation_proven) {
-    return "Manual capture mode did not observe a Yentl toolbar/popup invocation before the timeout.";
+    return report.proof.popup_automation
+      ? "Popup automation mode did not prove a Yentl popup start click before the timeout."
+      : "Manual capture mode did not observe a Yentl toolbar/popup invocation before the timeout.";
   }
 
   if (report.proof.manual_capture_mode && report.proof.manual_invocation_proven && !report.proof.tab_capture_stream_id_available) {

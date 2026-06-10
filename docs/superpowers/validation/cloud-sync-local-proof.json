@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T05:55:06.471Z",
+  "app_origin": "http://127.0.0.1:3000",
+  "cloud_configured": false,
+  "cloud_mode": "cloud_unavailable",
+  "authenticated_proof_requested": false,
+  "authenticated_proof_skipped": false,
+  "checks": [
+    {
+      "name": "app-reachable",
+      "ok": true,
+      "elapsed_ms": 96,
+      "status": 200
+    },
+    {
+      "name": "cloud-availability",
+      "ok": true,
+      "elapsed_ms": 0,
+      "status": 503,
+      "code": "cloud_unavailable"
+    },
+    {
+      "name": "unconfigured-list-response",
+      "ok": true,
+      "elapsed_ms": 0,
+      "status": 503,
+      "code": "cloud_unavailable"
+    },
+    {
+      "name": "unconfigured-save-response",
+      "ok": true,
+      "elapsed_ms": 13,
+      "status": 503,
+      "code": "cloud_unavailable"
+    }
+  ],
+  "failures": [],
+  "notes": [
+    "Cloud sync is not configured for this origin. Guest/local fallback behavior is the expected success path."
+  ]
+}

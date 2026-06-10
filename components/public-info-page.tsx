@@ -56,7 +56,7 @@ export function PublicInfoPage({
           </h1>
           <p className="mt-5 text-lg leading-8 text-ink-3">{description}</p>
           {lastUpdated && (
-            <p className="mt-3 text-sm font-medium text-ink-4">
+            <p className="mt-3 text-sm font-medium text-ink-3">
               Last updated: {lastUpdated}
             </p>
           )}
@@ -64,9 +64,12 @@ export function PublicInfoPage({
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
           <article className="min-w-0 space-y-10">{children}</article>
-          <aside className="min-w-0 rounded-lg border border-line bg-paper p-4">
-            <p className="text-xs font-semibold uppercase text-ink-4">Trust pages</p>
-            <nav aria-label="Trust pages" className="mt-3 grid gap-1">
+          <nav
+            aria-label="Trust pages"
+            className="min-w-0 rounded-lg border border-line bg-paper p-4"
+          >
+            <p className="text-xs font-semibold uppercase text-ink-3">Trust pages</p>
+            <div className="mt-3 grid gap-1">
               {trustLinks.map((link) => {
                 const active = link.href === currentPath;
                 return (
@@ -76,7 +79,7 @@ export function PublicInfoPage({
                     aria-current={active ? "page" : undefined}
                     className={
                       active
-                        ? "inline-flex min-h-11 items-center rounded-lg bg-teal-soft px-3 text-sm font-semibold text-teal"
+                        ? "inline-flex min-h-11 items-center rounded-lg border border-teal-2/20 bg-teal-soft px-3 text-sm font-semibold text-teal-2"
                         : "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-ink-2 hover:bg-cream-2"
                     }
                   >
@@ -84,8 +87,8 @@ export function PublicInfoPage({
                   </Link>
                 );
               })}
-            </nav>
-          </aside>
+            </div>
+          </nav>
         </div>
       </section>
     </main>

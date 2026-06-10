@@ -1,11 +1,11 @@
 {
-  "ok": false,
-  "generated_at": "2026-06-10T05:05:01.182Z",
+  "ok": true,
+  "generated_at": "2026-06-10T06:23:10.529Z",
   "checks": [
     {
       "name": "txt-transcript",
       "ok": true,
-      "elapsed_ms": 3,
+      "elapsed_ms": 9,
       "file": "public/validation/yentl-synthetic-transcript.txt",
       "segment_count": 9,
       "speaker_ids": [
@@ -17,7 +17,7 @@
     {
       "name": "markdown-document",
       "ok": true,
-      "elapsed_ms": 1,
+      "elapsed_ms": 49,
       "file": "public/validation/yentl-synthetic-transcript.md",
       "segment_count": 10,
       "outline_count": 1,
@@ -25,14 +25,17 @@
     },
     {
       "name": "docx-document",
-      "ok": false,
-      "elapsed_ms": 154,
-      "error": "mammoth.extractRawText failed: Error: Could not find file in options"
+      "ok": true,
+      "elapsed_ms": 473,
+      "file": "public/validation/yentl-small-brief.docx",
+      "text_chars": 384,
+      "segment_count": 5,
+      "outline_count": 4
     },
     {
       "name": "srt-captions",
       "ok": true,
-      "elapsed_ms": 0,
+      "elapsed_ms": 17,
       "file": "public/validation/yentl-synthetic-captions.srt",
       "segment_count": 5,
       "first_start": 0,
@@ -41,17 +44,12 @@
     {
       "name": "vtt-captions",
       "ok": true,
-      "elapsed_ms": 1,
+      "elapsed_ms": 5,
       "file": "public/validation/yentl-synthetic-captions.vtt",
       "segment_count": 5,
       "first_start": 0,
       "last_end": 33
     }
   ],
-  "failures": [
-    {
-      "name": "docx-document",
-      "error": "mammoth.extractRawText failed: Error: Could not find file in options"
-    }
-  ]
+  "failures": []
 }

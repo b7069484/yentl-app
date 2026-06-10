@@ -1,0 +1,270 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:21:14.670Z",
+  "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "headless": false,
+  "app_origin": "http://127.0.0.1:3000",
+  "target_url": "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm",
+  "external_proof": true,
+  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-GI3wXc/extension",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-GI3wXc/profile",
+  "extension_service_workers": [
+    "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+  ],
+  "extension_targets_before_shortcut": {
+    "all": [
+      {
+        "type": "background_page",
+        "title": "Yentl tab capture",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "yentlServiceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "pages": []
+  },
+  "extension_targets_after_shortcut": {
+    "all": [
+      {
+        "type": "background_page",
+        "title": "Yentl tab capture",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "serviceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
+        "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
+      },
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "yentlServiceWorkers": [
+      {
+        "type": "service_worker",
+        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
+        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+      }
+    ],
+    "pages": []
+  },
+  "screenshot": "docs/superpowers/validation/screenshots/installed-extension-external-page.png",
+  "screenshot_error": null,
+  "media_playback_before_shortcut": {},
+  "media_playback_after_capture": {},
+  "proof": {
+    "real_user_profile_used": false,
+    "extension_loaded": true,
+    "manual_capture_mode": true,
+    "popup_automation": true,
+    "invocation_path": "popup",
+    "popup_click_proven": true,
+    "manual_invocation_proven": true,
+    "shortcut_attempted": false,
+    "shortcut_strategy": "skipped",
+    "shortcut_command_proven": false,
+    "debug_service_worker_fallback_used": false,
+    "panel_injection_proven": true,
+    "tab_capture_stream_id_available": true,
+    "page_text_proven": true,
+    "live_transcription_proven": false
+  },
+  "latency_ms": {
+    "total_ms": 14382,
+    "media_ready_ms": 1209,
+    "capture_invocation_ms": 1209,
+    "panel_injection_ms": 13173,
+    "capture_running_observed": true,
+    "capture_start_event_ms": null,
+    "first_transcript_wait_ms": 5011,
+    "first_transcript_event_ms": null,
+    "manual_capture_wait_ms": 7343
+  },
+  "manual_capture": {
+    "ok": true,
+    "waited_ms": 7343,
+    "popupClickProven": true,
+    "manualInvocationProven": true,
+    "captureRunning": true,
+    "popup_click": {
+      "ok": true,
+      "buttonText": "Start live analysis",
+      "statusText": "Opening Yentl beside this tab..."
+    },
+    "active_tab_unlock": "os-shortcut-after-popup-click",
+    "diagnostics": {
+      "ok": true,
+      "captureState": {
+        "appOrigin": "http://127.0.0.1:3000",
+        "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
+        "running": true,
+        "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
+        "startedAt": 1781072467999,
+        "targetTabId": 771340635
+      },
+      "storageError": null,
+      "badgeText": "REC",
+      "contexts": [
+        {
+          "contextType": "BACKGROUND",
+          "frameId": -1,
+          "tabId": -1
+        },
+        {
+          "contextType": "OFFSCREEN_DOCUMENT",
+          "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
+          "frameId": 0,
+          "tabId": -1
+        }
+      ]
+    }
+  },
+  "shortcut_error": "Skipped in default headless proof mode because Chrome does not reliably dispatch extension command shortcuts through CDP key events.",
+  "shortcut_panel": null,
+  "extension_diagnostics_after_shortcut": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
+      "running": true,
+      "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
+      "startedAt": 1781072467999,
+      "targetTabId": 771340635
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "extension_diagnostics_after_fallback": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
+      "running": true,
+      "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
+      "startedAt": 1781072467999,
+      "targetTabId": 771340635
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "transcript_probe": {
+    "ok": true,
+    "waited_ms": 5011,
+    "liveTranscriptionProven": false,
+    "pageTextProven": true,
+    "page": {
+      "ok": true,
+      "panel": {
+        "panelInjected": true,
+        "bodyMarginRight": "430px",
+        "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+        "iframeText": null,
+        "iframeError": null,
+        "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+        "hostWidth": "430px"
+      },
+      "events": []
+    }
+  },
+  "page_capture_state": {
+    "ok": true,
+    "panel": {
+      "panelInjected": true,
+      "bodyMarginRight": "430px",
+      "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+      "iframeText": null,
+      "iframeError": null,
+      "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+      "hostWidth": "430px"
+    },
+    "events": []
+  },
+  "debug_panel": null,
+  "service_worker_debug": null,
+  "panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+    "iframeText": null,
+    "iframeError": null,
+    "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+    "hostWidth": "430px"
+  },
+  "failure_reason": null,
+  "notes": [
+    "This proof uses a visible temporary Chrome profile and does not modify the user's normal Chrome profile."
+  ],
+  "chrome_log_tail": [
+    "stderr: DevTools listening on ws://127.0.0.1:64572/devtools/browser/ff834680-accc-4d56-8f00-d2b9de9ffb57",
+    "stderr: [51597:17574363:0610/022104.517394:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [51597:17574363:0610/022104.543500:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [51597:17574363:0610/022104.546103:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR"
+  ]
+}

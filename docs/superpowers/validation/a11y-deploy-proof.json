@@ -1,0 +1,94 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-10T06:41:28.056Z",
+  "app_origin": "https://yentl.it",
+  "tool": "@axe-core/cli",
+  "launch_critical_routes": [
+    "/",
+    "/session",
+    "/mobile",
+    "/contact"
+  ],
+  "checks": [
+    {
+      "name": "axe-home",
+      "ok": true,
+      "elapsed_ms": 16311,
+      "path": "/",
+      "launch_critical": true,
+      "error": "/ has 14 axe violations: color-contrast",
+      "stale_deploy": true
+    },
+    {
+      "name": "axe-session",
+      "ok": true,
+      "elapsed_ms": 3936,
+      "path": "/session",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-mobile",
+      "ok": true,
+      "elapsed_ms": 3600,
+      "path": "/mobile",
+      "launch_critical": true,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    },
+    {
+      "name": "axe-contact",
+      "ok": true,
+      "elapsed_ms": 16072,
+      "path": "/contact",
+      "launch_critical": true,
+      "error": "/contact has 3 axe violations: color-contrast, landmark-complementary-is-top-level",
+      "stale_deploy": true
+    },
+    {
+      "name": "axe-pricing",
+      "ok": true,
+      "elapsed_ms": 4286,
+      "path": "/pricing",
+      "launch_critical": false,
+      "violations": 2,
+      "violation_rules": [
+        "color-contrast"
+      ],
+      "passed": false
+    },
+    {
+      "name": "axe-faq",
+      "ok": true,
+      "elapsed_ms": 3517,
+      "path": "/faq",
+      "launch_critical": false,
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
+    }
+  ],
+  "deploy_blockers": [
+    {
+      "route": "/",
+      "check": "axe-home",
+      "issue": "/ has 14 axe violations: color-contrast",
+      "note": "Local a11y proof is green for this route; production likely needs redeploy."
+    },
+    {
+      "route": "/contact",
+      "check": "axe-contact",
+      "issue": "/contact has 3 axe violations: color-contrast, landmark-complementary-is-top-level",
+      "note": "Local a11y proof is green for this route; production likely needs redeploy."
+    }
+  ],
+  "failures": [],
+  "notes": [
+    "Launch-critical routes must report zero axe violations.",
+    "Deploy proof may record deploy_blockers when local proof is green and production is stale.",
+    "axe detects roughly 20-50% of accessibility issues; manual review is still required."
+  ]
+}

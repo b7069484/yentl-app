@@ -1,0 +1,104 @@
+{
+  "id": "solo_005",
+  "title": "Hans Rosling: Global population growth, box by box",
+  "category": "solo_monologue",
+  "startedAt": "2026-06-10T06:54:34.526Z",
+  "finishedAt": "2026-06-10T06:56:04.309Z",
+  "baseUrl": "https://yentl.it",
+  "verify": "confirmed",
+  "utterancesAvailable": 125,
+  "utterancesReplayed": 10,
+  "claims": [
+    {
+      "claim_text": "The world population reached 3 billion people.",
+      "utterance_start": 16.505,
+      "utterance_end": 24.665,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "reported",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence",
+          "quoted_or_reported_speech"
+        ],
+        "stance": "reported",
+        "confidence": 0.6,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-1",
+      "speaker_id": 0,
+      "status": "confirmed",
+      "confirmed": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "historical milestone",
+          "world population"
+        ],
+        "explanation": "The world population reached 3 billion in 1960, according to UN and US Census Bureau historical estimates. This is a well-documented demographic milestone. The claim is vague (no date given) but as a factual statement about a population threshold that has been crossed, it is true — global population surpassed 3 billion around 1960 and is now over 8 billion.",
+        "sources": []
+      }
+    },
+    {
+      "claim_text": "The world population reached 3 billion people in 1960.",
+      "utterance_start": 25.465,
+      "utterance_end": 27.785,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "asserted",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence"
+        ],
+        "stance": "asserted",
+        "confidence": 0.9,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-2",
+      "speaker_id": 0,
+      "status": "confirmed",
+      "confirmed": {
+        "primary_label": "TRUE",
+        "score": 95,
+        "annotations": [
+          "Well-documented demographic milestone",
+          "Confirmed by UN and US Census Bureau sources"
+        ],
+        "explanation": "The world population reaching 3 billion in 1960 is a widely documented demographic fact. According to the United Nations Population Division and other demographic sources, the global population crossed the 3 billion threshold around 1960. This is consistent with historical population data published by major demographic authorities.",
+        "sources": []
+      }
+    },
+    {
+      "claim_text": "In 1960, the industrialized world had 1 billion people.",
+      "utterance_start": 60.29,
+      "utterance_end": 61.89,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "reported",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence",
+          "quoted_or_reported_speech"
+        ],
+        "stance": "reported",
+        "confidence": 0.8,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-3",
+      "speaker_id": 0,
+      "status": "failed",
+      "error": "/api/verify-confirmed HTTP 500: {\"error\":\"verify failed\"}"
+    }
+  ],
+  "markers": [],
+  "errors": []
+}

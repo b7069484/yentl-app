@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T04:22:37.803Z",
+  "generated_at": "2026-06-10T06:22:53.748Z",
   "app_origin": "http://127.0.0.1:3000",
   "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
-  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-mobile-proof-96ju0b/profile",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-mobile-proof-YKLIUJ/profile",
   "widths": [
     390,
     430,
@@ -616,7 +616,7 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
       "fieldTextStart": "",
       "controlCount": 8,
       "smallControls": [
@@ -644,7 +644,7 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
       "fieldTextStart": "",
       "controlCount": 8,
       "smallControls": [
@@ -672,7 +672,7 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification ",
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
       "fieldTextStart": "",
       "controlCount": 8,
       "smallControls": [
@@ -687,6 +687,6 @@
   ],
   "failures": [],
   "chrome_log_tail": [
-    "stderr: DevTools listening on ws://127.0.0.1:62216/devtools/browser/123f4fc9-e51e-46cf-b6f8-9660e888d611"
+    "stderr: DevTools listening on ws://127.0.0.1:65001/devtools/browser/4c04c7b1-965a-4206-b5e2-172f80af1e08"
   ]
 }

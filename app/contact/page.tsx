@@ -17,7 +17,7 @@ export default function ContactPage() {
     >
       <section aria-labelledby="support">
         <h2 id="support" className="text-xl font-semibold mb-3">Support</h2>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-ink-3 leading-relaxed">
           For product questions, source-ingest problems, extension setup, or
           report/export issues, email{" "}
           <a
@@ -35,7 +35,7 @@ export default function ContactPage() {
 
       <section aria-labelledby="privacy">
         <h2 id="privacy" className="text-xl font-semibold mb-3">Privacy</h2>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-ink-3 leading-relaxed">
           For privacy questions, data-rights requests, processor questions, or
           consent/retention concerns, email{" "}
           <a
@@ -52,7 +52,7 @@ export default function ContactPage() {
 
       <section aria-labelledby="accessibility">
         <h2 id="accessibility" className="text-xl font-semibold mb-3">Accessibility</h2>
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-ink-3 leading-relaxed">
           To report an accessibility barrier or request an accommodation, email{" "}
           <a
             href={mailto(contactEmails.accessibility, "Yentl accessibility issue")}

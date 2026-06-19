@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { claimOwnershipForSegment, documentAnchorWithClaimQuote } from "@/lib/client/orchestrator";
+import {
+  claimOwnershipForSegment,
+  documentAnchorWithClaimQuote,
+  transcriptContextLineForPrompt,
+} from "@/lib/client/orchestrator";
 import type { ClaimOwnership, TranscriptSegment } from "@/lib/types";
 
 function segment(overrides: Partial<TranscriptSegment> = {}): TranscriptSegment {
@@ -78,6 +82,23 @@ describe("claimOwnershipForSegment", () => {
     expect(ownership.confidence).toBe(1);
     expect(ownership.source_turn_ids).toEqual(["turn-1"]);
     expect(ownership.source_segment_ids).toEqual(["seg-1"]);
+  });
+});
+
+describe("transcriptContextLineForPrompt", () => {
+  it("keeps speaker, attribution, overlap, turn, and segment metadata in claim context", () => {
+    const line = transcriptContextLineForPrompt(segment({
+      attribution_status: "unsafe_overlap",
+      attribution_reasons: ["parallel_claim"],
+      overlap_class: "parallel_claim",
+    }));
+
+    expect(line).toContain("[Speaker 1]");
+    expect(line).toContain("attribution=unsafe_overlap");
+    expect(line).toContain("overlap=parallel_claim");
+    expect(line).toContain("turn=turn-1");
+    expect(line).toContain("segment=seg-1");
+    expect(line).toContain("reasons=parallel_claim");
   });
 });
 

@@ -1,11 +1,11 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:23:10.529Z",
+  "generated_at": "2026-06-11T19:11:46.158Z",
   "checks": [
     {
       "name": "txt-transcript",
       "ok": true,
-      "elapsed_ms": 9,
+      "elapsed_ms": 4,
       "file": "public/validation/yentl-synthetic-transcript.txt",
       "segment_count": 9,
       "speaker_ids": [
@@ -17,7 +17,7 @@
     {
       "name": "markdown-document",
       "ok": true,
-      "elapsed_ms": 49,
+      "elapsed_ms": 0,
       "file": "public/validation/yentl-synthetic-transcript.md",
       "segment_count": 10,
       "outline_count": 1,
@@ -26,7 +26,7 @@
     {
       "name": "docx-document",
       "ok": true,
-      "elapsed_ms": 473,
+      "elapsed_ms": 135,
       "file": "public/validation/yentl-small-brief.docx",
       "text_chars": 384,
       "segment_count": 5,
@@ -35,7 +35,7 @@
     {
       "name": "srt-captions",
       "ok": true,
-      "elapsed_ms": 17,
+      "elapsed_ms": 0,
       "file": "public/validation/yentl-synthetic-captions.srt",
       "segment_count": 5,
       "first_start": 0,
@@ -44,7 +44,7 @@
     {
       "name": "vtt-captions",
       "ok": true,
-      "elapsed_ms": 5,
+      "elapsed_ms": 1,
       "file": "public/validation/yentl-synthetic-captions.vtt",
       "segment_count": 5,
       "first_start": 0,

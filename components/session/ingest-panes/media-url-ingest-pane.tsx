@@ -7,11 +7,13 @@ import {
   AlertCircle,
   CheckCircle2,
   ClipboardPaste,
+  FileText,
   Globe2,
   Link as LinkIcon,
   Loader2,
   MonitorPlay,
   Route,
+  Upload,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/client/session-store";
@@ -44,6 +46,7 @@ interface MediaIngestResponse {
 }
 
 const VALIDATION_MEDIA_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
+const VALIDATION_VIDEO_URL = "http://localhost:3000/validation/yentl-synthetic-panel.mp4";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -226,6 +229,14 @@ export function MediaUrlIngestPane() {
     await handleProcess(VALIDATION_MEDIA_URL);
   }, [handleProcess, isBusy, phase.kind]);
 
+  const handleLoadValidationVideo = useCallback(async () => {
+    if (isBusy) return;
+    setClipboardStatus(null);
+    setUrl(VALIDATION_VIDEO_URL);
+    if (phase.kind === "error") setPhase({ kind: "idle" });
+    await handleProcess(VALIDATION_VIDEO_URL);
+  }, [handleProcess, isBusy, phase.kind]);
+
   const handleBack = useCallback(() => {
     abortRef.current?.abort();
     setPrerecordStage("picker");
@@ -234,6 +245,18 @@ export function MediaUrlIngestPane() {
   const switchToBrowserTab = useCallback(() => {
     abortRef.current?.abort();
     setSource({ kind: "browser_tab" });
+    setPrerecordStage("selected");
+  }, [setPrerecordStage, setSource]);
+
+  const switchToAudioUpload = useCallback(() => {
+    abortRef.current?.abort();
+    setSource({ kind: "audio_file", blob_url: "", duration_sec: 0, filename: "", mime: "" });
+    setPrerecordStage("selected");
+  }, [setPrerecordStage, setSource]);
+
+  const switchToTextDocument = useCallback(() => {
+    abortRef.current?.abort();
+    setSource({ kind: "text_doc", filename: "", mime: "", byte_count: 0 });
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource]);
 
@@ -338,6 +361,14 @@ export function MediaUrlIngestPane() {
                 <LinkIcon className="h-4 w-4" aria-hidden />
                 Load validation media URL
               </button>
+              <button
+                type="button"
+                onClick={() => void handleLoadValidationVideo()}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-ink-5 bg-paper px-3 text-[12.5px] font-semibold text-ink-2 transition-colors hover:bg-cream"
+              >
+                <MonitorPlay className="h-4 w-4" aria-hidden />
+                Load validation video URL
+              </button>
             </div>
           )}
 
@@ -372,9 +403,17 @@ export function MediaUrlIngestPane() {
 
           {/* Error state */}
           {phase.kind === "error" && (
-            <div className="mt-5 flex items-start gap-2 rounded-lg border border-amber/40 bg-amber-soft px-4 py-3 text-[13px]">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-2" />
-              <span className="text-amber-2">{phase.message}</span>
+            <div className="mt-5 rounded-lg border border-amber/40 bg-amber-soft px-4 py-3 text-[13px]">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-2" />
+                <span className="text-amber-2">{phase.message}</span>
+              </div>
+              <MediaErrorRecovery
+                code={phase.code}
+                onBrowserTab={switchToBrowserTab}
+                onAudioUpload={switchToAudioUpload}
+                onTextDocument={switchToTextDocument}
+              />
             </div>
           )}
         </section>
@@ -414,6 +453,70 @@ export function MediaUrlIngestPane() {
       </div>
     </div>
   );
+}
+
+function MediaErrorRecovery({
+  code,
+  onBrowserTab,
+  onAudioUpload,
+  onTextDocument,
+}: {
+  code: string;
+  onBrowserTab: () => void;
+  onAudioUpload: () => void;
+  onTextDocument: () => void;
+}) {
+  const guidance = recoveryGuidance(code);
+
+  return (
+    <div className="mt-3 border-t border-amber/25 pt-3">
+      <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-2">
+        Recovery
+      </div>
+      <p className="mt-1 text-[12.5px] leading-relaxed text-ink-3">{guidance}</p>
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <button
+          type="button"
+          onClick={onBrowserTab}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream"
+        >
+          <MonitorPlay className="h-4 w-4 text-teal" aria-hidden />
+          Use browser tab
+        </button>
+        <button
+          type="button"
+          onClick={onAudioUpload}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream"
+        >
+          <Upload className="h-4 w-4 text-teal" aria-hidden />
+          Upload file
+        </button>
+        <button
+          type="button"
+          onClick={onTextDocument}
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:bg-cream"
+        >
+          <FileText className="h-4 w-4 text-teal" aria-hidden />
+          Paste transcript
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function recoveryGuidance(code: string): string {
+  switch (code) {
+    case "SSRF_BLOCKED":
+      return "That address cannot be fetched safely. If it is an internal recording, upload the file directly; if it is a webpage, capture the browser tab instead.";
+    case "UNSUPPORTED_MEDIA":
+      return "This URL does not look like a direct audio/video file. Use browser-tab capture for pages with players, or import the page/document text if that is the real source.";
+    case "TRANSCRIBE_FAILED":
+      return "Remote media fetch or transcription failed. Uploading the original file is usually the most reliable path, and browser-tab capture works when the media only plays inside a page.";
+    case "INVALID_URL":
+      return "Fix the URL, or switch to a source path that matches what you actually have in hand.";
+    default:
+      return "Try the source path that best matches the material: browser page, local recording, or existing transcript/document.";
+  }
 }
 
 function UrlReadinessCard({

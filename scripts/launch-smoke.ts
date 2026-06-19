@@ -5,6 +5,7 @@ const authHeader = process.env.YENTL_SMOKE_AUTH_HEADER;
 const runRateLimit = process.env.YENTL_SMOKE_RATE_LIMIT === "1";
 const runBlobToken = process.env.YENTL_SMOKE_BLOB_TOKEN === "1";
 const expectProductAuth = process.env.YENTL_SMOKE_EXPECT_AUTH === "1";
+const skipInternalExposure = process.env.YENTL_SMOKE_SKIP_INTERNAL === "1";
 
 if (!baseUrl) {
   console.error("Set YENTL_SMOKE_BASE_URL, for example https://yentl.it");
@@ -103,15 +104,69 @@ async function checkPublicEntryPages() {
   console.log("ok public entry pages");
 }
 
+async function checkMobileEntry() {
+  const { status, text } = await readText("/mobile");
+  assert(status === 200, `mobile page returned ${status}`);
+  assert(text.includes("Yentl on iOS, Android, and mobile web."), "mobile page missing primary heading");
+  assert(text.includes("Mobile paths stay honest"), "mobile page missing platform-limit copy");
+  assert(text.includes("Native iOS and Android store shells are not shipped in v1"), "mobile page missing native-shell boundary");
+  assert(text.includes("Installed-capable browsers can hand audio, video, captions"), "mobile page missing file-open capability copy");
+  console.log("ok mobile/PWA entry page");
+}
+
+async function checkRoomModeEntry() {
+  const { status, text } = await readText("/tv");
+  assert(status === 200, `TV room page returned ${status}`);
+  assert(text.includes("Open a Yentl session on the big screen."), "TV room page missing empty-room heading");
+  assert(text.includes("Room mode is a read-only display"), "TV room page missing room-mode purpose copy");
+  assert(text.includes("/session"), "TV room page missing session handoff link");
+  console.log("ok TV room entry page");
+}
+
 async function checkManifest() {
   const { status, json } = await readJson("/manifest.webmanifest");
   assert(status === 200, `manifest returned ${status}`);
-  const manifest = json as { share_target?: { action?: string; params?: Record<string, string> } };
+  const manifest = json as {
+    start_url?: string;
+    display?: string;
+    display_override?: string[];
+    launch_handler?: { client_mode?: string[] };
+    share_target?: { action?: string; params?: Record<string, string> };
+    file_handlers?: Array<{ action?: string; accept?: Record<string, string[]> }>;
+  };
+
+  assert(manifest.start_url === "/mobile", "manifest start_url is not /mobile");
+  assert(manifest.display === "standalone", "manifest display is not standalone");
+  assert(manifest.display_override?.includes("minimal-ui"), "manifest display_override missing minimal-ui fallback");
+  assert(manifest.launch_handler?.client_mode?.includes("focus-existing"), "manifest launch_handler missing focus-existing");
+  assert(manifest.launch_handler?.client_mode?.includes("navigate-new"), "manifest launch_handler missing navigate-new");
+
   const shareTarget = manifest.share_target;
   assert(shareTarget, "manifest share_target missing");
   assert(shareTarget.action === "/session", "manifest share_target.action is not /session");
   assert(shareTarget.params?.url === "url", "manifest share_target url param missing");
-  console.log("ok manifest share_target");
+
+  const accept = manifest.file_handlers?.find((handler) => handler.action === "/session")?.accept;
+  assert(accept, "manifest file_handlers missing /session handler");
+  const requiredAccept: Record<string, string[]> = {
+    "text/plain": [".txt"],
+    "text/markdown": [".md"],
+    "application/pdf": [".pdf"],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+    "audio/mpeg": [".mp3"],
+    "audio/wav": [".wav"],
+    "audio/webm": [".webm"],
+    "video/mp4": [".mp4"],
+    "video/quicktime": [".mov"],
+    "video/webm": [".webm"],
+  };
+  for (const [mime, extensions] of Object.entries(requiredAccept)) {
+    assert(Array.isArray(accept[mime]), `manifest file handler missing ${mime}`);
+    for (const extension of extensions) {
+      assert(accept[mime].includes(extension), `manifest ${mime} missing ${extension}`);
+    }
+  }
+  console.log("ok manifest PWA/share/file-handler contract");
 }
 
 async function checkInternalDemoExposure() {
@@ -171,7 +226,7 @@ async function checkBlobToken() {
     {
       type: "blob.generate-client-token",
       payload: {
-        pathname: "launch-smoke-audio.webm",
+        pathname: "launch-smoke-video.mp4",
         callbackUrl: `${baseUrl}/api/upload-audio`,
         clientPayload: JSON.stringify({ consent: "source-analysis-v1" }),
         multipart: false,
@@ -189,17 +244,23 @@ async function checkBlobToken() {
   }
   assert(status === 200, `upload-audio token generation returned ${status}: ${JSON.stringify(json)}`);
   assert(JSON.stringify(json).includes("clientToken"), "upload-audio response did not include a client token");
-  console.log("ok blob upload token generation");
+  console.log("ok video Blob upload token generation");
 }
 
 async function main() {
   try {
     await checkManifest();
     await checkPublicEntryPages();
+    await checkMobileEntry();
+    await checkRoomModeEntry();
     await checkContactPage();
     await checkSessionEntry();
-    await checkInternalDemoExposure();
-    await checkInternalProjectExposure();
+    if (skipInternalExposure) {
+      console.log("skip internal exposure checks; YENTL_SMOKE_SKIP_INTERNAL=1 is for local release-candidate smoke only");
+    } else {
+      await checkInternalDemoExposure();
+      await checkInternalProjectExposure();
+    }
     if (runRateLimit) {
       await checkRateLimit();
     } else {

@@ -6,10 +6,13 @@ import {
   ArrowRight,
   Upload,
   FileAudio,
+  FileVideo,
+  Link,
   Loader2,
   AlertCircle,
   CheckCircle2,
   ListChecks,
+  MonitorPlay,
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -44,6 +47,46 @@ const MAX_DURATION_SEC = 4 * 60 * 60; // 4 hours
 const VALIDATION_AUDIO_PATH = "/validation/yentl-synthetic-panel.wav";
 const VALIDATION_AUDIO_FILENAME = "yentl-synthetic-panel.wav";
 const VALIDATION_AUDIO_MIME = "audio/wav";
+const VALIDATION_VIDEO_PATH = "/validation/yentl-synthetic-panel.mp4";
+const VALIDATION_VIDEO_FILENAME = "yentl-synthetic-panel.mp4";
+const VALIDATION_VIDEO_MIME = "video/mp4";
+const VALIDATION_MOV_PATH = "/validation/yentl-synthetic-panel.mov";
+const VALIDATION_MOV_FILENAME = "yentl-synthetic-panel.mov";
+const VALIDATION_MOV_MIME = "video/quicktime";
+const VALIDATION_WEBM_PATH = "/validation/yentl-synthetic-panel.webm";
+const VALIDATION_WEBM_FILENAME = "yentl-synthetic-panel.webm";
+const VALIDATION_WEBM_MIME = "video/webm";
+
+const VALIDATION_MEDIA_SAMPLES = [
+  {
+    label: "Load validation WAV",
+    path: VALIDATION_AUDIO_PATH,
+    filename: VALIDATION_AUDIO_FILENAME,
+    mime: VALIDATION_AUDIO_MIME,
+    kind: "audio",
+  },
+  {
+    label: "Load validation MP4",
+    path: VALIDATION_VIDEO_PATH,
+    filename: VALIDATION_VIDEO_FILENAME,
+    mime: VALIDATION_VIDEO_MIME,
+    kind: "video",
+  },
+  {
+    label: "Load validation MOV",
+    path: VALIDATION_MOV_PATH,
+    filename: VALIDATION_MOV_FILENAME,
+    mime: VALIDATION_MOV_MIME,
+    kind: "video",
+  },
+  {
+    label: "Load validation WebM",
+    path: VALIDATION_WEBM_PATH,
+    filename: VALIDATION_WEBM_FILENAME,
+    mime: VALIDATION_WEBM_MIME,
+    kind: "video",
+  },
+] as const;
 
 type Phase =
   | { kind: "idle" }
@@ -52,7 +95,14 @@ type Phase =
   | { kind: "processing" }                  // transcribing via Deepgram
   | { kind: "ingesting" }
   | { kind: "done" }
-  | { kind: "error"; message: string };
+  | { kind: "error"; message: string; recovery: ErrorRecovery };
+
+type ErrorRecovery =
+  | "unsupported"
+  | "too_large"
+  | "too_long"
+  | "validation_load"
+  | "transcribe_failed";
 
 interface StagedFile {
   file: File;
@@ -89,6 +139,7 @@ export function AudioIngestPane() {
       setPhase({
         kind: "error",
         message: `Unsupported file type: "${file.type || file.name}". Please upload .mp3, .wav, .m4a, .ogg, .webm, .mp4, or .mov.`,
+        recovery: "unsupported",
       });
       return;
     }
@@ -98,6 +149,7 @@ export function AudioIngestPane() {
       setPhase({
         kind: "error",
         message: `File is too large (${formatBytes(file.size)}). Maximum allowed size is 500 MB.`,
+        recovery: "too_large",
       });
       return;
     }
@@ -108,7 +160,8 @@ export function AudioIngestPane() {
     if (duration > MAX_DURATION_SEC) {
       setPhase({
         kind: "error",
-        message: `Audio is too long (${formatDuration(duration)}). Maximum allowed duration is 4 hours.`,
+        message: `Recording is too long (${formatDuration(duration)}). Maximum allowed duration is 4 hours.`,
+        recovery: "too_long",
       });
       return;
     }
@@ -226,7 +279,7 @@ export function AudioIngestPane() {
       URL.revokeObjectURL(localBlobUrl);
       if ((e as Error).name === "AbortError") return;
       const message = e instanceof Error ? e.message : String(e);
-      setPhase({ kind: "error", message });
+      setPhase({ kind: "error", message, recovery: "transcribe_failed" });
     }
   }, [staged, setSource, router]);
 
@@ -236,24 +289,40 @@ export function AudioIngestPane() {
     setPhase({ kind: "idle" });
   }, []);
 
-  const handleLoadValidationAudio = useCallback(async () => {
+  const handleLoadValidationFile = useCallback(async (
+    path: string,
+    filename: string,
+    fallbackMime: string,
+  ) => {
     if (phase.kind === "done") return;
 
     try {
-      const res = await fetch(VALIDATION_AUDIO_PATH);
+      const res = await fetch(path);
       if (!res.ok) {
-        throw new Error(`Could not load validation audio (${res.status}).`);
+        throw new Error(`Could not load validation media (${res.status}).`);
       }
       const blob = await res.blob();
-      const file = new File([blob], VALIDATION_AUDIO_FILENAME, {
-        type: blob.type || VALIDATION_AUDIO_MIME,
+      const file = new File([blob], filename, {
+        type: blob.type || fallbackMime,
       });
       await handleFile(file);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);
-      setPhase({ kind: "error", message });
+      setPhase({ kind: "error", message, recovery: "validation_load" });
     }
   }, [handleFile, phase.kind]);
+
+  const chooseMediaUrl = useCallback(() => {
+    abortRef.current?.abort();
+    setSource({ kind: "media_url", url: "" });
+    setPrerecordStage("selected");
+  }, [setPrerecordStage, setSource]);
+
+  const chooseBrowserTab = useCallback(() => {
+    abortRef.current?.abort();
+    setSource({ kind: "browser_tab" });
+    setPrerecordStage("selected");
+  }, [setPrerecordStage, setSource]);
 
   const isProcessing =
     phase.kind === "uploading" ||
@@ -276,7 +345,7 @@ export function AudioIngestPane() {
         <section className="rounded-lg border border-line bg-paper p-5 shadow-sm sm:p-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal-soft px-3 py-1 text-[11px] font-semibold text-teal">
             <FileAudio className="h-3.5 w-3.5" aria-hidden />
-            Audio upload
+            Audio/video upload
           </div>
 
           <h1 className="font-serif text-[28px] font-medium leading-tight tracking-tight text-ink sm:text-[34px]">
@@ -331,20 +400,30 @@ export function AudioIngestPane() {
                 accept={ACCEPT_ATTR}
                 className="sr-only"
                 onChange={handleInputChange}
-                aria-label="Select audio file"
+                aria-label="Select audio or video file"
               />
             </label>
           )}
 
           {validationDemoEnabled() && !staged && !isProcessing && phase.kind !== "done" && (
-            <button
-              type="button"
-              onClick={handleLoadValidationAudio}
-              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-4 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <FileAudio className="h-4 w-4" aria-hidden />
-              Load validation WAV
-            </button>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {VALIDATION_MEDIA_SAMPLES.map((sample) => {
+                const Icon = sample.kind === "audio" ? FileAudio : FileVideo;
+                return (
+                  <button
+                    key={sample.filename}
+                    type="button"
+                    onClick={() => {
+                      void handleLoadValidationFile(sample.path, sample.filename, sample.mime);
+                    }}
+                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-4 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-paper disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden />
+                    {sample.label}
+                  </button>
+                );
+              })}
+            </div>
           )}
 
           {/* Staged file preview card */}
@@ -435,10 +514,13 @@ export function AudioIngestPane() {
 
           {/* Error state */}
           {phase.kind === "error" && (
-            <div className="mt-5 flex items-start gap-2 rounded-lg border border-red/20 bg-red-soft px-4 py-3 text-[13px] text-red">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{phase.message}</span>
-            </div>
+            <AudioUploadRecovery
+              message={phase.message}
+              recovery={phase.recovery}
+              hasStagedFile={Boolean(staged)}
+              onChooseMediaUrl={chooseMediaUrl}
+              onChooseBrowserTab={chooseBrowserTab}
+            />
           )}
 
           {/* After error: re-show drop zone so user can try again */}
@@ -459,7 +541,7 @@ export function AudioIngestPane() {
                 accept={ACCEPT_ATTR}
                 className="sr-only"
                 onChange={handleInputChange}
-                aria-label="Select audio file"
+                aria-label="Select audio or video file"
               />
             </label>
           )}
@@ -490,6 +572,85 @@ export function AudioIngestPane() {
       </div>
     </div>
   );
+}
+
+function AudioUploadRecovery({
+  message,
+  recovery,
+  hasStagedFile,
+  onChooseMediaUrl,
+  onChooseBrowserTab,
+}: {
+  message: string;
+  recovery: ErrorRecovery;
+  hasStagedFile: boolean;
+  onChooseMediaUrl: () => void;
+  onChooseBrowserTab: () => void;
+}) {
+  const guidance = audioRecoveryGuidance(recovery, hasStagedFile);
+
+  return (
+    <div className="mt-5 rounded-lg border border-red/20 bg-red-soft px-4 py-3 text-[13px] text-red">
+      <div className="flex items-start gap-2">
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <div>
+          <div className="font-semibold text-red">{guidance.title}</div>
+          <div className="mt-0.5 text-red">{message}</div>
+          <div className="mt-1 text-red/85">{guidance.body}</div>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={onChooseMediaUrl}
+          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-red/20 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 hover:border-red/30"
+        >
+          <Link className="h-3.5 w-3.5" aria-hidden />
+          Use media URL
+        </button>
+        <button
+          type="button"
+          onClick={onChooseBrowserTab}
+          className="inline-flex min-h-10 items-center gap-2 rounded-md border border-red/20 bg-paper px-3 py-2 text-[12px] font-medium text-ink-2 hover:border-red/30"
+        >
+          <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
+          Use browser tab
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function audioRecoveryGuidance(recovery: ErrorRecovery, hasStagedFile: boolean): { title: string; body: string } {
+  switch (recovery) {
+    case "unsupported":
+      return {
+        title: "This file cannot be transcribed directly.",
+        body: "Choose another audio/video file, paste a direct media URL, or use browser-tab capture if the source plays on a webpage.",
+      };
+    case "too_large":
+      return {
+        title: "This recording is too large for this upload path.",
+        body: "Trim or compress the file, use a hosted media URL, or capture the source from the page where it plays.",
+      };
+    case "too_long":
+      return {
+        title: "This recording is longer than the current session limit.",
+        body: "Split the recording into smaller sections so Yentl can keep speaker turns, claims, and markers reviewable.",
+      };
+    case "validation_load":
+      return {
+        title: "The validation media did not load.",
+        body: "Try a local file instead, or switch to media URL/browser-tab capture to keep testing the ingestion path.",
+      };
+    case "transcribe_failed":
+      return {
+        title: hasStagedFile ? "The file is still staged, but transcription failed." : "Transcription failed.",
+        body: hasStagedFile
+          ? "You can retry the same recording, choose another file, or switch to a URL/page-based capture path."
+          : "Choose another recording, paste a direct media URL, or capture the playable page instead.",
+      };
+  }
 }
 
 function AudioStep({ label, body }: { label: string; body: string }) {

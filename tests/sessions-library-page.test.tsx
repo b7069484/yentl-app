@@ -6,11 +6,12 @@ import type { Session } from "@/lib/types";
 // ─── Mock next/navigation ─────────────────────────────────────────────────────
 
 const mockPush = vi.fn();
+let mockSearchParamsRaw = new URLSearchParams("");
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
   usePathname: () => "/sessions",
-  useSearchParams: () => new URLSearchParams(""),
+  useSearchParams: () => mockSearchParamsRaw,
 }));
 
 vi.mock("next/link", () => ({
@@ -123,6 +124,7 @@ import SessionsLibraryPage from "@/app/sessions/page";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockSearchParamsRaw = new URLSearchParams("");
   vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
   mockListSessions.mockResolvedValue([]);
   mockLoadSession.mockResolvedValue(makeFullSession());
@@ -283,6 +285,29 @@ describe("SessionsLibraryPage — with sessions", () => {
     expect(screen.getByText(/Showing 1 of 2 saved sessions/i)).toBeTruthy();
   });
 
+  it("searches saved sessions by storage scope", async () => {
+    const cloudMeta = makeMeta({
+      id: "cloud-1",
+      name: "Remote archive",
+      source_kind: "text_doc",
+      saved_at: new Date(Date.now() - 60 * 1000).toISOString(),
+    });
+    mockListCloudSessions.mockResolvedValue({ ok: true, data: [cloudMeta] });
+
+    render(<SessionsLibraryPage />);
+    await waitFor(() =>
+      expect(screen.getByText("Remote archive")).toBeTruthy(),
+    );
+
+    fireEvent.change(screen.getByLabelText("Search saves"), {
+      target: { value: "cloud" },
+    });
+
+    expect(screen.getByText("Remote archive")).toBeTruthy();
+    expect(screen.queryByText("Morning debate")).toBeNull();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+    expect(screen.getByText(/Showing 1 of 3 saved sessions/i)).toBeTruthy();
+  });
 
   it("filters saved sessions by source type", async () => {
     render(<SessionsLibraryPage />);
@@ -296,6 +321,87 @@ describe("SessionsLibraryPage — with sessions", () => {
 
     expect(screen.queryByText("Morning debate")).toBeNull();
     expect(screen.getByText("Evening roundup")).toBeTruthy();
+  });
+
+  it("filters merged saved sessions by storage scope", async () => {
+    const cloudOnly = makeMeta({
+      id: "cloud-1",
+      name: "Cloud-only interview",
+      source_kind: "text_doc",
+      saved_at: new Date(Date.now() - 60 * 1000).toISOString(),
+    });
+    const mergedCloud = makeMeta({
+      id: "sess-1",
+      name: "Morning debate cloud copy",
+      saved_at: new Date(Date.now() - 30 * 1000).toISOString(),
+    });
+    mockListCloudSessions.mockResolvedValue({ ok: true, data: [cloudOnly, mergedCloud] });
+
+    render(<SessionsLibraryPage />);
+    await waitFor(() =>
+      expect(screen.getByText("Morning debate cloud copy")).toBeTruthy(),
+    );
+    expect(screen.getByText("Cloud-only interview")).toBeTruthy();
+    expect(screen.getByText("Evening roundup")).toBeTruthy();
+    expect(screen.getAllByText("Local + cloud").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Cloud").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Local").length).toBeGreaterThan(0);
+
+    fireEvent.change(screen.getByLabelText("Storage"), {
+      target: { value: "cloud_backed" },
+    });
+    expect(screen.getByText("Morning debate cloud copy")).toBeTruthy();
+    expect(screen.getByText("Cloud-only interview")).toBeTruthy();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+    expect(screen.getByText(/Showing 2 of 3 saved sessions/i)).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Storage"), {
+      target: { value: "both" },
+    });
+    expect(screen.getByText("Morning debate cloud copy")).toBeTruthy();
+    expect(screen.queryByText("Cloud-only interview")).toBeNull();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+    expect(screen.getByText(/Showing 1 of 3 saved sessions/i)).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Storage"), {
+      target: { value: "cloud" },
+    });
+    expect(screen.queryByText("Morning debate cloud copy")).toBeNull();
+    expect(screen.getByText("Cloud-only interview")).toBeTruthy();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Storage"), {
+      target: { value: "local" },
+    });
+    expect(screen.queryByText("Morning debate cloud copy")).toBeNull();
+    expect(screen.queryByText("Cloud-only interview")).toBeNull();
+    expect(screen.getByText("Evening roundup")).toBeTruthy();
+  });
+
+  it("treats /sessions?filter=cloud as account-backed saves, not only cloud-only rows", async () => {
+    mockSearchParamsRaw = new URLSearchParams("filter=cloud");
+    const cloudOnly = makeMeta({
+      id: "cloud-1",
+      name: "Cloud-only interview",
+      source_kind: "text_doc",
+      saved_at: new Date(Date.now() - 60 * 1000).toISOString(),
+    });
+    const mergedCloud = makeMeta({
+      id: "sess-1",
+      name: "Morning debate cloud copy",
+      saved_at: new Date(Date.now() - 30 * 1000).toISOString(),
+    });
+    mockListCloudSessions.mockResolvedValue({ ok: true, data: [cloudOnly, mergedCloud] });
+
+    render(<SessionsLibraryPage />);
+    await waitFor(() =>
+      expect(screen.getByText("Morning debate cloud copy")).toBeTruthy(),
+    );
+
+    expect(screen.getByLabelText("Storage")).toHaveValue("cloud_backed");
+    expect(screen.getByText("Cloud-only interview")).toBeTruthy();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+    expect(screen.getByText(/Showing 2 of 3 saved sessions/i)).toBeTruthy();
   });
 
   it("sorts saved sessions by highest claim count", async () => {
@@ -502,5 +608,32 @@ describe("SessionsLibraryPage — with sessions", () => {
       expect(mockClearAllSessions).toHaveBeenCalledOnce(),
     );
     expect(screen.getByText(/No saved sessions yet/i)).toBeTruthy();
+  });
+
+  it("clears local saves while preserving cloud-only and merged cloud rows", async () => {
+    const cloudOnly = makeMeta({ id: "cloud-1", name: "Cloud-only interview" });
+    const mergedCloud = makeMeta({
+      id: "sess-1",
+      name: "Morning debate cloud copy",
+      saved_at: new Date(Date.now() - 60 * 1000).toISOString(),
+    });
+    mockListCloudSessions.mockResolvedValue({ ok: true, data: [cloudOnly, mergedCloud] });
+
+    render(<SessionsLibraryPage />);
+    await waitFor(() =>
+      expect(screen.getByText("Morning debate cloud copy")).toBeTruthy(),
+    );
+    expect(screen.getByText("Evening roundup")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear local saves" }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear all local saves" }));
+
+    await waitFor(() =>
+      expect(mockClearAllSessions).toHaveBeenCalledOnce(),
+    );
+    expect(screen.getByText("Morning debate cloud copy")).toBeTruthy();
+    expect(screen.getByText("Cloud-only interview")).toBeTruthy();
+    expect(screen.queryByText("Evening roundup")).toBeNull();
+    expect(screen.queryByText(/No saved sessions yet/i)).toBeNull();
   });
 });

@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_mech_03_clip_host_attribution",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_mech_03",
+  "start_s": 0,
+  "end_s": 130,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Undocumented migrant sent a letter threatening to kill the president promising to self deport after the assassination. CNN reporting shows that investigators believe the migrant was was set up. It was a victim of a set up. What is the administration going to do now? I wanna clarify what you mean, so we're talking about the same thing. Are you saying this this immigrant was here illegally? Yes. But I am, and that's why I said that. I clarified that. But You said you said undocumented, and I wasn't. CNN expected a simple critique, but White House deputy chief of staff Steven Miller surprised everyone in his conversation with CNN's Pamela Brown. Brown tried to stick with her usual approach, gentle language, familiar buzzwords, and the democratic viewpoint on immigration, but Miller firmly held his position. He called her out on the spot, cutting through the soft talk and steering the conversation back to the facts. The interaction has impact, because when someone like Miller jumps in, the word play falls apart. The media shouldn't use vague phrases like undocumented migrant when it's clearly a matter of illegal border crossings. Let me know where you're listening from before we dive in. Alright. Here we go. He's an undocumented immigrant. I do wanna note that, but this was someone who came forward, was a victim of a crime, and now law enforcement believes he was set up. Go ahead. Because I'm assuming they have a fake ID. I'm assuming they have a fake Social Security number. Neither here nor there. That's that's that's that's that's that's that's that's I want this to be, and call me naive, a good faith discussion about what's happening right now. When we when we when we use language that's designed to obscure the truth, that's not good faith. Alright. This this is illegal alien. They're not an undocumented migrant. That's fine. That's another discussion were having today. I don't know the I don't know the details of the assassination threat.",
+    "turns": [
+      {
+        "id": "c2-mech-03-anchor-setup-1",
+        "start_s": 0.4,
+        "end_s": 14.21,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-mech-03-guest-clarifier-1",
+        "start_s": 14.21,
+        "end_s": 20.13,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-mech-03-anchor-repair-1",
+        "start_s": 21.16,
+        "end_s": 24.61,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "repair_initiation"
+      },
+      {
+        "id": "c2-mech-03-guest-interrupt-1",
+        "start_s": 24.61,
+        "end_s": 26.77,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "competitive_interruption"
+      },
+      {
+        "id": "c2-mech-03-narrator-1",
+        "start_s": 27.36,
+        "end_s": 95.82,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-mech-03-anchor-setup-2",
+        "start_s": 96.09,
+        "end_s": 104.42,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-mech-03-guest-assumption-1",
+        "start_s": 104.42,
+        "end_s": 107.53,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "competitive_interruption"
+      },
+      {
+        "id": "c2-mech-03-anchor-repair-2",
+        "start_s": 107.53,
+        "end_s": 109.38,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "repair_initiation"
+      },
+      {
+        "id": "c2-mech-03-guest-fragment-1",
+        "start_s": 109.38,
+        "end_s": 109.53,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "competitive_interruption"
+      },
+      {
+        "id": "c2-mech-03-anchor-repair-3",
+        "start_s": 109.53,
+        "end_s": 116.34,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "repair_initiation"
+      },
+      {
+        "id": "c2-mech-03-guest-terminology-1",
+        "start_s": 116.34,
+        "end_s": 124.34,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "competitive_interruption"
+      },
+      {
+        "id": "c2-mech-03-anchor-close-1",
+        "start_s": 124.34,
+        "end_s": 126.42,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "repair_initiation"
+      },
+      {
+        "id": "c2-mech-03-guest-coda-1",
+        "start_s": 126.42,
+        "end_s": 130.08,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-mech-03-claim-1",
+        "start_s": 0.4,
+        "end_s": 14.21,
+        "owner_speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-03-claim-2",
+        "start_s": 14.21,
+        "end_s": 20.13,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "questioned",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-03-claim-3",
+        "start_s": 27.36,
+        "end_s": 95.82,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 2,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-03-claim-4",
+        "start_s": 96.09,
+        "end_s": 104.42,
+        "owner_speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-mech-03-claim-5",
+        "start_s": 104.42,
+        "end_s": 107.53,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      },
+      {
+        "id": "c2-mech-03-claim-6",
+        "start_s": 116.34,
+        "end_s": 124.34,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": true
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": [
+      {
+        "id": "c2-mech-03-unsafe-1",
+        "start_s": 104.42,
+        "end_s": 126.42,
+        "reason": "rapid host and guest interruption plus repair should not be collapsed into one clean completed claim without context"
+      }
+    ]
+  }
+}

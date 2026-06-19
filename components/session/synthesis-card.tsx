@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { SynthesisState, SpeakerVerdict } from "@/lib/client/session-store";
+import type { SynthesisMetaRead, SynthesisState, SpeakerVerdict } from "@/lib/client/session-store";
 
 // ─── Time-ago helper ──────────────────────────────────────────────────────────
 
@@ -125,13 +125,54 @@ type MetaRead = {
   label: string;
   summary: string;
   caveat: string;
-  counts: {
+  counts?: {
     good: number;
     mixed: number;
     bad: number;
     insufficient: number;
   };
+  sourceHealth?: string;
+  scope?: string;
+  keyQuestion?: string;
 };
+
+const META_POSTURE_LABEL: Record<SynthesisMetaRead["posture"], string> = {
+  good_faith: "Good-faith read",
+  mixed: "Mixed-faith read",
+  bad_faith_risk: "Bad-faith risk",
+  insufficient: "Still forming",
+};
+
+const META_SOURCE_LABEL: Record<SynthesisMetaRead["source_health"], string> = {
+  strong: "Strong sources",
+  mixed: "Mixed sources",
+  thin: "Thin sources",
+  unknown: "Source unknown",
+};
+
+const META_SCOPE_LABEL: Record<SynthesisMetaRead["scope"], string> = {
+  live_window: "Live window",
+  full_session: "Full session",
+};
+
+function toneFromPosture(posture: SynthesisMetaRead["posture"]): MetaReadTone {
+  if (posture === "good_faith") return "good";
+  if (posture === "bad_faith_risk") return "bad";
+  if (posture === "insufficient") return "insufficient";
+  return "mixed";
+}
+
+function metaReadFromStructured(metaRead: SynthesisMetaRead): MetaRead {
+  return {
+    tone: toneFromPosture(metaRead.posture),
+    label: META_POSTURE_LABEL[metaRead.posture],
+    summary: metaRead.summary,
+    caveat: metaRead.uncertainty,
+    sourceHealth: META_SOURCE_LABEL[metaRead.source_health],
+    scope: META_SCOPE_LABEL[metaRead.scope],
+    keyQuestion: metaRead.key_question,
+  };
+}
 
 function metaReadFromVerdicts(verdicts: SpeakerVerdict[]): MetaRead | null {
   if (verdicts.length === 0) return null;
@@ -210,18 +251,31 @@ function MetaReadPanel({ read, refreshing }: { read: MetaRead; refreshing: boole
         )}
       </div>
       <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{read.summary}</p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        <MetaCount label="Good-faith" value={read.counts.good} />
-        <MetaCount label="Mixed" value={read.counts.mixed} />
-        <MetaCount label="Bad-faith risk" value={read.counts.bad} />
-        <MetaCount label="Uncertain" value={read.counts.insufficient} />
-      </div>
+      {(read.sourceHealth || read.scope) && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {read.sourceHealth && <MetaCount label="Evidence" value={read.sourceHealth} />}
+          {read.scope && <MetaCount label="Scope" value={read.scope} />}
+        </div>
+      )}
+      {read.counts && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          <MetaCount label="Good-faith" value={read.counts.good} />
+          <MetaCount label="Mixed" value={read.counts.mixed} />
+          <MetaCount label="Bad-faith risk" value={read.counts.bad} />
+          <MetaCount label="Uncertain" value={read.counts.insufficient} />
+        </div>
+      )}
       <p className="mt-2 text-[11px] leading-snug text-ink-4">{read.caveat}</p>
+      {read.keyQuestion && (
+        <p className="mt-1.5 text-[11px] leading-snug text-ink-4">
+          <span className="font-semibold text-ink-3">Next:</span> {read.keyQuestion}
+        </p>
+      )}
     </div>
   );
 }
 
-function MetaCount({ label, value }: { label: string; value: number }) {
+function MetaCount({ label, value }: { label: string; value: number | string }) {
   return (
     <span className="rounded-full border border-line/80 bg-white/65 px-2 py-0.5 text-[10.5px] font-semibold text-ink-3">
       {label}: {value}
@@ -354,7 +408,9 @@ export function SynthesisCard({
   const text = synthesis.text;
   const headlines = synthesis.headlines ?? [];
   const perSpeakerVerdicts = ("per_speaker_verdicts" in synthesis && synthesis.per_speaker_verdicts) ? synthesis.per_speaker_verdicts : [];
-  const metaRead = metaReadFromVerdicts(perSpeakerVerdicts);
+  const metaRead = synthesis.meta_read
+    ? metaReadFromStructured(synthesis.meta_read)
+    : metaReadFromVerdicts(perSpeakerVerdicts);
 
   // Age label
   let ageSuffix: string;

@@ -97,6 +97,28 @@ const capabilityRows: Array<{
   },
 ];
 
+const nativeContractRows: Array<{
+  title: string;
+  body: string;
+  Icon: Icon;
+}> = [
+  {
+    title: "PWA install first",
+    body: "The v1 mobile app is the installable web app: it starts at /mobile, opens shared links/text, and keeps work in the Yentl session route.",
+    Icon: Smartphone,
+  },
+  {
+    title: "Native shells later",
+    body: "Native iOS and Android store shells are not shipped in v1; the web/PWA contract is the supported mobile surface until that wrapper is proven.",
+    Icon: PanelsTopLeft,
+  },
+  {
+    title: "File opens",
+    body: "Installed-capable browsers can hand audio, video, captions, PDFs, DOCX, Markdown, and text files into /session.",
+    Icon: FileUp,
+  },
+];
+
 export default function MobilePage() {
   return (
     <main id="main-content" className="min-h-screen bg-cream text-ink">
@@ -192,6 +214,26 @@ export default function MobilePage() {
               <p className="mt-2 text-sm leading-6 text-ink-3">{body}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-line bg-paper">
+        <div className="mx-auto grid w-full max-w-5xl gap-6 px-5 py-12 lg:grid-cols-[0.78fr_1.22fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase text-teal">Native shell status</p>
+            <h2 className="mt-3 font-serif text-4xl font-medium text-ink">
+              Installable web app first; store shells after proof.
+            </h2>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {nativeContractRows.map(({ title, body, Icon: ContractIcon }) => (
+              <article key={title} className="rounded-lg border border-line bg-cream p-4">
+                <ContractIcon className="h-5 w-5 text-teal" aria-hidden />
+                <h3 className="mt-4 text-base font-semibold text-ink">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-ink-3">{body}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </main>

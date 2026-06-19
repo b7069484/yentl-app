@@ -1,5 +1,13 @@
 # Per-agent Yentl launch files
 
+Current reset-to-finish packet: use the June 14 files before launching new sessions:
+
+- `../2026-06-14-yentl-reset-to-finish-agent-orchestration.md`
+- `../agent-starter-prompts-2026-06-14.md`
+- `../yentl-reset-to-finish-dashboard.html`
+
+The files below are the older May 21 launch set. Keep them as background unless the orchestrator explicitly reassigns one.
+
 Each fresh session should be pointed to exactly one file below. The filename and file body both include the agent's name.
 
 | Agent | Lane | Launch file |

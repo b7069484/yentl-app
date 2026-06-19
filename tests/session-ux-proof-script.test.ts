@@ -19,6 +19,23 @@ describe("session UX local proof script", () => {
     expect(source).toContain('slug: "end-session-dialog"');
     expect(source).toContain('slug: "export-report-preview"');
     expect(source).toContain('slug: "share-target-text-mobile"');
+    expect(source).toContain('slug: "save-library-restore-roundtrip"');
+    expect(source).toContain("Proof saved validation session");
+    expect(source).toContain("Proof renamed validation session");
+    expect(source).toContain("Proof text research session");
+    expect(source).toContain("Proof long audio session");
+    expect(source).toContain("Export JSON");
+    expect(source).toContain("Confirm delete session");
+    expect(source).toContain("libraryControlsResult");
+    expect(source).toContain("deleteResult");
+    expect(source).toContain("clearResult");
+    expect(source).toContain("Clear all local saves");
+    expect(source).toContain("#source-filter");
+    expect(source).toContain("#sort-sessions");
+    expect(source).toContain("/tv?restore");
+    expect(source).toContain("tvReturnResult");
+    expect(source).toContain("tv session return link mismatch");
+    expect(source).toContain("/session?restore=");
     expect(source).toContain('path: "/tv?demo=validation&sample=cable_008"');
   });
 

@@ -1,10 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:39:41.230Z",
-  "app_origin": "http://127.0.0.1:3000",
+  "generated_at": "2026-06-12T00:01:14.559Z",
+  "app_origin": "http://localhost:3000",
+  "proof_scope": "local",
   "validation_urls": {
-    "article": "http://127.0.0.1:3000/validation/yentl-synthetic-article.html",
-    "media": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+    "article": "http://localhost:3000/validation/yentl-synthetic-article.html",
+    "messyArticle": "http://localhost:3000/validation/yentl-messy-article.html",
+    "media": "http://localhost:3000/validation/yentl-synthetic-panel.wav",
+    "video": "http://localhost:3000/validation/yentl-synthetic-panel.mp4",
+    "mov": "http://localhost:3000/validation/yentl-synthetic-panel.mov",
+    "webm": "http://localhost:3000/validation/yentl-synthetic-panel.webm",
     "youtube": "https://www.youtube.com/watch?v=fTznEIZRkLg"
   },
   "external_urls": {
@@ -17,14 +22,14 @@
     {
       "name": "consent-gate",
       "ok": true,
-      "elapsed_ms": 18,
+      "elapsed_ms": 51,
       "status": 428,
       "error_code": "SOURCE_CONSENT_REQUIRED"
     },
     {
       "name": "ssrf-block",
       "ok": true,
-      "elapsed_ms": 6,
+      "elapsed_ms": 7,
       "status": 400,
       "error_code": "SSRF_BLOCKED",
       "probe_url": "http://169.254.169.254/latest/meta-data"
@@ -32,28 +37,45 @@
     {
       "name": "article-url-ingest",
       "ok": true,
-      "elapsed_ms": 8,
+      "elapsed_ms": 9,
       "status": 200,
       "title": "Yentl Validation Article",
-      "word_count": 139,
-      "source_word_count": 139,
+      "word_count": 142,
+      "source_word_count": 142,
       "validation_fixture_id": "yentl_synthetic_article_html"
+    },
+    {
+      "name": "messy-article-url-ingest",
+      "ok": true,
+      "elapsed_ms": 6,
+      "status": 200,
+      "title": "Yentl Messy Article Fixture",
+      "word_count": 102,
+      "source_word_count": 102,
+      "validation_fixture_id": "yentl_messy_article_html",
+      "excluded_page_chrome": [
+        "cookie",
+        "share",
+        "ad",
+        "related",
+        "comments"
+      ]
     },
     {
       "name": "external-article-url-ingest",
       "ok": true,
-      "elapsed_ms": 186,
+      "elapsed_ms": 164,
       "status": 200,
       "url": "https://www.w3.org/TR/WCAG22/",
       "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
       "word_count": 2200,
-      "source_word_count": 19965,
+      "source_word_count": 20075,
       "truncated": true
     },
     {
       "name": "direct-media-url-ingest",
       "ok": true,
-      "elapsed_ms": 7,
+      "elapsed_ms": 34,
       "status": 200,
       "mime": "audio/wav",
       "utterance_count": 5,
@@ -61,9 +83,75 @@
       "validation_fixture_id": "yentl_synthetic_panel_wav"
     },
     {
+      "name": "direct-video-url-ingest",
+      "ok": true,
+      "elapsed_ms": 6,
+      "status": 200,
+      "mime": "video/mp4",
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_mp4"
+    },
+    {
+      "name": "direct-mov-url-ingest",
+      "ok": true,
+      "elapsed_ms": 4,
+      "status": 200,
+      "mime": "video/quicktime",
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_mov"
+    },
+    {
+      "name": "direct-webm-url-ingest",
+      "ok": true,
+      "elapsed_ms": 6,
+      "status": 200,
+      "mime": "video/webm",
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_webm"
+    },
+    {
+      "name": "uploaded-video-file-ingest",
+      "ok": true,
+      "elapsed_ms": 43,
+      "status": 200,
+      "file": "public/validation/yentl-synthetic-panel.mp4",
+      "mime": "video/mp4",
+      "byte_count": 499223,
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_mp4"
+    },
+    {
+      "name": "uploaded-mov-file-ingest",
+      "ok": true,
+      "elapsed_ms": 7,
+      "status": 200,
+      "file": "public/validation/yentl-synthetic-panel.mov",
+      "mime": "video/quicktime",
+      "byte_count": 499274,
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_mov"
+    },
+    {
+      "name": "uploaded-webm-file-ingest",
+      "ok": true,
+      "elapsed_ms": 4,
+      "status": 200,
+      "file": "public/validation/yentl-synthetic-panel.webm",
+      "mime": "video/webm",
+      "byte_count": 279551,
+      "utterance_count": 5,
+      "speaker_count": 2,
+      "validation_fixture_id": "yentl_synthetic_panel_webm"
+    },
+    {
       "name": "external-media-url-ingest",
       "ok": true,
-      "elapsed_ms": 1321,
+      "elapsed_ms": 592,
       "status": 200,
       "url": "https://raw.githubusercontent.com/mozilla/DeepSpeech/master/data/smoke_test/LDC93S1.wav",
       "mime": "audio/wav",
@@ -73,7 +161,7 @@
     {
       "name": "pdf-document-ingest",
       "ok": true,
-      "elapsed_ms": 20,
+      "elapsed_ms": 240,
       "status": 200,
       "file": "public/validation/yentl-small-text-layer.pdf",
       "page_count": 1,
@@ -83,16 +171,39 @@
     {
       "name": "upload-audio-consent-gate",
       "ok": true,
-      "elapsed_ms": 8,
+      "elapsed_ms": 29,
       "status": 428,
       "error_code": "SOURCE_CONSENT_REQUIRED"
     },
     {
       "name": "upload-audio-token-with-consent",
       "ok": true,
-      "elapsed_ms": 10,
+      "elapsed_ms": 7,
       "status": 200,
       "has_client_token": true
+    },
+    {
+      "name": "large-media-upload-streaming-contract",
+      "ok": true,
+      "elapsed_ms": 1,
+      "client_blob_threshold_bytes": 4194304,
+      "server_stream_threshold_bytes": 52428800,
+      "max_upload_bytes": 524288000,
+      "blob_upload_route": "/api/upload-audio",
+      "transcription_route": "/api/transcribe-batch",
+      "allowed_large_video_types": [
+        "video/mp4",
+        "video/quicktime",
+        "video/webm"
+      ],
+      "proof_files": [
+        "lib/client/audio-ingest.ts",
+        "app/api/upload-audio/route.ts",
+        "app/api/transcribe-batch/route.ts",
+        "tests/audio-ingest.test.ts",
+        "tests/streaming-upload.test.ts",
+        "tests/api/upload-audio.test.ts"
+      ]
     },
     {
       "name": "document-upload-missing-file",
@@ -111,7 +222,7 @@
     {
       "name": "youtube-caption-ingest",
       "ok": true,
-      "elapsed_ms": 1787,
+      "elapsed_ms": 1686,
       "status": 200,
       "video_id": "fTznEIZRkLg",
       "title": "Hans Rosling: Global population growth, box by box",
@@ -124,12 +235,14 @@
     {
       "name": "wikimedia-host-403",
       "ok": true,
-      "elapsed_ms": 309,
+      "elapsed_ms": 275,
       "status": 500,
       "error_code": "TRANSCRIBE_FAILED",
       "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
       "note": "External-host fetch blocker recorded for documentation; not a Yentl SSRF validation failure."
     }
   ],
-  "failures": []
+  "deploy_blockers": [],
+  "failures": [],
+  "notes": []
 }

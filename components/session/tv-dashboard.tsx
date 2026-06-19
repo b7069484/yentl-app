@@ -104,7 +104,11 @@ function EmptyRoomMode() {
   );
 }
 
-export function TVDashboard() {
+type TVDashboardProps = {
+  sessionHref?: string;
+};
+
+export function TVDashboard({ sessionHref = "/session" }: TVDashboardProps = {}) {
   const title = useSession((s) => s.title);
   const startedAt = useSession((s) => s.startedAt);
   const endedAt = useSession((s) => s.endedAt);
@@ -153,7 +157,7 @@ export function TVDashboard() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/session"
+              href={sessionHref}
               className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-line bg-paper px-5 text-sm font-semibold text-ink-2 hover:bg-cream-2"
             >
               Session <ArrowRight className="h-4 w-4" aria-hidden />

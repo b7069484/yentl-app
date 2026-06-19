@@ -1,0 +1,194 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-12T00:08:24.587Z",
+  "native_shell_status": "not_shipped_v1_pwa_first",
+  "report_path": "docs/superpowers/validation/pwa-native-contract-proof.json",
+  "checks": [
+    {
+      "name": "manifest-install-contract",
+      "ok": true,
+      "elapsed_ms": 0,
+      "id": "/",
+      "start_url": "/mobile",
+      "display": "standalone",
+      "display_override": [
+        "standalone",
+        "minimal-ui",
+        "browser"
+      ],
+      "launch_handler": {
+        "client_mode": [
+          "focus-existing",
+          "navigate-new"
+        ]
+      }
+    },
+    {
+      "name": "share-target-contract",
+      "ok": true,
+      "elapsed_ms": 0,
+      "action": "/session",
+      "method": "GET",
+      "params": {
+        "title": "title",
+        "text": "text",
+        "url": "url"
+      }
+    },
+    {
+      "name": "file-handler-contract",
+      "ok": true,
+      "elapsed_ms": 0,
+      "action": "/session",
+      "mime_count": 15,
+      "text_extensions": [
+        ".txt",
+        ".md",
+        ".srt",
+        ".vtt",
+        ".pdf",
+        ".docx"
+      ],
+      "media_extensions": [
+        ".mp3",
+        ".wav",
+        ".m4a",
+        ".ogg",
+        ".opus",
+        ".webm",
+        ".mp4",
+        ".mov"
+      ],
+      "required_video_types": [
+        "video/mp4",
+        "video/quicktime",
+        "video/webm"
+      ]
+    },
+    {
+      "name": "launch-file-routing",
+      "ok": true,
+      "elapsed_ms": 0,
+      "routed": [
+        {
+          "name": "transcript.txt",
+          "type": "text/plain",
+          "expected_kind": "text_doc",
+          "actual_kind": "text_doc",
+          "mime": "text/plain"
+        },
+        {
+          "name": "brief.pdf",
+          "type": "(from extension)",
+          "expected_kind": "text_doc",
+          "actual_kind": "text_doc",
+          "mime": "application/pdf"
+        },
+        {
+          "name": "captions.vtt",
+          "type": "text/vtt",
+          "expected_kind": "text_doc",
+          "actual_kind": "text_doc",
+          "mime": "text/vtt"
+        },
+        {
+          "name": "clip.mp4",
+          "type": "video/mp4",
+          "expected_kind": "audio_file",
+          "actual_kind": "audio_file",
+          "mime": "video/mp4"
+        },
+        {
+          "name": "phone-recording.mov",
+          "type": "video/quicktime",
+          "expected_kind": "audio_file",
+          "actual_kind": "audio_file",
+          "mime": "video/quicktime"
+        },
+        {
+          "name": "screen-recording.webm",
+          "type": "video/webm",
+          "expected_kind": "audio_file",
+          "actual_kind": "audio_file",
+          "mime": "video/webm"
+        },
+        {
+          "name": "screen-recording.webm",
+          "type": "(from extension)",
+          "expected_kind": "audio_file",
+          "actual_kind": "audio_file",
+          "mime": "audio/webm"
+        },
+        {
+          "name": "room.wav",
+          "type": "(from extension)",
+          "expected_kind": "audio_file",
+          "actual_kind": "audio_file",
+          "mime": "audio/wav"
+        },
+        {
+          "name": "archive.zip",
+          "type": "application/zip",
+          "expected_kind": null,
+          "actual_kind": null,
+          "mime": null
+        }
+      ]
+    },
+    {
+      "name": "asset-contract",
+      "ok": true,
+      "elapsed_ms": 1,
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "width": 192,
+          "height": 192,
+          "actual": {
+            "width": 192,
+            "height": 192
+          }
+        },
+        {
+          "src": "/icon-512.png",
+          "width": 512,
+          "height": 512,
+          "actual": {
+            "width": 512,
+            "height": 512
+          }
+        },
+        {
+          "src": "/icon-maskable-512.png",
+          "width": 512,
+          "height": 512,
+          "actual": {
+            "width": 512,
+            "height": 512
+          }
+        }
+      ],
+      "screenshots": [
+        {
+          "src": "/visual-evidence/pipeline-smoke/2026-05-27/pw-07-source-picker-mobile.png",
+          "sizes": "390x1606",
+          "form_factor": "narrow",
+          "exists": true
+        },
+        {
+          "src": "/visual-evidence/pipeline-smoke/2026-05-27/01-session-source-picker-desktop.png",
+          "sizes": "1373x934",
+          "form_factor": "wide",
+          "exists": true
+        }
+      ]
+    },
+    {
+      "name": "mobile-native-shell-copy",
+      "ok": true,
+      "elapsed_ms": 0,
+      "required_text_count": 6
+    }
+  ],
+  "failures": []
+}

@@ -21,7 +21,9 @@ describe("GET /api/corpus-sample", () => {
     expect(json.source.video_id).toBe("0UYx55YNRv0");
     expect(json.segments.length).toBeGreaterThan(0);
     expect(json.claims).toHaveLength(1);
-    expect(json.markers).toHaveLength(6);
+    expect(json.claims[0].status).toBe("confirmed");
+    expect(json.claims[0].sources[0].domain).toBe("livenowfox.com");
+    expect(json.markers).toHaveLength(5);
     expect(json.synthesis.text).toContain("Validation replay");
     expect(json.synthesis.headlines).toHaveLength(3);
     expect(json.synthesis.per_speaker_verdicts.length).toBeGreaterThan(0);
@@ -133,6 +135,36 @@ describe("GET /api/corpus-sample", () => {
       severity: "clear",
     });
     expect(json.synthesis.headlines).toContain("Claims and markers seek to exact audio moments");
+  });
+
+  it("returns an extension snapshot sample for full-workspace handoff proof", async () => {
+    const res = await GET(makeRequest("extension_snapshot") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.id).toBe("extension_snapshot");
+    expect(json.category).toBe("extension_workspace");
+    expect(json.url).toBe("/session?demo=validation&sample=extension_snapshot&view=overview");
+    expect(json.source).toMatchObject({
+      kind: "browser_tab",
+      title: "Civic Ledger hearing clip",
+      url: "https://news.example/live/civic-ledger-hearing",
+    });
+    expect(json.segments).toHaveLength(3);
+    expect(json.segments.every((segment: TranscriptSegment) => segment.source_audio_kind === "browser_tab")).toBe(true);
+    expect(json.claims).toHaveLength(2);
+    expect(json.claims[0]).toMatchObject({
+      id: "extension-snapshot-claim-contract",
+      primary_label: "PARTIAL",
+      status: "confirmed",
+    });
+    expect(json.markers).toHaveLength(1);
+    expect(json.markers[0]).toMatchObject({
+      id: "extension-snapshot-marker-bailout",
+      severity: "clear",
+    });
+    expect(json.synthesis.headlines).toContain("Browser-tab source identity preserved");
+    expect(json.devil_advocate.stance).toContain("contract ceiling");
   });
 
   it("rejects unknown sample ids", async () => {

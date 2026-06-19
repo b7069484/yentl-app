@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_ident_10_identity_boundary",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_ident_10",
+  "start_s": 0,
+  "end_s": 120,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "It can be tough to identify as a Zionist these days. We don't want no Zionists here. Raise your hand for Zionists. This is your chance to get out. But are you ready for a hot take? I'm willing to bet that some of the folks on that subway were Zionists, even if they didn't know it. Because Zionism is simply the belief that Jews have a right to govern themselves in their ancestral homeland. Anti Zionism is the belief that, well, we don't. Bad news for the anti zionist crowd though, the zionist dream has already come true. We do have self determination in our ancestral homeland. It's called the modern state of Israel. So if we have our own country, do we still need zionism? You might have heard that Judaism isn't Zionism. After all, you don't need to be Jewish to be a Zionist. There are more Christian Zionists in The United States than there are Jews in the entire world. But let me blow your mind for a second. Judaism is inherently zionist. I can already see you rolling your eyes. Zionism is a modern concept. The word zionism wasn't invented until 1890. That's technically true. Zionism as a modern political movement began in the late eighteen hundreds, but the Jewish connection to the land of Israel, that's 4,000 years old. The foundational text of our religion is the Hebrew Bible. From the very first book, Israel is presented as the promised land and the rest is history. For centuries, we lived and ruled and squabbled with each other in this land. Sometimes our kings paid tribute to foreign empires, other times we were fully independent. But no matter who was in charge, one thing was constant, our land was our home. And then the Babylonians came along. They destroyed",
+    "turns": [
+      {
+        "id": "c2-ident-10-intro-with-clip-1",
+        "start_s": 0,
+        "end_s": 7.92,
+        "speaker_id": "narrator_with_clip",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-ident-10-clip-voice-1",
+        "start_s": 7.92,
+        "end_s": 10,
+        "speaker_id": "clip_voice",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-ident-10-narrator-1",
+        "start_s": 10,
+        "end_s": 43.88,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-ident-10-narrator-2",
+        "start_s": 48.92,
+        "end_s": 120.43,
+        "speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-ident-10-claim-1",
+        "start_s": 3.76,
+        "end_s": 10,
+        "owner_speaker_id": "clip_voice",
+        "expected_provider_speaker_id": 0,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-2",
+        "start_s": 12,
+        "end_s": 24.05,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-3",
+        "start_s": 24.13,
+        "end_s": 27.89,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-4",
+        "start_s": 28.54,
+        "end_s": 40.6,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-5",
+        "start_s": 48.92,
+        "end_s": 60.42,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-6",
+        "start_s": 60.74,
+        "end_s": 77.56,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-ident-10-claim-7",
+        "start_s": 77.63,
+        "end_s": 120.43,
+        "owner_speaker_id": "narrator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": [
+      {
+        "id": "c2-ident-10-unsafe-1",
+        "start_s": 0,
+        "end_s": 10,
+        "reason": "opening contains clipped protest/audience language and should be treated as quoted context rather than narrator endorsement"
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T05:55:06.471Z",
-  "app_origin": "http://127.0.0.1:3000",
+  "generated_at": "2026-06-12T00:49:46.600Z",
+  "app_origin": "http://localhost:3000",
   "cloud_configured": false,
   "cloud_mode": "cloud_unavailable",
   "authenticated_proof_requested": false,
@@ -10,7 +10,7 @@
     {
       "name": "app-reachable",
       "ok": true,
-      "elapsed_ms": 96,
+      "elapsed_ms": 935,
       "status": 200
     },
     {
@@ -30,9 +30,16 @@
     {
       "name": "unconfigured-save-response",
       "ok": true,
-      "elapsed_ms": 13,
+      "elapsed_ms": 30,
       "status": 503,
       "code": "cloud_unavailable"
+    },
+    {
+      "name": "invalid-save-json-guard",
+      "ok": true,
+      "elapsed_ms": 14,
+      "status": 400,
+      "code": "invalid_request"
     }
   ],
   "failures": [],

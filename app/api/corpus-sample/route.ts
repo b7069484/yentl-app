@@ -10,19 +10,23 @@ import type {
   PrimaryLabel,
   RhetoricMarker,
   SessionSource,
+  Source,
   Speaker,
+  SynthesisMetaRead,
   SpeakerVerdict,
   TranscriptSegment,
 } from "@/lib/types";
 
 const SOURCE_QUOTE_ANCHOR_SAMPLE_ID = "source_quote_anchors";
 const MEDIA_PLAYBACK_SYNC_SAMPLE_ID = "media_playback_sync";
+const EXTENSION_SNAPSHOT_SAMPLE_ID = "extension_snapshot";
 const ALLOWED_SAMPLE_IDS = new Set([
   "solo_005",
   "cable_008",
   "israel_010",
   SOURCE_QUOTE_ANCHOR_SAMPLE_ID,
   MEDIA_PLAYBACK_SYNC_SAMPLE_ID,
+  EXTENSION_SNAPSHOT_SAMPLE_ID,
 ]);
 const VALID_LABELS = new Set<PrimaryLabel>([
   "TRUE",
@@ -69,12 +73,16 @@ type ReplayClaim = {
   topic?: string;
   topic_secondary?: string | null;
   status?: string;
-  provisional?: {
-    primary_label?: PrimaryLabel;
-    score?: number;
-    annotations?: string[];
-    explanation?: string;
-  };
+  provisional?: ReplayClaimVerification;
+  confirmed?: ReplayClaimVerification;
+};
+
+type ReplayClaimVerification = {
+  primary_label?: PrimaryLabel;
+  score?: number;
+  annotations?: string[];
+  explanation?: string;
+  sources?: Source[];
 };
 
 type ReplayMarker = {
@@ -105,6 +113,7 @@ type CorpusSampleSynthesis = {
   text: string;
   headlines: string[];
   per_speaker_verdicts: SpeakerVerdict[];
+  meta_read?: SynthesisMetaRead;
 };
 
 type CorpusSampleDevilAdvocate = Omit<PersistedDevilAdvocate, "at">;
@@ -131,6 +140,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
     if (id === MEDIA_PLAYBACK_SYNC_SAMPLE_ID) {
       return NextResponse.json(mediaPlaybackSyncSample());
+    }
+    if (id === EXTENSION_SNAPSHOT_SAMPLE_ID) {
+      return NextResponse.json(extensionSnapshotSample());
     }
 
     const [row, transcript, replay] = await Promise.all([
@@ -554,6 +566,162 @@ function mediaPlaybackSyncSample() {
   };
 }
 
+function extensionSnapshotSample() {
+  const title = "Extension workspace snapshot proof";
+  const source: SessionSource = {
+    kind: "browser_tab",
+    title: "Civic Ledger hearing clip",
+    url: "https://news.example/live/civic-ledger-hearing",
+  };
+  const segments: TranscriptSegment[] = [
+    {
+      id: "extension-snapshot-seg-1",
+      text: "The emergency contract doubled overnight without a public vote.",
+      start: 0,
+      end: 5,
+      is_final: true,
+      speaker_id: 0,
+      source_audio_kind: "browser_tab",
+    },
+    {
+      id: "extension-snapshot-seg-2",
+      text: "The finance director says the increase was a temporary ceiling, not an actual payment.",
+      start: 5,
+      end: 12,
+      is_final: true,
+      speaker_id: 1,
+      source_audio_kind: "browser_tab",
+    },
+    {
+      id: "extension-snapshot-seg-3",
+      text: "Calling the whole process a secret bailout skips the published procurement memo.",
+      start: 12,
+      end: 18,
+      is_final: true,
+      speaker_id: 1,
+      source_audio_kind: "browser_tab",
+    },
+  ];
+  const claims: ClaimCard[] = [
+    {
+      id: "extension-snapshot-claim-contract",
+      claim_text: "The emergency contract doubled overnight without a public vote.",
+      utterance_start: 0,
+      utterance_end: 5,
+      speaker_id: 0,
+      topic: "Local government",
+      topic_secondary: "Procurement",
+      primary_label: "PARTIAL",
+      score: 58,
+      annotations: ["Extension snapshot", "Needs contract ceiling context"],
+      explanation:
+        "The tab transcript raises a checkable contract claim, but the later source context distinguishes an authorized ceiling from an actual payment.",
+      status: "confirmed",
+      sources: [
+        {
+          url: "https://news.example/live/civic-ledger-hearing#procurement-memo",
+          domain: "news.example",
+          title: "Published procurement memo",
+          reputation_tier: "mid",
+          stance: "mixed",
+          excerpt: "The memo describes a temporary ceiling while the emergency repairs are scoped.",
+        },
+      ],
+    },
+    {
+      id: "extension-snapshot-claim-secret-bailout",
+      claim_text: "The process was a secret bailout.",
+      utterance_start: 12,
+      utterance_end: 18,
+      speaker_id: 1,
+      topic: "Local government",
+      topic_secondary: "Transparency",
+      primary_label: "MISLEADING",
+      score: 36,
+      annotations: ["Loaded framing", "Source visible in tab snapshot"],
+      explanation:
+        "The source context says the procurement memo was published, so the phrase secret bailout overstates what the snapshot supports.",
+      status: "confirmed",
+      sources: [
+        {
+          url: "https://news.example/live/civic-ledger-hearing#published-memo",
+          domain: "news.example",
+          title: "Hearing page source note",
+          reputation_tier: "mid",
+          stance: "contradicts",
+          excerpt: "The published procurement memo was linked from the hearing page before the discussion.",
+        },
+      ],
+    },
+  ];
+  const markers: RhetoricMarker[] = [
+    {
+      id: "extension-snapshot-marker-bailout",
+      type: "rhetoric",
+      name: "loaded_language",
+      display: "Loaded language",
+      excerpt: "secret bailout",
+      speaker_id: 1,
+      start_time: 12,
+      end_time: 18,
+      severity: "clear",
+      explanation:
+        "The phrase carries a judgment that outruns the source context visible in the captured tab.",
+    },
+  ];
+  const speakers: Speaker[] = [
+    { id: 0, label: "Host" },
+    { id: 1, label: "Analyst" },
+  ];
+
+  return {
+    id: EXTENSION_SNAPSHOT_SAMPLE_ID,
+    title,
+    category: "extension_workspace",
+    url: "/session?demo=validation&sample=extension_snapshot&view=overview",
+    source,
+    speakers,
+    segments,
+    claims,
+    markers,
+    synthesis: {
+      text:
+        "This validation workspace proves the Chrome extension can hand off a browser-tab analysis as a durable full-workspace snapshot without implying live sync.",
+      headlines: [
+        "Browser-tab source identity preserved",
+        "Snapshot carries claims and markers",
+        "Live sync remains explicitly separate",
+      ],
+      per_speaker_verdicts: speakers.map((speaker) =>
+        speakerVerdictFromReplay(speaker, claims, markers),
+      ),
+    },
+    devil_advocate: {
+      stance:
+        "A skeptic would separate the factual contract ceiling from the stronger claim that the process was secret or a bailout.",
+      strongest_counterarguments: [
+        "A published memo can still be hard for ordinary viewers to notice during a live hearing.",
+        "A temporary ceiling may still signal a meaningful spending risk even before payment.",
+        "The snapshot preserves the source page, but a final judgment still needs the full contract record.",
+      ],
+      weakest_assumption:
+        "The weakest assumption is that the visible hearing page captures every relevant procurement disclosure.",
+      questions: [
+        "Was the procurement memo linked before or after the claim was made?",
+        "What amount was authorized, obligated, and ultimately paid?",
+      ],
+      confidence: "medium",
+      model: "validation-fixture",
+    },
+    replay: {
+      verify: "extension_workspace",
+      utterancesAvailable: segments.length,
+      utterancesReplayed: segments.length,
+      errors: [],
+    },
+  };
+}
+
 async function readVideoRow(id: string): Promise<VideoRow | null> {
   const csv = await fs.readFile(path.join(process.cwd(), "test-corpus/videos.csv"), "utf8");
   const rows = parse(csv, { columns: true, skip_empty_lines: true }) as VideoRow[];
@@ -604,7 +772,17 @@ function claimsFromReplay(replay: ReplayRecord): ClaimCard[] {
   return (replay.claims ?? []).flatMap((claim, index) => {
     const text = claim.claim_text?.trim();
     if (!text) return [];
-    const label = claim.provisional?.primary_label;
+    const status =
+      replay.verify === "none"
+        ? "checking"
+        : claim.status === "confirmed" && claim.confirmed
+          ? "confirmed"
+          : "provisional";
+    const verification =
+      status === "confirmed"
+        ? claim.confirmed
+        : claim.provisional ?? claim.confirmed;
+    const label = verification?.primary_label;
     const card: ClaimCard = {
       id: claim.id ?? `${replay.id}-claim-${index + 1}`,
       claim_text: text,
@@ -616,13 +794,13 @@ function claimsFromReplay(replay: ReplayRecord): ClaimCard[] {
       topic: claim.topic ?? "General",
       topic_secondary: claim.topic_secondary ?? null,
       primary_label: label && VALID_LABELS.has(label) ? label : "UNVERIFIABLE",
-      score: numberOrDefault(claim.provisional?.score, 50),
-      annotations: claim.provisional?.annotations ?? ["Corpus replay sample"],
+      score: numberOrDefault(verification?.score, 50),
+      annotations: verification?.annotations ?? ["Corpus replay sample"],
       explanation:
-        claim.provisional?.explanation ??
+        verification?.explanation ??
         "Extracted during corpus replay. Verification was not requested for this sample.",
-      status: replay.verify === "none" ? "checking" : "provisional",
-      sources: [],
+      status,
+      sources: verification?.sources ?? [],
     };
     return [applySampleClaimOverride(replay, card)];
   });

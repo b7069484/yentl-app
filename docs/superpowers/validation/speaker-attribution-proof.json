@@ -1,0 +1,370 @@
+{
+  "ok": true,
+  "launch_ready": true,
+  "generated_at": "2026-06-12T00:14:13.859Z",
+  "proof": "speaker-attribution-hard-windows",
+  "public_claims_review_status": "review_required_before_public_claims",
+  "report_path": "test-corpus/speaker-attribution/report/speaker-attribution-report.json",
+  "summary": {
+    "windows": 16,
+    "scored": 16,
+    "partial": 0,
+    "missing_labels": 0,
+    "missing_transcripts": 0,
+    "review_required": 5,
+    "mean_speaker_purity": 0.9967236675094789,
+    "mean_claim_owner_accuracy": 1,
+    "unsafe_attribution_recall": 1,
+    "quote_vs_endorsement_errors": 0,
+    "non_asserted_claim_spans": 27,
+    "unsafe_non_asserted_claim_spans": 1
+  },
+  "checks": [
+    {
+      "name": "no-missing-transcripts",
+      "ok": true,
+      "missing_transcripts": 0
+    },
+    {
+      "name": "scored-window-floor",
+      "ok": true,
+      "scored": 16,
+      "min": 9
+    },
+    {
+      "name": "speaker-purity-floor",
+      "ok": true,
+      "actual": 0.9967236675094789,
+      "min": 0.95
+    },
+    {
+      "name": "claim-owner-accuracy-floor",
+      "ok": true,
+      "actual": 1,
+      "min": 0.95
+    },
+    {
+      "name": "per-window-speaker-purity-floor",
+      "ok": true,
+      "min": 0.95,
+      "failures": []
+    },
+    {
+      "name": "per-window-claim-owner-accuracy-floor",
+      "ok": true,
+      "min": 0.95,
+      "failures": []
+    },
+    {
+      "name": "unsafe-attribution-recall-floor",
+      "ok": true,
+      "actual": 1,
+      "min": 1
+    },
+    {
+      "name": "quote-vs-endorsement-errors",
+      "ok": true,
+      "actual": 0,
+      "max": 0
+    },
+    {
+      "name": "review-required-windows-named",
+      "ok": true,
+      "review_required": 5,
+      "named_windows": [
+        "israel_010_sensitive_boundary",
+        "holocaust_010_historical_framing",
+        "c2_quote_09_brown_quote_boundary",
+        "c2_ident_10_identity_boundary",
+        "c2_platform_07_clip_stack"
+      ],
+      "public_claims_review_status": "review_required_before_public_claims"
+    }
+  ],
+  "source_blockers": [],
+  "launch_blockers": [],
+  "human_review_required_count": 5,
+  "human_review_required_windows": [
+    {
+      "window_id": "israel_010_sensitive_boundary",
+      "source_id": "israel_010",
+      "failure_family": "sensitive_quote_stance",
+      "expected_risk": "sensitive_identity",
+      "label_status": "scored",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "quote_vs_endorsement_errors": 0
+    },
+    {
+      "window_id": "holocaust_010_historical_framing",
+      "source_id": "holocaust_010",
+      "failure_family": "historical_memory_boundary",
+      "expected_risk": "review_required",
+      "label_status": "scored",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "quote_vs_endorsement_errors": 0
+    },
+    {
+      "window_id": "c2_quote_09_brown_quote_boundary",
+      "source_id": "c2_quote_09",
+      "failure_family": "harmful_quote_boundary",
+      "expected_risk": "high_quote_risk",
+      "label_status": "scored",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "quote_vs_endorsement_errors": 0
+    },
+    {
+      "window_id": "c2_ident_10_identity_boundary",
+      "source_id": "c2_ident_10",
+      "failure_family": "identity_definition_boundary",
+      "expected_risk": "high_identity_risk",
+      "label_status": "scored",
+      "speaker_purity": 0.9964315943239511,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "quote_vs_endorsement_errors": 0
+    },
+    {
+      "window_id": "c2_platform_07_clip_stack",
+      "source_id": "c2_platform_07",
+      "failure_family": "platform_native_speaker_merge",
+      "expected_risk": "platform_context",
+      "label_status": "scored",
+      "speaker_purity": 0.9818771780145295,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "quote_vs_endorsement_errors": 0
+    }
+  ],
+  "scored_windows": [
+    {
+      "window_id": "cable_008_panel_open",
+      "source_id": "cable_008",
+      "review_required": false,
+      "failure_family": "crosstalk_turn_attribution",
+      "expected_risk": "heavy_overlap",
+      "speaker_purity": 0.9961127274503445,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "cable_005_nato_panel",
+      "source_id": "cable_005",
+      "review_required": false,
+      "failure_family": "crosstalk_turn_attribution",
+      "expected_risk": "panel_quote_context",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 4,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0.25
+    },
+    {
+      "window_id": "israel_010_sensitive_boundary",
+      "source_id": "israel_010",
+      "review_required": true,
+      "failure_family": "sensitive_quote_stance",
+      "expected_risk": "sensitive_identity",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 7,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "holocaust_010_historical_framing",
+      "source_id": "holocaust_010",
+      "review_required": true,
+      "failure_family": "historical_memory_boundary",
+      "expected_risk": "review_required",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 2,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "solo_001_clean_control",
+      "source_id": "solo_001",
+      "review_required": false,
+      "failure_family": "clean_solo_control",
+      "expected_risk": "single_speaker",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "solo_003_smoke_single_speaker",
+      "source_id": "solo_003",
+      "review_required": false,
+      "failure_family": "clean_solo_control",
+      "expected_risk": "single_speaker",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "solo_008_clean_control",
+      "source_id": "solo_008",
+      "review_required": false,
+      "failure_family": "clean_solo_control",
+      "expected_risk": "single_speaker",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "interview_002_clean_control",
+      "source_id": "interview_002",
+      "review_required": false,
+      "failure_family": "clean_interview_control",
+      "expected_risk": "two_speaker",
+      "speaker_purity": 0.9874608135729799,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "interview_003_clean_control",
+      "source_id": "interview_003",
+      "review_required": false,
+      "failure_family": "clean_interview_control",
+      "expected_risk": "two_speaker",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_mech_01_crosstalk",
+      "source_id": "c2_mech_01",
+      "review_required": false,
+      "failure_family": "crosstalk_turn_attribution",
+      "expected_risk": "heavy_overlap",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "non_asserted_claim_spans": 0,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_mech_03_clip_host_attribution",
+      "source_id": "c2_mech_03",
+      "review_required": false,
+      "failure_family": "clip_host_attribution",
+      "expected_risk": "interruption_repair",
+      "speaker_purity": 0.9914078655958745,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "non_asserted_claim_spans": 1,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0.23880597014925373
+    },
+    {
+      "window_id": "c2_quote_02_deadpan_irony",
+      "source_id": "c2_quote_02",
+      "review_required": false,
+      "failure_family": "quote_irony_stance",
+      "expected_risk": "quote_risk",
+      "speaker_purity": 0.996226485666633,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 2,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_quote_09_brown_quote_boundary",
+      "source_id": "c2_quote_09",
+      "review_required": true,
+      "failure_family": "harmful_quote_boundary",
+      "expected_risk": "high_quote_risk",
+      "speaker_purity": 1,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": null,
+      "non_asserted_claim_spans": 1,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_ident_10_identity_boundary",
+      "source_id": "c2_ident_10",
+      "review_required": true,
+      "failure_family": "identity_definition_boundary",
+      "expected_risk": "high_identity_risk",
+      "speaker_purity": 0.9964315943239511,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "non_asserted_claim_spans": 1,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_rhet_03_loaded_question",
+      "source_id": "c2_rhet_03",
+      "review_required": false,
+      "failure_family": "loaded_question_trap",
+      "expected_risk": "transcript_usability",
+      "speaker_purity": 0.9980620155273496,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "non_asserted_claim_spans": 3,
+      "unsafe_non_asserted_claim_spans": 1,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    },
+    {
+      "window_id": "c2_platform_07_clip_stack",
+      "source_id": "c2_platform_07",
+      "review_required": true,
+      "failure_family": "platform_native_speaker_merge",
+      "expected_risk": "platform_context",
+      "speaker_purity": 0.9818771780145295,
+      "claim_owner_accuracy": 1,
+      "unsafe_attribution_recall": 1,
+      "non_asserted_claim_spans": 6,
+      "unsafe_non_asserted_claim_spans": 0,
+      "quote_vs_endorsement_errors": 0,
+      "wer": 0
+    }
+  ]
+}

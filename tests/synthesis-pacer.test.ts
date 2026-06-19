@@ -377,12 +377,9 @@ describe("maybeRunSynthesis — abort does not leak error state", () => {
 
   it("store synthesis does not transition to error state after abort", async () => {
     let capturedSignal: AbortSignal | undefined;
-    let rejectFetch: ((e: Error) => void) | undefined;
-
     const fetchMock = vi.fn().mockImplementation((_url: string, opts: RequestInit) => {
       capturedSignal = opts.signal as AbortSignal;
       return new Promise<Response>((_resolve, reject) => {
-        rejectFetch = reject;
         capturedSignal!.addEventListener("abort", () =>
           reject(new DOMException("Aborted", "AbortError")),
         );

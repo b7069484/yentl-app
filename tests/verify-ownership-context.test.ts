@@ -220,4 +220,57 @@ describe("orchestrator verification payload", () => {
     });
     expect(confirmedBody.claim_context).toEqual(provisionalBody.claim_context);
   });
+
+  it("does not include future bulk-import transcript lines in claim extraction context", async () => {
+    const { onFinalUtterance } = await import("@/lib/client/orchestrator");
+    const { useSession } = await import("@/lib/client/session-store");
+
+    useSession.getState().reset();
+    useSession.getState().setSource({
+      kind: "youtube",
+      video_id: "fixture-video",
+      url: "https://www.youtube.com/watch?v=fixture-video",
+      title: "Fixture video",
+      channel: "Fixture channel",
+    });
+    useSession.getState().startSession("YouTube bulk context");
+
+    const prior: TranscriptSegment = {
+      text: "Earlier context should stay available.",
+      start: 8,
+      end: 9,
+      is_final: true,
+      speaker_id: 0,
+      source_audio_kind: "youtube_caption",
+    };
+    const current: TranscriptSegment = {
+      text: "The speaker says the budget doubled.",
+      start: 10,
+      end: 12,
+      is_final: true,
+      speaker_id: 0,
+      source_audio_kind: "youtube_caption",
+    };
+    const future: TranscriptSegment = {
+      text: "Future caption should not be sent as prior context.",
+      start: 600,
+      end: 603,
+      is_final: true,
+      speaker_id: 0,
+      source_audio_kind: "youtube_caption",
+    };
+
+    useSession.getState().appendFinal(prior);
+    useSession.getState().appendFinal(current);
+    useSession.getState().appendFinal(future);
+
+    await onFinalUtterance(current);
+
+    const extractCall = mockFetch.mock.calls.find(([url]) => url === "/api/extract-claims");
+    expect(extractCall).toBeDefined();
+    const extractBody = JSON.parse(extractCall![1].body as string);
+    expect(extractBody.context).toContain("Earlier context should stay available.");
+    expect(extractBody.context).toContain("The speaker says the budget doubled.");
+    expect(extractBody.context).not.toContain("Future caption should not be sent");
+  });
 });

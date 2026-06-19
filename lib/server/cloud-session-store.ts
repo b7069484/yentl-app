@@ -334,7 +334,10 @@ export async function saveCloudSession(input: CloudSessionInput): Promise<SavedS
         data: envelope,
         createdAt: savedAt,
       },
+      setWhere: eq(schema.sessions.clerkUserId, clerkUserId),
     });
+
+  await ensureSessionOwnership(id, clerkUserId);
 
   return buildMeta(id, name, input.session, savedAt.toISOString());
 }

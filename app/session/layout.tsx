@@ -23,6 +23,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
 
   const mic = useRef<MicHandle | null>(null);
   const dg = useRef<Awaited<ReturnType<typeof openDeepgramStream>> | null>(null);
+  const teardownRef = useRef<() => void>(() => {});
   const [error, setError] = useState<string | null>(null);
 
   const teardown = () => {
@@ -32,6 +33,10 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
     mic.current = null;
     dg.current = null;
   };
+
+  useEffect(() => {
+    teardownRef.current = teardown;
+  });
 
   const start = async () => {
     setError(null);
@@ -128,7 +133,7 @@ export default function SessionLayout({ children }: { children: React.ReactNode 
   }, [isRecording, startedAt, sourceKind]);
 
   // Cleanup on unmount
-  useEffect(() => () => teardown(), []);
+  useEffect(() => () => teardownRef.current(), []);
 
   // Restart on speakersMode flip while recording (same race-safety contract as before)
   const lastSpeakersMode = useRef(speakersMode);

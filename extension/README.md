@@ -36,6 +36,20 @@ Manifest V3 Chrome extension for live browser-tab audio capture.
 The default Yentl origin is `https://yentl.it`. Change it in the extension
 options page only for preview or internal validation deployments.
 
+## Chrome Web Store Readiness
+
+The package includes `16`, `32`, `48`, and `128` pixel PNG icons under
+`extension/icons/`, with the `128` pixel icon declared for Chrome Web Store
+review. Listing collateral is tracked in
+`docs/superpowers/chrome-web-store-listing.json`, including the privacy URL,
+support URL, screenshot paths, small promotional tile, and permission
+rationales.
+
+Run `npm run extension:check` before packaging. The verifier fails if the
+production manifest points at localhost, drops a required icon, omits listing
+metadata, loses permission rationale coverage, or references missing/mis-sized
+store assets.
+
 ## Local Validation
 
 The launch manifest is production-first and does not grant localhost access by

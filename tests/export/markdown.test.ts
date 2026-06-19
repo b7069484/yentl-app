@@ -74,6 +74,19 @@ describe("toMarkdown", () => {
         source_segment_ids: ["seg-a", "seg-b"],
       },
     ],
+    synthesis: {
+      text: "Yentl sees a partial unemployment claim with unresolved ownership.",
+      headlines: ["Ownership remains unresolved", "One partial claim", "Rhetoric marker present"],
+      meta_read: {
+        posture: "mixed",
+        source_health: "thin",
+        scope: "full_session",
+        summary: "Across the full session, the read remains mixed.",
+        uncertainty: "The strongest uncertainty is unresolved ownership.",
+        key_question: "Which source anchors the unemployment timeframe?",
+      },
+      at: 1_716_000_000_000,
+    },
     devil_advocate: {
       stance: "A skeptic would ask whether the unemployment claim depends on the chosen timeframe.",
       strongest_counterarguments: [
@@ -98,11 +111,22 @@ describe("toMarkdown", () => {
     expect(md).toContain("## Transcript");
     expect(md).toContain("## Claims");
     expect(md).toContain("## Markers");
+    expect(md).toContain("## Summary");
     expect(md).toContain("Unemployment is at a 30-year low.");
     expect(md).toContain("PARTIAL · 65%");
     expect(md).toContain("Absolutism");
     expect(md).toContain("## Devil's Advocate");
     expect(md).toContain("chosen timeframe");
+  });
+
+  it("exports structured synthesis meta-read fields", () => {
+    const md = toMarkdown(session);
+    expect(md).toContain("**Meta-read:**");
+    expect(md).toContain("Posture: mixed");
+    expect(md).toContain("Source health: thin");
+    expect(md).toContain("Scope: full session");
+    expect(md).toContain("The strongest uncertainty is unresolved ownership.");
+    expect(md).toContain("Which source anchors the unemployment timeframe?");
   });
 
   it("includes formatted duration when ended", () => {

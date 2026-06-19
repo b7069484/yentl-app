@@ -108,10 +108,69 @@ describe("runFinalSynthesis — non-mic sources get full-transcript synthesis", 
 
     // Full synthesis must include ALL 50 segments, not a trailing slice of 20
     expect(body.utterances).toHaveLength(50);
+    expect(body.analysis_scope).toEqual({
+      mode: "full_session",
+      total_utterances: 50,
+      included_utterances: 50,
+    });
 
     // Verify first and last segments are present
     expect(body.utterances[0].text).toBe("Word 0.");
     expect(body.utterances[49].text).toBe("Word 49.");
+  });
+});
+
+describe("runSynthesisNow — explicit bulk-import scope", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    mockFetch.mockReturnValue(successResponse());
+  });
+
+  it("uses the trailing live window by default", async () => {
+    const mediaSource: SessionSource = {
+      kind: "media_url",
+      url: "https://example.com/panel.mp4",
+    };
+    const segments = Array.from({ length: 50 }, (_, i) => makeSeg(`Window word ${i}.`, i));
+
+    await seedSessionWithSource(mediaSource, segments);
+
+    const { runSynthesisNow } = await import("@/lib/client/orchestrator");
+    await runSynthesisNow();
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string);
+    expect(body.utterances).toHaveLength(20);
+    expect(body.utterances[0].text).toBe("Window word 30.");
+    expect(body.utterances[19].text).toBe("Window word 49.");
+    expect(body.analysis_scope).toEqual({
+      mode: "live_window",
+      total_utterances: 50,
+      included_utterances: 20,
+    });
+  });
+
+  it("uses every transcript segment when bulk import requests full-session scope", async () => {
+    const mediaSource: SessionSource = {
+      kind: "media_url",
+      url: "https://example.com/panel.mp4",
+    };
+    const segments = Array.from({ length: 50 }, (_, i) => makeSeg(`Full word ${i}.`, i));
+
+    await seedSessionWithSource(mediaSource, segments);
+
+    const { runSynthesisNow } = await import("@/lib/client/orchestrator");
+    await runSynthesisNow({ scope: "full_session" });
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body as string);
+    expect(body.utterances).toHaveLength(50);
+    expect(body.utterances[0].text).toBe("Full word 0.");
+    expect(body.utterances[49].text).toBe("Full word 49.");
+    expect(body.analysis_scope).toEqual({
+      mode: "full_session",
+      total_utterances: 50,
+      included_utterances: 50,
+    });
   });
 });
 

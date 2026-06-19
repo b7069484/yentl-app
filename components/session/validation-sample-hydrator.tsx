@@ -8,6 +8,7 @@ import type {
   RhetoricMarker,
   SessionSource,
   Speaker,
+  SynthesisMetaRead,
   SpeakerVerdict,
   TranscriptSegment,
 } from "@/lib/types";
@@ -134,6 +135,7 @@ type CorpusSampleResponse = {
     text: string;
     headlines: string[];
     per_speaker_verdicts?: SpeakerVerdict[];
+    meta_read?: SynthesisMetaRead;
   };
   devil_advocate?: Omit<PersistedDevilAdvocate, "at">;
 };

@@ -25,6 +25,19 @@ export type CorpusFunctionalSample = {
   status: "pass" | "review";
 };
 
+export type LaunchCanaryProof = {
+  id: string;
+  area: string;
+  title: string;
+  requirement: string;
+  proofCommands: string[];
+  templatePath?: string;
+  manifestPath?: string;
+  proofArtifacts: string[];
+  evidenceNeeded: string[];
+  status: "needs-real-evidence";
+};
+
 export const corpusAcceptanceSummary = {
   videos: 100,
   transcripts: 100,
@@ -62,7 +75,7 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     reportHref: "/corpus-report/index.html#cable_008",
     youtubeUrl: "https://www.youtube.com/watch?v=0UYx55YNRv0",
     claims: 1,
-    markers: 6,
+    markers: 5,
     errors: 0,
     verification: "none",
     status: "pass",
@@ -112,6 +125,21 @@ export const corpusFunctionalSamples: CorpusFunctionalSample[] = [
     verification: "provisional",
     status: "pass",
   },
+  {
+    id: "extension_snapshot",
+    title: "Extension workspace snapshot proof",
+    category: "extension_workspace",
+    purpose:
+      "Browser-tab sample with transcript, claims, marker, synthesis, and counter-read: proves the extension panel can hand off a durable full-workspace snapshot without implying live sync.",
+    sessionHref: "/session?demo=validation&sample=extension_snapshot&view=overview",
+    reportHref: "/project/validation",
+    youtubeUrl: "https://news.example/live/civic-ledger-hearing",
+    claims: 2,
+    markers: 1,
+    errors: 0,
+    verification: "provisional",
+    status: "pass",
+  },
 ];
 
 export const validationFixtures: ValidationFixture[] = [
@@ -152,6 +180,18 @@ export const validationFixtures: ValidationFixture[] = [
     status: "manual-extension",
   },
   {
+    id: "browser-tab-snapshot-workspace",
+    sourceType: "Extension workspace",
+    title: "Extension workspace snapshot proof",
+    purpose:
+      "Exercises the browser-tab full-workspace handoff after the side panel saves a snapshot.",
+    primaryTarget: "Open /session?demo=validation&sample=extension_snapshot&view=overview",
+    expectedResult:
+      "Yentl opens a full workspace with preserved browser-tab source identity, snapshot status, transcript, claims, markers, synthesis, and counter-read.",
+    url: "http://localhost:3000/session?demo=validation&sample=extension_snapshot&view=overview",
+    status: "ready",
+  },
+  {
     id: "browser-tab-real-video-page",
     sourceType: "Real webpage + video",
     title: "Wikimedia Commons spoken WebM",
@@ -190,6 +230,19 @@ export const validationFixtures: ValidationFixture[] = [
     status: "ready",
   },
   {
+    id: "web-url-messy-article",
+    sourceType: "Web URL",
+    title: "Messy local article",
+    purpose:
+      "Exercises readable article URL import when the article body includes cookie, ad, sharing, related-story, newsletter, and comment chrome.",
+    primaryTarget: "Run npm run ingestion:proof:local and inspect the messy-article-url-ingest check",
+    expectedResult:
+      "Yentl imports the real article paragraphs while excluding embedded page chrome from the source text used for analysis.",
+    url: "http://localhost:3000/validation/yentl-messy-article.html",
+    localPath: "public/validation/yentl-messy-article.html",
+    status: "ready",
+  },
+  {
     id: "audio-file-wav",
     sourceType: "Audio file",
     title: "Synthetic spoken WAV",
@@ -200,6 +253,45 @@ export const validationFixtures: ValidationFixture[] = [
       "Yentl stages the WAV as a file, transcribes the known two-speaker panel, and opens Watch.",
     url: "http://localhost:3000/validation/yentl-synthetic-panel.wav",
     localPath: "public/validation/yentl-synthetic-panel.wav",
+    status: "ready",
+  },
+  {
+    id: "video-file-mp4",
+    sourceType: "Video file",
+    title: "Synthetic spoken MP4",
+    purpose:
+      "Exercises video-file upload staging, duration probing, deterministic batch transcription, speaker handoff, transcript ingestion, and Watch redirect.",
+    primaryTarget: "Open /session?source=audio-file and click Load validation MP4",
+    expectedResult:
+      "Yentl stages the MP4 as a file, transcribes the known two-speaker panel, and opens Watch.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.mp4",
+    localPath: "public/validation/yentl-synthetic-panel.mp4",
+    status: "ready",
+  },
+  {
+    id: "video-file-mov",
+    sourceType: "Video file",
+    title: "Synthetic spoken MOV",
+    purpose:
+      "Exercises QuickTime/MOV upload staging, duration probing, deterministic batch transcription, speaker handoff, transcript ingestion, and Watch redirect.",
+    primaryTarget: "Open /session?source=audio-file and click Load validation MOV",
+    expectedResult:
+      "Yentl stages the MOV as a file, transcribes the known two-speaker panel, and opens Watch.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.mov",
+    localPath: "public/validation/yentl-synthetic-panel.mov",
+    status: "ready",
+  },
+  {
+    id: "video-file-webm",
+    sourceType: "Video file",
+    title: "Synthetic spoken WebM",
+    purpose:
+      "Exercises WebM upload staging, duration probing, deterministic batch transcription, speaker handoff, transcript ingestion, and Watch redirect.",
+    primaryTarget: "Open /session?source=audio-file and click Load validation WebM",
+    expectedResult:
+      "Yentl stages the WebM as a file, transcribes the known two-speaker panel, and opens Watch.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.webm",
+    localPath: "public/validation/yentl-synthetic-panel.webm",
     status: "ready",
   },
   {
@@ -299,20 +391,172 @@ export const validationFixtures: ValidationFixture[] = [
     localPath: "public/validation/yentl-synthetic-panel.wav",
     status: "ready",
   },
+  {
+    id: "media-url-local-validation-mp4",
+    sourceType: "Media URL",
+    title: "Local validation MP4 transcription",
+    purpose:
+      "Exercises the direct media URL backend and rendered media URL pane against Yentl's deterministic local MP4 video transcript without requiring a live Deepgram call.",
+    primaryTarget: "Open /session?source=media-url and click Load validation video URL",
+    expectedResult:
+      "Yentl returns five timed utterances from the MP4 validation fixture and opens Watch.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.mp4",
+    localPath: "public/validation/yentl-synthetic-panel.mp4",
+    status: "ready",
+  },
+  {
+    id: "media-url-local-validation-mov",
+    sourceType: "Media URL",
+    title: "Local validation MOV transcription",
+    purpose:
+      "Exercises the direct media URL backend against Yentl's deterministic local MOV video transcript without requiring a live Deepgram call.",
+    primaryTarget: "Run npm run ingestion:proof:local and inspect direct-mov-url-ingest",
+    expectedResult:
+      "Yentl returns five timed utterances from the MOV validation fixture.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.mov",
+    localPath: "public/validation/yentl-synthetic-panel.mov",
+    status: "ready",
+  },
+  {
+    id: "media-url-local-validation-webm",
+    sourceType: "Media URL",
+    title: "Local validation WebM transcription",
+    purpose:
+      "Exercises the direct media URL backend against Yentl's deterministic local WebM video transcript without requiring a live Deepgram call.",
+    primaryTarget: "Run npm run ingestion:proof:local and inspect direct-webm-url-ingest",
+    expectedResult:
+      "Yentl returns five timed utterances from the WebM validation fixture.",
+    url: "http://localhost:3000/validation/yentl-synthetic-panel.webm",
+    localPath: "public/validation/yentl-synthetic-panel.webm",
+    status: "ready",
+  },
+  {
+    id: "claim-quick-check-validation",
+    sourceType: "Claim quick check",
+    title: "Standalone validation claim",
+    purpose:
+      "Exercises one-claim checking through the rendered quick-check pane, provisional verification, confirmed verification, and claim-detail handoff.",
+    primaryTarget: "Open /session?source=claim and click Load validation claim",
+    expectedResult:
+      "Yentl fills the known spending claim, returns the document-validation fixture, and opens the claim detail with source-trail cautions.",
+    status: "ready",
+  },
 ];
 
 export const validationRunbook = [
   "Open /project/validation and confirm every fixture is visible.",
   "Use /session?source=youtube, Load validation YouTube, and Analyze caption track to verify deterministic YouTube ingest, caption arming, Watch handoff, and transcript analysis dispatch.",
-  "Use /session?source=audio-file and Load validation WAV to verify audio upload, batch transcription, speaker handoff, and Watch redirect.",
+  "Use /session?source=audio-file and Load validation WAV/MP4/MOV/WebM to verify audio and video upload, batch transcription, speaker handoff, and Watch redirect.",
   "Use /session?source=text-doc and the text validation loaders to verify TXT, Markdown, VTT, and SRT transcript ingest.",
   "Use /session?source=web-url and Load validation article to verify readable article URL ingest, source-review handoff, and claim extraction.",
   "Use the browser-capture page to verify same-page extension capture and analysis.",
   "Use the Wikimedia Commons real video page to verify same-page extension capture on a third-party playable-media page.",
   "Use the Wikinews real article page to verify page-text extraction and analysis without requiring playable media.",
-  "Use the three corpus functional samples to verify the rendered Yentl Watch experience against replayed transcripts, claims, and markers.",
+  "Use the functional samples to verify the rendered Yentl Watch, Source Review, media playback, and extension snapshot experiences against prepared transcripts, claims, and markers.",
   "Use the Source Review quote-anchor sample to verify imported-text claim anchors and exact quote highlighting.",
   "Use the media playback sync sample to verify local audio player readiness, finding queue seeking, and current transcript highlighting.",
-  "Use /session?source=media-url and Load validation media URL to verify deterministic /api/media-ingest and Watch redirect.",
+  "Use the extension snapshot sample to verify browser-tab source continuity after panel-to-workspace handoff.",
+  "Use /session?source=media-url and Load validation media/video URL, plus npm run ingestion:proof:local, to verify deterministic /api/media-ingest for WAV, MP4, MOV, and WebM.",
+  "Use /session?source=claim and Load validation claim to verify one-claim provisional/confirmed verification and detail handoff.",
   "Use the Mozilla WAV URL to verify direct media URL ingest.",
+];
+
+export const launchCanaryProofs: LaunchCanaryProof[] = [
+  {
+    id: "sensitive-attribution-review",
+    area: "Analysis",
+    title: "Sensitive attribution editorial review",
+    requirement:
+      "Every sensitive public-claims window must be reviewed for speaker ownership, quote boundaries, and endorsement risk before launch copy can rely on it.",
+    proofCommands: ["npm run analysis:proof:sensitive-review"],
+    templatePath: "agent-work/validation/sensitive-attribution-reviews.template.json",
+    manifestPath: "agent-work/validation/sensitive-attribution-reviews.json",
+    proofArtifacts: ["docs/superpowers/validation/sensitive-attribution-review-proof.json"],
+    evidenceNeeded: [
+      "Named reviewer",
+      "Fresh reviewed_at timestamp",
+      "Per-window notes with quote/endorsement reasoning",
+      "Explicit public_claims_allowed approval",
+    ],
+    status: "needs-real-evidence",
+  },
+  {
+    id: "mobile-device-canaries",
+    area: "Mobile",
+    title: "Physical iOS and Android device canaries",
+    requirement:
+      "Real iOS and Android devices must prove share targets, file pickers, microphone capture, PWA install/open, and saved-session restore.",
+    proofCommands: ["npm run mobile:proof:devices"],
+    templatePath: "agent-work/validation/mobile-device-canaries.template.json",
+    manifestPath: "agent-work/validation/mobile-device-canaries.json",
+    proofArtifacts: ["docs/superpowers/validation/mobile-device-canary-proof.json"],
+    evidenceNeeded: [
+      "Device model and OS version",
+      "Browser used",
+      "Passing flow status for each required mobile path",
+      "Non-empty screenshot, note, log, or video evidence files",
+    ],
+    status: "needs-real-evidence",
+  },
+  {
+    id: "large-real-media-canaries",
+    area: "Ingestion",
+    title: "Large real audio/video media canaries",
+    requirement:
+      "Real phone-recorded audio, MP4, MOV, and WebM files must pass through production-like Blob upload and transcription.",
+    proofCommands: ["npm run ingestion:proof:large-real-media"],
+    templatePath: "agent-work/validation/large-real-media-canaries.template.json",
+    manifestPath: "agent-work/validation/large-real-media-canaries.json",
+    proofArtifacts: ["docs/superpowers/validation/large-real-media-canary-proof.json"],
+    evidenceNeeded: [
+      "Real media file paths",
+      "Correct MIME type and duration",
+      "Expected phrases heard in each recording",
+      "Blob upload plus non-fixture transcription proof",
+    ],
+    status: "needs-real-evidence",
+  },
+  {
+    id: "authenticated-cloud-sync",
+    area: "Cloud sync",
+    title: "Authenticated cross-device cloud sync",
+    requirement:
+      "A Clerk/database-backed environment must prove account save, load, list, rename, TV restore, delete, and two isolated browser-profile restores.",
+    proofCommands: [
+      "YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER='Bearer ...' npm run cloud-sync:proof:local",
+      "YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER='Bearer ...' npm run cloud-sync:proof:deploy",
+    ],
+    proofArtifacts: [
+      "docs/superpowers/validation/cloud-sync-local-proof.json",
+      "docs/superpowers/validation/cloud-sync-deploy-proof.json",
+    ],
+    evidenceNeeded: [
+      "Configured Clerk publishable key and database",
+      "Fresh signed-in auth header",
+      "Authenticated CRUD proof",
+      "Two-profile browser restore proof",
+    ],
+    status: "needs-real-evidence",
+  },
+  {
+    id: "production-current-tree-smoke",
+    area: "Release",
+    title: "Production current-tree smoke",
+    requirement:
+      "The current worktree must be committed, pass CI, deploy, and pass production launch smoke without internal-skip shortcuts.",
+    proofCommands: [
+      "npm run smoke:launch",
+      "npm run release:readiness",
+    ],
+    proofArtifacts: [
+      "docs/superpowers/validation/release-readiness-proof.json",
+    ],
+    evidenceNeeded: [
+      "Clean committed tree",
+      "Green CI for the shipped commit",
+      "Fresh production deploy",
+      "Production smoke with Blob token checks enabled",
+    ],
+    status: "needs-real-evidence",
+  },
 ];

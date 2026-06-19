@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_quote_09_brown_quote_boundary",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_quote_09",
+  "start_s": 414,
+  "end_s": 444,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "The rules here are simple. I read the mystery document, if I'm wrong I get shocked. Segregation of white and colored children in public schools has a detrimental effect upon the colored children. The impact is greater when it has the sanction of the law, for the policy of separating the races is usually interpreted as denoting the inferiority of the Negro group. A sense of inferiority affects the motivation of a child to learn. Segregation with the sanction of law, therefore, has a tendency to retard the educational and mental development of Negro children and to deprive",
+    "turns": [
+      {
+        "id": "c2-quote-09-educator-quote-1",
+        "start_s": 414.13,
+        "end_s": 444.15,
+        "speaker_id": "educator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "quote_or_clip"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-quote-09-claim-1",
+        "start_s": 414.13,
+        "end_s": 418.1,
+        "owner_speaker_id": "educator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-quote-09-claim-2",
+        "start_s": 418.1,
+        "end_s": 444.15,
+        "owner_speaker_id": "quoted_brown_document",
+        "expected_provider_speaker_id": 0,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

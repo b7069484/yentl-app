@@ -119,10 +119,10 @@ Real external validation targets:
 Repeatable harness:
 
 ```bash
-node scripts/validation/verify-real-webpage-targets.mjs
+npm run extension:proof:real-pages
 ```
 
-The harness fetches both real targets, loads the actual extension content
+The harness fetches the default real targets, loads the actual extension content
 script into those page DOMs, opens the Yentl panel, verifies a `page-text`
 snapshot, and writes the proof report to
 `docs/superpowers/validation/real-webpage-targets.json`.

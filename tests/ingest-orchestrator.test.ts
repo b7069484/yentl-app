@@ -159,6 +159,7 @@ describe("bulkIngest — segment processing", () => {
       // Advance past the synthesis delay
       await vi.advanceTimersByTimeAsync(5000);
       expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+      expect(mockRunSynthesisNow).toHaveBeenCalledWith({ scope: "full_session" });
     } finally {
       vi.useRealTimers();
     }
@@ -175,6 +176,7 @@ describe("bulkIngest — segment processing", () => {
       expect(mockOnFinalUtterance).not.toHaveBeenCalled();
       // Synthesis is still scheduled — produces a "nothing on the floor yet" read
       expect(mockRunSynthesisNow).toHaveBeenCalledTimes(1);
+      expect(mockRunSynthesisNow).toHaveBeenCalledWith({ scope: "full_session" });
     } finally {
       vi.useRealTimers();
     }

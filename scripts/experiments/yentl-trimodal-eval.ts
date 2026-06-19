@@ -339,11 +339,6 @@ function formatNum(value: number | null | undefined, digits = 1): string {
   return value.toFixed(digits);
 }
 
-function formatTimeRange(stats: ModeTranscriptStats): string {
-  if (stats.firstStart === null || stats.lastEnd === null) return "n/a";
-  return `${formatNum(stats.firstStart)}-${formatNum(stats.lastEnd)}s`;
-}
-
 async function getInfo(candidate: Candidate): Promise<YtDlpInfo> {
   const { stdout } = await execFileAsync(
     "yt-dlp",

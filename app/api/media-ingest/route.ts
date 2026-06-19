@@ -5,9 +5,8 @@ import { transcribeUrl } from "@/lib/server/deepgram-batch";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import {
-  isSyntheticPanelValidationUrl,
-  SYNTHETIC_PANEL_MEDIA_MIME,
   syntheticPanelTranscriptionFixture,
+  syntheticPanelValidationMedia,
 } from "@/lib/server/validation-media-fixtures";
 
 export const runtime = "nodejs";
@@ -48,10 +47,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const trimmedUrl = url.trim();
 
-  if (isSyntheticPanelValidationUrl(trimmedUrl)) {
+  const validationMedia = syntheticPanelValidationMedia(trimmedUrl);
+  if (validationMedia) {
     return NextResponse.json({
-      ...syntheticPanelTranscriptionFixture(),
-      mime: SYNTHETIC_PANEL_MEDIA_MIME,
+      ...syntheticPanelTranscriptionFixture(validationMedia.id),
+      mime: validationMedia.mime,
     });
   }
 

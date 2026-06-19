@@ -169,6 +169,15 @@ describe("TextIngestPane — rendering", () => {
     expect(screen.getByRole("button", { name: "Load validation VTT" })).toBeTruthy();
   });
 
+  it("makes the PDF text-layer boundary visible before import", () => {
+    render(<TextIngestPane />);
+
+    expect(screen.getByText(/PDFs need selectable text/i)).toBeTruthy();
+    expect(screen.getByText(/Scanned PDFs need OCR elsewhere/i)).toBeTruthy();
+    expect(screen.getByText(/PDF import boundary/i)).toBeTruthy();
+    expect(screen.getByText(/Scanned image-only PDFs currently need OCR before import/i)).toBeTruthy();
+  });
+
   it("renders the Back to sources button", () => {
     render(<TextIngestPane />);
     expect(screen.getByRole("button", { name: /Back to sources/i })).toBeTruthy();
@@ -477,6 +486,37 @@ describe("TextIngestPane — file drop", () => {
         screen.getByText(/Only .txt, .md, .docx, .pdf, .srt, and .vtt files are supported/i),
       ).toBeTruthy();
     });
+  });
+
+  it("shows scanned-PDF recovery actions and can switch to browser-tab capture", async () => {
+    mockParsePdfWithMetadata.mockRejectedValueOnce(
+      new Error(
+        "This PDF does not expose enough selectable text for direct import. OCR is not yet wired in this build.",
+      ),
+    );
+
+    render(<TextIngestPane />);
+    const file = new File(["fake scanned pdf"], "scan.pdf", {
+      type: "application/pdf",
+    });
+
+    await act(async () => {
+      fireEvent.drop(screen.getByTestId("drop-zone"), {
+        dataTransfer: { files: [file], types: ["Files"] },
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert").textContent).toContain("selectable text");
+      expect(screen.getByRole("button", { name: /Choose another file/i })).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Paste extracted text/i })).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Use browser tab/i })).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Use browser tab/i }));
+
+    expect(mockSetSource).toHaveBeenCalledWith({ kind: "browser_tab" });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
   });
 });
 

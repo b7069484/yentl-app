@@ -134,4 +134,15 @@ describe("TVDashboard", () => {
     expect(container.querySelector('a[href="/session/detail/claim/claim-1"]')).not.toBeNull();
     expect(container.querySelector('a[href="/session/detail/marker/marker-1"]')).not.toBeNull();
   });
+
+  it("can return from room mode to the source session context", () => {
+    useSession.getState().restoreSession(makeRoomSession());
+
+    render(<TVDashboard sessionHref="/session?demo=validation&sample=extension_snapshot&view=overview" />);
+
+    expect(screen.getByRole("link", { name: /Session/i })).toHaveAttribute(
+      "href",
+      "/session?demo=validation&sample=extension_snapshot&view=overview",
+    );
+  });
 });

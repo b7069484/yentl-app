@@ -1,0 +1,148 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-11T21:47:34.265Z",
+  "source": "existing-proof-artifacts",
+  "requested_runs": 0,
+  "sample_count": 2,
+  "app_origin": "http://127.0.0.1:3000",
+  "target_urls": [
+    "http://127.0.0.1:3000/validation/browser-capture.html",
+    "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm"
+  ],
+  "invocation_paths": [
+    "popup"
+  ],
+  "proof_modes": [
+    "local",
+    "external"
+  ],
+  "latency_ms": {
+    "total_ms": {
+      "count": 2,
+      "min": 14830,
+      "max": 20843,
+      "avg": 17837,
+      "values": [
+        20843,
+        14830
+      ]
+    },
+    "media_ready_ms": {
+      "count": 2,
+      "min": 1153,
+      "max": 1637,
+      "avg": 1395,
+      "values": [
+        1153,
+        1637
+      ]
+    },
+    "capture_invocation_ms": {
+      "count": 2,
+      "min": 1153,
+      "max": 1637,
+      "avg": 1395,
+      "values": [
+        1153,
+        1637
+      ]
+    },
+    "panel_injection_ms": {
+      "count": 2,
+      "min": 13193,
+      "max": 19690,
+      "avg": 16442,
+      "values": [
+        19690,
+        13193
+      ]
+    },
+    "first_transcript_wait_ms": {
+      "count": 2,
+      "min": 5010,
+      "max": 12022,
+      "avg": 8516,
+      "values": [
+        12022,
+        5010
+      ]
+    },
+    "first_transcript_event_ms": {
+      "count": 1,
+      "min": 12022,
+      "max": 12022,
+      "avg": 12022,
+      "values": [
+        12022
+      ]
+    },
+    "manual_capture_wait_ms": {
+      "count": 2,
+      "min": 7055,
+      "max": 7355,
+      "avg": 7205,
+      "values": [
+        7055,
+        7355
+      ]
+    }
+  },
+  "samples": [
+    {
+      "sample_index": 1,
+      "proof_path": "docs/superpowers/validation/installed-extension-local-proof.json",
+      "generated_at": "2026-06-11T21:47:24.923Z",
+      "ok": true,
+      "external_proof": false,
+      "proof_mode": "local",
+      "app_origin": "http://127.0.0.1:3000",
+      "target_url": "http://127.0.0.1:3000/validation/browser-capture.html",
+      "headless": false,
+      "invocation_path": "popup",
+      "panel_injection_proven": true,
+      "tab_capture_stream_id_available": true,
+      "live_transcription_proven": true,
+      "page_text_proven": true,
+      "latency_ms": {
+        "total_ms": 20843,
+        "media_ready_ms": 1153,
+        "capture_invocation_ms": 1153,
+        "panel_injection_ms": 19690,
+        "capture_running_observed": true,
+        "capture_start_event_ms": null,
+        "first_transcript_wait_ms": 12022,
+        "first_transcript_event_ms": 12022,
+        "manual_capture_wait_ms": 7055
+      },
+      "failure_reason": null
+    },
+    {
+      "sample_index": 2,
+      "proof_path": "docs/superpowers/validation/installed-extension-external-proof.json",
+      "generated_at": "2026-06-11T21:39:28.566Z",
+      "ok": true,
+      "external_proof": true,
+      "proof_mode": "external",
+      "app_origin": "http://127.0.0.1:3000",
+      "target_url": "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm",
+      "headless": false,
+      "invocation_path": "popup",
+      "panel_injection_proven": true,
+      "tab_capture_stream_id_available": true,
+      "live_transcription_proven": false,
+      "page_text_proven": true,
+      "latency_ms": {
+        "total_ms": 14830,
+        "media_ready_ms": 1637,
+        "capture_invocation_ms": 1637,
+        "panel_injection_ms": 13193,
+        "capture_running_observed": true,
+        "capture_start_event_ms": null,
+        "first_transcript_wait_ms": 5010,
+        "first_transcript_event_ms": null,
+        "manual_capture_wait_ms": 7355
+      },
+      "failure_reason": null
+    }
+  ]
+}

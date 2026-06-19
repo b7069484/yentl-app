@@ -10,6 +10,18 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+async function parseJsonBody(req: Request) {
+  try {
+    return await req.json();
+  } catch {
+    throw new CloudSessionError(
+      400,
+      "invalid_request",
+      "Request body must be valid JSON.",
+    );
+  }
+}
+
 function cloudError(error: unknown) {
   if (error instanceof CloudSessionError) {
     return NextResponse.json(
@@ -42,7 +54,7 @@ export async function GET(_req: Request, context: RouteContext) {
 export async function PATCH(req: Request, context: RouteContext) {
   try {
     const { id } = await context.params;
-    const body = await req.json();
+    const body = await parseJsonBody(req);
     await renameCloudSession(id, typeof body?.name === "string" ? body.name : "");
     return NextResponse.json({ ok: true });
   } catch (error) {

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "window_id": "holocaust_010_historical_framing",
+  "corpus_id": "test-corpus",
+  "source_id": "holocaust_010",
+  "start_s": 0,
+  "end_s": 120,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Hello. I'm Dan Stone. I'm professor of modern history and director of the Holocaust Research Institute at Royal Holloway. Okay. So I think students find the intentionalism, functionalism debate still useful, but we need to move beyond it. So intentionalism is the argument that says that the holocaust took place because the Nazis intended from the very start to to murder the Jews, and then they implemented this plan at the first opportunity. The functionalist or structuralist argument says there was no plan for genocide and that the Nazis, in a way, maneuvered themselves accidentally into a situation whereby they ended up committing genocide. And these terms and these debates have been running for thirty or forty years. They still are useful as a way of orienting yourselves in in the literature. But students will find that actually, historians don't fall neatly into either of those categories in the same way anymore. There are no or there are very few historians who would say that the Holocaust took place because of what Hitler wrote in Mein Kampf, just as there are very few historians who would argue anymore that the Holocaust took place more or less by accident and that the Nazis didn't intend for it to happen. So whilst these are terms that help to orient students, I think, in the literature, what they'll discover is that the majority of historians within a kind of circumscribed band are a mix of the two. The difference, I think, falls between those who stress more the ad hoc nature of Nazi decision making,",
+    "turns": [
+      {
+        "id": "holocaust-010-intro-1",
+        "start_s": 6.48,
+        "end_s": 12.32,
+        "speaker_id": "speaker_intro",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "holocaust-010-professor-1",
+        "start_s": 23.22,
+        "end_s": 120.21,
+        "speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "holocaust-010-claim-1",
+        "start_s": 6.48,
+        "end_s": 12.32,
+        "owner_speaker_id": "speaker_intro",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "holocaust-010-claim-2",
+        "start_s": 23.22,
+        "end_s": 30.07,
+        "owner_speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "holocaust-010-claim-3",
+        "start_s": 30.47,
+        "end_s": 42.15,
+        "owner_speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "holocaust-010-claim-4",
+        "start_s": 42.47,
+        "end_s": 56.55,
+        "owner_speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "holocaust-010-claim-5",
+        "start_s": 75.72,
+        "end_s": 95.34,
+        "owner_speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "holocaust-010-claim-6",
+        "start_s": 95.58,
+        "end_s": 120.21,
+        "owner_speaker_id": "professor",
+        "expected_provider_speaker_id": 1,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

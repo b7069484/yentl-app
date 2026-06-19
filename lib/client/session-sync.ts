@@ -25,6 +25,10 @@ type CloudErrorBody = {
   };
 };
 
+function clientCloudSyncConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+}
+
 function failureStatus(status: number): CloudSessionFailureStatus {
   if (status === 401 || status === 403) return "signed_out";
   if (status === 404) return "not_found";
@@ -36,6 +40,14 @@ async function cloudRequest<T>(
   path: string,
   init?: RequestInit,
 ): Promise<CloudSessionResult<T>> {
+  if (!clientCloudSyncConfigured()) {
+    return {
+      ok: false,
+      status: "unavailable",
+      message: "Account sync is not configured for this Yentl environment.",
+    };
+  }
+
   const headers = new Headers(init?.headers);
   if (init?.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");

@@ -40,6 +40,7 @@ let mockClipboardReadText = vi.fn();
 
 const VALID_URL = "https://example.com/episode.mp3";
 const VALIDATION_MEDIA_URL = "http://localhost:3000/validation/yentl-synthetic-panel.wav";
+const VALIDATION_VIDEO_URL = "http://localhost:3000/validation/yentl-synthetic-panel.mp4";
 const INVALID_URL_FORMAT = "not-a-url";
 const PRIVATE_IP_URL = "http://192.168.1.1/audio.mp3";
 
@@ -132,6 +133,11 @@ describe("MediaUrlIngestPane — renders", () => {
   it("renders a local validation media URL loader in development", () => {
     render(<MediaUrlIngestPane />);
     expect(screen.getByRole("button", { name: "Load validation media URL" })).toBeTruthy();
+  });
+
+  it("renders a local validation video URL loader in development", () => {
+    render(<MediaUrlIngestPane />);
+    expect(screen.getByRole("button", { name: "Load validation video URL" })).toBeTruthy();
   });
 
   it("renders the Back to sources button", () => {
@@ -313,6 +319,42 @@ describe("MediaUrlIngestPane — happy path", () => {
       expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
     });
   });
+
+  it("loads the local validation video URL through the same ingest path", async () => {
+    render(<MediaUrlIngestPane />);
+    mockFetch.mockResolvedValueOnce(happyFetchResponse());
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Load validation video URL" }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Media URL")).toHaveValue(VALIDATION_VIDEO_URL);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "/api/media-ingest",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "x-yentl-source-consent": "source-analysis-v1",
+          }),
+          body: JSON.stringify({ url: VALIDATION_VIDEO_URL }),
+        }),
+      );
+      expect(mockSetSource).toHaveBeenCalledWith({
+        kind: "media_url",
+        url: VALIDATION_VIDEO_URL,
+      });
+      expect(mockBulkIngest).toHaveBeenCalledWith(
+        SAMPLE_UTTERANCES,
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+          speakers: SAMPLE_SPEAKERS,
+        }),
+      );
+      expect(mockPush).toHaveBeenCalledWith("/session?view=watch");
+    });
+  });
 });
 
 // ─── 4. Error states ──────────────────────────────────────────────────────────
@@ -343,6 +385,45 @@ describe("MediaUrlIngestPane — error states", () => {
     });
   });
 
+  it("shows direct recovery actions for blocked private media URLs", async () => {
+    await typeAndProcessWithError(
+      PRIVATE_IP_URL,
+      "SSRF_BLOCKED",
+      "resolved to a private address",
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Recovery")).toBeTruthy();
+      expect(screen.getByText(/upload the file directly/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Use browser tab" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Upload file" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Paste transcript" })).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Use browser tab" }));
+    expect(mockSetSource).toHaveBeenCalledWith({ kind: "browser_tab" });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+
+    fireEvent.click(screen.getByRole("button", { name: "Upload file" }));
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "audio_file",
+      blob_url: "",
+      duration_sec: 0,
+      filename: "",
+      mime: "",
+    });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+
+    fireEvent.click(screen.getByRole("button", { name: "Paste transcript" }));
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "text_doc",
+      filename: "",
+      mime: "",
+      byte_count: 0,
+    });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+  });
+
   it("shows invalid URL error copy for INVALID_URL", async () => {
     await typeAndProcessWithError(
       VALID_URL,
@@ -353,6 +434,20 @@ describe("MediaUrlIngestPane — error states", () => {
       expect(
         screen.getByText(/doesn.t look like a valid URL/i),
       ).toBeTruthy();
+    });
+  });
+
+  it("explains unsupported media recovery without trapping the user on the failed URL", async () => {
+    await typeAndProcessWithError(
+      "https://example.com/document.pdf",
+      "UNSUPPORTED_MEDIA",
+      "Unsupported content type",
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/does not look like a direct audio\/video file/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Use browser tab" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Paste transcript" })).toBeTruthy();
     });
   });
 
@@ -376,7 +471,7 @@ describe("MediaUrlIngestPane — error states", () => {
       "Deepgram quota exceeded",
     );
     await waitFor(() => {
-      expect(screen.getByText(/Transcription failed/i)).toBeTruthy();
+      expect(screen.getByText("Transcription failed. Deepgram quota exceeded")).toBeTruthy();
       expect(screen.getByText(/Deepgram quota exceeded/i)).toBeTruthy();
     });
   });

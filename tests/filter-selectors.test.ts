@@ -11,7 +11,6 @@ import {
   describeClaimFilters,
   describeMarkerFilters,
 } from "@/lib/client/filter-selectors";
-import type { ClaimSort, MarkerSort } from "@/lib/client/filter-selectors";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 

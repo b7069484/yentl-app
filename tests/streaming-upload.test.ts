@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Readable } from "stream";
 
 // ─── Mock deepgram-batch ──────────────────────────────────────────────────────
 
@@ -214,8 +213,6 @@ describe("POST /api/transcribe-batch — large file (>50MB) uses stream path", (
 describe("transcribeStream — unit tests", () => {
   // Reset the module mock to test the real implementation
   // We need a separate describe block that mocks @deepgram/sdk directly
-
-  const mockDgTranscribeFile = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();

@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:48:21.686Z",
+  "generated_at": "2026-06-11T19:56:49.707Z",
   "app_origin": "https://yentl.it",
   "cloud_configured": true,
   "cloud_mode": "signed_out",
@@ -10,7 +10,7 @@
     {
       "name": "app-reachable",
       "ok": true,
-      "elapsed_ms": 530,
+      "elapsed_ms": 198,
       "status": 200
     },
     {
@@ -30,21 +30,21 @@
     {
       "name": "signed-out-save-guard",
       "ok": true,
-      "elapsed_ms": 190,
+      "elapsed_ms": 120,
       "status": 401,
       "code": "signed_out"
     },
     {
       "name": "signed-out-session-id-guard",
       "ok": true,
-      "elapsed_ms": 76,
+      "elapsed_ms": 158,
       "status": 401,
       "code": "signed_out"
     },
     {
       "name": "invalid-save-payload-guard",
       "ok": true,
-      "elapsed_ms": 139,
+      "elapsed_ms": 93,
       "status": 400,
       "code": "invalid_request"
     }
@@ -52,6 +52,6 @@
   "failures": [],
   "notes": [
     "Cloud sync is configured but no auth header was provided. Signed-out guards are the expected success path.",
-    "Set YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER to run authenticated save/rename/delete proof."
+    "Set YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER to run authenticated save/load/list/rename/TV/delete proof."
   ]
 }

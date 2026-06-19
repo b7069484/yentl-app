@@ -1,6 +1,11 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { useSession } from "@/lib/client/session-store";
-import type { DevilAdvocateState, SpeakerVerdict, SynthesisState } from "@/lib/client/session-store";
+import type {
+  DevilAdvocateState,
+  SpeakerVerdict,
+  SynthesisMetaRead,
+  SynthesisState,
+} from "@/lib/client/session-store";
 
 // ─── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -21,11 +26,21 @@ const SPEAKER_VERDICTS: SpeakerVerdict[] = [
   },
 ];
 
+const META_READ: SynthesisMetaRead = {
+  posture: "mixed",
+  source_health: "mixed",
+  scope: "full_session",
+  summary: "Across the full session, the conversation-level read is mixed.",
+  uncertainty: "Some source trails remain incomplete.",
+  key_question: "Which disputed claim deserves the next source review?",
+};
+
 const FRESH_SYNTHESIS: SynthesisState = {
   state: "fresh",
   text: "This 90-minute podcast covered three main claims. Speaker 1 was largely factual; Speaker 2 made several misleading assertions.",
   headlines: ["Speaker 1 was mostly truthful", "Speaker 2 overstated statistics", "No major fallacies detected"],
   per_speaker_verdicts: SPEAKER_VERDICTS,
+  meta_read: META_READ,
   at: 1_716_000_000_000,
 };
 
@@ -34,6 +49,7 @@ const REFRESHING_SYNTHESIS: SynthesisState = {
   text: "Refreshed analysis pending. Previous: mostly accurate conversation.",
   headlines: ["Prior analysis: good faith debate"],
   per_speaker_verdicts: SPEAKER_VERDICTS,
+  meta_read: META_READ,
   at: 1_716_000_001_000,
 };
 
@@ -90,6 +106,7 @@ describe("toSession() — synthesis persistence", () => {
     expect(session.synthesis!.text).toBe(FRESH_SYNTHESIS.text);
     expect(session.synthesis!.headlines).toEqual(FRESH_SYNTHESIS.headlines);
     expect(session.synthesis!.per_speaker_verdicts).toEqual(SPEAKER_VERDICTS);
+    expect(session.synthesis!.meta_read).toEqual(META_READ);
     expect(session.synthesis!.at).toBe(FRESH_SYNTHESIS.at);
   });
 
@@ -101,6 +118,7 @@ describe("toSession() — synthesis persistence", () => {
     expect(session.synthesis!.text).toBe(REFRESHING_SYNTHESIS.text);
     expect(session.synthesis!.headlines).toEqual(REFRESHING_SYNTHESIS.headlines);
     expect(session.synthesis!.per_speaker_verdicts).toEqual(SPEAKER_VERDICTS);
+    expect(session.synthesis!.meta_read).toEqual(META_READ);
     expect(session.synthesis!.at).toBe(REFRESHING_SYNTHESIS.at);
   });
 
@@ -186,6 +204,7 @@ describe("restoreSession() — synthesis rehydration", () => {
       expect(restored.text).toBe(FRESH_SYNTHESIS.text);
       expect(restored.headlines).toEqual(FRESH_SYNTHESIS.headlines);
       expect(restored.per_speaker_verdicts).toEqual(SPEAKER_VERDICTS);
+      expect(restored.meta_read).toEqual(META_READ);
       expect(restored.at).toBe(FRESH_SYNTHESIS.at);
     }
   });
@@ -204,6 +223,7 @@ describe("restoreSession() — synthesis rehydration", () => {
     expect(restored!.state).toBe("fresh");
     if (restored?.state === "fresh") {
       expect(restored.text).toBe(REFRESHING_SYNTHESIS.text);
+      expect(restored.meta_read).toEqual(META_READ);
       expect(restored.at).toBe(REFRESHING_SYNTHESIS.at);
     }
   });
@@ -245,6 +265,23 @@ describe("restoreSession() — synthesis rehydration", () => {
       expect(restored.per_speaker_verdicts).toHaveLength(SPEAKER_VERDICTS.length);
       expect(restored.per_speaker_verdicts![0].factual_grade).toBe("mostly_factual");
       expect(restored.per_speaker_verdicts![1].faith_grade).toBe("bad_faith");
+    } else {
+      throw new Error(`Expected 'fresh' state, got: ${restored?.state}`);
+    }
+  });
+
+  it("round-trips structured meta_read faithfully", () => {
+    seedStore(FRESH_SYNTHESIS);
+    const saved = useSession.getState().toSession();
+
+    useSession.getState().reset();
+    useSession.getState().restoreSession(saved);
+
+    const restored = useSession.getState().synthesis;
+    if (restored?.state === "fresh") {
+      expect(restored.meta_read).toEqual(META_READ);
+      expect(restored.meta_read?.scope).toBe("full_session");
+      expect(restored.meta_read?.key_question).toContain("source review");
     } else {
       throw new Error(`Expected 'fresh' state, got: ${restored?.state}`);
     }

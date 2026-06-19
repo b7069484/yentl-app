@@ -54,6 +54,16 @@ vi.mock("@/lib/client/text-ingest", async (importOriginal) => {
 import { WebUrlIngestPane } from "@/components/session/ingest-panes/web-url-ingest-pane";
 
 const ARTICLE_URL = "https://example.com/story";
+const PLAYER_PAGE_URL = "https://example.com/watch/live-event";
+
+function articleErrorResponse(code: string, message: string) {
+  return {
+    ok: false,
+    json: async () => ({
+      error: { code, message },
+    }),
+  } as Response;
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -170,6 +180,73 @@ describe("WebUrlIngestPane", () => {
       );
       expect(mockPush).toHaveBeenCalledWith("/session?view=overview");
     });
+
+    fetchSpy.mockRestore();
+  });
+
+  it("shows recovery choices when article extraction has no readable text", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      articleErrorResponse(
+        "NO_READABLE_TEXT",
+        "Yentl could not extract enough readable text from this page.",
+      ),
+    );
+
+    render(<WebUrlIngestPane />);
+    fireEvent.change(screen.getByLabelText("Web page URL"), { target: { value: ARTICLE_URL } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze URL" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("This URL needs a fallback")).toBeTruthy();
+      expect(screen.getByText(/did not expose enough readable article text/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Use Chrome tab" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Try media URL" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Paste text" })).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Use Chrome tab" }));
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "browser_tab",
+      url: ARTICLE_URL,
+      title: "example.com",
+    });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+
+    fireEvent.click(screen.getByRole("button", { name: "Paste text" }));
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "text_doc",
+      filename: "",
+      mime: "",
+      byte_count: 0,
+    });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+
+    fetchSpy.mockRestore();
+  });
+
+  it("routes unsupported article URLs toward the media URL recovery path", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      articleErrorResponse(
+        "UNSUPPORTED_PAGE",
+        "This URL did not return readable text/html or text/plain content.",
+      ),
+    );
+
+    render(<WebUrlIngestPane />);
+    fireEvent.change(screen.getByLabelText("Web page URL"), { target: { value: PLAYER_PAGE_URL } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze URL" }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/probably not a readable article page/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Try media URL" })).toBeTruthy();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Try media URL" }));
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "media_url",
+      url: PLAYER_PAGE_URL,
+    });
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
 
     fetchSpy.mockRestore();
   });

@@ -1,0 +1,159 @@
+{
+  "_template": true,
+  "_copy_to": "agent-work/validation/mobile-device-canaries.json",
+  "_proof_command": "npm run mobile:proof:devices",
+  "_instructions": [
+    "Run this on physical iOS and Android devices against the deployed app origin.",
+    "Every required flow must pass and point to a non-empty local evidence file.",
+    "Evidence files can be screenshots, short notes, exported browser logs, or videos kept under agent-work/validation/evidence/mobile/."
+  ],
+  "app_origin": "https://yentl.it",
+  "runs": [
+    {
+      "platform": "ios",
+      "device_model": "",
+      "os_version": "",
+      "browser": "Safari",
+      "tested_at": "",
+      "flows": [
+        {
+          "id": "share_text",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/share_text.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "share_web_url",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/share_web_url.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "share_media_url",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/share_media_url.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "file_picker_audio_video",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/file_picker_audio_video.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "file_picker_text_document",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/file_picker_text_document.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "microphone_capture",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/microphone_capture.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "pwa_install_open",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/pwa_install_open.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "saved_session_restore",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/ios/saved_session_restore.md"
+          ],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "device_model": "",
+      "os_version": "",
+      "browser": "Chrome",
+      "tested_at": "",
+      "flows": [
+        {
+          "id": "share_text",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/share_text.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "share_web_url",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/share_web_url.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "share_media_url",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/share_media_url.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "file_picker_audio_video",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/file_picker_audio_video.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "file_picker_text_document",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/file_picker_text_document.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "microphone_capture",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/microphone_capture.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "pwa_install_open",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/pwa_install_open.md"
+          ],
+          "notes": ""
+        },
+        {
+          "id": "saved_session_restore",
+          "status": "pending",
+          "evidence": [
+            "agent-work/validation/evidence/mobile/android/saved_session_restore.md"
+          ],
+          "notes": ""
+        }
+      ]
+    }
+  ]
+}

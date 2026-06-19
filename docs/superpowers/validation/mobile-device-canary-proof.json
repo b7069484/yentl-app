@@ -1,0 +1,51 @@
+{
+  "ok": false,
+  "launch_ready": false,
+  "generated_at": "2026-06-12T00:40:37.919Z",
+  "app_origin": "https://yentl.it",
+  "proof_scope": "deploy",
+  "production_like": true,
+  "report_path": "docs/superpowers/validation/mobile-device-canary-proof.json",
+  "manifest_path": "agent-work/validation/mobile-device-canaries.json",
+  "manifest_status": "missing_manifest",
+  "max_age_days": 14,
+  "required_platforms": [
+    "ios",
+    "android"
+  ],
+  "required_flows": [
+    "share_text",
+    "share_web_url",
+    "share_media_url",
+    "file_picker_audio_video",
+    "file_picker_text_document",
+    "microphone_capture",
+    "pwa_install_open",
+    "saved_session_restore"
+  ],
+  "required_missing": [
+    "ios:run",
+    "android:run"
+  ],
+  "platform_summary": {
+    "ios": {
+      "present": false,
+      "passing_flows": 0,
+      "required_flows": 8,
+      "device_model": null,
+      "os_version": null,
+      "browser": null
+    },
+    "android": {
+      "present": false,
+      "passing_flows": 0,
+      "required_flows": 8,
+      "device_model": null,
+      "os_version": null,
+      "browser": null
+    }
+  },
+  "checks": [],
+  "failures": [],
+  "next_action": "Create agent-work/validation/mobile-device-canaries.json with real iOS and Android canary results and evidence files."
+}

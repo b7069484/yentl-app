@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:41:28.056Z",
+  "generated_at": "2026-06-10T09:53:58.044Z",
   "app_origin": "https://yentl.it",
   "tool": "@axe-core/cli",
   "launch_critical_routes": [
@@ -13,16 +13,17 @@
     {
       "name": "axe-home",
       "ok": true,
-      "elapsed_ms": 16311,
+      "elapsed_ms": 6664,
       "path": "/",
       "launch_critical": true,
-      "error": "/ has 14 axe violations: color-contrast",
-      "stale_deploy": true
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
     },
     {
       "name": "axe-session",
       "ok": true,
-      "elapsed_ms": 3936,
+      "elapsed_ms": 4147,
       "path": "/session",
       "launch_critical": true,
       "violations": 0,
@@ -32,7 +33,7 @@
     {
       "name": "axe-mobile",
       "ok": true,
-      "elapsed_ms": 3600,
+      "elapsed_ms": 4025,
       "path": "/mobile",
       "launch_critical": true,
       "violations": 0,
@@ -42,28 +43,27 @@
     {
       "name": "axe-contact",
       "ok": true,
-      "elapsed_ms": 16072,
+      "elapsed_ms": 3750,
       "path": "/contact",
       "launch_critical": true,
-      "error": "/contact has 3 axe violations: color-contrast, landmark-complementary-is-top-level",
-      "stale_deploy": true
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
     },
     {
       "name": "axe-pricing",
       "ok": true,
-      "elapsed_ms": 4286,
+      "elapsed_ms": 4165,
       "path": "/pricing",
       "launch_critical": false,
-      "violations": 2,
-      "violation_rules": [
-        "color-contrast"
-      ],
-      "passed": false
+      "violations": 0,
+      "violation_rules": [],
+      "passed": true
     },
     {
       "name": "axe-faq",
       "ok": true,
-      "elapsed_ms": 3517,
+      "elapsed_ms": 3829,
       "path": "/faq",
       "launch_critical": false,
       "violations": 0,
@@ -71,20 +71,7 @@
       "passed": true
     }
   ],
-  "deploy_blockers": [
-    {
-      "route": "/",
-      "check": "axe-home",
-      "issue": "/ has 14 axe violations: color-contrast",
-      "note": "Local a11y proof is green for this route; production likely needs redeploy."
-    },
-    {
-      "route": "/contact",
-      "check": "axe-contact",
-      "issue": "/contact has 3 axe violations: color-contrast, landmark-complementary-is-top-level",
-      "note": "Local a11y proof is green for this route; production likely needs redeploy."
-    }
-  ],
+  "deploy_blockers": [],
   "failures": [],
   "notes": [
     "Launch-critical routes must report zero axe violations.",

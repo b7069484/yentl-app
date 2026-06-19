@@ -3,7 +3,11 @@ import { join } from "node:path";
 import { waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-type OffscreenListener = (message: unknown) => boolean;
+type OffscreenListener = (
+  message: unknown,
+  sender?: unknown,
+  sendResponse?: (response: unknown) => void,
+) => boolean;
 
 type ChromeRuntimeMessage = {
   target?: string;
@@ -91,7 +95,15 @@ function installHarness() {
   let resolveFetch: ((value: unknown) => void) | null = null;
   const messages: ChromeRuntimeMessage[] = [];
   const mediaStream = {
-    getTracks: () => [{ stop: vi.fn() }],
+    getTracks: () => [{
+      enabled: true,
+      id: "track-1",
+      kind: "audio",
+      label: "Tab audio",
+      muted: false,
+      readyState: "live",
+      stop: vi.fn(),
+    }],
   };
   const getUserMedia = vi.fn().mockResolvedValue(mediaStream);
   const fetchMock = vi.fn(() => new Promise((resolve) => {
@@ -140,6 +152,14 @@ function installHarness() {
     });
   };
 
+  const diagnostics = () =>
+    new Promise((resolve) => {
+      listener?.({
+        target: "offscreen",
+        type: "diagnostics-request",
+      }, {}, resolve);
+    });
+
   const resolveToken = () => {
     resolveFetch?.({
       ok: true,
@@ -154,6 +174,7 @@ function installHarness() {
     fetchMock,
     getUserMedia,
     messages,
+    diagnostics,
     resolveToken,
     startCapture,
   };
@@ -231,5 +252,61 @@ describe("extension offscreen capture", () => {
         }),
       }),
     );
+  });
+
+  it("reports offscreen diagnostics for chunks, socket state, and transcripts", async () => {
+    const harness = installHarness();
+
+    harness.startCapture();
+
+    await waitFor(() => {
+      expect(FakeMediaRecorder.instances).toHaveLength(1);
+    });
+
+    FakeMediaRecorder.instances[0]?.emitChunk([7, 8, 9, 10]);
+    harness.resolveToken();
+
+    await waitFor(() => {
+      expect(FakeWebSocket.instances).toHaveLength(1);
+    });
+
+    FakeWebSocket.instances[0]?.open();
+    FakeWebSocket.instances[0]?.onmessage?.({
+      data: JSON.stringify({
+        type: "Results",
+        is_final: true,
+        start: 1,
+        duration: 2,
+        channel: {
+          alternatives: [{
+            transcript: "The operating budget increased.",
+            words: [{ speaker: 1 }, { speaker: 1 }],
+          }],
+        },
+      }),
+    });
+
+    await waitFor(async () => {
+      const diagnostics = await harness.diagnostics();
+      expect(diagnostics).toMatchObject({
+        active: true,
+        appOrigin: "http://localhost:3000",
+        chunksObserved: 1,
+        chunksSent: 1,
+        bytesObserved: 4,
+        bytesSent: 4,
+        finalTranscriptCount: 1,
+        interimTranscriptCount: 0,
+        sawTranscript: true,
+        socketState: "open",
+        socketResultCount: 1,
+        transcriptChars: "The operating budget increased.".length,
+      });
+      expect(diagnostics).toMatchObject({
+        lastTranscriptPreview: "The operating budget increased.",
+        mediaRecorderMimeType: "audio/webm;codecs=opus",
+        mediaRecorderState: "recording",
+      });
+    });
   });
 });

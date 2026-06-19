@@ -3,6 +3,8 @@ import {
   isSyntheticPanelValidationFile,
   isSyntheticPanelValidationUrl,
   syntheticPanelTranscriptionFixture,
+  syntheticPanelValidationFile,
+  syntheticPanelValidationMedia,
 } from "@/lib/server/validation-media-fixtures";
 
 describe("validation media fixtures", () => {
@@ -10,17 +12,44 @@ describe("validation media fixtures", () => {
     vi.unstubAllEnvs();
   });
 
-  it("recognizes only the exact local synthetic WAV URL", () => {
+  it("recognizes only exact local synthetic media URLs", () => {
     expect(isSyntheticPanelValidationUrl("http://localhost:3000/validation/yentl-synthetic-panel.wav")).toBe(true);
     expect(isSyntheticPanelValidationUrl("http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav")).toBe(true);
     expect(isSyntheticPanelValidationUrl("/validation/yentl-synthetic-panel.wav")).toBe(true);
+    expect(isSyntheticPanelValidationUrl("http://localhost:3000/validation/yentl-synthetic-panel.mp4")).toBe(true);
+    expect(isSyntheticPanelValidationUrl("http://localhost:3000/validation/yentl-synthetic-panel.mov")).toBe(true);
+    expect(isSyntheticPanelValidationUrl("http://localhost:3000/validation/yentl-synthetic-panel.webm")).toBe(true);
+    expect(syntheticPanelValidationMedia("http://localhost:3000/validation/yentl-synthetic-panel.mp4")?.id).toBe(
+      "yentl_synthetic_panel_mp4",
+    );
+    expect(syntheticPanelValidationMedia("http://localhost:3000/validation/yentl-synthetic-panel.mov")?.id).toBe(
+      "yentl_synthetic_panel_mov",
+    );
+    expect(syntheticPanelValidationMedia("http://localhost:3000/validation/yentl-synthetic-panel.webm")?.id).toBe(
+      "yentl_synthetic_panel_webm",
+    );
     expect(isSyntheticPanelValidationUrl("https://example.com/validation/yentl-synthetic-panel.wav")).toBe(false);
     expect(isSyntheticPanelValidationUrl("http://localhost:3000/validation/other.wav")).toBe(false);
   });
 
-  it("recognizes the exact synthetic WAV file name and MIME", () => {
+  it("recognizes exact synthetic media file names and MIME types", () => {
     expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.wav", { type: "audio/wav" }))).toBe(true);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mp4", { type: "video/mp4" }))).toBe(true);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mov", { type: "video/quicktime" }))).toBe(true);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.webm", { type: "video/webm" }))).toBe(true);
+    expect(syntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mp4", { type: "video/mp4" }))?.id).toBe(
+      "yentl_synthetic_panel_mp4",
+    );
+    expect(syntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mov", { type: "video/quicktime" }))?.id).toBe(
+      "yentl_synthetic_panel_mov",
+    );
+    expect(syntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.webm", { type: "video/webm" }))?.id).toBe(
+      "yentl_synthetic_panel_webm",
+    );
     expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.wav", { type: "audio/mpeg" }))).toBe(false);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mp4", { type: "audio/wav" }))).toBe(false);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.mov", { type: "video/mp4" }))).toBe(false);
+    expect(isSyntheticPanelValidationFile(new File(["x"], "yentl-synthetic-panel.webm", { type: "video/mp4" }))).toBe(false);
     expect(isSyntheticPanelValidationFile(new File(["x"], "other.wav", { type: "audio/wav" }))).toBe(false);
   });
 

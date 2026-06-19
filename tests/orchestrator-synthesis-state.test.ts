@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { runSynthesisNow } from "@/lib/client/orchestrator";
-import { useSession, type SpeakerVerdict } from "@/lib/client/session-store";
+import { useSession, type SpeakerVerdict, type SynthesisMetaRead } from "@/lib/client/session-store";
 import type { TranscriptSegment } from "@/lib/types";
 
 const mockFetch = vi.fn();
@@ -22,6 +22,15 @@ const SPEAKER_VERDICTS: SpeakerVerdict[] = [
     one_liner: "Jon repeats a disputed frame after correction.",
   },
 ];
+
+const META_READ: SynthesisMetaRead = {
+  posture: "mixed",
+  source_health: "thin",
+  scope: "live_window",
+  summary: "The prior read is mixed but still useful.",
+  uncertainty: "Evidence strength is still thin.",
+  key_question: "Which disputed claim has the clearest source trail?",
+};
 
 function responseJson(body: unknown): Response {
   return {
@@ -53,6 +62,7 @@ function seedSessionWithSynthesis() {
     text: "Original Yentl Opinion.",
     headlines: ["Audit claim is disputed"],
     per_speaker_verdicts: SPEAKER_VERDICTS,
+    meta_read: META_READ,
     at: Date.now(),
   });
 }
@@ -79,13 +89,23 @@ describe("orchestrator synthesis state", () => {
     expect(refreshing && "per_speaker_verdicts" in refreshing
       ? refreshing.per_speaker_verdicts
       : undefined).toEqual(SPEAKER_VERDICTS);
+    expect(refreshing && "meta_read" in refreshing
+      ? refreshing.meta_read
+      : undefined).toEqual(META_READ);
 
     resolveResponse(responseJson({
       text: "Updated Yentl Opinion.",
       headlines: ["Updated headline"],
       per_speaker_verdicts: SPEAKER_VERDICTS,
+      meta_read: {
+        ...META_READ,
+        summary: "Updated read.",
+      },
     }));
     await running;
+
+    const fresh = useSession.getState().synthesis;
+    expect(fresh && "meta_read" in fresh ? fresh.meta_read?.summary : undefined).toBe("Updated read.");
   });
 
   it("preserves speaker verdicts when a synthesis refresh fails", async () => {
@@ -99,6 +119,24 @@ describe("orchestrator synthesis state", () => {
     expect(errored && "per_speaker_verdicts" in errored
       ? errored.per_speaker_verdicts
       : undefined).toEqual(SPEAKER_VERDICTS);
+    expect(errored && "meta_read" in errored
+      ? errored.meta_read
+      : undefined).toEqual(META_READ);
     expect(errored && "text" in errored ? errored.text : undefined).toBe("Original Yentl Opinion.");
+  });
+
+  it("omits absent document anchors from synthesis payloads instead of sending null", async () => {
+    mockFetch.mockResolvedValue(responseJson({
+      text: "Updated Yentl Opinion.",
+      headlines: ["Updated headline"],
+      per_speaker_verdicts: SPEAKER_VERDICTS,
+      meta_read: META_READ,
+    }));
+
+    seedSessionWithSynthesis();
+    await runSynthesisNow();
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string);
+    expect(body.utterances[0]).not.toHaveProperty("anchor");
   });
 });

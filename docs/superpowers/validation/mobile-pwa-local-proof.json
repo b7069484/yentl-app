@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:22:53.748Z",
-  "app_origin": "http://127.0.0.1:3000",
+  "generated_at": "2026-06-12T00:09:56.594Z",
+  "app_origin": "http://localhost:3000",
   "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
-  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-mobile-proof-YKLIUJ/profile",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-mobile-proof-Ii763N/profile",
   "widths": [
     390,
     430,
@@ -19,16 +19,76 @@
       "path": "/session"
     },
     {
+      "slug": "source-youtube",
+      "path": "/session?source=youtube"
+    },
+    {
+      "slug": "source-web-url",
+      "path": "/session?source=web-url"
+    },
+    {
+      "slug": "source-media-url",
+      "path": "/session?source=media-url"
+    },
+    {
+      "slug": "source-audio-file",
+      "path": "/session?source=audio-file"
+    },
+    {
+      "slug": "source-text-doc",
+      "path": "/session?source=text-doc"
+    },
+    {
+      "slug": "source-claim-quick-check",
+      "path": "/session?source=claim"
+    },
+    {
+      "slug": "source-browser-tab-limit",
+      "path": "/session?source=browser-tab"
+    },
+    {
+      "slug": "extension-snapshot-workspace",
+      "path": "/session?demo=validation&sample=extension_snapshot&view=overview"
+    },
+    {
       "slug": "share-target-text",
       "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific."
+    },
+    {
+      "slug": "share-target-web-url",
+      "path": "/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle"
+    },
+    {
+      "slug": "share-target-media-url",
+      "path": "/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3"
+    },
+    {
+      "slug": "share-target-video-url",
+      "path": "/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4"
     },
     {
       "slug": "saved-sessions",
       "path": "/sessions"
     },
     {
+      "slug": "auth-signin-return-source",
+      "path": "/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file"
+    },
+    {
+      "slug": "auth-signup-return-library",
+      "path": "/signup?return_to=%2Fsessions%3Ffilter%3Dcloud"
+    },
+    {
+      "slug": "auth-signin-unsafe-return",
+      "path": "/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession"
+    },
+    {
       "slug": "room-mode",
       "path": "/tv?demo=validation&sample=cable_008"
+    },
+    {
+      "slug": "room-mode-extension-snapshot",
+      "path": "/tv?demo=validation&sample=extension_snapshot"
     }
   ],
   "report_path": "docs/superpowers/validation/mobile-pwa-local-proof.json",
@@ -36,7 +96,7 @@
     {
       "slug": "mobile-start",
       "path": "/mobile",
-      "url": "http://127.0.0.1:3000/mobile",
+      "url": "http://localhost:3000/mobile",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -51,10 +111,15 @@
         "Mobile paths stay honest": true,
         "iOS": true,
         "Android": true,
-        "Mobile web": true
+        "Mobile web": true,
+        "NATIVE SHELL STATUS": true,
+        "Installable web app first": true,
+        "Native shells later": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /sessions /session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Fstory /session /sessions /tv",
       "controlCount": 9,
       "smallControls": [
         {
@@ -68,7 +133,7 @@
     {
       "slug": "mobile-start",
       "path": "/mobile",
-      "url": "http://127.0.0.1:3000/mobile",
+      "url": "http://localhost:3000/mobile",
       "width": 430,
       "failures": [],
       "runtimeIssues": [],
@@ -83,10 +148,15 @@
         "Mobile paths stay honest": true,
         "iOS": true,
         "Android": true,
-        "Mobile web": true
+        "Mobile web": true,
+        "NATIVE SHELL STATUS": true,
+        "Installable web app first": true,
+        "Native shells later": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /sessions /session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Fstory /session /sessions /tv",
       "controlCount": 9,
       "smallControls": [
         {
@@ -100,7 +170,7 @@
     {
       "slug": "mobile-start",
       "path": "/mobile",
-      "url": "http://127.0.0.1:3000/mobile",
+      "url": "http://localhost:3000/mobile",
       "width": 768,
       "failures": [],
       "runtimeIssues": [],
@@ -115,10 +185,15 @@
         "Mobile paths stay honest": true,
         "iOS": true,
         "Android": true,
-        "Mobile web": true
+        "Mobile web": true,
+        "NATIVE SHELL STATUS": true,
+        "Installable web app first": true,
+        "Native shells later": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl. Start MOBILE APP Yentl on iOS, Android, and mobile web. The mobile app path is installable web-first in v1: share into Yentl, import files, use the microphone, review saved sessions, and hand the result to room mode. Pick source Saved work Share a link or text Open the same source-aware workspace that iOS Share Sheet and Android share intents target. Pick a source Use microphone, URL, upload, text, document, direct media, or one-claim mode. Open saved work Resume, exp",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /sessions /session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Fstory /session /sessions /tv",
       "controlCount": 9,
       "smallControls": [
         {
@@ -132,7 +207,7 @@
     {
       "slug": "source-picker",
       "path": "/session",
-      "url": "http://127.0.0.1:3000/session",
+      "url": "http://localhost:3000/session",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -145,8 +220,10 @@
       "textMatches": {
         "Choose your source path": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, or meeting. URL You have ",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, o",
       "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 15,
       "smallControls": [
         {
@@ -190,7 +267,7 @@
     {
       "slug": "source-picker",
       "path": "/session",
-      "url": "http://127.0.0.1:3000/session",
+      "url": "http://localhost:3000/session",
       "width": 430,
       "failures": [],
       "runtimeIssues": [],
@@ -203,8 +280,10 @@
       "textMatches": {
         "Choose your source path": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, or meeting. URL You have ",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. On mobile, start with a shared link, file, text, or microphone. Mobile browsers cannot expose another tab's audio the same way desktop Chrome can. Yentl can still analyze shared URLs, files, pasted text, and live microphone audio. Live Something is happening or playing now. Microphone Listen to a live room, call, class, o",
       "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 15,
       "smallControls": [
         {
@@ -248,7 +327,7 @@
     {
       "slug": "source-picker",
       "path": "/session",
-      "url": "http://127.0.0.1:3000/session",
+      "url": "http://localhost:3000/session",
       "width": 768,
       "failures": [],
       "runtimeIssues": [],
@@ -261,8 +340,10 @@
       "textMatches": {
         "Choose your source path": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. Live Something is happening or playing now. Current tab Analyze what is already open in Chrome. Microphone Listen to a live room, call, class, or meeting. URL You have a link to a page, video, or media file. YouTube Paste a link, watch here, and run live analysis. Web page Article, readable page, or mixed page with text Yentl can pull in. Direct",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped yentl Choose your source path Start with Live, URL, or File. Then choose the specific branch Yentl should use. Live Something is happening or playing now. Current tab Analyze what is already open in Chrome. Microphone Listen to a live room, call, class, or meeting. URL You have a link to a page, video, or media file. YouTube Paste a link, watch here, and run live analysis. Web page Article, readable page, or mixed page with text Y",
       "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 16,
       "smallControls": [
         {
@@ -304,9 +385,1554 @@
       ]
     },
     {
+      "slug": "source-youtube",
+      "path": "/session?source=youtube",
+      "url": "http://localhost:3000/session?source=youtube",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "YouTube URL": true,
+        "Paste a YouTube link and watch here": true,
+        "Load validation YouTube": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Sources YouTube URL Start Load validation YouTube Watch + live analysis Paste a YouTube link and watch here Yentl's live read follows the player and stays synced to playback. The video will play in this space Paste a link above. This area becomes the YouTube player, not a thumbnail. Paste a YouTube URL Waiting for a playable YouTube URL 00:00 No video YENTL'S READ Paste URL Bring the video in first. Paste a YouTube link. The playe",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-youtube",
+      "path": "/session?source=youtube",
+      "url": "http://localhost:3000/session?source=youtube",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "YouTube URL": true,
+        "Paste a YouTube link and watch here": true,
+        "Load validation YouTube": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Sources YouTube URL Start Load validation YouTube Watch + live analysis Paste a YouTube link and watch here Yentl's live read follows the player and stays synced to playback. The video will play in this space Paste a link above. This area becomes the YouTube player, not a thumbnail. Paste a YouTube URL Waiting for a playable YouTube URL 00:00 No video YENTL'S READ Paste URL Bring the video in first. Paste a YouTube link. The playe",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-youtube",
+      "path": "/session?source=youtube",
+      "url": "http://localhost:3000/session?source=youtube",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "YouTube URL": true,
+        "Paste a YouTube link and watch here": true,
+        "Load validation YouTube": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Sources YouTube URL Start Load validation YouTube Save snapshot Watch + live analysis Paste a YouTube link and watch here The video stays left. Yentl reads, transcribes, and flags moments on the right. The video will play in this space Paste a link above. This area becomes the YouTube player, not a thumbnail. Paste a YouTube URL Waiting for a playable YouTube URL 00:00 No video YENTL'S READ Paste URL Bring the video in first. Past",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 20,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-web-url",
+      "path": "/session?source=web-url",
+      "url": "http://localhost:3000/session?source=web-url",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Web page": true,
+        "Paste a page URL": true,
+        "Analyze URL": true,
+        "URL ROUTING": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Paste the URL once. Yentl will pick the best branch from there. URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. D",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-web-url",
+      "path": "/session?source=web-url",
+      "url": "http://localhost:3000/session?source=web-url",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Web page": true,
+        "Paste a page URL": true,
+        "Analyze URL": true,
+        "URL ROUTING": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Paste the URL once. Yentl will pick the best branch from there. URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. D",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-web-url",
+      "path": "/session?source=web-url",
+      "url": "http://localhost:3000/session?source=web-url",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Web page": true,
+        "Paste a page URL": true,
+        "Analyze URL": true,
+        "URL ROUTING": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Paste the URL once. Yentl will pick the best branch from there. URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. D",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-media-url",
+      "path": "/session?source=media-url",
+      "url": "http://localhost:3000/session?source=media-url",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Direct media URL": true,
+        "Paste a media URL": true,
+        "Load validation media URL": true,
+        "INTAKE ROUTE": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Paste a direct audio or video URL Examples: a podcast MP3, an MP4 file, or a hosted WebM clip. INTAKE ROUTE 1. Verify URL Yentl checks that the URL ",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-media-url",
+      "path": "/session?source=media-url",
+      "url": "http://localhost:3000/session?source=media-url",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Direct media URL": true,
+        "Paste a media URL": true,
+        "Load validation media URL": true,
+        "INTAKE ROUTE": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Paste a direct audio or video URL Examples: a podcast MP3, an MP4 file, or a hosted WebM clip. INTAKE ROUTE 1. Verify URL Yentl checks that the URL ",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-media-url",
+      "path": "/session?source=media-url",
+      "url": "http://localhost:3000/session?source=media-url",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Direct media URL": true,
+        "Paste a media URL": true,
+        "Load validation media URL": true,
+        "INTAKE ROUTE": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Paste a direct audio or video URL Examples: a podcast MP3, an MP4 file, or a hosted WebM clip. INTAKE ROUTE 1. Verify URL Yentl checks that the URL ",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-audio-file",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Audio/video upload": true,
+        "Drop an audio or video file": true,
+        "Drop your recording here": true,
+        "Load validation WAV": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 14,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Select audio or video file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-audio-file",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Audio/video upload": true,
+        "Drop an audio or video file": true,
+        "Drop your recording here": true,
+        "Load validation WAV": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 14,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Select audio or video file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-audio-file",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Audio/video upload": true,
+        "Drop an audio or video file": true,
+        "Drop your recording here": true,
+        "Load validation WAV": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 14,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Select audio or video file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-text-doc",
+      "path": "/session?source=text-doc",
+      "url": "http://localhost:3000/session?source=text-doc",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Transcript or text": true,
+        "Paste or drop a transcript": true,
+        "Load validation TXT": true,
+        "Load validation PDF": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 0 chars · ~0 tokens · 0 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF ",
+      "fieldTextStart": "on on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-text-doc",
+      "path": "/session?source=text-doc",
+      "url": "http://localhost:3000/session?source=text-doc",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Transcript or text": true,
+        "Paste or drop a transcript": true,
+        "Load validation TXT": true,
+        "Load validation PDF": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 0 chars · ~0 tokens · 0 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF ",
+      "fieldTextStart": "on on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-text-doc",
+      "path": "/session?source=text-doc",
+      "url": "http://localhost:3000/session?source=text-doc",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Transcript or text": true,
+        "Paste or drop a transcript": true,
+        "Load validation TXT": true,
+        "Load validation PDF": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 0 chars · ~0 tokens · 0 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF ",
+      "fieldTextStart": "on on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 19,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "Choose a transcript file",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "INPUT",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-claim-quick-check",
+      "path": "/session?source=claim",
+      "url": "http://localhost:3000/session?source=claim",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Quick claim check": true,
+        "Check one specific claim": true,
+        "Optional context or source note": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Quick claim check Check one specific claim Use this when you already know the claim you want checked. Add context only to clarify who, where, or what the claim is about. Claim Optional context or source note 0 / 2,000 characters Context is for disambiguation, not automatic evidence. Load validation claim Check claim GOOD QUICK CHECKS A factual sentence with names, dates, numbers, or places. A quote or statistic tha",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 14,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-claim-quick-check",
+      "path": "/session?source=claim",
+      "url": "http://localhost:3000/session?source=claim",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Quick claim check": true,
+        "Check one specific claim": true,
+        "Optional context or source note": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Quick claim check Check one specific claim Use this when you already know the claim you want checked. Add context only to clarify who, where, or what the claim is about. Claim Optional context or source note 0 / 2,000 characters Context is for disambiguation, not automatic evidence. Load validation claim Check claim GOOD QUICK CHECKS A factual sentence with names, dates, numbers, or places. A quote or statistic tha",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 14,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-claim-quick-check",
+      "path": "/session?source=claim",
+      "url": "http://localhost:3000/session?source=claim",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Quick claim check": true,
+        "Check one specific claim": true,
+        "Optional context or source note": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Quick claim check Check one specific claim Use this when you already know the claim you want checked. Add context only to clarify who, where, or what the claim is about. Claim Optional context or source note 0 / 2,000 characters Context is for disambiguation, not automatic evidence. Load validation claim Check claim GOOD QUICK CHECKS A factual sentence with names, dates, numbers, or places. A quote or statistic tha",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-browser-tab-limit",
+      "path": "/session?source=browser-tab",
+      "url": "http://localhost:3000/session?source=browser-tab",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Use the desktop Chrome extension": true,
+        "Check in-page extension": true,
+        "CONNECTION CHECKLIST": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Heads up — recording the people around you may need their consent. Yentl doesn't know where you are; you do. Back to sources Use the desktop Chrome extension Open the page where the video, podcast, livestream, class, or meeting is already playing. Click the Yentl Chrome extension there; Yentl should appear beside the media so the player, transcript, claims, and evidence stay together on the same page. 1 Open media page Any page wi",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 12,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-browser-tab-limit",
+      "path": "/session?source=browser-tab",
+      "url": "http://localhost:3000/session?source=browser-tab",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Use the desktop Chrome extension": true,
+        "Check in-page extension": true,
+        "CONNECTION CHECKLIST": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Heads up — recording the people around you may need their consent. Yentl doesn't know where you are; you do. Back to sources Use the desktop Chrome extension Open the page where the video, podcast, livestream, class, or meeting is already playing. Click the Yentl Chrome extension there; Yentl should appear beside the media so the player, transcript, claims, and evidence stay together on the same page. 1 Open media page Any page wi",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 12,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "source-browser-tab-limit",
+      "path": "/session?source=browser-tab",
+      "url": "http://localhost:3000/session?source=browser-tab",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Use the desktop Chrome extension": true,
+        "Check in-page extension": true,
+        "CONNECTION CHECKLIST": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Heads up — recording the people around you may need their consent. Yentl doesn't know where you are; you do. Back to sources Use the desktop Chrome extension Open the page where the video, podcast, livestream, class, or meeting is already playing. Click the Yentl Chrome extension there; Yentl should appear beside the media so the player, transcript, claims, and evidence stay together on the same page. 1 Open media page Any page wi",
+      "fieldTextStart": "on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 12,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "extension-snapshot-workspace",
+      "path": "/session?demo=validation&sample=extension_snapshot&view=overview",
+      "url": "http://localhost:3000/session?demo=validation&sample=extension_snapshot&view=overview",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "EXTENSION SNAPSHOT": true,
+        "Civic Ledger hearing clip": true,
+        "Live tab sync is not assumed": true,
+        "Open original": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content yentl Library Waiting · 00:00 Overview Transcript Claims · 2 Markers · 1 Sources Room Save Export End Host Analyst Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW META-READ Mixed-faith read Yentl sees a split pattern: some direct engagement, some rhetorical or evidentiary pressure. Good-faith: 0 Mixed: 1 Bad-faith risk: 1 Uncertain: 0 Review the speaker cards and source-backed claims before sharing this read. Browser-tab source identity preserved Snapsh",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /sessions /session?demo=validation&sample=extension_snapshot&view=overview /session?demo=validation&sample=extension_snapshot&view=transcript /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /tv?demo=validation&sample=extension_snapshot /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /session?demo=validation&sample=ext",
+      "controlCount": 26,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "a",
+          "label": "Transcript",
+          "width": 107,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Claims",
+          "width": 86,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Open original",
+          "width": 125,
+          "height": 36
+        }
+      ]
+    },
+    {
+      "slug": "extension-snapshot-workspace",
+      "path": "/session?demo=validation&sample=extension_snapshot&view=overview",
+      "url": "http://localhost:3000/session?demo=validation&sample=extension_snapshot&view=overview",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "EXTENSION SNAPSHOT": true,
+        "Civic Ledger hearing clip": true,
+        "Live tab sync is not assumed": true,
+        "Open original": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content yentl Library Waiting · 00:00 Overview Transcript Claims · 2 Markers · 1 Sources Room Save Export End Host Analyst Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW META-READ Mixed-faith read Yentl sees a split pattern: some direct engagement, some rhetorical or evidentiary pressure. Good-faith: 0 Mixed: 1 Bad-faith risk: 1 Uncertain: 0 Review the speaker cards and source-backed claims before sharing this read. Browser-tab source identity preserved Snapsh",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /sessions /session?demo=validation&sample=extension_snapshot&view=overview /session?demo=validation&sample=extension_snapshot&view=transcript /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /tv?demo=validation&sample=extension_snapshot /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /session?demo=validation&sample=ext",
+      "controlCount": 26,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "a",
+          "label": "Transcript",
+          "width": 107,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Claims",
+          "width": 86,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Open original",
+          "width": 125,
+          "height": 36
+        }
+      ]
+    },
+    {
+      "slug": "extension-snapshot-workspace",
+      "path": "/session?demo=validation&sample=extension_snapshot&view=overview",
+      "url": "http://localhost:3000/session?demo=validation&sample=extension_snapshot&view=overview",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "EXTENSION SNAPSHOT": true,
+        "Civic Ledger hearing clip": true,
+        "Live tab sync is not assumed": true,
+        "Open original": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content yentl Library Waiting · 00:00 Overview Transcript Claims · 2 Markers · 1 Sources Room Save Export End Host Analyst Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW This validation workspace proves the Chrome extension can hand off a browser-tab analysis as a durable full-workspace snapshot without implying live sync. META-READ Mixed-faith read Yentl sees a split pattern: some direct engagement, some rhetorical or evidentiary pressure. Good-faith: 0 Mixed",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /sessions /session?demo=validation&sample=extension_snapshot&view=overview /session?demo=validation&sample=extension_snapshot&view=transcript /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /tv?demo=validation&sample=extension_snapshot /session?demo=validation&sample=extension_snapshot&view=claims /session?demo=validation&sample=extension_snapshot&view=markers /session?demo=validation&sample=ext",
+      "controlCount": 25,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "a",
+          "label": "Overview",
+          "width": 78,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Transcript",
+          "width": 83,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Claims · 2",
+          "width": 81,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Markers · 1",
+          "width": 87,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Transcript",
+          "width": 107,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Claims",
+          "width": 86,
+          "height": 36
+        },
+        {
+          "tag": "a",
+          "label": "Open original",
+          "width": 125,
+          "height": 36
+        }
+      ]
+    },
+    {
       "slug": "share-target-text",
       "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
-      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://localhost:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -320,8 +1946,10 @@
         "Shared note": true,
         "The claim is specific": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF",
       "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 19,
       "smallControls": [
         {
@@ -377,7 +2005,7 @@
     {
       "slug": "share-target-text",
       "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
-      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://localhost:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
       "width": 430,
       "failures": [],
       "runtimeIssues": [],
@@ -391,8 +2019,10 @@
         "Shared note": true,
         "The claim is specific": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF",
       "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 19,
       "smallControls": [
         {
@@ -448,7 +2078,7 @@
     {
       "slug": "share-target-text",
       "path": "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
-      "url": "http://127.0.0.1:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
+      "url": "http://localhost:3000/session?title=Shared%20note&text=The%20claim%20is%20specific.",
       "width": 768,
       "failures": [],
       "runtimeIssues": [],
@@ -462,8 +2092,10 @@
         "Shared note": true,
         "The claim is specific": true
       },
-      "visibleTextStart": "Skip to main content Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCT",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF",
       "fieldTextStart": "Shared note The claim is specific. on on on on on on",
+      "hrefTextStart": "#main-content",
       "controlCount": 19,
       "smallControls": [
         {
@@ -517,9 +2149,567 @@
       ]
     },
     {
+      "slug": "share-target-web-url",
+      "path": "/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "url": "http://localhost:3000/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a page URL": true,
+        "https://example.com/article": true,
+        "Readable-page import": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Readable-page import will try example.com . URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. Direct media MP3, MP4",
+      "fieldTextStart": "https://example.com/article on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-web-url",
+      "path": "/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "url": "http://localhost:3000/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a page URL": true,
+        "https://example.com/article": true,
+        "Readable-page import": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Readable-page import will try example.com . URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. Direct media MP3, MP4",
+      "fieldTextStart": "https://example.com/article on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-web-url",
+      "path": "/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "url": "http://localhost:3000/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a page URL": true,
+        "https://example.com/article": true,
+        "Readable-page import": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Readable-page import will try example.com . URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. Direct media MP3, MP4",
+      "fieldTextStart": "https://example.com/article on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 13,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-media-url",
+      "path": "/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "url": "http://localhost:3000/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp3": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP3 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp3 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-media-url",
+      "path": "/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "url": "http://localhost:3000/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp3": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP3 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp3 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-media-url",
+      "path": "/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "url": "http://localhost:3000/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp3": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP3 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp3 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-video-url",
+      "path": "/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "url": "http://localhost:3000/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp4": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP4 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp4 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-video-url",
+      "path": "/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "url": "http://localhost:3000/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp4": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP4 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp4 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
+      "slug": "share-target-video-url",
+      "path": "/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "url": "http://localhost:3000/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Paste a media URL": true,
+        "https://example.com/clip.mp4": true,
+        "Direct media URL recognized": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Direct media URL recognized MP4 Yentl will fetch the media, transcribe it, then open Watch. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is ",
+      "fieldTextStart": "https://example.com/clip.mp4 on on on on on",
+      "hrefTextStart": "#main-content",
+      "controlCount": 15,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tag": "input",
+          "label": "mic_stt",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "ai_analysis",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "web_search",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "age_13plus",
+          "width": 16,
+          "height": 16
+        },
+        {
+          "tag": "input",
+          "label": "analytics",
+          "width": 16,
+          "height": 16
+        }
+      ]
+    },
+    {
       "slug": "saved-sessions",
       "path": "/sessions",
-      "url": "http://127.0.0.1:3000/sessions",
+      "url": "http://localhost:3000/sessions",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -532,8 +2722,10 @@
       "textMatches": {
         "Saved sessions": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /privacy",
       "controlCount": 5,
       "smallControls": [
         {
@@ -547,7 +2739,7 @@
     {
       "slug": "saved-sessions",
       "path": "/sessions",
-      "url": "http://127.0.0.1:3000/sessions",
+      "url": "http://localhost:3000/sessions",
       "width": 430,
       "failures": [],
       "runtimeIssues": [],
@@ -560,8 +2752,10 @@
       "textMatches": {
         "Saved sessions": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /privacy",
       "controlCount": 5,
       "smallControls": [
         {
@@ -575,7 +2769,7 @@
     {
       "slug": "saved-sessions",
       "path": "/sessions",
-      "url": "http://127.0.0.1:3000/sessions",
+      "url": "http://localhost:3000/sessions",
       "width": 768,
       "failures": [],
       "runtimeIssues": [],
@@ -588,9 +2782,314 @@
       "textMatches": {
         "Saved sessions": true
       },
+      "forbiddenMatches": {},
       "visibleTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback No saved sessions yet. Start an analysis first. Once Yentl has transcript, claims, markers, or a report brief, the Save action adds a snapshot to this library. Guest saves stay in this browser. Signed-in saves can sync to your account when the cloud backend is configured. Start a new analysis Review local-save privacy",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content / /session /session /privacy",
       "controlCount": 5,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-return-source",
+      "path": "/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "url": "http://localhost:3000/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/session?source=audio-file": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Return to your Yentl flow after this account step. Your source or share context will stay attached. Return to flow Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?source=audio-file /demo /sessions",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-return-source",
+      "path": "/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "url": "http://localhost:3000/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/session?source=audio-file": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Return to your Yentl flow after this account step. Your source or share context will stay attached. Return to flow Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?source=audio-file /demo /sessions",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-return-source",
+      "path": "/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "url": "http://localhost:3000/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/session?source=audio-file": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Return to your Yentl flow after this account step. Your source or share context will stay attached. Return to flow Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?source=audio-file /demo /sessions",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signup-return-library",
+      "path": "/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "url": "http://localhost:3000/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Account creation is not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/sessions?filter=cloud": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Account creation is not enabled in this build. Yentl v1 is guest-first. Saved sessions stay local to this browser unless you export them. Return to your Yentl flow after this account step. Your source, saved session, or share context will stay attached. Return to flow Try demo Privacy",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /sessions?filter=cloud /demo /privacy",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signup-return-library",
+      "path": "/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "url": "http://localhost:3000/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Account creation is not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/sessions?filter=cloud": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Account creation is not enabled in this build. Yentl v1 is guest-first. Saved sessions stay local to this browser unless you export them. Return to your Yentl flow after this account step. Your source, saved session, or share context will stay attached. Return to flow Try demo Privacy",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /sessions?filter=cloud /demo /privacy",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signup-return-library",
+      "path": "/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "url": "http://localhost:3000/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Account creation is not enabled": true,
+        "Return to your Yentl flow": true,
+        "Return to flow": true,
+        "/sessions?filter=cloud": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content Account creation is not enabled in this build. Yentl v1 is guest-first. Saved sessions stay local to this browser unless you export them. Return to your Yentl flow after this account step. Your source, saved session, or share context will stay attached. Return to flow Try demo Privacy",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /sessions?filter=cloud /demo /privacy",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-unsafe-return",
+      "path": "/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "url": "http://localhost:3000/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Unsafe return target ignored": true,
+        "Start checking": true,
+        "/session": true
+      },
+      "forbiddenMatches": {
+        "evil.example": false
+      },
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Unsafe return target ignored. Start from a fresh Yentl workspace instead. Start checking Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /demo /sessions",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-unsafe-return",
+      "path": "/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "url": "http://localhost:3000/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Unsafe return target ignored": true,
+        "Start checking": true,
+        "/session": true
+      },
+      "forbiddenMatches": {
+        "evil.example": false
+      },
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Unsafe return target ignored. Start from a fresh Yentl workspace instead. Start checking Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /demo /sessions",
+      "controlCount": 4,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "auth-signin-unsafe-return",
+      "path": "/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "url": "http://localhost:3000/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "Accounts are not enabled": true,
+        "Unsafe return target ignored": true,
+        "Start checking": true,
+        "/session": true
+      },
+      "forbiddenMatches": {
+        "evil.example": false
+      },
+      "visibleTextStart": "Skip to main content Accounts are not enabled in this build. Yentl v1 is guest-first. You can check a source and save sessions locally in this browser without signing in. Unsafe return target ignored. Start from a fresh Yentl workspace instead. Start checking Try demo Local saves",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session /demo /sessions",
+      "controlCount": 4,
       "smallControls": [
         {
           "tag": "a",
@@ -603,7 +3102,7 @@
     {
       "slug": "room-mode",
       "path": "/tv?demo=validation&sample=cable_008",
-      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "url": "http://localhost:3000/tv?demo=validation&sample=cable_008",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -616,8 +3115,10 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 5 rhetoric signals SOURCES 10 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=cable_008&view=overview /sessions /session/detail/claim/cable_008-claim-1 /session/detail/marker/cable_008-marker-3 /session/detail/marker/cable_008-marker-2 /session/detail/marker/cable_008-marker-4 /session/detail/marker/cable_008-marker-5",
       "controlCount": 8,
       "smallControls": [
         {
@@ -631,7 +3132,7 @@
     {
       "slug": "room-mode",
       "path": "/tv?demo=validation&sample=cable_008",
-      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "url": "http://localhost:3000/tv?demo=validation&sample=cable_008",
       "width": 430,
       "failures": [],
       "runtimeIssues": [],
@@ -644,8 +3145,10 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 5 rhetoric signals SOURCES 10 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=cable_008&view=overview /sessions /session/detail/claim/cable_008-claim-1 /session/detail/marker/cable_008-marker-3 /session/detail/marker/cable_008-marker-2 /session/detail/marker/cable_008-marker-4 /session/detail/marker/cable_008-marker-5",
       "controlCount": 8,
       "smallControls": [
         {
@@ -659,7 +3162,7 @@
     {
       "slug": "room-mode",
       "path": "/tv?demo=validation&sample=cable_008",
-      "url": "http://127.0.0.1:3000/tv?demo=validation&sample=cable_008",
+      "url": "http://localhost:3000/tv?demo=validation&sample=cable_008",
       "width": 768,
       "failures": [],
       "runtimeIssues": [],
@@ -672,9 +3175,110 @@
       "textMatches": {
         "ROOM MODE": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes ",
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 5 rhetoric signals SOURCES 10 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes",
       "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=cable_008&view=overview /sessions /session/detail/claim/cable_008-claim-1 /session/detail/marker/cable_008-marker-3 /session/detail/marker/cable_008-marker-2 /session/detail/marker/cable_008-marker-4 /session/detail/marker/cable_008-marker-5",
       "controlCount": 8,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode-extension-snapshot",
+      "path": "/tv?demo=validation&sample=extension_snapshot",
+      "url": "http://localhost:3000/tv?demo=validation&sample=extension_snapshot",
+      "width": 390,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true,
+        "Extension workspace snapshot proof": true,
+        "Browser tab · Review": true,
+        "/session?demo=validation&sample=extension_snapshot&view=overview": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Extension workspace snapshot proof Browser tab · Review Session Library TRANSCRIPT 3 lines captured CLAIMS 2 checkable items MARKERS 1 rhetoric signals SOURCES 2 0 high reputation Yentl's Read This validation workspace proves the Chrome extension can hand off a browser-tab analysis as a durable full-workspace snapshot without implying live sync. Browser-tab source identity preserved Snapshot carries claims and markers Live sync remains explicitly s",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=extension_snapshot&view=overview /sessions /session/detail/claim/extension-snapshot-claim-secret-bailout /session/detail/claim/extension-snapshot-claim-contract /session/detail/marker/extension-snapshot-marker-bailout",
+      "controlCount": 6,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode-extension-snapshot",
+      "path": "/tv?demo=validation&sample=extension_snapshot",
+      "url": "http://localhost:3000/tv?demo=validation&sample=extension_snapshot",
+      "width": 430,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 430,
+      "clientWidth": 430,
+      "scrollWidth": 430,
+      "bodyScrollWidth": 430,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true,
+        "Extension workspace snapshot proof": true,
+        "Browser tab · Review": true,
+        "/session?demo=validation&sample=extension_snapshot&view=overview": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Extension workspace snapshot proof Browser tab · Review Session Library TRANSCRIPT 3 lines captured CLAIMS 2 checkable items MARKERS 1 rhetoric signals SOURCES 2 0 high reputation Yentl's Read This validation workspace proves the Chrome extension can hand off a browser-tab analysis as a durable full-workspace snapshot without implying live sync. Browser-tab source identity preserved Snapshot carries claims and markers Live sync remains explicitly s",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=extension_snapshot&view=overview /sessions /session/detail/claim/extension-snapshot-claim-secret-bailout /session/detail/claim/extension-snapshot-claim-contract /session/detail/marker/extension-snapshot-marker-bailout",
+      "controlCount": 6,
+      "smallControls": [
+        {
+          "tag": "a",
+          "label": "Skip to main content",
+          "width": 1,
+          "height": 1
+        }
+      ]
+    },
+    {
+      "slug": "room-mode-extension-snapshot",
+      "path": "/tv?demo=validation&sample=extension_snapshot",
+      "url": "http://localhost:3000/tv?demo=validation&sample=extension_snapshot",
+      "width": 768,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 768,
+      "clientWidth": 768,
+      "scrollWidth": 768,
+      "bodyScrollWidth": 768,
+      "overflowX": 0,
+      "textMatches": {
+        "ROOM MODE": true,
+        "Extension workspace snapshot proof": true,
+        "Browser tab · Review": true,
+        "/session?demo=validation&sample=extension_snapshot&view=overview": true
+      },
+      "forbiddenMatches": {},
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Extension workspace snapshot proof Browser tab · Review Session Library TRANSCRIPT 3 lines captured CLAIMS 2 checkable items MARKERS 1 rhetoric signals SOURCES 2 0 high reputation Yentl's Read This validation workspace proves the Chrome extension can hand off a browser-tab analysis as a durable full-workspace snapshot without implying live sync. Browser-tab source identity preserved Snapshot carries claims and markers Live sync remains explicitly s",
+      "fieldTextStart": "",
+      "hrefTextStart": "#main-content /session?demo=validation&sample=extension_snapshot&view=overview /sessions /session/detail/claim/extension-snapshot-claim-secret-bailout /session/detail/claim/extension-snapshot-claim-contract /session/detail/marker/extension-snapshot-marker-bailout",
+      "controlCount": 6,
       "smallControls": [
         {
           "tag": "a",
@@ -687,6 +3291,6 @@
   ],
   "failures": [],
   "chrome_log_tail": [
-    "stderr: DevTools listening on ws://127.0.0.1:65001/devtools/browser/4c04c7b1-965a-4206-b5e2-172f80af1e08"
+    "stderr: DevTools listening on ws://127.0.0.1:51427/devtools/browser/f0ad4abe-b8fd-4b4f-a106-923aa6446b12"
   ]
 }

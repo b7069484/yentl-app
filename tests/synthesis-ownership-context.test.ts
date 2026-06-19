@@ -12,6 +12,11 @@ describe("synthesis claim ownership context", () => {
         end: 3,
         source_audio_kind: "text_import",
         anchor: "Paragraph 2",
+        attribution_status: "uncertain",
+        attribution_reasons: ["quoted_or_reported_speech"],
+        overlap_class: "none",
+        turn_id: "turn-a",
+        segment_id: "seg-a",
       }],
       counters: { claims: 1, false: 1, partial: 0, true: 0, fallacy: 0, bias: 0, rhetoric: 0 },
       speakers: [{ id: 0, label: "Mira" }],
@@ -35,6 +40,8 @@ describe("synthesis claim ownership context", () => {
     expect(parsed.claims[0].attribution_status).toBe("uncertain");
     expect(parsed.source_context).toContain("audit.txt");
     expect(parsed.utterances[0].anchor).toBe("Paragraph 2");
+    expect(parsed.utterances[0].attribution_status).toBe("uncertain");
+    expect(parsed.utterances[0].attribution_reasons).toEqual(["quoted_or_reported_speech"]);
   });
 
   it("adds a CLAIMS section so synthesis can judge by ownership, not counters only", () => {
@@ -46,6 +53,11 @@ describe("synthesis claim ownership context", () => {
         end: 3,
         source_audio_kind: "text_import",
         anchor: "Paragraph 2",
+        attribution_status: "uncertain",
+        attribution_reasons: ["quoted_or_reported_speech"],
+        overlap_class: "none",
+        turn_id: "turn-a",
+        segment_id: "seg-a",
       }],
       counters: { claims: 1, false: 1, partial: 0, true: 0, fallacy: 0, bias: 0, rhetoric: 0 },
       speakers: [{ id: 0, label: "Mira" }],
@@ -67,6 +79,7 @@ describe("synthesis claim ownership context", () => {
     expect(prompt).toContain("SOURCE_CONTEXT:");
     expect(prompt).toContain("document overview: city audit article");
     expect(prompt).toContain("[Paragraph 2] [source=text_import] [Mira]");
+    expect(prompt).toContain("[attribution=uncertain overlap=none turn=turn-a segment=seg-a reasons=quoted_or_reported_speech]");
     expect(prompt).toContain("CLAIMS:");
     expect(prompt).toContain("[Unknown owner]");
     expect(prompt).toContain("stance=reported");
@@ -90,11 +103,16 @@ function successResponse() {
 
 function makeSeg(text: string, i: number): TranscriptSegment {
   return {
+    id: `seg-${i + 1}`,
     text,
     start: i * 10,
     end: i * 10 + 8,
     is_final: true,
     speaker_id: 0,
+    attribution_status: "unsafe_overlap",
+    attribution_reasons: ["parallel_claim"],
+    overlap_class: "parallel_claim",
+    turn_id: `turn-${i + 1}`,
     source_audio_kind: "text_import",
     document_anchor: {
       kind: "paragraph",
@@ -183,6 +201,11 @@ describe("orchestrator synthesis payload", () => {
     expect(body.utterances[0]).toMatchObject({
       source_audio_kind: "text_import",
       anchor: "Paragraph 1",
+      attribution_status: "unsafe_overlap",
+      attribution_reasons: ["parallel_claim"],
+      overlap_class: "parallel_claim",
+      turn_id: "turn-1",
+      segment_id: "seg-1",
     });
   });
 });

@@ -1,0 +1,439 @@
+{
+  "ok": true,
+  "launch_ready": false,
+  "generated_at": "2026-06-12T01:07:48.953Z",
+  "strict": false,
+  "report_path": "docs/superpowers/validation/release-readiness-proof.json",
+  "local_proof_summary": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "deploy_proof_summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "external_proof_summary": {
+    "total": 3,
+    "passed": 0,
+    "failed": 3
+  },
+  "blockers": [
+    {
+      "id": "human-review-sensitive-attribution",
+      "severity": "blocker",
+      "area": "analysis",
+      "status": "missing_manifest",
+      "summary": "Speaker-attribution scoring passes, but sensitive public-claims rows still require human/editorial review.",
+      "evidence": "docs/superpowers/validation/sensitive-attribution-review-proof.json",
+      "count": 5,
+      "reviewed_count": 0,
+      "next_action": "Create the sensitive attribution review manifest, run npm run analysis:proof:sensitive-review, and approve every required window before public launch claims."
+    },
+    {
+      "id": "authenticated-cloud-sync-not-proven",
+      "severity": "blocker",
+      "area": "cloud-sync",
+      "status": "cloud_unavailable",
+      "summary": "Cross-device account-backed saved-session sync has not been proven with a real auth header.",
+      "evidence": "docs/superpowers/validation/cloud-sync-local-proof.json",
+      "next_action": "Run cloud sync proof with YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER against a Clerk/database configured environment, then repeat after production deploy."
+    },
+    {
+      "id": "production-authenticated-cloud-sync-not-proven",
+      "severity": "blocker",
+      "area": "cloud-sync",
+      "status": "signed_out",
+      "summary": "Production cloud sync proof is not authenticated.",
+      "evidence": "docs/superpowers/validation/cloud-sync-deploy-proof.json",
+      "next_action": "Run authenticated production cloud sync proof after deploy."
+    },
+    {
+      "id": "physical-ios-android-device-proof-missing",
+      "severity": "blocker",
+      "area": "mobile",
+      "status": "missing_manifest",
+      "summary": "Physical iOS/Android share sheet, file picker, microphone, install/open, and restore behavior are not yet proven on real devices.",
+      "evidence": "docs/superpowers/validation/mobile-device-canary-proof.json",
+      "missing_device_items": [
+        "ios:run",
+        "android:run"
+      ],
+      "next_action": "Create the mobile device canary manifest, run npm run mobile:proof:devices against production, and keep evidence files for each required iOS and Android flow."
+    },
+    {
+      "id": "large-real-media-production-canaries-missing",
+      "severity": "blocker",
+      "area": "ingestion",
+      "status": "missing_manifest",
+      "summary": "Large real phone-recorded MP4/MOV/WebM and audio upload canaries have not been proven in a production-like Blob + Deepgram environment.",
+      "evidence": "docs/superpowers/validation/large-real-media-canary-proof.json",
+      "missing_media_kinds": [
+        "audio",
+        "video/mp4",
+        "video/quicktime",
+        "video/webm"
+      ],
+      "next_action": "Create the large real media canary manifest, run npm run ingestion:proof:large-real-media against production with Blob and Deepgram configured, and keep the passing proof artifact."
+    },
+    {
+      "id": "production-release-smoke-current-tree-missing",
+      "severity": "blocker",
+      "area": "release",
+      "status": "needs_redeploy_and_smoke",
+      "summary": "The current dirty tree has not been deployed and rerun through production launch smoke.",
+      "evidence": ".github/workflows/ci.yml",
+      "next_action": "Commit/push, get CI green, deploy, then run production smoke without YENTL_SMOKE_SKIP_INTERNAL and with Blob token smoke enabled."
+    }
+  ],
+  "advisory": [
+    {
+      "id": "deploy-proof-stale-ingestion-deploy-proof",
+      "severity": "advisory",
+      "area": "deploy-proof",
+      "status": "older_than_local_proofs",
+      "summary": "ingestion-deploy-proof is older than the newest local proof and should be rerun after deploy.",
+      "evidence": "docs/superpowers/validation/ingestion-deploy-proof.json",
+      "generated_at": "2026-06-10T09:54:11.802Z"
+    },
+    {
+      "id": "deploy-proof-stale-analysis-deploy-both-proof",
+      "severity": "advisory",
+      "area": "deploy-proof",
+      "status": "older_than_local_proofs",
+      "summary": "analysis-deploy-both-proof is older than the newest local proof and should be rerun after deploy.",
+      "evidence": "docs/superpowers/validation/analysis-deploy-both-proof.json",
+      "generated_at": "2026-06-10T09:54:15.670Z"
+    },
+    {
+      "id": "deploy-proof-stale-cloud-sync-deploy-proof",
+      "severity": "advisory",
+      "area": "deploy-proof",
+      "status": "older_than_local_proofs",
+      "summary": "cloud-sync-deploy-proof is older than the newest local proof and should be rerun after deploy.",
+      "evidence": "docs/superpowers/validation/cloud-sync-deploy-proof.json",
+      "generated_at": "2026-06-11T19:56:49.707Z"
+    },
+    {
+      "id": "deploy-proof-stale-a11y-deploy-proof",
+      "severity": "advisory",
+      "area": "deploy-proof",
+      "status": "older_than_local_proofs",
+      "summary": "a11y-deploy-proof is older than the newest local proof and should be rerun after deploy.",
+      "evidence": "docs/superpowers/validation/a11y-deploy-proof.json",
+      "generated_at": "2026-06-10T09:53:58.044Z"
+    },
+    {
+      "id": "deploy-proof-stale-trust-copy-deploy-proof",
+      "severity": "advisory",
+      "area": "deploy-proof",
+      "status": "older_than_local_proofs",
+      "summary": "trust-copy-deploy-proof is older than the newest local proof and should be rerun after deploy.",
+      "evidence": "docs/superpowers/validation/trust-copy-deploy-proof.json",
+      "generated_at": "2026-06-10T09:53:31.139Z"
+    }
+  ],
+  "git": {
+    "branch": "main",
+    "dirty_count": 246,
+    "clean": false
+  },
+  "local_proofs": [
+    {
+      "id": "session-ux-local",
+      "path": "docs/superpowers/validation/session-ux-local-proof.json",
+      "requirement": "Core session UX, saved-session roundtrip, and restore flow have local browser proof.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T20:27:18.278Z",
+      "details": {
+        "failures": 0,
+        "checks": 21
+      }
+    },
+    {
+      "id": "ingestion-api-local",
+      "path": "docs/superpowers/validation/ingestion-local-proof.json",
+      "requirement": "Core ingestion API paths and validation fixtures pass locally.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T00:01:14.559Z",
+      "details": {
+        "proof_scope": "local",
+        "failures": 0,
+        "checks": 20
+      }
+    },
+    {
+      "id": "ingestion-ui-local",
+      "path": "docs/superpowers/validation/ingestion-ui-local-proof.json",
+      "requirement": "Rendered ingestion UI handoff flows pass locally.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T01:01:43.253Z",
+      "details": {
+        "failures": 0,
+        "checks": 11
+      }
+    },
+    {
+      "id": "text-document-fixtures",
+      "path": "docs/superpowers/validation/text-document-fixtures-proof.json",
+      "requirement": "Text, document, caption, and PDF fixtures are covered.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T19:11:46.158Z",
+      "details": {
+        "failures": 0,
+        "checks": 5
+      }
+    },
+    {
+      "id": "synthesis-metaread",
+      "path": "docs/superpowers/validation/synthesis-metaread-proof.json",
+      "requirement": "Full-session synthesis and meta-read quality gates pass.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T23:32:34.286Z",
+      "details": {
+        "failures": 0,
+        "checks": 6
+      }
+    },
+    {
+      "id": "speaker-attribution",
+      "path": "docs/superpowers/validation/speaker-attribution-proof.json",
+      "requirement": "Multi-speaker hard-window scoring gate passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T00:14:13.859Z",
+      "details": {
+        "launch_ready": true,
+        "public_claims_review_status": "review_required_before_public_claims",
+        "human_review_required_count": 5,
+        "checks": 9
+      }
+    },
+    {
+      "id": "mobile-pwa-local",
+      "path": "docs/superpowers/validation/mobile-pwa-local-proof.json",
+      "requirement": "Mobile/PWA route rendering has local browser proof.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T00:09:56.594Z",
+      "details": {
+        "failures": 0,
+        "checks": 60
+      }
+    },
+    {
+      "id": "pwa-native-contract",
+      "path": "docs/superpowers/validation/pwa-native-contract-proof.json",
+      "requirement": "PWA install, share, launch-handler, and file-handler contract passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T00:08:24.587Z",
+      "details": {
+        "failures": 0,
+        "checks": 6
+      }
+    },
+    {
+      "id": "cloud-sync-local",
+      "path": "docs/superpowers/validation/cloud-sync-local-proof.json",
+      "requirement": "Saved-session cloud-sync API reports a safe local mode.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T00:49:46.600Z",
+      "details": {
+        "cloud_mode": "cloud_unavailable",
+        "authenticated_proof_requested": false,
+        "authenticated_proof_skipped": false,
+        "failures": 0,
+        "checks": 5
+      }
+    },
+    {
+      "id": "extension-local",
+      "path": "docs/superpowers/validation/installed-extension-local-proof.json",
+      "requirement": "Installed Chrome extension local proof passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T22:23:08.635Z",
+      "details": {}
+    },
+    {
+      "id": "extension-external",
+      "path": "docs/superpowers/validation/installed-extension-external-proof.json",
+      "requirement": "Installed Chrome extension external media proof passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T22:36:58.766Z",
+      "details": {}
+    },
+    {
+      "id": "extension-store-readiness",
+      "path": "docs/superpowers/validation/extension-store-readiness.json",
+      "requirement": "Chrome Web Store package/readiness checks pass.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-12T01:02:18.081Z",
+      "details": {}
+    },
+    {
+      "id": "a11y-local",
+      "path": "docs/superpowers/validation/a11y-local-proof.json",
+      "requirement": "Local accessibility proof passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-10T06:28:27.261Z",
+      "details": {
+        "failures": 0,
+        "checks": 6
+      }
+    }
+  ],
+  "deploy_proofs": [
+    {
+      "id": "ingestion-deploy-proof",
+      "path": "docs/superpowers/validation/ingestion-deploy-proof.json",
+      "requirement": "Production/deployed proof artifact exists and passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-10T09:54:11.802Z",
+      "details": {
+        "proof_scope": "deploy",
+        "failures": 0,
+        "checks": 12
+      }
+    },
+    {
+      "id": "analysis-deploy-both-proof",
+      "path": "docs/superpowers/validation/analysis-deploy-both-proof.json",
+      "requirement": "Production/deployed proof artifact exists and passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-10T09:54:15.670Z",
+      "details": {
+        "failures": 0,
+        "checks": 1
+      }
+    },
+    {
+      "id": "cloud-sync-deploy-proof",
+      "path": "docs/superpowers/validation/cloud-sync-deploy-proof.json",
+      "requirement": "Production/deployed proof artifact exists and passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-11T19:56:49.707Z",
+      "details": {
+        "cloud_mode": "signed_out",
+        "authenticated_proof_requested": false,
+        "authenticated_proof_skipped": true,
+        "failures": 0,
+        "checks": 6
+      }
+    },
+    {
+      "id": "a11y-deploy-proof",
+      "path": "docs/superpowers/validation/a11y-deploy-proof.json",
+      "requirement": "Production/deployed proof artifact exists and passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-10T09:53:58.044Z",
+      "details": {
+        "failures": 0,
+        "checks": 6
+      }
+    },
+    {
+      "id": "trust-copy-deploy-proof",
+      "path": "docs/superpowers/validation/trust-copy-deploy-proof.json",
+      "requirement": "Production/deployed proof artifact exists and passes.",
+      "ok": true,
+      "status": "passed",
+      "generated_at": "2026-06-10T09:53:31.139Z",
+      "details": {
+        "failures": 0,
+        "checks": 7
+      }
+    }
+  ],
+  "external_proofs": [
+    {
+      "id": "sensitive-attribution-review",
+      "path": "docs/superpowers/validation/sensitive-attribution-review-proof.json",
+      "requirement": "Human/editorial review approves all sensitive speaker-attribution windows before public launch claims.",
+      "ok": false,
+      "status": "failed",
+      "generated_at": "2026-06-12T00:44:18.414Z",
+      "details": {
+        "launch_ready": false,
+        "public_claims_review_status": "review_required_before_public_claims",
+        "required_window_count": 5,
+        "reviewed_window_count": 0,
+        "speaker_proof_generated_at": "2026-06-12T00:14:13.859Z",
+        "manifest_status": "missing_manifest",
+        "required_missing": [
+          "israel_010_sensitive_boundary",
+          "holocaust_010_historical_framing",
+          "c2_quote_09_brown_quote_boundary",
+          "c2_ident_10_identity_boundary",
+          "c2_platform_07_clip_stack"
+        ],
+        "failures": 0,
+        "checks": 1
+      }
+    },
+    {
+      "id": "mobile-device-canary",
+      "path": "docs/superpowers/validation/mobile-device-canary-proof.json",
+      "requirement": "Physical iOS and Android share, file picker, microphone, install/open, and restore canaries pass.",
+      "ok": false,
+      "status": "failed",
+      "generated_at": "2026-06-12T00:40:37.919Z",
+      "details": {
+        "launch_ready": false,
+        "proof_scope": "deploy",
+        "production_like": true,
+        "manifest_status": "missing_manifest",
+        "required_missing": [
+          "ios:run",
+          "android:run"
+        ],
+        "failures": 0,
+        "checks": 0
+      }
+    },
+    {
+      "id": "large-real-media-canary",
+      "path": "docs/superpowers/validation/large-real-media-canary-proof.json",
+      "requirement": "Large real phone-recorded audio/video canaries pass through production Blob upload and transcription.",
+      "ok": false,
+      "status": "failed",
+      "generated_at": "2026-06-12T00:36:11.335Z",
+      "details": {
+        "launch_ready": false,
+        "proof_scope": "deploy",
+        "production_like": true,
+        "manifest_status": "missing_manifest",
+        "required_missing": [
+          "audio",
+          "video/mp4",
+          "video/quicktime",
+          "video/webm"
+        ],
+        "case_summary": {
+          "total": 0,
+          "audio": 0,
+          "video_mp4": 0,
+          "video_quicktime": 0,
+          "video_webm": 0
+        },
+        "failures": 0,
+        "checks": 0
+      }
+    }
+  ]
+}

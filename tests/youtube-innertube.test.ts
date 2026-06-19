@@ -15,7 +15,7 @@ vi.mock("youtubei.js", () => ({
 
 // ─── Import under test (after mocks) ─────────────────────────────────────────
 
-import { fetchViaInnertube, CaptionError } from "@/lib/server/youtube-captions";
+import { fetchViaInnertube } from "@/lib/server/youtube-captions";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

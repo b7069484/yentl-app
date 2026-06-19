@@ -2,54 +2,15 @@
   "id": "solo_005",
   "title": "Hans Rosling: Global population growth, box by box",
   "category": "solo_monologue",
-  "startedAt": "2026-06-10T06:56:45.256Z",
-  "finishedAt": "2026-06-10T06:57:29.051Z",
+  "startedAt": "2026-06-10T09:53:30.461Z",
+  "finishedAt": "2026-06-10T09:54:15.656Z",
   "baseUrl": "https://yentl.it",
   "verify": "both",
   "utterancesAvailable": 125,
   "utterancesReplayed": 6,
   "claims": [
     {
-      "claim_text": "The world population reached 3 billion people at some point",
-      "utterance_start": 16.505,
-      "utterance_end": 24.664999,
-      "topic": "Society",
-      "topic_secondary": "History",
-      "stance": "reported",
-      "ownership": {
-        "owner_speaker_id": 0,
-        "attribution_status": "confident",
-        "attribution_reasons": [
-          "single_speaker_high_confidence"
-        ],
-        "stance": "reported",
-        "confidence": 0.9,
-        "source_turn_ids": [],
-        "source_segment_ids": []
-      },
-      "id": "solo_005-claim-1",
-      "speaker_id": 0,
-      "status": "confirmed",
-      "provisional": {
-        "primary_label": "TRUE",
-        "score": 98,
-        "annotations": [
-          "historical demographic milestone"
-        ],
-        "explanation": "World population reached approximately 3 billion around 1960, a well-established demographic milestone."
-      },
-      "confirmed": {
-        "primary_label": "TRUE",
-        "score": 98,
-        "annotations": [
-          "Well-documented demographic milestone"
-        ],
-        "explanation": "The world population reached 3 billion around 1960, according to the United Nations and demographic historical records. This is a well-established historical fact. The population has since grown well past this milestone, reaching 8 billion in November 2022.",
-        "sources": []
-      }
-    },
-    {
-      "claim_text": "The world population reached 3 billion people in 1960.",
+      "claim_text": "The world population reached 3,000,000,000 people in 1960.",
       "utterance_start": 25.465,
       "utterance_end": 27.785,
       "topic": "Society",
@@ -66,25 +27,98 @@
         "source_turn_ids": [],
         "source_segment_ids": []
       },
-      "id": "solo_005-claim-2",
+      "id": "solo_005-claim-1",
       "speaker_id": 0,
       "status": "confirmed",
       "provisional": {
         "primary_label": "TRUE",
-        "score": 95,
+        "score": 92,
         "annotations": [
           "well-established demographic fact"
         ],
-        "explanation": "The world population is widely documented to have reached approximately 3 billion around 1959-1960, with the UN typically citing 1960 as the milestone year."
+        "explanation": "The global population is widely recognized to have reached approximately 3 billion around 1960, based on UN and other demographic estimates."
       },
       "confirmed": {
         "primary_label": "TRUE",
         "score": 95,
         "annotations": [
-          "Widely documented demographic milestone"
+          "Multiple authoritative sources confirm 1960 as the year world population reached 3 billion"
         ],
-        "explanation": "According to UN demographic data and other authoritative sources, the world population reached approximately 3 billion in 1960. This is a well-established historical fact.",
-        "sources": []
+        "explanation": "According to the UN and Wikipedia, world population reached 2 billion in 1927 and 3 billion in 1960 (taking 33 years). The Federal Reserve Bank of Chicago and Population Connection corroborate this milestone date.",
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/World_population_milestones",
+            "domain": "en.wikipedia.org",
+            "title": "World population milestones - Wikipedia",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.quora.com/In-1960-the-global-population-was-3-billion-in-1927-it-was-2-billion-What-was-the-global-exponential-annual-population-growth-rate-for-that-period",
+            "domain": "quora.com",
+            "title": "In 1960, the global population was 3 billion; in 1927, it was 2 billion. What was the global exponential annual population growth rate for that period? - Quora",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.chicagofed.org/publications/chicago-fed-letter/2001/september-169",
+            "domain": "chicagofed.org",
+            "title": "The World's Population Conundrum - Federal Reserve Bank of Chicago",
+            "stance": "supports",
+            "excerpt": "From the late 1920s it took approximately 33 years for the world's population to reach 3 billion in 1960.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://populationconnection.org/learn/population-milestones/",
+            "domain": "populationconnection.org",
+            "title": "Population Milestones - Population Connection",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/World_population",
+            "domain": "en.wikipedia.org",
+            "title": "World population - Wikipedia",
+            "stance": "supports",
+            "excerpt": "The UN estimated the world population reached one billion in 1804, two billion in 1927, and it took only 33 years to reach three billion in 1960.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.stlouisfed.org/publications/regional-economist/2022/sep/what-helps-explain-world-population-explosion",
+            "domain": "stlouisfed.org",
+            "title": "What Helps Explain the World Population Explosion? | St. Louis Fed",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://earthsky.org/human-world/this-date-in-science-6-billion-humans-and-counting/",
+            "domain": "earthsky.org",
+            "title": "It's been 20 years since the Day of 6 Billion | Human World | EarthSky",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://datatopics.worldbank.org/world-development-indicators/stories/a-changing-world-population.html",
+            "domain": "datatopics.worldbank.org",
+            "title": "WDI - A changing world population",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3777609/",
+            "domain": "pmc.ncbi.nlm.nih.gov",
+            "title": "How the World Survived the Population Bomb - PMC - NIH",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "high"
+          }
+        ]
       }
     }
   ],

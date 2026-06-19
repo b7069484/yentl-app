@@ -39,6 +39,10 @@ describe("public entry pages", () => {
     expect(screen.getByText(/Open-tab audio capture is not exposed by mobile Safari/i)).toBeTruthy();
     expect(screen.getByText(/installed app can also open supported files/i)).toBeTruthy();
     expect(screen.getByText(/installed-app file opens/i)).toBeTruthy();
+    expect(screen.getByText("Native shell status")).toBeTruthy();
+    expect(screen.getByText("Installable web app first; store shells after proof.")).toBeTruthy();
+    expect(screen.getByText("Native shells later")).toBeTruthy();
+    expect(screen.getByText(/Native iOS and Android store shells are not shipped in v1/i)).toBeTruthy();
   });
 
   it("publishes the honest v1 pricing posture", () => {

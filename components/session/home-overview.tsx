@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ExternalLink, FileText, MonitorPlay, Radio, Settings2 } from "lucide-react";
+import { ArrowLeft, Captions, ExternalLink, FileText, MonitorPlay, Radio, SearchCheck, Settings2 } from "lucide-react";
 import { useSession } from "@/lib/client/session-store";
 import { sessionViewHref } from "@/lib/client/session-route";
 import {
@@ -307,6 +307,86 @@ function TextSourceReviewCard({
   );
 }
 
+function BrowserTabSnapshotCard({ source }: { source: SessionSource }) {
+  const searchParams = useSearchParams();
+  if (source.kind !== "browser_tab") return null;
+
+  const title = source.title?.trim() || "Captured browser tab";
+  const host = source.url ? sourceUrlHostname(source.url) : "Chrome extension";
+
+  return (
+    <section
+      data-testid="browser-tab-snapshot-card"
+      className="min-w-0 rounded-lg border border-line bg-paper px-4 py-3.5"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[.12em] text-ink-4">
+            <MonitorPlay className="h-3.5 w-3.5 text-teal" aria-hidden />
+            Extension snapshot
+          </div>
+          <h2 className="mt-2 truncate font-serif text-[22px] leading-tight text-ink">
+            {title}
+          </h2>
+          <p className="mt-1 truncate text-[12px] text-ink-4">{host}</p>
+        </div>
+        <span className="rounded-full border border-amber-2/25 bg-amber-soft px-2 py-0.5 text-[10.5px] font-semibold text-amber-2">
+          Snapshot
+        </span>
+      </div>
+
+      <p className="mt-3 rounded-lg border border-line bg-cream px-3 py-2 text-[12.5px] leading-relaxed text-ink-3">
+        This workspace preserves the extension panel transcript, claims,
+        markers, and source identity as a durable review snapshot. Live tab sync
+        is not assumed after the handoff.
+      </p>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+        <div className="rounded-lg border border-line bg-cream px-3 py-2">
+          <div className="font-semibold text-ink-2">Same source</div>
+          <div className="text-ink-4">browser tab identity</div>
+        </div>
+        <div className="rounded-lg border border-line bg-cream px-3 py-2">
+          <div className="font-semibold text-ink-2">Review mode</div>
+          <div className="text-ink-4">safe to export</div>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link
+          href={sessionViewHref(searchParams, "transcript", { block: null })}
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-line bg-cream px-3 text-[12px] font-semibold text-ink-2 hover:bg-cream-2"
+        >
+          <Captions className="h-3.5 w-3.5" aria-hidden />
+          Transcript
+        </Link>
+        <Link
+          href={sessionViewHref(searchParams, "claims", {
+            block: null,
+            topic: null,
+            type: null,
+            severity: null,
+          })}
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-line bg-cream px-3 text-[12px] font-semibold text-ink-2 hover:bg-cream-2"
+        >
+          <SearchCheck className="h-3.5 w-3.5" aria-hidden />
+          Claims
+        </Link>
+        {source.url && (
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-line bg-cream px-3 text-[12px] font-semibold text-ink-2 hover:bg-cream-2"
+          >
+            Open original <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+          </a>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function BrowserTabEmptyState() {
   const router = useRouter();
   const reset = useSession((s) => s.reset);
@@ -563,6 +643,7 @@ export function HomeOverview() {
       <div className="grid gap-5 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] lg:items-start">
         <div className="grid gap-5">
           <SourceHealthCard health={sourceHealth} />
+          <BrowserTabSnapshotCard source={source} />
           <TextSourceReviewCard source={source} transcript={transcript} claims={claims} />
         </div>
 

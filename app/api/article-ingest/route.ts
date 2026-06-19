@@ -248,7 +248,7 @@ function extractBetweenStartAndBoundary(html: string, startRe: RegExp, boundaryR
 }
 
 function htmlToText(html: string) {
-  const withoutNoise = html
+  const withoutNoise = removeReadablePageChrome(html)
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
     .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
     .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ")
@@ -260,11 +260,29 @@ function htmlToText(html: string) {
     .replace(/<form\b[\s\S]*?<\/form>/gi, " ")
     .replace(/<table\b[\s\S]*?<\/table>/gi, " ")
     .replace(/<figure\b[\s\S]*?<\/figure>/gi, " ")
-    .replace(/<sup\b[\s\S]*?<\/sup>/gi, " ");
+    .replace(/<sup\b[\s\S]*?<\/sup>/gi, " ")
+    .replace(/<button\b[\s\S]*?<\/button>/gi, " ")
+    .replace(/<dialog\b[\s\S]*?<\/dialog>/gi, " ");
   const withBreaks = withoutNoise
-    .replace(/<\/(p|div|section|article|main|header|footer|li|blockquote|h[1-6]|tr)>/gi, "\n")
+    .replace(/<\/(p|div|section|article|main|header|footer|li|blockquote|h[1-6]|tr)>/gi, "\n\n")
     .replace(/<br\s*\/?>/gi, "\n");
   return normalizeWhitespace(decodeHtml(stripTags(withBreaks)));
+}
+
+function removeReadablePageChrome(html: string) {
+  const noiseToken =
+    "\\b(?:ad|ads|advert|advertisement|sponsor|sponsored|promo|promoted|newsletter|subscribe|subscription|cookie|consent|banner|modal|overlay|share|social|related|recommendations?|recommended|comments?|discussion|paywall|signin|sign-in|login)\\b";
+  const noisyBlockRe = new RegExp(
+    `<([a-z][a-z0-9-]*)\\b(?=[^>]*(?:id|class|role|aria-label|data-[a-z0-9_-]+)=["'][^"']*${noiseToken}[^"']*["'])[^>]*>[\\s\\S]*?<\\/\\1>`,
+    "gi",
+  );
+  let cleaned = html;
+  for (let i = 0; i < 4; i += 1) {
+    const next = cleaned.replace(noisyBlockRe, " ");
+    if (next === cleaned) break;
+    cleaned = next;
+  }
+  return cleaned;
 }
 
 function cleanReadableText(text: string) {
@@ -293,10 +311,11 @@ function stripTags(value: string) {
 function normalizeWhitespace(value: string) {
   return value
     .replace(/\u00a0/g, " ")
+    .replace(/\r\n?/g, "\n")
     .replace(/[ \t]+/g, " ")
-    .replace(/\n\s*\n\s*\n+/g, "\n\n")
-    .split(/\n+/)
-    .map((line) => line.trim())
+    .replace(/\n{3,}/g, "\n\n")
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.replace(/\n+/g, " ").trim())
     .filter(Boolean)
     .join("\n\n")
     .trim();

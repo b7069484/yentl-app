@@ -41,10 +41,27 @@ function makeSession(): Session {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("session-sync client adapter", () => {
+  it("skips network calls when account sync is not configured", async () => {
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await saveCloudSession(makeSession(), { id: "same-id", name: "Synced" });
+
+    expect(result).toEqual({
+      ok: false,
+      status: "unavailable",
+      message: "Account sync is not configured for this Yentl environment.",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("maps signed-out API responses into a non-throwing fallback result", async () => {
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
     vi.stubGlobal("fetch", vi.fn(async () =>
       new Response(
         JSON.stringify({
@@ -65,6 +82,7 @@ describe("session-sync client adapter", () => {
   });
 
   it("posts the local save id so account sync and IndexedDB share one identity", async () => {
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
     const fetchMock = vi.fn(async () =>
       Response.json({ session: makeMeta({ id: "same-id", name: "Synced" }) }),
     );
@@ -84,6 +102,7 @@ describe("session-sync client adapter", () => {
   });
 
   it("loads cloud-only sessions through the per-session API", async () => {
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
     vi.stubGlobal("fetch", vi.fn(async () =>
       Response.json({ session: { ...makeMeta({ id: "cloud-only" }), session: makeSession() } }),
     ));

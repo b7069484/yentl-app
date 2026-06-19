@@ -1,0 +1,61 @@
+{
+  "_template": true,
+  "_copy_to": "agent-work/validation/large-real-media-canaries.json",
+  "_proof_command": "npm run ingestion:proof:large-real-media",
+  "_instructions": [
+    "Use real phone-recorded media, not the deterministic validation fixtures.",
+    "Each file must be at least 4 MB unless YENTL_REAL_MEDIA_CANARY_MIN_BYTES is deliberately changed.",
+    "Run against a production-like origin with Blob upload and Deepgram configured."
+  ],
+  "app_origin": "https://yentl.it",
+  "cases": [
+    {
+      "id": "phone_audio_real_world",
+      "filename": "replace-with-phone-audio.m4a",
+      "mime": "audio/mp4",
+      "path": "agent-work/validation/real-media/replace-with-phone-audio.m4a",
+      "duration_sec": null,
+      "expected_phrases": [
+        "replace with an exact phrase spoken in the recording"
+      ],
+      "min_utterances": 1,
+      "min_speakers": 1
+    },
+    {
+      "id": "phone_video_mp4_real_world",
+      "filename": "replace-with-phone-video.mp4",
+      "mime": "video/mp4",
+      "path": "agent-work/validation/real-media/replace-with-phone-video.mp4",
+      "duration_sec": null,
+      "expected_phrases": [
+        "replace with an exact phrase spoken in the recording"
+      ],
+      "min_utterances": 1,
+      "min_speakers": 1
+    },
+    {
+      "id": "phone_video_mov_real_world",
+      "filename": "replace-with-iphone-video.mov",
+      "mime": "video/quicktime",
+      "path": "agent-work/validation/real-media/replace-with-iphone-video.mov",
+      "duration_sec": null,
+      "expected_phrases": [
+        "replace with an exact phrase spoken in the recording"
+      ],
+      "min_utterances": 1,
+      "min_speakers": 1
+    },
+    {
+      "id": "phone_video_webm_real_world",
+      "filename": "replace-with-android-or-browser-video.webm",
+      "mime": "video/webm",
+      "path": "agent-work/validation/real-media/replace-with-android-or-browser-video.webm",
+      "duration_sec": null,
+      "expected_phrases": [
+        "replace with an exact phrase spoken in the recording"
+      ],
+      "min_utterances": 1,
+      "min_speakers": 1
+    }
+  ]
+}

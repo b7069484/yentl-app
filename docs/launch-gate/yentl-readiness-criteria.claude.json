@@ -1,0 +1,88 @@
+{
+  "criteria_for": "yentl-readiness-board.json",
+  "owner": "claude-yentl (Readiness)",
+  "version": "1.0",
+  "updatedAt": "2026-06-19",
+  "note": "Readiness-authored acceptance bar + independent-reproduction record. The board imports these. A row reaches 'verified' ONLY after claude-yentl personally re-derives the proof. 'accepted' is Owner-only.",
+  "criteria": {
+    "P0-001": {
+      "acceptance_criteria": "Prod yentl.it /api/document-ingest returns 200 with extracted text for the validation PDF (no Next error page); prod home + key routes 200 and render; post-deploy battery (trust/a11y/ingestion/analysis) green; P0-002 env CRITICALs verified BEFORE deploy; the deployed commit set is coherent (not a blind 246-file dump).",
+      "proof_required": ["curl prod document-ingest 200 + text", "agent-browser renders prod /session", "post-deploy proof JSONs green", "git: deployed set reviewed"],
+      "readiness_verdict": "blocked-until-staged-and-env-verified",
+      "reproduction_plan": "After Operator deploys: I re-curl prod document-ingest + youtube-ingest, re-run the deploy battery myself, and load prod in agent-browser. Owner turns the deploy key."
+    },
+    "P0-002": {
+      "acceptance_criteria": "Live AI Gateway resolves the configured model slug (anthropic/claude-opus-4.7 or corrected) — a real call returns 200, not a gateway 404/400; prod paid route (e.g. /api/extract-claims) returns 401 when YENTL_REQUIRE_AUTH=1 and no auth; prod /api/corpus-sample returns 404 (validation-demo OFF).",
+      "proof_required": ["live model call 200", "prod paid route 401 unauth", "prod corpus-sample 404"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I probe the live gateway for the slug and curl the prod auth + corpus-sample behavior myself."
+    },
+    "P0-003": {
+      "acceptance_criteria": "Prod /api/youtube-ingest returns real transcript_segments (>0) for a known public video — not {code:PRIVATE}. Works LOCALLY today (241 segments); must work from Vercel IPs.",
+      "proof_required": ["prod youtube-ingest real segments for a public video id"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I curl prod youtube-ingest for the TED fixture video and confirm >0 segments."
+    },
+    "P0-004": {
+      "acceptance_criteria": "A redirect/DNS-rebind to a private IP is blocked at fetch time (not just pre-check) in media-ingest + article-ingest; transcribe-batch {url} branch calls assertSafeUrl; legitimate public fetches still succeed; tests cover the rebind/redirect case.",
+      "proof_required": ["test: rebind->private blocked", "transcribe-batch url guarded (code + test)", "no regression on legit fetch"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I re-run the new SSRF tests and attempt a redirect-to-127.0.0.1 against each route myself."
+    },
+    "P0-005": {
+      "acceptance_criteria": "Security events persist to a real sink (not a no-op); a simulated model-slug error does NOT silently 503-refuse every claim invisibly — the failure is observable/alerting, and the gate fail-mode is a deliberate, documented choice.",
+      "proof_required": ["security event reaches sink (artifact)", "model-error path emits an observable signal"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I force a model error locally and confirm the event is recorded + the gate behavior is the documented one."
+    },
+    "P1-001": {
+      "acceptance_criteria": "All 5 hardening headers present on every response (HSTS 63072000+includeSubDomains+preload, nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy disabling camera/geo/payment but PRESERVING microphone, CSP-Report-Only default-src 'self' + Deepgram/Gateway allowlist); tsc+lint+test green; verified via live curl.",
+      "proof_required": ["curl shows 5 headers on / and /api/*", "tests 8/8", "tsc 0", "lint 0"],
+      "readiness_verdict": "verified-local",
+      "reproduction_artifacts": ["local curl 2026-06-19 (5 headers on / and /api/youtube-preview)", "tests/security-headers.test.ts 8/8", "tsc exit 0", "lint exit 0"],
+      "reproduction_plan": "Re-verify on prod after P0-001 deploy; then Owner accepts. Promote CSP to enforce after report window is clean."
+    },
+    "P1-002": {
+      "acceptance_criteria": "A single verdict vocabulary (lib/client/verdict-theme.ts) renders across watch-view, claim-row, claim-detail, chips, markers, TV, mobile — no component shows raw taxonomy labels that contradict it; VerdictChip text/!bg contrast >= 4.5:1 (WCAG AA); verdicts carry icon+text+color (not hue-only); markers carry a severity-scaled icon + a plain word (e.g. 'Inflammatory'); all existing tests stay green; before/after screenshots captured.",
+      "proof_required": ["grep shows one vocabulary source", "measured contrast >= 4.5:1", "marker icon+word present", "tests green", "agent-browser before/after"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I re-run the suite, grep for the removed hardcoded maps, and measure rendered contrast in agent-browser myself before marking verified. (Grok builds in a worktree; I do NOT rubber-stamp.)"
+    },
+    "P1-003": {
+      "acceptance_criteria": "Diarization is ON only behind an explicit, granular consent that the user actively grants; a voiceprint-deletion path exists and works; a recorded legal sign-off (DPIA/TIA update) authorizes biometric processing; default remains OFF. (Owner-gated — autonomy rule 11.)",
+      "proof_required": ["consent flow gates diarize", "voiceprint deletion works", "legal sign-off recorded", "flag default OFF"],
+      "readiness_verdict": "blocked-owner-gate",
+      "reproduction_plan": "I verify diarize stays false without consent and only flips with it; I confirm the deletion path and the recorded sign-off."
+    },
+    "P1-004": {
+      "acceptance_criteria": "Real multi-speaker accuracy is measured on the ACTUAL shipping pipeline (post-P1-003), on at least one real 30-45min multi-speaker debate with human-labeled ground truth; WER + speaker-attribution numbers recorded with the config they were measured under; no public 'robust multi-speaker' claim exceeds the measured evidence.",
+      "proof_required": ["real debate scored end-to-end", "human ground truth", "numbers tagged with shipping config"],
+      "readiness_verdict": "blocked-on-P1-003",
+      "reproduction_plan": "I re-score at least one sample myself and confirm the public copy matches the measured number."
+    },
+    "P1-005": {
+      "acceptance_criteria": "A real public multi-speaker audio URL flows media-ingest -> real Deepgram -> a real transcript (utterances+speakers), NOT a fixture/replay; artifact saved.",
+      "proof_required": ["real Deepgram transcript artifact from a real URL"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I run it myself end-to-end and save the transcript; confirm it is not the validation fixture path."
+    },
+    "P1-006": {
+      "acceptance_criteria": "An Owner-approved design direction exists; each primary surface (Watch, TV, mobile) presents ONE dominant verdict legible at a glance and from a distance; signal language is consistent and consumer-plain (no Meta-Read/Pulse/Counter-read jargon surfaced raw); screenshots match the approved direction.",
+      "proof_required": ["approved design reference", "one dominant verdict per surface", "glanceable TV+mobile screenshots", "jargon removed from user-facing copy"],
+      "readiness_verdict": "blocked-needs-direction",
+      "reproduction_plan": "Start with P1-002. I draft the redesign direction for Owner approval, then verify built screens against the approved frames."
+    },
+    "P2-001": {
+      "acceptance_criteria": "Every proof script/JSON is labeled REAL or SYNTHETIC; the ingestion-deploy proof logic is fixed so a live 5xx fails the check (cannot read ok:true with a 500 hidden in deploy_blockers).",
+      "proof_required": ["labels present", "induced prod 5xx makes the proof fail"],
+      "readiness_verdict": "not-started",
+      "reproduction_plan": "I re-read the proof logic and confirm a 500 now fails it."
+    },
+    "P2-002": {
+      "acceptance_criteria": "Every screen + each meaningful state from docs/audit/2026-06-19/03-frontend-ux.md inventory is captured (desktop + ~390 mobile) into the screenshots folder.",
+      "proof_required": ["screenshot set covering the inventory checklist"],
+      "readiness_verdict": "in-progress (11 key shots captured)",
+      "reproduction_plan": "I spot-check the captured set against the inventory."
+    }
+  }
+}

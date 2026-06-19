@@ -19,7 +19,11 @@ const LOCAL_PROOF_PATH = join(ROOT, "docs/superpowers/validation/ingestion-local
 
 const validationUrls = {
   article: `${APP_ORIGIN}/validation/yentl-synthetic-article.html`,
+  messyArticle: `${APP_ORIGIN}/validation/yentl-messy-article.html`,
   media: `${APP_ORIGIN}/validation/yentl-synthetic-panel.wav`,
+  video: `${APP_ORIGIN}/validation/yentl-synthetic-panel.mp4`,
+  mov: `${APP_ORIGIN}/validation/yentl-synthetic-panel.mov`,
+  webm: `${APP_ORIGIN}/validation/yentl-synthetic-panel.webm`,
   youtube: "https://www.youtube.com/watch?v=fTznEIZRkLg",
 };
 
@@ -37,12 +41,20 @@ async function main() {
   checks.push(await runCheck("consent-gate", proveConsentGate));
   checks.push(await runCheck("ssrf-block", proveSsrfBlock));
   checks.push(await runCheck("article-url-ingest", proveArticleUrlIngest));
+  checks.push(await runCheck("messy-article-url-ingest", proveMessyArticleUrlIngest));
   checks.push(await runCheck("external-article-url-ingest", proveExternalArticleUrlIngest));
   checks.push(await runCheck("direct-media-url-ingest", proveDirectMediaUrlIngest));
+  checks.push(await runCheck("direct-video-url-ingest", proveDirectVideoUrlIngest));
+  checks.push(await runCheck("direct-mov-url-ingest", proveDirectMovUrlIngest));
+  checks.push(await runCheck("direct-webm-url-ingest", proveDirectWebmUrlIngest));
+  checks.push(await runCheck("uploaded-video-file-ingest", proveUploadedVideoFileIngest));
+  checks.push(await runCheck("uploaded-mov-file-ingest", proveUploadedMovFileIngest));
+  checks.push(await runCheck("uploaded-webm-file-ingest", proveUploadedWebmFileIngest));
   checks.push(await runCheck("external-media-url-ingest", proveExternalMediaUrlIngest));
   checks.push(await runCheck("pdf-document-ingest", provePdfDocumentIngest));
   checks.push(await runCheck("upload-audio-consent-gate", proveUploadAudioConsentGate));
   checks.push(await runCheck("upload-audio-token-with-consent", proveUploadAudioTokenWithConsent));
+  checks.push(await runCheck("large-media-upload-streaming-contract", proveLargeMediaUploadStreamingContract));
   checks.push(await runCheck("document-upload-missing-file", proveDocumentUploadMissingFile));
   checks.push(await runCheck("document-upload-unsupported-type", proveDocumentUploadUnsupportedType));
   checks.push(await runCheck("youtube-caption-ingest", proveYouTubeCaptionIngest));
@@ -193,6 +205,39 @@ async function proveArticleUrlIngest() {
   };
 }
 
+async function proveMessyArticleUrlIngest() {
+  const { status, json } = await postJson("/api/article-ingest", {
+    url: validationUrls.messyArticle,
+  });
+
+  assert(status === 200, `messy article ingest returned ${status}: ${JSON.stringify(json)}`);
+  assert(json.validation_fixture === true, "messy article ingest did not use the local validation fixture");
+  assert(json.validation_fixture_id === "yentl_messy_article_html", "messy article fixture id mismatch");
+  assert(json.title === "Yentl Messy Article Fixture", `unexpected messy article title: ${json.title}`);
+  assert(
+    String(json.text).includes("filtration project is six months behind schedule"),
+    "messy article text missing known filtration claim",
+  );
+  assert(
+    String(json.text).includes("bottled-water costs would be reimbursed"),
+    "messy article text missing known reimbursement question",
+  );
+  assert(!String(json.text).includes("Accept cookies"), "messy article included cookie banner chrome");
+  assert(!String(json.text).includes("Share this story"), "messy article included sharing chrome");
+  assert(!String(json.text).includes("Sponsored mortgage offers"), "messy article included ad chrome");
+  assert(!String(json.text).includes("summer camps"), "messy article included related-story chrome");
+  assert(!String(json.text).includes("Reader comments"), "messy article included comment chrome");
+
+  return {
+    status,
+    title: json.title,
+    word_count: json.word_count,
+    source_word_count: json.source_word_count,
+    validation_fixture_id: json.validation_fixture_id,
+    excluded_page_chrome: ["cookie", "share", "ad", "related", "comments"],
+  };
+}
+
 async function proveExternalArticleUrlIngest() {
   const { status, json } = await postJson("/api/article-ingest", {
     url: externalUrls.article,
@@ -241,6 +286,127 @@ async function proveDirectMediaUrlIngest() {
   return {
     status,
     mime: json.mime,
+    utterance_count: json.utterances.length,
+    speaker_count: json.speakers.length,
+    validation_fixture_id: json.validation_fixture_id,
+  };
+}
+
+async function proveDirectVideoUrlIngest() {
+  return proveDirectValidationMediaUrlIngest({
+    url: validationUrls.video,
+    mime: "video/mp4",
+    fixtureId: "yentl_synthetic_panel_mp4",
+    label: "video",
+  });
+}
+
+async function proveDirectMovUrlIngest() {
+  return proveDirectValidationMediaUrlIngest({
+    url: validationUrls.mov,
+    mime: "video/quicktime",
+    fixtureId: "yentl_synthetic_panel_mov",
+    label: "MOV",
+  });
+}
+
+async function proveDirectWebmUrlIngest() {
+  return proveDirectValidationMediaUrlIngest({
+    url: validationUrls.webm,
+    mime: "video/webm",
+    fixtureId: "yentl_synthetic_panel_webm",
+    label: "WebM",
+  });
+}
+
+async function proveDirectValidationMediaUrlIngest({ url, mime, fixtureId, label }) {
+  const { status, json } = await postJson("/api/media-ingest", { url });
+
+  assert(status === 200, `${label} ingest returned ${status}: ${JSON.stringify(json)}`);
+  assert(json.validation_fixture === true, `${label} ingest did not use the local validation fixture`);
+  assert(json.validation_fixture_id === fixtureId, `${label} fixture id mismatch`);
+  assert(json.mime === mime, `unexpected ${label} mime: ${json.mime}`);
+  assert(Array.isArray(json.utterances) && json.utterances.length === 5, `${label} fixture should return 5 utterances`);
+  assert(Array.isArray(json.speakers) && json.speakers.length === 2, `${label} fixture should return 2 speakers`);
+  assert(
+    json.utterances.some((segment) => String(segment.text).includes("city library budget increased by 12 percent")),
+    `${label} transcript missing known budget utterance`,
+  );
+
+  return {
+    status,
+    mime: json.mime,
+    utterance_count: json.utterances.length,
+    speaker_count: json.speakers.length,
+    validation_fixture_id: json.validation_fixture_id,
+  };
+}
+
+async function proveUploadedVideoFileIngest() {
+  return proveUploadedValidationMediaFileIngest({
+    relativePath: "public/validation/yentl-synthetic-panel.mp4",
+    filename: "yentl-synthetic-panel.mp4",
+    mime: "video/mp4",
+    fixtureId: "yentl_synthetic_panel_mp4",
+    label: "uploaded video",
+  });
+}
+
+async function proveUploadedMovFileIngest() {
+  return proveUploadedValidationMediaFileIngest({
+    relativePath: "public/validation/yentl-synthetic-panel.mov",
+    filename: "yentl-synthetic-panel.mov",
+    mime: "video/quicktime",
+    fixtureId: "yentl_synthetic_panel_mov",
+    label: "uploaded MOV",
+  });
+}
+
+async function proveUploadedWebmFileIngest() {
+  return proveUploadedValidationMediaFileIngest({
+    relativePath: "public/validation/yentl-synthetic-panel.webm",
+    filename: "yentl-synthetic-panel.webm",
+    mime: "video/webm",
+    fixtureId: "yentl_synthetic_panel_webm",
+    label: "uploaded WebM",
+  });
+}
+
+async function proveUploadedValidationMediaFileIngest({ relativePath, filename, mime, fixtureId, label }) {
+  const mediaPath = join(ROOT, relativePath);
+  const buffer = await readFile(mediaPath);
+  const form = new FormData();
+  form.append(
+    "file",
+    new Blob([buffer], { type: mime }),
+    filename,
+  );
+  form.append("duration_sec", "31.953");
+
+  const response = await fetchWithTimeout(`${APP_ORIGIN}/api/transcribe-batch`, {
+    method: "POST",
+    headers: {
+      [CONSENT_HEADER]: CONSENT_VALUE,
+    },
+    body: form,
+  });
+  const json = await response.json().catch(() => null);
+
+  assert(response.status === 200, `${label} transcription returned ${response.status}: ${JSON.stringify(json)}`);
+  assert(json.validation_fixture === true, `${label} did not use the local validation fixture`);
+  assert(json.validation_fixture_id === fixtureId, `${label} fixture id mismatch`);
+  assert(Array.isArray(json.utterances) && json.utterances.length === 5, `${label} should return 5 utterances`);
+  assert(Array.isArray(json.speakers) && json.speakers.length === 2, `${label} should return 2 speakers`);
+  assert(
+    json.utterances.some((segment) => String(segment.text).includes("city library budget increased by 12 percent")),
+    `${label} transcript missing known budget utterance`,
+  );
+
+  return {
+    status: response.status,
+    file: relative(ROOT, mediaPath),
+    mime,
+    byte_count: buffer.length,
     utterance_count: json.utterances.length,
     speaker_count: json.speakers.length,
     validation_fixture_id: json.validation_fixture_id,
@@ -396,6 +562,70 @@ async function proveUploadAudioTokenWithConsent() {
   return {
     status: response.status,
     has_client_token: true,
+  };
+}
+
+async function proveLargeMediaUploadStreamingContract() {
+  const clientPath = join(ROOT, "lib/client/audio-ingest.ts");
+  const uploadRoutePath = join(ROOT, "app/api/upload-audio/route.ts");
+  const transcribeRoutePath = join(ROOT, "app/api/transcribe-batch/route.ts");
+  const clientTestPath = join(ROOT, "tests/audio-ingest.test.ts");
+  const streamTestPath = join(ROOT, "tests/streaming-upload.test.ts");
+  const uploadRouteTestPath = join(ROOT, "tests/api/upload-audio.test.ts");
+
+  const clientSource = await readFile(clientPath, "utf8");
+  const uploadRouteSource = await readFile(uploadRoutePath, "utf8");
+  const transcribeRouteSource = await readFile(transcribeRoutePath, "utf8");
+  const clientTestSource = await readFile(clientTestPath, "utf8");
+  const streamTestSource = await readFile(streamTestPath, "utf8");
+  const uploadRouteTestSource = await readFile(uploadRouteTestPath, "utf8");
+
+  const requirements = [
+    ["client threshold is 4MB", clientSource, "BLOB_UPLOAD_THRESHOLD_BYTES = 4 * 1024 * 1024"],
+    ["large client files use Blob upload", clientSource, "file.size >= BLOB_UPLOAD_THRESHOLD_BYTES"],
+    ["Blob upload is private", clientSource, 'access: "private"'],
+    ["Blob upload uses upload token route", clientSource, 'handleUploadUrl: "/api/upload-audio"'],
+    ["Blob upload stores consent payload", clientSource, "clientPayload: sourceAnalysisConsentPayload()"],
+    ["large client files call transcribe-batch with blob_url", clientSource, "blob_url: blobResult.url"],
+    ["token route accepts MP4", uploadRouteSource, '"video/mp4"'],
+    ["token route accepts MOV", uploadRouteSource, '"video/quicktime"'],
+    ["token route accepts WebM", uploadRouteSource, '"video/webm"'],
+    ["token route caps uploads at 500MB", uploadRouteSource, "MAX_SIZE_BYTES = 500 * 1024 * 1024"],
+    ["transcribe route streams private Blob URLs", transcribeRouteSource, "transcribePrivateBlobUrl"],
+    ["transcribe route uses Vercel Blob get", transcribeRouteSource, "await get(url"],
+    ["transcribe route sends Blob stream to Deepgram", transcribeRouteSource, "return transcribeStream(nodeStream, mime)"],
+    ["transcribe route deletes uploaded Blob after JSON transcription", transcribeRouteSource, "await deleteUploadedBlob(blob_url)"],
+    ["multipart threshold is 50MB", transcribeRouteSource, "STREAM_THRESHOLD_BYTES = 50 * 1024 * 1024"],
+    ["multipart files over threshold use stream path", transcribeRouteSource, "file.size > STREAM_THRESHOLD_BYTES"],
+    ["multipart stream path avoids transcribeFile", streamTestSource, "large file does NOT use Buffer.from(arrayBuffer)"],
+    ["client tests prove Blob upload for large files", clientTestSource, "calls @vercel/blob upload() for files >= BLOB_UPLOAD_THRESHOLD_BYTES"],
+    ["client tests prove JSON blob_url handoff", clientTestSource, "calls /api/transcribe-batch with JSON { blob_url, duration_sec } after upload"],
+    ["upload-token tests prove video MIME allowance", uploadRouteTestSource, 'expect(capturedToken!.allowedContentTypes).toContain("video/mp4")'],
+    ["upload-token tests prove MOV MIME allowance", uploadRouteTestSource, 'expect(capturedToken!.allowedContentTypes).toContain("video/quicktime")'],
+    ["upload-token tests prove WebM MIME allowance", uploadRouteTestSource, 'expect(capturedToken!.allowedContentTypes).toContain("video/webm")'],
+  ];
+
+  const missing = requirements
+    .filter(([, source, needle]) => !source.includes(needle))
+    .map(([label]) => label);
+
+  assert(missing.length === 0, `large-media upload contract missing: ${missing.join(", ")}`);
+
+  return {
+    client_blob_threshold_bytes: 4 * 1024 * 1024,
+    server_stream_threshold_bytes: 50 * 1024 * 1024,
+    max_upload_bytes: 500 * 1024 * 1024,
+    blob_upload_route: "/api/upload-audio",
+    transcription_route: "/api/transcribe-batch",
+    allowed_large_video_types: ["video/mp4", "video/quicktime", "video/webm"],
+    proof_files: [
+      relative(ROOT, clientPath),
+      relative(ROOT, uploadRoutePath),
+      relative(ROOT, transcribeRoutePath),
+      relative(ROOT, clientTestPath),
+      relative(ROOT, streamTestPath),
+      relative(ROOT, uploadRouteTestPath),
+    ],
   };
 }
 

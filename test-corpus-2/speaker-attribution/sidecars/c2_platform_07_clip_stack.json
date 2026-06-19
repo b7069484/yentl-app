@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "window_id": "c2_platform_07_clip_stack",
+  "corpus_id": "test-corpus-2",
+  "source_id": "c2_platform_07",
+  "start_s": 5,
+  "end_s": 130,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "Welcome back viewer. I'm Drone Tech, and today we're gonna be heartily laughing at the Washington Post fact checker, Glenn Kessler. Once again, Glenn's fierce ly partisan blinders have gotten him into trouble and is currently in the process of stepping on rakes in the form of Twitter community notes that keep proving he's full of shit. Since Trump, Republicans, and really many other people have accused the Democrats of being bought and paid for by George Soros, the Democrat state media must take the opposite position and attack anybody who makes this claim of being an anti Semi and racist, naturally. And, of course, you've gotta yeah. Yeah. Yeah. Gotta just What's this line? Look at the Soros fact. No. It's just Jews. They're attacking Jewish international bankers. It's what antisemites have been doing for hundreds of years. And it also comes as Trump and a number of his allies have been using dog whistle attacks, anti Semitic attacks against, when they attack DA Alvin Bragg by saying that he is backed by George Soros, who is Jewish. Mister Trump has been indicted. Republican allies now have been continuing his lines of attacking the prosecutor attacking the prosecution and the prosecutor using some anti Semitic dog whistles, also some racist undertones to a lot of that. Of course. What are these racist and anti semitic undertones? Who knows because they never give examples. Apparently, it's just because Bragg is black and Soros is Jewish. It almost seems like democrats want minorities in their party so that they can use their intrinsic qualities as shields from criticism. What? No. Many of you are probably wondering, where did that 700,000,000,000 missing from our economy go? Now to help answer that, let me introduce our good friend, billionaire, head funds manager, George Soros. Thank you very much, mister Soros. You're a great man. Yes. Could I just add that, even though you know what's coming, you won't be able to do anything about it? You're a wise man, mister Soros, a powerful one. You are better than us. Your wife is physically attractive.",
+    "turns": [
+      {
+        "id": "c2-platform-07-commentator-1",
+        "start_s": 5.92,
+        "end_s": 38.61,
+        "speaker_id": "commentator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-platform-07-clip-1",
+        "start_s": 38.61,
+        "end_s": 55.58,
+        "speaker_id": "clip_voice_1",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-platform-07-clip-2",
+        "start_s": 55.58,
+        "end_s": 70.06,
+        "speaker_id": "clip_voice_2",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-platform-07-clip-3",
+        "start_s": 70.06,
+        "end_s": 84.38,
+        "speaker_id": "clip_voice_3",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "c2-platform-07-clip-backchannel-1",
+        "start_s": 84.38,
+        "end_s": 85.02,
+        "speaker_id": "clip_voice_4",
+        "expected_provider_speaker_id": 4,
+        "overlap_class": "backchannel_continuer"
+      },
+      {
+        "id": "c2-platform-07-commentator-2",
+        "start_s": 85.28,
+        "end_s": 100.84,
+        "speaker_id": "commentator",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "c2-platform-07-clip-fragment-1",
+        "start_s": 100.84,
+        "end_s": 102.84,
+        "speaker_id": "clip_voice_5",
+        "expected_provider_speaker_id": 5,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-platform-07-clip-4",
+        "start_s": 102.84,
+        "end_s": 117.65,
+        "speaker_id": "clip_voice_4",
+        "expected_provider_speaker_id": 4,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-platform-07-clip-6",
+        "start_s": 117.65,
+        "end_s": 123.17,
+        "speaker_id": "clip_voice_6",
+        "expected_provider_speaker_id": 6,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-platform-07-clip-3b",
+        "start_s": 123.17,
+        "end_s": 126.21,
+        "speaker_id": "clip_voice_3",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-platform-07-clip-4b",
+        "start_s": 126.21,
+        "end_s": 127.98,
+        "speaker_id": "clip_voice_4",
+        "expected_provider_speaker_id": 4,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "c2-platform-07-clip-6b",
+        "start_s": 128.31,
+        "end_s": 130.22,
+        "speaker_id": "clip_voice_6",
+        "expected_provider_speaker_id": 6,
+        "overlap_class": "quote_or_clip"
+      }
+    ],
+    "claims": [
+      {
+        "id": "c2-platform-07-claim-1",
+        "start_s": 5.92,
+        "end_s": 38.61,
+        "owner_speaker_id": "commentator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-2",
+        "start_s": 38.61,
+        "end_s": 55.58,
+        "owner_speaker_id": "clip_voice_1",
+        "expected_provider_speaker_id": 1,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-3",
+        "start_s": 55.58,
+        "end_s": 70.06,
+        "owner_speaker_id": "clip_voice_2",
+        "expected_provider_speaker_id": 2,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-4",
+        "start_s": 70.06,
+        "end_s": 84.38,
+        "owner_speaker_id": "clip_voice_3",
+        "expected_provider_speaker_id": 3,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-5",
+        "start_s": 85.28,
+        "end_s": 100.84,
+        "owner_speaker_id": "commentator",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-6",
+        "start_s": 102.84,
+        "end_s": 117.65,
+        "owner_speaker_id": "clip_voice_4",
+        "expected_provider_speaker_id": 4,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-7",
+        "start_s": 117.65,
+        "end_s": 123.17,
+        "owner_speaker_id": "clip_voice_6",
+        "expected_provider_speaker_id": 6,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "c2-platform-07-claim-8",
+        "start_s": 123.17,
+        "end_s": 127.98,
+        "owner_speaker_id": "clip_voice_3",
+        "expected_provider_speaker_id": 3,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": [
+      {
+        "id": "c2-platform-07-unsafe-1",
+        "start_s": 100.84,
+        "end_s": 130.22,
+        "reason": "stacked platform clip voices should not be merged into the commentator's own claim"
+      }
+    ]
+  }
+}

@@ -17,14 +17,15 @@
 </head>
 <body>
   <h1>Yentl Speaker Attribution Hard Windows</h1>
-  <p>Generated 2026-06-10T05:37:01.650Z. Missing labels are blockers, not passes.</p>
+  <p>Generated 2026-06-12T00:14:13.857Z. Missing labels are blockers, not passes.</p>
   <section class="summary">
     <div class="metric">Windows<strong>16</strong></div>
-    <div class="metric">Scored<strong>9</strong></div>
+    <div class="metric">Scored<strong>16</strong></div>
     <div class="metric">Partial<strong>0</strong></div>
-    <div class="metric">Missing Labels<strong>7</strong></div>
-    <div class="metric">Mean Speaker Purity<strong>99.8%</strong></div>
+    <div class="metric">Missing Labels<strong>0</strong></div>
+    <div class="metric">Mean Speaker Purity<strong>99.7%</strong></div>
     <div class="metric">Mean Claim Owner Accuracy<strong>100.0%</strong></div>
+    <div class="metric">Stance Risk Spans<strong>1 / 27</strong></div>
   </section>
   <table>
     <thead>
@@ -36,7 +37,7 @@
         <th>Speaker Purity</th>
         <th>Claim Owner</th>
         <th>Unsafe Recall</th>
-        <th>Quote Errors</th>
+        <th>Unsafe / Stance Risk</th>
         <th>WER</th>
         <th>Missing</th>
       </tr>
@@ -50,48 +51,48 @@
         <td>99.6%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
 
       <tr>
-        <td>political_010_collapsed_panel</td>
-        <td>test-corpus/political_010</td>
-        <td>speaker_collapse</td>
-        <td>missing</td>
+        <td>cable_005_nato_panel</td>
+        <td>test-corpus/cable_005</td>
+        <td>crosstalk_turn_attribution</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
         <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus/speaker-attribution/sidecars/political_010_collapsed_panel.json</td>
+        <td>0 / 4</td>
+        <td>25.0%</td>
+        <td>none</td>
       </tr>
 
       <tr>
         <td>israel_010_sensitive_boundary</td>
         <td>test-corpus/israel_010</td>
         <td>sensitive_quote_stance</td>
-        <td>missing</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
         <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus/speaker-attribution/sidecars/israel_010_sensitive_boundary.json</td>
+        <td>0 / 7</td>
+        <td>0.0%</td>
+        <td>none</td>
       </tr>
 
       <tr>
         <td>holocaust_010_historical_framing</td>
         <td>test-corpus/holocaust_010</td>
         <td>historical_memory_boundary</td>
-        <td>missing</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
         <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus/speaker-attribution/sidecars/holocaust_010_historical_framing.json</td>
+        <td>0 / 2</td>
+        <td>0.0%</td>
+        <td>none</td>
       </tr>
 
       <tr>
@@ -102,7 +103,7 @@
         <td>100.0%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
@@ -115,7 +116,7 @@
         <td>100.0%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
@@ -128,7 +129,7 @@
         <td>100.0%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
@@ -141,7 +142,7 @@
         <td>98.7%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
@@ -154,7 +155,7 @@
         <td>100.0%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
@@ -167,22 +168,22 @@
         <td>100.0%</td>
         <td>100.0%</td>
         <td>100.0%</td>
-        <td>0</td>
+        <td>0 / 0</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
 
       <tr>
-        <td>c2_mech_05_interruption_repair</td>
-        <td>test-corpus-2/c2_mech_05</td>
-        <td>heated_interruption_repair</td>
-        <td>missing</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_mech_05_interruption_repair.json</td>
+        <td>c2_mech_03_clip_host_attribution</td>
+        <td>test-corpus-2/c2_mech_03</td>
+        <td>clip_host_attribution</td>
+        <td>scored</td>
+        <td>99.1%</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>0 / 1</td>
+        <td>23.9%</td>
+        <td>none</td>
       </tr>
 
       <tr>
@@ -193,35 +194,35 @@
         <td>99.6%</td>
         <td>100.0%</td>
         <td>n/a</td>
-        <td>2</td>
+        <td>0 / 2</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
 
       <tr>
-        <td>c2_quote_09_harmful_quote</td>
+        <td>c2_quote_09_brown_quote_boundary</td>
         <td>test-corpus-2/c2_quote_09</td>
         <td>harmful_quote_boundary</td>
-        <td>missing</td>
+        <td>scored</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
         <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_quote_09_harmful_quote.json</td>
+        <td>0 / 1</td>
+        <td>0.0%</td>
+        <td>none</td>
       </tr>
 
       <tr>
         <td>c2_ident_10_identity_boundary</td>
         <td>test-corpus-2/c2_ident_10</td>
         <td>identity_definition_boundary</td>
-        <td>missing</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_ident_10_identity_boundary.json</td>
+        <td>scored</td>
+        <td>99.6%</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>0 / 1</td>
+        <td>0.0%</td>
+        <td>none</td>
       </tr>
 
       <tr>
@@ -232,22 +233,22 @@
         <td>99.8%</td>
         <td>100.0%</td>
         <td>100.0%</td>
-        <td>3</td>
+        <td>0 / 3</td>
         <td>0.0%</td>
         <td>none</td>
       </tr>
 
       <tr>
-        <td>c2_platform_03_many_speakers</td>
-        <td>test-corpus-2/c2_platform_03</td>
+        <td>c2_platform_07_clip_stack</td>
+        <td>test-corpus-2/c2_platform_07</td>
         <td>platform_native_speaker_merge</td>
-        <td>missing</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>n/a</td>
-        <td>sidecar:test-corpus-2/speaker-attribution/sidecars/c2_platform_03_many_speakers.json</td>
+        <td>scored</td>
+        <td>98.2%</td>
+        <td>100.0%</td>
+        <td>100.0%</td>
+        <td>0 / 6</td>
+        <td>0.0%</td>
+        <td>none</td>
       </tr></tbody>
   </table>
 </body>

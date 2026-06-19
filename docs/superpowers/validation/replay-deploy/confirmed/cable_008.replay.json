@@ -2,28 +2,28 @@
   "id": "cable_008",
   "title": "Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown",
   "category": "cable_news_debate",
-  "startedAt": "2026-06-10T06:53:34.323Z",
-  "finishedAt": "2026-06-10T06:54:34.104Z",
+  "startedAt": "2026-06-10T07:30:09.560Z",
+  "finishedAt": "2026-06-10T07:30:59.863Z",
   "baseUrl": "https://yentl.it",
   "verify": "confirmed",
   "utterancesAvailable": 115,
   "utterancesReplayed": 10,
   "claims": [
     {
-      "claim_text": "Donald Trump received over 77,000,000 votes (in the 2024 US presidential election).",
+      "claim_text": "Donald Trump received over 77,000,000 votes",
       "utterance_start": 28.33,
       "utterance_end": 30.01,
       "topic": "Politics",
       "topic_secondary": null,
-      "stance": "hedged",
+      "stance": "asserted",
       "ownership": {
         "owner_speaker_id": 2,
-        "attribution_status": "probable",
+        "attribution_status": "confident",
         "attribution_reasons": [
           "single_speaker_high_confidence"
         ],
-        "stance": "hedged",
-        "confidence": 0.55,
+        "stance": "asserted",
+        "confidence": 0.6,
         "source_turn_ids": [],
         "source_segment_ids": []
       },
@@ -34,25 +34,33 @@
         "primary_label": "TRUE",
         "score": 98,
         "annotations": [
-          "Multiple authoritative sources confirm Trump received approximately 77.28 million votes in 2024",
-          "Exceeds the 77,000,000 threshold stated in the claim"
+          "2024 election",
+          "popular vote"
         ],
-        "explanation": "Final/near-final tallies from authoritative sources consistently report Donald Trump received approximately 77.28 million votes in the 2024 US presidential election. The Council on Foreign Relations reports 77,284,118 votes; Brookings reports 77,266,801. Both figures clearly exceed the 77,000,000 threshold in the claim.",
+        "explanation": "Multiple authoritative tallies confirm Donald Trump received approximately 77.3 million votes in the 2024 presidential election, well above 77,000,000. The Council on Foreign Relations cites 77,284,118 votes (49.8%), and other aggregators report ~77,266,801. The claim is accurate.",
         "sources": [
           {
             "url": "https://www.livenowfox.com/news/presidents-most-popular-votes-trump-2024",
             "domain": "livenowfox.com",
             "title": "Popular vote: How Trump’s 77.3 million ranks among past presidential candidates | LiveNOW from FOX",
             "stance": "supports",
-            "excerpt": "Reports Trump received 77.3 million popular votes, ranking among the largest vote totals ever.",
+            "excerpt": "Trump received 77.3 million popular votes in 2024, ranking among the largest vote totals ever.",
             "reputation_tier": "mid"
           },
           {
-            "url": "https://factually.co/fact-checks/politics/2024-us-presidential-election-final-popular-vote-count-74f082",
+            "url": "https://factually.co/fact-checks/politics/trump-2024-total-popular-vote-count-849dbf",
             "domain": "factually.co",
-            "title": "What Was the Final Popular Vote Count in the 2024 Pres...",
+            "title": "How Many Votes Did Donald Trump Get in 2024?",
             "stance": "mixed",
             "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.cfr.org/articles/2024-election-numbers",
+            "domain": "cfr.org",
+            "title": "The 2024 Election by the Numbers | Council on Foreign Relations",
+            "stance": "supports",
+            "excerpt": "Trump won 77,284,118 votes, or 49.8 percent of the votes cast for president, the second highest vote total in U.S. history.",
             "reputation_tier": "mid"
           },
           {
@@ -64,25 +72,9 @@
             "reputation_tier": "mid"
           },
           {
-            "url": "https://www.cfr.org/articles/2024-election-numbers",
-            "domain": "cfr.org",
-            "title": "The 2024 Election by the Numbers | Council on Foreign Relations",
-            "stance": "supports",
-            "excerpt": "CFR reports Trump won 77,284,118 votes, or 49.8 percent of the votes cast — the second-highest vote total in U.S. history.",
-            "reputation_tier": "mid"
-          },
-          {
-            "url": "https://www.brookings.edu/articles/what-the-nation-told-us-in-2024-state-by-state/",
-            "domain": "brookings.edu",
-            "title": "What the nation told us in 2024, state by state | Brookings",
-            "stance": "supports",
-            "excerpt": "Brookings cites a near-final count of Donald Trump at 77,266,801 (49.9%) versus Kamala Harris at 74,981,313.",
-            "reputation_tier": "high"
-          },
-          {
-            "url": "https://factually.co/fact-checks/politics/trump-2024-total-popular-vote-count-849dbf",
+            "url": "https://factually.co/fact-checks/politics/2024-us-presidential-election-final-popular-vote-count-74f082",
             "domain": "factually.co",
-            "title": "How Many Votes Did Donald Trump Get in 2024?",
+            "title": "What Was the Final Popular Vote Count in the 2024 Pres...",
             "stance": "mixed",
             "excerpt": "",
             "reputation_tier": "mid"
@@ -90,7 +82,15 @@
           {
             "url": "https://www.nbcchicago.com/news/politics/who-won-presidential-election-popular-vote-heres-where-the-count-stands/3596427/",
             "domain": "nbcchicago.com",
-            "title": "Who won the presidential election popular vote? Here's where the count stands",
+            "title": "Who won the 2024 popular vote? Here’s where the count stands – NBC Chicago",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.foxnews.com/politics/president-elect-trumps-2024-popular-vote-count-officially-surpasses-2020-election-numbers",
+            "domain": "foxnews.com",
+            "title": "President-elect Trump's 2024 popular vote count officially surpasses 2020's numbers | Fox News",
             "stance": "mixed",
             "excerpt": "",
             "reputation_tier": "mid"
@@ -104,17 +104,17 @@
             "reputation_tier": "mid"
           },
           {
-            "url": "https://www.presidency.ucsb.edu/statistics/elections/2024",
-            "domain": "presidency.ucsb.edu",
-            "title": "2024 | The American Presidency Project",
+            "url": "https://www.fox9.com/news/election-results-popular-vote-kamala-harris-donald-trump",
+            "domain": "fox9.com",
+            "title": "Trump’s popular vote win is GOP's first in 20 years | FOX 9 Minneapolis-St. Paul",
             "stance": "mixed",
             "excerpt": "",
-            "reputation_tier": "high"
+            "reputation_tier": "mid"
           },
           {
-            "url": "https://en.wikipedia.org/wiki/2024_United_States_presidential_election",
-            "domain": "en.wikipedia.org",
-            "title": "2024 United States presidential election - Wikipedia",
+            "url": "https://www.cnn.com/election/2024/results/president",
+            "domain": "cnn.com",
+            "title": "Presidential election results 2024 | CNN Politics",
             "stance": "mixed",
             "excerpt": "",
             "reputation_tier": "mid"
@@ -126,25 +126,14 @@
   "markers": [
     {
       "type": "fallacy",
-      "name": "ad_hominem",
-      "display": "Ad Hominem",
-      "excerpt": "Trump is being Trump",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "Trump is being Trump.",
       "start_time": 3,
       "end_time": 6,
       "severity": "subtle",
-      "explanation": "Dismissing concerns about cognition by reducing the issue to a personality tautology ('Trump is being Trump') attacks/characterizes the person rather than engaging with the substantive question about cognitive function.",
+      "explanation": "Responding to a substantive question about cognitive concerns with a tautological deflection that avoids engaging with the actual question.",
       "id": "cable_008-marker-1"
-    },
-    {
-      "type": "fallacy",
-      "name": "red_herring",
-      "display": "Red Herring",
-      "excerpt": "focusing only on that completely ignores the larger reality forming underneath",
-      "start_time": 22,
-      "end_time": 26,
-      "severity": "subtle",
-      "explanation": "The narrator pivots away from the direct question about cognitive issues to a vague 'larger reality,' diverting attention from the original concern.",
-      "id": "cable_008-marker-2"
     },
     {
       "type": "rhetoric",
@@ -152,21 +141,10 @@
       "display": "Vagueness / Hand-waving",
       "excerpt": "the larger reality forming underneath",
       "start_time": 22,
-      "end_time": 26,
+      "end_time": 25,
       "severity": "clear",
-      "explanation": "The phrase 'larger reality forming underneath' is unspecified and hand-wavy, gesturing at something significant without identifying what it actually is.",
-      "id": "cable_008-marker-3"
-    },
-    {
-      "type": "fallacy",
-      "name": "reductive_fallacy",
-      "display": "Reductive Fallacy",
-      "excerpt": "the conversation almost always gets reduced to personality",
-      "start_time": 13,
-      "end_time": 18,
-      "severity": "subtle",
-      "explanation": "The speaker characterizes opposing analyses as merely reductive personality-focused takes, setting up their own framing as the deeper truth without justification.",
-      "id": "cable_008-marker-4"
+      "explanation": "The phrase gestures at something significant without specifying what that 'larger reality' actually is, priming the listener to accept a vague claim.",
+      "id": "cable_008-marker-2"
     },
     {
       "type": "fallacy",
@@ -174,32 +152,32 @@
       "display": "Appeal to Popularity",
       "excerpt": "Over 77,000,000 people showed up and voted for him. That's not random",
       "start_time": 28,
-      "end_time": 38,
+      "end_time": 36,
       "severity": "clear",
-      "explanation": "The speaker uses the sheer number of voters as evidence that something deeper and legitimate is happening, treating popularity as proof of structural validity rather than addressing the underlying claims on their merits.",
-      "id": "cable_008-marker-5"
-    },
-    {
-      "type": "fallacy",
-      "name": "false_dilemma",
-      "display": "False Dilemma Fallacy",
-      "excerpt": "something structural, not emotional",
-      "start_time": 42,
-      "end_time": 45,
-      "severity": "subtle",
-      "explanation": "The speaker frames the explanation as a binary choice between structural and emotional causes, ignoring that mass political support can be driven by a mix of both factors simultaneously.",
-      "id": "cable_008-marker-6"
+      "explanation": "The speaker uses the large number of voters as evidence that something 'deeper' and legitimate is happening, treating popularity as validation of meaning rather than addressing the substance of the claim.",
+      "id": "cable_008-marker-3"
     },
     {
       "type": "rhetoric",
       "name": "loaded_language",
       "display": "Loaded Language",
-      "excerpt": "you can dismiss as confusion or misinformation",
-      "start_time": 33,
-      "end_time": 38,
+      "excerpt": "something structural, not emotional",
+      "start_time": 42,
+      "end_time": 46,
       "severity": "subtle",
-      "explanation": "By framing counter-explanations as 'dismissing' voters as confused, the speaker preemptively delegitimizes alternative interpretations through emotionally charged framing.",
-      "id": "cable_008-marker-7"
+      "explanation": "By framing the support as 'structural' versus 'emotional,' the speaker loads the terms to elevate his interpretation as serious and rational while implicitly dismissing alternative explanations as merely emotional.",
+      "id": "cable_008-marker-4"
+    },
+    {
+      "type": "fallacy",
+      "name": "false_dilemma",
+      "display": "False Dilemma Fallacy",
+      "excerpt": "That kind of support signals something deeper happening in the country, something structural, not emotional",
+      "start_time": 38,
+      "end_time": 46,
+      "severity": "subtle",
+      "explanation": "The speaker presents only two options—structural significance versus emotional/confused response—excluding other plausible explanations for voter behavior.",
+      "id": "cable_008-marker-5"
     }
   ],
   "errors": []

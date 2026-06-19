@@ -111,6 +111,9 @@ export function toReport(session: Session): string {
   .row .score .of { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); margin-left: 1px; }
   .claim-text { font-size: 15px; font-weight: 600; margin: 12px 0 8px; }
   .explanation { font-size: 14px; color: #334155; margin: 0 0 12px; }
+  .metaread { font-size: 13px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 14px; }
+  .metaread strong { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+  .metaread p { margin: 5px 0; }
   .ownership { font-size: 12px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 10px 0 12px; }
   .ownership strong { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 3px; }
   .marker-attribution { font-size: 12px; color: #334155; background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 8px 0 6px; }
@@ -202,10 +205,21 @@ function renderSynthesis(session: Session) {
   const headlines = session.synthesis.headlines.length
     ? `<ul>${session.synthesis.headlines.map((headline) => `<li>${escapeHtml(headline)}</li>`).join("")}</ul>`
     : "";
+  const meta = session.synthesis.meta_read
+    ? `<div class="metaread">
+      <strong>Meta-read</strong>
+      <p>Posture: ${escapeHtml(humanize(session.synthesis.meta_read.posture))}</p>
+      <p>Source health: ${escapeHtml(humanize(session.synthesis.meta_read.source_health))}</p>
+      <p>Scope: ${escapeHtml(humanize(session.synthesis.meta_read.scope))}</p>
+      <p>Uncertainty: ${escapeHtml(session.synthesis.meta_read.uncertainty)}</p>
+      <p>Next question: ${escapeHtml(session.synthesis.meta_read.key_question)}</p>
+    </div>`
+    : "";
   return `<h2>Summary</h2>
   <section class="summary">
     ${headlines}
     <p>${escapeHtml(session.synthesis.text)}</p>
+    ${meta}
   </section>`;
 }
 

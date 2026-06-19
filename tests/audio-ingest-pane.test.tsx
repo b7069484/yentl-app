@@ -117,7 +117,7 @@ describe("AudioIngestPane — renders", () => {
 
   it("renders a hidden file input", () => {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i) as HTMLInputElement;
+    const input = screen.getByLabelText(/Select audio or video file/i) as HTMLInputElement;
     expect(input.tagName.toLowerCase()).toBe("input");
     expect(input.type).toBe("file");
     // hidden by sr-only class
@@ -145,7 +145,7 @@ describe("AudioIngestPane — renders", () => {
 describe("AudioIngestPane — file validation", () => {
   it("unsupported non-media file shows inline error", async () => {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = new File(["data"], "image.png", { type: "image/png" });
 
     await act(async () => {
@@ -154,12 +154,15 @@ describe("AudioIngestPane — file validation", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Unsupported file type/i)).toBeTruthy();
+      expect(screen.getByText(/This file cannot be transcribed directly/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Use media URL/i })).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Use browser tab/i })).toBeTruthy();
     });
   });
 
   it("accepts video files for transcription", async () => {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("clip.mp4", "video/mp4", 2 * 1024 * 1024);
 
     await act(async () => {
@@ -174,7 +177,7 @@ describe("AudioIngestPane — file validation", () => {
 
   it("file over 500 MB shows inline error", async () => {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("big.mp3", "audio/mpeg", 600 * 1024 * 1024);
 
     await act(async () => {
@@ -182,7 +185,8 @@ describe("AudioIngestPane — file validation", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/too large/i)).toBeTruthy();
+      expect(screen.getByText(/File is too large/i)).toBeTruthy();
+      expect(screen.getByText(/too large for this upload path/i)).toBeTruthy();
     });
   });
 
@@ -190,7 +194,7 @@ describe("AudioIngestPane — file validation", () => {
     mockProbeAudioDuration.mockResolvedValue(4 * 3600 + 1);
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("long.mp3", "audio/mpeg");
 
     await act(async () => {
@@ -199,14 +203,35 @@ describe("AudioIngestPane — file validation", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/too long/i)).toBeTruthy();
+      expect(screen.getByText(/longer than the current session limit/i)).toBeTruthy();
     });
+  });
+
+  it("recovery actions switch to media URL or browser-tab capture", async () => {
+    render(<AudioIngestPane />);
+    const input = screen.getByLabelText(/Select audio or video file/i);
+    const file = new File(["data"], "image.png", { type: "image/png" });
+
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
+    });
+
+    await waitFor(() => screen.getByRole("button", { name: /Use media URL/i }));
+
+    fireEvent.click(screen.getByRole("button", { name: /Use media URL/i }));
+    expect(mockSetSource).toHaveBeenLastCalledWith({ kind: "media_url", url: "" });
+    expect(mockSetPrerecordStage).toHaveBeenLastCalledWith("selected");
+
+    fireEvent.click(screen.getByRole("button", { name: /Use browser tab/i }));
+    expect(mockSetSource).toHaveBeenLastCalledWith({ kind: "browser_tab" });
+    expect(mockSetPrerecordStage).toHaveBeenLastCalledWith("selected");
   });
 });
 
 describe("AudioIngestPane — valid file preview", () => {
   it("shows filename, size, duration, and cost after valid file selected", async () => {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("interview.mp3", "audio/mpeg", 5 * 1024 * 1024);
 
     await act(async () => {
@@ -267,6 +292,61 @@ describe("AudioIngestPane — valid file preview", () => {
     fetchSpy.mockRestore();
   });
 
+  it("loads the local validation MP4 into the same staged-file flow", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response("ftyp", {
+        status: 200,
+        headers: { "Content-Type": "video/mp4" },
+      }),
+    );
+
+    render(<AudioIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /Load validation MP4/i }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith("/validation/yentl-synthetic-panel.mp4");
+      expect(mockProbeAudioDuration).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "yentl-synthetic-panel.mp4" }),
+      );
+      expect(screen.getByText(/yentl-synthetic-panel\.mp4/i)).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process audio/i })).not.toBeDisabled();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
+  it.each([
+    ["Load validation MOV", "/validation/yentl-synthetic-panel.mov", "video/quicktime", "yentl-synthetic-panel.mov"],
+    ["Load validation WebM", "/validation/yentl-synthetic-panel.webm", "video/webm", "yentl-synthetic-panel.webm"],
+  ])("loads %s into the same staged-file flow", async (buttonLabel, path, mime, filename) => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response("media", {
+        status: 200,
+        headers: { "Content-Type": mime },
+      }),
+    );
+
+    render(<AudioIngestPane />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: new RegExp(buttonLabel, "i") }));
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalledWith(path);
+      expect(mockProbeAudioDuration).toHaveBeenCalledWith(
+        expect.objectContaining({ name: filename }),
+      );
+      expect(screen.getByText(new RegExp(filename.replace(".", "\\."), "i"))).toBeTruthy();
+      expect(screen.getByRole("button", { name: /Process audio/i })).not.toBeDisabled();
+    });
+
+    fetchSpy.mockRestore();
+  });
+
   it("Process button disabled until valid file staged", () => {
     render(<AudioIngestPane />);
     // Initially no button
@@ -277,7 +357,7 @@ describe("AudioIngestPane — valid file preview", () => {
 describe("AudioIngestPane — Process flow", () => {
   async function stageAndProcess() {
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("audio.mp3", "audio/mpeg");
 
     await act(async () => {
@@ -365,7 +445,7 @@ describe("AudioIngestPane — Process flow", () => {
     mockTranscribeAudioFile.mockRejectedValue(new Error("Deepgram quota exceeded"));
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("audio.mp3", "audio/mpeg");
 
     await act(async () => {
@@ -380,6 +460,7 @@ describe("AudioIngestPane — Process flow", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Deepgram quota exceeded/i)).toBeTruthy();
+      expect(screen.getByText(/file is still staged, but transcription failed/i)).toBeTruthy();
     });
   });
 
@@ -391,7 +472,7 @@ describe("AudioIngestPane — Process flow", () => {
     mockTranscribeAudioFile.mockReturnValue(transcribePromise);
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("audio.mp3", "audio/mpeg");
 
     await act(async () => {
@@ -456,7 +537,7 @@ describe("AudioIngestPane — large file blob upload path", () => {
     );
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
 
     await act(async () => {
@@ -498,7 +579,7 @@ describe("AudioIngestPane — large file blob upload path", () => {
     );
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
 
     await act(async () => {
@@ -528,7 +609,7 @@ describe("AudioIngestPane — large file blob upload path", () => {
     mockTranscribeAudioFile.mockResolvedValue({ utterances: [], speakers: [] });
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("large.mp3", "audio/mpeg", LARGE_SIZE);
 
     await act(async () => {
@@ -553,7 +634,7 @@ describe("AudioIngestPane — large file blob upload path", () => {
     mockTranscribeAudioFile.mockResolvedValue({ utterances: [], speakers: [] });
 
     render(<AudioIngestPane />);
-    const input = screen.getByLabelText(/Select audio file/i);
+    const input = screen.getByLabelText(/Select audio or video file/i);
     const file = makeAudioFile("small.mp3", "audio/mpeg", SMALL_SIZE);
 
     await act(async () => {

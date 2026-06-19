@@ -8,20 +8,21 @@ import type {
   SessionSource,
   Speaker,
   SpeakerId,
+  SynthesisMetaRead,
   SpeakerVerdict,
   TranscriptSegment,
 } from "@/lib/types";
 
 // Re-export so existing imports (`import type { SpeakerVerdict } from "@/lib/client/session-store"`)
 // keep working — single source of truth lives in lib/types.ts.
-export type { SpeakerVerdict };
+export type { SpeakerVerdict, SynthesisMetaRead };
 
 export type SynthesisState =
   | null
   | { state: "warming"; at: number }
-  | { state: "fresh"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
-  | { state: "refreshing"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number }
-  | { state: "error"; text?: string; headlines?: string[]; per_speaker_verdicts?: SpeakerVerdict[]; at: number; lastError?: string };
+  | { state: "fresh"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; meta_read?: SynthesisMetaRead; at: number }
+  | { state: "refreshing"; text: string; headlines: string[]; per_speaker_verdicts?: SpeakerVerdict[]; meta_read?: SynthesisMetaRead; at: number }
+  | { state: "error"; text?: string; headlines?: string[]; per_speaker_verdicts?: SpeakerVerdict[]; meta_read?: SynthesisMetaRead; at: number; lastError?: string };
 
 export type DevilAdvocateBrief = {
   stance: string;
@@ -375,8 +376,8 @@ export const useSession = create<State>((set, get) => ({
       s.synthesis?.state === "fresh" ||
       s.synthesis?.state === "refreshing"
     ) {
-      const { text, headlines, per_speaker_verdicts, at } = s.synthesis;
-      persistedSynthesis = { text, headlines, per_speaker_verdicts, at };
+      const { text, headlines, per_speaker_verdicts, meta_read, at } = s.synthesis;
+      persistedSynthesis = { text, headlines, per_speaker_verdicts, meta_read, at };
     }
     let persistedDevilAdvocate: PersistedDevilAdvocate | undefined;
     if (

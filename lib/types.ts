@@ -137,6 +137,7 @@ export type PersistedSynthesis = {
   text: string;
   headlines: string[];
   per_speaker_verdicts?: SpeakerVerdict[];
+  meta_read?: SynthesisMetaRead;
   at: number;
 };
 
@@ -160,6 +161,15 @@ export type SpeakerVerdict = {
   factual_grade: "mostly_factual" | "mixed" | "mostly_inaccurate" | "insufficient";
   faith_grade: "good_faith" | "mixed" | "bad_faith" | "insufficient";
   one_liner: string;
+};
+
+export type SynthesisMetaRead = {
+  posture: "good_faith" | "mixed" | "bad_faith_risk" | "insufficient";
+  source_health: "strong" | "mixed" | "thin" | "unknown";
+  scope: "live_window" | "full_session";
+  summary: string;
+  uncertainty: string;
+  key_question: string;
 };
 
 export type Session = {

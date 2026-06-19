@@ -1,23 +1,21 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:21:14.670Z",
+  "generated_at": "2026-06-11T22:36:58.766Z",
   "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
   "headless": false,
   "app_origin": "http://127.0.0.1:3000",
-  "target_url": "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm",
+  "target_url": "https://archive.org/download/MLKDream/MLKDream_64kb.mp3",
+  "resolved_target_url": "https://archive.org/download/MLKDream/MLKDream_64kb.mp3",
+  "required_transcript_phrase": null,
+  "require_live_transcript": true,
   "external_proof": true,
-  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-GI3wXc/extension",
-  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-GI3wXc/profile",
+  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-XgRYE8/extension",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-XgRYE8/profile",
   "extension_service_workers": [
-    "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+    "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
   ],
   "extension_targets_before_shortcut": {
     "all": [
-      {
-        "type": "background_page",
-        "title": "Yentl tab capture",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html"
-      },
       {
         "type": "service_worker",
         "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
@@ -25,8 +23,8 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "serviceWorkers": [
@@ -37,15 +35,15 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "yentlServiceWorkers": [
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "pages": []
@@ -55,7 +53,7 @@
       {
         "type": "background_page",
         "title": "Yentl tab capture",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html"
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/offscreen.html"
       },
       {
         "type": "service_worker",
@@ -64,8 +62,8 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "serviceWorkers": [
@@ -76,104 +74,279 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "yentlServiceWorkers": [
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js",
-        "url": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/background.js"
+        "title": "Service Worker chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js",
+        "url": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/background.js"
       }
     ],
     "pages": []
   },
   "screenshot": "docs/superpowers/validation/screenshots/installed-extension-external-page.png",
   "screenshot_error": null,
-  "media_playback_before_shortcut": {},
-  "media_playback_after_capture": {},
+  "media_playback_before_shortcut": {
+    "ok": true,
+    "title": "",
+    "targetPreference": "video",
+    "selected": {
+      "index": 0,
+      "tag": "video",
+      "title": null,
+      "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+      "hasSource": true,
+      "readyState": 4,
+      "networkState": 1,
+      "paused": false,
+      "muted": false,
+      "volume": 1,
+      "currentTime": 0.428,
+      "duration": 987.523,
+      "width": 300,
+      "height": 150,
+      "visible": true,
+      "area": 45000,
+      "prepare": {
+        "ready": true,
+        "reason": "loadedmetadata"
+      },
+      "playError": null,
+      "elapsedMs": 1234
+    },
+    "audioCount": 0,
+    "videoCount": 1,
+    "candidates": [
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+        "hasSource": true,
+        "readyState": 0,
+        "networkState": 2,
+        "paused": true,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0,
+        "duration": null,
+        "width": 300,
+        "height": 150,
+        "visible": true,
+        "area": 45000
+      }
+    ],
+    "attempts": [
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0.428,
+        "duration": 987.523,
+        "width": 300,
+        "height": 150,
+        "visible": true,
+        "area": 45000,
+        "prepare": {
+          "ready": true,
+          "reason": "loadedmetadata"
+        },
+        "playError": null,
+        "elapsedMs": 1234
+      }
+    ]
+  },
+  "media_playback_after_capture": {
+    "ok": true,
+    "title": "",
+    "targetPreference": "audio",
+    "selected": {
+      "index": 0,
+      "tag": "video",
+      "title": null,
+      "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+      "hasSource": true,
+      "readyState": 4,
+      "networkState": 1,
+      "paused": false,
+      "muted": false,
+      "volume": 1,
+      "currentTime": 0.478,
+      "duration": 987.523,
+      "width": 300,
+      "height": 150,
+      "visible": true,
+      "area": 45000,
+      "prepare": {
+        "ready": true,
+        "reason": "loadedmetadata"
+      },
+      "playError": null,
+      "elapsedMs": 508
+    },
+    "audioCount": 0,
+    "videoCount": 1,
+    "candidates": [
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 1.992,
+        "duration": 987.523,
+        "width": 300,
+        "height": 150,
+        "visible": true,
+        "area": 45000
+      }
+    ],
+    "attempts": [
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "https://dn711301.ca.archive.org/0/items/MLKDream/MLKDream_64kb.mp3",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0.478,
+        "duration": 987.523,
+        "width": 300,
+        "height": 150,
+        "visible": true,
+        "area": 45000,
+        "prepare": {
+          "ready": true,
+          "reason": "loadedmetadata"
+        },
+        "playError": null,
+        "elapsedMs": 508
+      }
+    ]
+  },
   "proof": {
     "real_user_profile_used": false,
     "extension_loaded": true,
-    "manual_capture_mode": true,
-    "popup_automation": true,
-    "invocation_path": "popup",
-    "popup_click_proven": true,
-    "manual_invocation_proven": true,
-    "shortcut_attempted": false,
-    "shortcut_strategy": "skipped",
-    "shortcut_command_proven": false,
+    "manual_capture_mode": false,
+    "popup_automation": false,
+    "invocation_path": "keyboard-shortcut",
+    "popup_click_proven": false,
+    "manual_invocation_proven": false,
+    "shortcut_attempted": true,
+    "shortcut_strategy": "os",
+    "shortcut_command_proven": true,
     "debug_service_worker_fallback_used": false,
     "panel_injection_proven": true,
     "tab_capture_stream_id_available": true,
-    "page_text_proven": true,
-    "live_transcription_proven": false
+    "deepgram_socket_open_proven": true,
+    "offscreen_audio_chunks_proven": true,
+    "media_playback_proven": true,
+    "page_text_proven": false,
+    "panel_transcript_status_proven": true,
+    "live_transcription_proven": true,
+    "required_transcript_proven": null
   },
   "latency_ms": {
-    "total_ms": 14382,
-    "media_ready_ms": 1209,
-    "capture_invocation_ms": 1209,
-    "panel_injection_ms": 13173,
+    "total_ms": 66125,
+    "media_ready_ms": 3787,
+    "capture_invocation_ms": 3788,
+    "panel_injection_ms": 62337,
     "capture_running_observed": true,
     "capture_start_event_ms": null,
-    "first_transcript_wait_ms": 5011,
+    "first_transcript_wait_ms": 59113,
     "first_transcript_event_ms": null,
-    "manual_capture_wait_ms": 7343
+    "manual_capture_wait_ms": null
   },
-  "manual_capture": {
-    "ok": true,
-    "waited_ms": 7343,
-    "popupClickProven": true,
-    "manualInvocationProven": true,
-    "captureRunning": true,
-    "popup_click": {
-      "ok": true,
-      "buttonText": "Start live analysis",
-      "statusText": "Opening Yentl beside this tab..."
-    },
-    "active_tab_unlock": "os-shortcut-after-popup-click",
-    "diagnostics": {
-      "ok": true,
-      "captureState": {
-        "appOrigin": "http://127.0.0.1:3000",
-        "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
-        "running": true,
-        "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
-        "startedAt": 1781072467999,
-        "targetTabId": 771340635
-      },
-      "storageError": null,
-      "badgeText": "REC",
-      "contexts": [
-        {
-          "contextType": "BACKGROUND",
-          "frameId": -1,
-          "tabId": -1
-        },
-        {
-          "contextType": "OFFSCREEN_DOCUMENT",
-          "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
-          "frameId": 0,
-          "tabId": -1
-        }
-      ]
-    }
+  "manual_capture": null,
+  "shortcut_error": null,
+  "shortcut_panel": {
+    "panelInjected": true,
+    "bodyMarginRight": "430px",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=dn711301.ca.archive.org%2F0%2Fitems%2FMLKDream%2FMLKDream_64kb.mp3",
+    "statusText": "Capturing tab audio now. Yentl is connecting live transcription and will process buffered audio as soon as it is ready.",
+    "hostWidth": "430px"
   },
-  "shortcut_error": "Skipped in default headless proof mode because Chrome does not reliably dispatch extension command shortcuts through CDP key events.",
-  "shortcut_panel": null,
   "extension_diagnostics_after_shortcut": {
     "ok": true,
     "captureState": {
       "appOrigin": "http://127.0.0.1:3000",
-      "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
+      "bridgeToken": "87e9cc32-d85a-4308-aaea-a5b84ccfd209",
       "running": true,
-      "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
-      "startedAt": 1781072467999,
-      "targetTabId": 771340635
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "startedAt": 1781217357362,
+      "targetTabId": 811655180
     },
     "storageError": null,
     "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 3712,
+      "bytesDropped": 0,
+      "bytesObserved": 3712,
+      "bytesSent": 0,
+      "chunksBuffered": 1,
+      "chunksDropped": 0,
+      "chunksObserved": 1,
+      "chunksPending": 1,
+      "chunksSent": 0,
+      "emptyTranscriptResults": 0,
+      "finalTranscriptCount": 0,
+      "interimTranscriptCount": 0,
+      "lastError": null,
+      "lastTranscriptAt": null,
+      "lastTranscriptPreview": null,
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781217357441,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 3712,
+      "sawTranscript": false,
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "socketErrorCount": 0,
+      "socketOpenAt": null,
+      "socketOpeningAt": 1781217357810,
+      "socketReadyState": null,
+      "socketResultCount": 0,
+      "socketState": "idle",
+      "startedAt": 1781217357363,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781217357400,
+      "tokenExpiresAtMs": 1781217957809,
+      "tokenReceivedAt": 1781217357810,
+      "tokenRequestedAt": 1781217357441,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "b390c37c-80f5-4b98-864f-95dc90147622",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 0
+    },
     "contexts": [
       {
         "contextType": "BACKGROUND",
@@ -182,7 +355,7 @@
       },
       {
         "contextType": "OFFSCREEN_DOCUMENT",
-        "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
+        "documentUrl": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/offscreen.html",
         "frameId": 0,
         "tabId": -1
       }
@@ -192,14 +365,64 @@
     "ok": true,
     "captureState": {
       "appOrigin": "http://127.0.0.1:3000",
-      "bridgeToken": "f707ae74-fe27-48f5-b234-7d83550900c0",
+      "bridgeToken": "87e9cc32-d85a-4308-aaea-a5b84ccfd209",
       "running": true,
-      "sessionId": "cec5e931-79d0-45ae-b102-f8cbba4b63c9",
-      "startedAt": 1781072467999,
-      "targetTabId": 771340635
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "startedAt": 1781217357362,
+      "targetTabId": 811655180
     },
     "storageError": null,
     "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 3712,
+      "bytesDropped": 0,
+      "bytesObserved": 3712,
+      "bytesSent": 0,
+      "chunksBuffered": 1,
+      "chunksDropped": 0,
+      "chunksObserved": 1,
+      "chunksPending": 1,
+      "chunksSent": 0,
+      "emptyTranscriptResults": 0,
+      "finalTranscriptCount": 0,
+      "interimTranscriptCount": 0,
+      "lastError": null,
+      "lastTranscriptAt": null,
+      "lastTranscriptPreview": null,
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781217357441,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 3712,
+      "sawTranscript": false,
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "socketErrorCount": 0,
+      "socketOpenAt": null,
+      "socketOpeningAt": 1781217357810,
+      "socketReadyState": null,
+      "socketResultCount": 0,
+      "socketState": "idle",
+      "startedAt": 1781217357363,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781217357400,
+      "tokenExpiresAtMs": 1781217957809,
+      "tokenReceivedAt": 1781217357810,
+      "tokenRequestedAt": 1781217357441,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "b390c37c-80f5-4b98-864f-95dc90147622",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 0
+    },
     "contexts": [
       {
         "contextType": "BACKGROUND",
@@ -208,26 +431,104 @@
       },
       {
         "contextType": "OFFSCREEN_DOCUMENT",
-        "documentUrl": "chrome-extension://opfoijkngbghhhfkinfhphemnhhlcpkp/offscreen.html",
+        "documentUrl": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "extension_diagnostics_after_transcript": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "87e9cc32-d85a-4308-aaea-a5b84ccfd209",
+      "running": true,
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "startedAt": 1781217357362,
+      "targetTabId": 811655180
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 8558,
+      "bytesDropped": 0,
+      "bytesObserved": 982604,
+      "bytesSent": 982604,
+      "chunksBuffered": 2,
+      "chunksDropped": 0,
+      "chunksObserved": 203,
+      "chunksPending": 0,
+      "chunksSent": 203,
+      "emptyTranscriptResults": 24,
+      "finalTranscriptCount": 11,
+      "interimTranscriptCount": 36,
+      "lastError": null,
+      "lastTranscriptAt": 1781217418432,
+      "lastTranscriptPreview": "as a great",
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781217357441,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 0,
+      "sawTranscript": true,
+      "sessionId": "dc0f334a-f145-4ab8-b340-74d266a49a34",
+      "socketErrorCount": 0,
+      "socketOpenAt": 1781217358265,
+      "socketOpeningAt": 1781217357810,
+      "socketReadyState": 1,
+      "socketResultCount": 71,
+      "socketState": "open",
+      "startedAt": 1781217357363,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781217357400,
+      "tokenExpiresAtMs": 1781217957809,
+      "tokenReceivedAt": 1781217357810,
+      "tokenRequestedAt": 1781217357441,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "b390c37c-80f5-4b98-864f-95dc90147622",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 1176
+    },
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://lcicmmiponeeoapnkifjidmnbicklcii/offscreen.html",
         "frameId": 0,
         "tabId": -1
       }
     ]
   },
   "transcript_probe": {
-    "ok": true,
-    "waited_ms": 5011,
+    "ok": false,
+    "waited_ms": 59113,
     "liveTranscriptionProven": false,
-    "pageTextProven": true,
+    "requiredTranscriptPhrase": null,
+    "requiredTranscriptProven": null,
+    "pageTextProven": false,
     "page": {
       "ok": true,
       "panel": {
         "panelInjected": true,
         "bodyMarginRight": "430px",
-        "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+        "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=dn711301.ca.archive.org%2F0%2Fitems%2FMLKDream%2FMLKDream_64kb.mp3",
         "iframeText": null,
         "iframeError": null,
-        "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+        "statusText": "Transcript updating",
         "hostWidth": "430px"
       },
       "events": []
@@ -238,10 +539,10 @@
     "panel": {
       "panelInjected": true,
       "bodyMarginRight": "430px",
-      "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
+      "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=dn711301.ca.archive.org%2F0%2Fitems%2FMLKDream%2FMLKDream_64kb.mp3",
       "iframeText": null,
       "iframeError": null,
-      "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+      "statusText": "Audio arriving",
       "hostWidth": "430px"
     },
     "events": []
@@ -251,10 +552,8 @@
   "panel": {
     "panelInjected": true,
     "bodyMarginRight": "430px",
-    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=File%3ADavid+Korten%2C+The+Green+Interview.webm+-+Wikimedia+Commons",
-    "iframeText": null,
-    "iframeError": null,
-    "statusText": "Yentl is connected to this tab, but no speech has been transcribed yet. Make sure the media is playing, unmuted, and contains speech.",
+    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=dn711301.ca.archive.org%2F0%2Fitems%2FMLKDream%2FMLKDream_64kb.mp3",
+    "statusText": "Capturing tab audio now. Yentl is connecting live transcription and will process buffered audio as soon as it is ready.",
     "hostWidth": "430px"
   },
   "failure_reason": null,
@@ -262,9 +561,8 @@
     "This proof uses a visible temporary Chrome profile and does not modify the user's normal Chrome profile."
   ],
   "chrome_log_tail": [
-    "stderr: DevTools listening on ws://127.0.0.1:64572/devtools/browser/ff834680-accc-4d56-8f00-d2b9de9ffb57",
-    "stderr: [51597:17574363:0610/022104.517394:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
-    "stderr: [51597:17574363:0610/022104.543500:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
-    "stderr: [51597:17574363:0610/022104.546103:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR"
+    "stderr: DevTools listening on ws://127.0.0.1:56510/devtools/browser/5fc3930c-37ef-4c7d-8661-ddf9b1efd317",
+    "stderr: [96680:25129202:0611/183557.699147:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [96680:25129202:0611/183619.778372:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
   ]
 }

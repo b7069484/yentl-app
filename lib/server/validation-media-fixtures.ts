@@ -1,8 +1,46 @@
 import type { Speaker, TranscriptSegment } from "@/lib/types";
+import type { z } from "zod";
+import type { SynthesizeRequest, SynthesizeResponse } from "@/lib/prompts/synthesize";
 
 export const SYNTHETIC_PANEL_MEDIA_PATH = "/validation/yentl-synthetic-panel.wav";
 export const SYNTHETIC_PANEL_MEDIA_FILENAME = "yentl-synthetic-panel.wav";
 export const SYNTHETIC_PANEL_MEDIA_MIME = "audio/wav";
+export const SYNTHETIC_PANEL_VIDEO_PATH = "/validation/yentl-synthetic-panel.mp4";
+export const SYNTHETIC_PANEL_VIDEO_FILENAME = "yentl-synthetic-panel.mp4";
+export const SYNTHETIC_PANEL_VIDEO_MIME = "video/mp4";
+export const SYNTHETIC_PANEL_MOV_PATH = "/validation/yentl-synthetic-panel.mov";
+export const SYNTHETIC_PANEL_MOV_FILENAME = "yentl-synthetic-panel.mov";
+export const SYNTHETIC_PANEL_MOV_MIME = "video/quicktime";
+export const SYNTHETIC_PANEL_WEBM_PATH = "/validation/yentl-synthetic-panel.webm";
+export const SYNTHETIC_PANEL_WEBM_FILENAME = "yentl-synthetic-panel.webm";
+export const SYNTHETIC_PANEL_WEBM_MIME = "video/webm";
+
+const SYNTHETIC_PANEL_FIXTURES = [
+  {
+    path: SYNTHETIC_PANEL_MEDIA_PATH,
+    filename: SYNTHETIC_PANEL_MEDIA_FILENAME,
+    mime: SYNTHETIC_PANEL_MEDIA_MIME,
+    id: "yentl_synthetic_panel_wav",
+  },
+  {
+    path: SYNTHETIC_PANEL_VIDEO_PATH,
+    filename: SYNTHETIC_PANEL_VIDEO_FILENAME,
+    mime: SYNTHETIC_PANEL_VIDEO_MIME,
+    id: "yentl_synthetic_panel_mp4",
+  },
+  {
+    path: SYNTHETIC_PANEL_MOV_PATH,
+    filename: SYNTHETIC_PANEL_MOV_FILENAME,
+    mime: SYNTHETIC_PANEL_MOV_MIME,
+    id: "yentl_synthetic_panel_mov",
+  },
+  {
+    path: SYNTHETIC_PANEL_WEBM_PATH,
+    filename: SYNTHETIC_PANEL_WEBM_FILENAME,
+    mime: SYNTHETIC_PANEL_WEBM_MIME,
+    id: "yentl_synthetic_panel_webm",
+  },
+] as const;
 
 const LOCAL_VALIDATION_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 const SYNTHETIC_PANEL_SPEAKERS: Speaker[] = [
@@ -14,8 +52,10 @@ export type ValidationTranscriptionResult = {
   utterances: TranscriptSegment[];
   speakers: Speaker[];
   validation_fixture: true;
-  validation_fixture_id: "yentl_synthetic_panel_wav";
+  validation_fixture_id: (typeof SYNTHETIC_PANEL_FIXTURES)[number]["id"];
 };
+type SynthesisInput = z.infer<typeof SynthesizeRequest>;
+type SynthesisOutput = z.infer<typeof SynthesizeResponse>;
 
 export function validationMediaFixturesEnabled(): boolean {
   if (process.env.YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
@@ -25,36 +65,90 @@ export function validationMediaFixturesEnabled(): boolean {
 
 export function isSyntheticPanelValidationUrl(value: string): boolean {
   if (!validationMediaFixturesEnabled()) return false;
-  const trimmed = value.trim();
-  if (trimmed === SYNTHETIC_PANEL_MEDIA_PATH) return true;
+  return Boolean(findSyntheticPanelValidationFixture(value));
+}
 
+export function syntheticPanelValidationMedia(value: string) {
+  if (!validationMediaFixturesEnabled()) return null;
+  return findSyntheticPanelValidationFixture(value);
+}
+
+export function syntheticPanelValidationFile(file: File) {
+  if (!validationMediaFixturesEnabled()) return null;
+  const mime = file.type.trim().toLowerCase();
+  return (
+    SYNTHETIC_PANEL_FIXTURES.find((fixture) => {
+      if (file.name !== fixture.filename) return false;
+      if (mime === "") return true;
+      if (fixture.mime === SYNTHETIC_PANEL_MEDIA_MIME) {
+        return mime === fixture.mime || mime === "audio/x-wav" || mime === "audio/wave";
+      }
+      return mime === fixture.mime;
+    }) ?? null
+  );
+}
+
+function findSyntheticPanelValidationFixture(value: string) {
+  const trimmed = value.trim();
+  const fixture = SYNTHETIC_PANEL_FIXTURES.find((entry) => entry.path === trimmed);
+  if (fixture) return fixture;
   try {
     const url = new URL(trimmed);
-    return (
-      (url.protocol === "http:" || url.protocol === "https:") &&
-      LOCAL_VALIDATION_HOSTS.has(url.hostname) &&
-      url.pathname === SYNTHETIC_PANEL_MEDIA_PATH
-    );
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    if (!LOCAL_VALIDATION_HOSTS.has(url.hostname)) return null;
+    return SYNTHETIC_PANEL_FIXTURES.find((entry) => entry.path === url.pathname) ?? null;
   } catch {
-    return false;
+    return null;
   }
 }
 
 export function isSyntheticPanelValidationFile(file: File): boolean {
-  if (!validationMediaFixturesEnabled()) return false;
-  const mime = file.type.trim().toLowerCase();
-  return (
-    file.name === SYNTHETIC_PANEL_MEDIA_FILENAME &&
-    (mime === "" || mime === SYNTHETIC_PANEL_MEDIA_MIME || mime === "audio/x-wav" || mime === "audio/wave")
-  );
+  return Boolean(syntheticPanelValidationFile(file));
 }
 
-export function syntheticPanelTranscriptionFixture(): ValidationTranscriptionResult {
+export function syntheticPanelTranscriptionFixture(
+  validation_fixture_id: ValidationTranscriptionResult["validation_fixture_id"] = "yentl_synthetic_panel_wav",
+): ValidationTranscriptionResult {
   return {
     validation_fixture: true,
-    validation_fixture_id: "yentl_synthetic_panel_wav",
+    validation_fixture_id,
     speakers: SYNTHETIC_PANEL_SPEAKERS.map((speaker) => ({ ...speaker })),
     utterances: syntheticPanelSegments().map((segment) => ({ ...segment })),
+  };
+}
+
+export function syntheticPanelSynthesisFixture(request: SynthesisInput): SynthesisOutput | null {
+  if (!validationMediaFixturesEnabled()) return null;
+  const text = request.utterances
+    .map((utterance) => utterance.text)
+    .join(" ")
+    .toLowerCase();
+  if (
+    !text.includes("welcome to the yentl validation panel") ||
+    !text.includes("city library budget increased by 12 percent")
+  ) {
+    return null;
+  }
+
+  const speakers = request.speakers.length > 0 ? request.speakers : SYNTHETIC_PANEL_SPEAKERS;
+  return {
+    text:
+      "The validation panel has a budget claim, a context challenge, and a separate school-platform warning. The strongest meta-read is cautious: one speaker asserts a number and uses an urgent frame, while the other asks for the missing evidence and scope.",
+    headlines: [
+      "Budget claim needs the missing baseline.",
+      "Technology-grant context may change the read.",
+      "School-platform warning is rhetorically heated.",
+    ],
+    per_speaker_verdicts: speakers.map((speaker) => ({
+      speaker_id: speaker.id,
+      label: speaker.label,
+      factual_grade: "insufficient" as const,
+      faith_grade: speaker.id === 0 ? "mixed" as const : "good_faith" as const,
+      one_liner:
+        speaker.id === 0
+          ? "Budget and platform claims need source context."
+          : "Analyst asks for context and evidence.",
+    })),
   };
 }
 

@@ -83,7 +83,7 @@ const populatedTargets: CaptureTarget[] = [
   },
   {
     slug: "route-session-detail-marker-populated",
-    path: "/session/detail/marker/cable_008-marker-6?demo=validation&sample=cable_008",
+    path: "/session/detail/marker/cable_008-marker-4?demo=validation&sample=cable_008",
     viewport: desktop,
   },
   {
@@ -103,7 +103,7 @@ const populatedTargets: CaptureTarget[] = [
   },
   {
     slug: "route-session-detail-marker-populated-mobile",
-    path: "/session/detail/marker/cable_008-marker-6?demo=validation&sample=cable_008",
+    path: "/session/detail/marker/cable_008-marker-4?demo=validation&sample=cable_008",
     viewport: mobile,
   },
   {

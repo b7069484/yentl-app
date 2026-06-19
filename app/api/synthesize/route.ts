@@ -12,6 +12,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { youtubeValidationSynthesisFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
 import { documentValidationSynthesisFixture } from "@/lib/server/document-validation-analysis-fixtures";
+import { syntheticPanelSynthesisFixture } from "@/lib/server/validation-media-fixtures";
+import {
+  buildSynthesisMetaRead,
+  isCleanOwnedSynthesisClaim,
+  sanitizeSynthesisMetaRead,
+} from "@/lib/synthesis-meta-read";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -34,11 +40,15 @@ export async function POST(req: NextRequest) {
 
   const validationFixture = youtubeValidationSynthesisFixture(parsed.data);
   if (validationFixture) {
-    return NextResponse.json(validationFixture);
+    return NextResponse.json(enrichSynthesisFixture(validationFixture, parsed.data));
+  }
+  const mediaValidationFixture = syntheticPanelSynthesisFixture(parsed.data);
+  if (mediaValidationFixture) {
+    return NextResponse.json(enrichSynthesisFixture(mediaValidationFixture, parsed.data));
   }
   const documentValidationFixture = documentValidationSynthesisFixture(parsed.data);
   if (documentValidationFixture) {
-    return NextResponse.json(documentValidationFixture);
+    return NextResponse.json(enrichSynthesisFixture(documentValidationFixture, parsed.data));
   }
 
   try {
@@ -68,19 +78,33 @@ export async function POST(req: NextRequest) {
   }
 }
 
-const RESOLVED_CLAIM_ATTRIBUTIONS = new Set(["confident", "probable", "manual_corrected"]);
-const NON_ASSERTIVE_CLAIM_STANCES = new Set(["quoted", "reported", "mocked", "questioned", "unclear"]);
 const TRUE_VERDICTS = new Set(["TRUE", "MOSTLY_TRUE"]);
 const FALSE_VERDICTS = new Set(["FALSE", "MISLEADING"]);
 const MIXED_VERDICTS = new Set(["PARTIAL", "OMISSION"]);
 
 function sanitizeSynthesisOutput(output: SynthesisOutput, input: SynthesisInput): SynthesisOutput {
-  if (!output.per_speaker_verdicts?.length) return output;
+  const perSpeakerVerdicts = output.per_speaker_verdicts?.length
+    ? output.per_speaker_verdicts.map((verdict) => sanitizeSpeakerVerdict(verdict, input))
+    : output.per_speaker_verdicts;
 
   return {
     ...output,
-    per_speaker_verdicts: output.per_speaker_verdicts.map((verdict) =>
-      sanitizeSpeakerVerdict(verdict, input),
+    ...(perSpeakerVerdicts !== undefined ? { per_speaker_verdicts: perSpeakerVerdicts } : {}),
+    meta_read: sanitizeSynthesisMetaRead(
+      output.meta_read ?? buildSynthesisMetaRead(input, perSpeakerVerdicts ?? []),
+      input,
+      perSpeakerVerdicts ?? [],
+    ),
+  };
+}
+
+function enrichSynthesisFixture(output: SynthesisOutput, input: SynthesisInput): SynthesisOutput {
+  return {
+    ...output,
+    meta_read: sanitizeSynthesisMetaRead(
+      output.meta_read ?? buildSynthesisMetaRead(input, output.per_speaker_verdicts ?? []),
+      input,
+      output.per_speaker_verdicts ?? [],
     ),
   };
 }
@@ -117,15 +141,7 @@ function isCleanOwnedClaim(
   claim: SynthesisInput["claims"][number],
   speakerId: number,
 ): boolean {
-  if (claim.speaker_id !== speakerId) return false;
-  if (
-    claim.attribution_status &&
-    !RESOLVED_CLAIM_ATTRIBUTIONS.has(claim.attribution_status)
-  ) {
-    return false;
-  }
-  if (claim.stance && NON_ASSERTIVE_CLAIM_STANCES.has(claim.stance)) return false;
-  return true;
+  return isCleanOwnedSynthesisClaim(claim, speakerId);
 }
 
 function factualGradeCaveat(grade: SpeakerVerdict["factual_grade"]): string {
@@ -168,8 +184,10 @@ function addCandidateText(candidates: Set<string>, value: unknown): void {
 }
 
 function parseSynthesisCandidate(value: string): SynthesisOutput | null {
-  const direct = parseAndValidateSynthesis(value);
-  if (direct) return direct;
+  for (const candidate of normalizedSynthesisCandidates(value)) {
+    const direct = parseAndValidateSynthesis(candidate);
+    if (direct) return direct;
+  }
 
   const parsed = safeParseJson(value);
   if (parsed && typeof parsed === "object") {
@@ -189,10 +207,45 @@ function parseSynthesisCandidate(value: string): SynthesisOutput | null {
   const firstBrace = value.indexOf("{");
   const lastBrace = value.lastIndexOf("}");
   if (firstBrace >= 0 && lastBrace > firstBrace) {
-    return parseAndValidateSynthesis(value.slice(firstBrace, lastBrace + 1));
+    for (const candidate of normalizedSynthesisCandidates(value.slice(firstBrace, lastBrace + 1))) {
+      const recovered = parseAndValidateSynthesis(candidate);
+      if (recovered) return recovered;
+    }
   }
 
   return null;
+}
+
+function normalizedSynthesisCandidates(value: string): string[] {
+  const candidates = new Set<string>();
+  const add = (candidate: string) => {
+    const trimmed = candidate.trim();
+    if (trimmed) candidates.add(trimmed);
+  };
+
+  add(value);
+  const withoutToolTail = value.replace(/<\/parameter>[\s\S]*$/i, "").replace(/<\/invoke>[\s\S]*$/i, "");
+  add(withoutToolTail);
+
+  for (const candidate of [...candidates]) {
+    if (!looksLikePartialSynthesisObject(candidate)) continue;
+
+    const lastHeadlineArray = candidate.lastIndexOf("]");
+    const lastObjectClose = candidate.lastIndexOf("}");
+    if (lastHeadlineArray > lastObjectClose) {
+      add(`${candidate.slice(0, lastHeadlineArray + 1)}}`);
+    }
+  }
+
+  return [...candidates];
+}
+
+function looksLikePartialSynthesisObject(value: string): boolean {
+  return (
+    value.trimStart().startsWith("{") &&
+    value.includes('"text"') &&
+    value.includes('"headlines"')
+  );
 }
 
 function parseAndValidateSynthesis(value: string): SynthesisOutput | null {
@@ -257,6 +310,7 @@ function localSynthesisFallback(args: z.infer<typeof SynthesizeRequest>): Synthe
       markerTotal > 0 ? `${markerTotal} rhetoric or bias markers logged.` : "No rhetoric markers logged yet.",
       speakerLabels.length > 1 ? `${speakerLabels.length} speakers active in this read.` : "One source voice is carrying the session.",
     ],
+    meta_read: buildSynthesisMetaRead(args, []),
     per_speaker_verdicts: args.speakers.map((speaker) => ({
       speaker_id: speaker.id,
       label: speaker.label,

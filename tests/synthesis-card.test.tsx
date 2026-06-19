@@ -311,6 +311,30 @@ describe("SynthesisCard – per_speaker_verdicts absent", () => {
     render(<SynthesisCard synthesis={freshSynthesis()} onHeadlineClick={noop} />);
     expect(screen.queryByTestId("synthesis-meta-read")).toBeNull();
   });
+
+  it("renders structured meta_read even when per_speaker_verdicts is undefined", () => {
+    const synthesis: SynthesisState = {
+      state: "fresh",
+      text: "Yentl sees a pattern of misdirection here.",
+      headlines: HEADLINES,
+      at: Date.now(),
+      meta_read: {
+        posture: "bad_faith_risk",
+        source_health: "thin",
+        scope: "full_session",
+        summary: "Across the full session, Yentl sees repeated unsupported framing.",
+        uncertainty: "Source context is still thin.",
+        key_question: "Which contradicted claim has the clearest source trail?",
+      },
+    };
+    render(<SynthesisCard synthesis={synthesis} onHeadlineClick={noop} />);
+    expect(screen.getByTestId("synthesis-meta-read")).toBeTruthy();
+    expect(screen.getByText("Bad-faith risk")).toBeTruthy();
+    expect(screen.getByText("Evidence: Thin sources")).toBeTruthy();
+    expect(screen.getByText("Scope: Full session")).toBeTruthy();
+    expect(screen.getByText("Source context is still thin.")).toBeTruthy();
+    expect(screen.getByText(/Which contradicted claim/)).toBeTruthy();
+  });
 });
 
 // ─── 13. per_speaker_verdicts: empty array → no per-speaker block ─────────────

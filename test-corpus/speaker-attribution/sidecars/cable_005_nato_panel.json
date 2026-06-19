@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "window_id": "cable_005_nato_panel",
+  "corpus_id": "test-corpus",
+  "source_id": "cable_005",
+  "start_s": 0,
+  "end_s": 120,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "How dare he say we weren't on the front line? How dare he? Why are we still fostering a special relationship with Donald Trump and The US when his recent actions prove that he can't be trusted? Well, it's been pretty lively this week, hasn't it, with Donald Trump? Greg, I'm going to come to you first, because I think you probably have a greater understanding, or certainly sympathy with Donald Trump's position. We've had a week where he's threatened to take over Greenland. He's threatened to oppose tariffs. He's insulted NATO allies. I just wanna tell you about something he's also said this evening about NATO allies Yeah. In an interview with Fox News. He talked about NATO not coming to help The United States if it needed them. And he said, we've never needed them. They say they'll they sent some troops to Afghanistan and this or that, and they did. They stayed a little back, a little off the front lines. What do you make of that? Yeah. It's a mistake. And and look, the president is very unfiltered and often doesn't have his facts perfectly lined up. We all know that not only was The UK fighting alongside of us in in both of those wars, but so was Denmark. And so, in fact, the percentage of, casualties for Denmark was as high as The United States. So, look, it was a mistake. He's very focused on trying to get the Europeans to step up defense spending. And the President's been successful with that. So we'll see. I mean, you have Denmark, for example,",
+    "turns": [
+      {
+        "id": "cable-005-clip-reaction-1",
+        "start_s": 0,
+        "end_s": 4.56,
+        "speaker_id": "clip_reaction",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "cable-005-audience-question-1",
+        "start_s": 5.44,
+        "end_s": 12,
+        "speaker_id": "audience_question",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "cable-005-host-setup-1",
+        "start_s": 12.8,
+        "end_s": 63.64,
+        "speaker_id": "host",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "cable-005-guest-answer-1",
+        "start_s": 63.64,
+        "end_s": 120.03,
+        "speaker_id": "guest",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "none"
+      }
+    ],
+    "claims": [
+      {
+        "id": "cable-005-claim-1",
+        "start_s": 5.44,
+        "end_s": 12,
+        "owner_speaker_id": "audience_question",
+        "expected_provider_speaker_id": 1,
+        "stance": "questioned",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-005-claim-2",
+        "start_s": 27.81,
+        "end_s": 42.37,
+        "owner_speaker_id": "host",
+        "expected_provider_speaker_id": 2,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-005-claim-3",
+        "start_s": 43.98,
+        "end_s": 63.64,
+        "owner_speaker_id": "host",
+        "expected_provider_speaker_id": 2,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-005-claim-4",
+        "start_s": 63.64,
+        "end_s": 86.48,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 3,
+        "stance": "corrected",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "cable-005-claim-5",
+        "start_s": 87.04,
+        "end_s": 109.92,
+        "owner_speaker_id": "guest",
+        "expected_provider_speaker_id": 3,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

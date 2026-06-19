@@ -1,0 +1,38 @@
+{
+  "name": "Yentl Tab Listener",
+  "summary": "Listen to tab audio and read Yentl's fact-checking analysis beside the source.",
+  "category": "Productivity",
+  "language": "en-US",
+  "home_page_url": "https://yentl.it",
+  "privacy_policy_url": "https://yentl.it/privacy",
+  "support_url": "https://yentl.it/contact",
+  "screenshots": [
+    {
+      "path": "docs/superpowers/validation/screenshots/chrome-store-extension-panel-1280x800.png",
+      "width": 1280,
+      "height": 800,
+      "caption": "Yentl attaches to a media page and keeps the analysis beside the source."
+    }
+  ],
+  "small_promo_tile": {
+    "path": "docs/superpowers/validation/screenshots/chrome-store-small-promo-440x280.png",
+    "width": 440,
+    "height": 280
+  },
+  "permission_rationale": {
+    "activeTab": "Required so Yentl can start only from the tab the user explicitly chooses.",
+    "offscreen": "Required to process captured tab audio while the extension service worker stays MV3-compliant.",
+    "scripting": "Required to inject the same-page Yentl panel after the user starts capture.",
+    "storage": "Required to remember the selected Yentl app origin and capture preferences.",
+    "tabCapture": "Required to capture audio from the active tab after a user gesture.",
+    "tabs": "Required to verify the active tab, recover when the user switches tabs, and keep capture tied to the source.",
+    "https://yentl.it/*": "Required to load the production Yentl session panel and send source context to the app.",
+    "https://api.deepgram.com/*": "Required to stream captured audio for transcription.",
+    "wss://api.deepgram.com": "Required for the live transcription websocket."
+  },
+  "data_use_disclosure": [
+    "Captured tab audio is processed only after the user starts capture.",
+    "Transcript text is forwarded into the Yentl session for analysis.",
+    "The extension does not use the user's normal Chrome profile during automated local proof runs."
+  ]
+}

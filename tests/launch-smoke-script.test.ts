@@ -14,13 +14,34 @@ describe("launch smoke harness", () => {
     expect(script).toContain("YENTL_SMOKE_RATE_LIMIT");
     expect(script).toContain("YENTL_SMOKE_BLOB_TOKEN");
     expect(script).toContain("YENTL_SMOKE_EXPECT_AUTH");
+    expect(script).toContain("YENTL_SMOKE_SKIP_INTERNAL");
     expect(script).toContain("/contact");
+    expect(script).toContain("/mobile");
+    expect(script).toContain("/tv");
     expect(script).toContain("/session");
     expect(script).toContain("/api/corpus-sample?id=solo_005");
     expect(script).toContain("/project/validation");
     expect(script).toContain("/api/project-flow-comments");
     expect(script).toContain("/api/source-preview");
     expect(script).toContain("/api/upload-audio");
+  });
+
+  it("checks the launch-critical mobile, TV, and PWA file-handler surfaces", () => {
+    const script = read("scripts/launch-smoke.ts");
+    expect(script).toContain("checkMobileEntry");
+    expect(script).toContain("checkRoomModeEntry");
+    expect(script).toContain("manifest PWA/share/file-handler contract");
+    expect(script).toContain("Native iOS and Android store shells are not shipped in v1");
+    expect(script).toContain("Open a Yentl session on the big screen.");
+    expect(script).toContain('"video/mp4"');
+    expect(script).toContain('"video/quicktime"');
+    expect(script).toContain('"video/webm"');
+  });
+
+  it("uses the optional Blob smoke for video upload-token readiness", () => {
+    const script = read("scripts/launch-smoke.ts");
+    expect(script).toContain("launch-smoke-video.mp4");
+    expect(script).toContain("video Blob upload token generation");
   });
 
   it("is exposed through package.json", () => {

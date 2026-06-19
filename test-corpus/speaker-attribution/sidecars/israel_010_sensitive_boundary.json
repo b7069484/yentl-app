@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "window_id": "israel_010_sensitive_boundary",
+  "corpus_id": "test-corpus",
+  "source_id": "israel_010",
+  "start_s": 0,
+  "end_s": 120,
+  "reviewer": "codex-hard-window",
+  "review_date": "2026-06-11",
+  "transcript_usable": true,
+  "labels": {
+    "reference_text": "We return now to today's vote in the house on a resolution denouncing bigotry in many forms. Nick Schifrin looks now at the path to this divisive debate on Capitol Hill. For years, Minnesota Democrat Ilhan Omar has criticized Israeli policies. As a candidate, she argued that criticism was not the same as criticism of Jews. Same breath. I see there being a difference between criticism of a country, criticism of its administration and its government, and criticism of the people and their faith. But in February, Republicans targeted her Israel comments, and she said she was being attacked because, quote, it's all about the Benjamin's baby, suggesting $100 bills created support for Israel. When asked who she thought was paying US politicians to be pro Israel, she replied the powerful lobbying group APAC, the American Israel Public Affairs Committee. Her critics accused her of repeating anti Semitic tropes linking Jewish influence to money. By the next day, she deleted the tweets, but Republican minority leader Kevin McCarthy has called her criticism inappropriate. The language they are using is wrong, and I would say their leadership is wrong for not standing up to it. It's unacceptable in this country, especially when you sat back and you thought about and you listened to what this country went through in World War two. The same day, her own party issued a statement saying her, quote, use of anti Semitic tropes and prejudicial accusations about Israel's supporters is deeply offensive. Omar, who is Muslim and black, issued a statement thanking her colleagues for, quote, educating me on the painful history of anti Semitic tropes. She said, I unequivocally apologized, but also criticized the, quote, problematic role of lobbyists in our politics. It's not the first time she's apologized. During the twenty twelve conflict in Gaza between Israel and Hamas, she tweeted, Israel has hypnotized the world. May Allah awaken the people and help them see the evil doings of",
+    "turns": [
+      {
+        "id": "israel-010-anchor-1",
+        "start_s": 0.16,
+        "end_s": 10.24,
+        "speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "overlap_class": "none"
+      },
+      {
+        "id": "israel-010-reporter-1",
+        "start_s": 12.16,
+        "end_s": 21.5,
+        "speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "none"
+      },
+      {
+        "id": "israel-010-omar-clip-1",
+        "start_s": 21.57,
+        "end_s": 33.89,
+        "speaker_id": "omar_clip",
+        "expected_provider_speaker_id": 2,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "israel-010-reporter-2",
+        "start_s": 33.89,
+        "end_s": 66.29,
+        "speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "quote_or_clip"
+      },
+      {
+        "id": "israel-010-mccarthy-clip-1",
+        "start_s": 66.29,
+        "end_s": 80.94,
+        "speaker_id": "mccarthy_clip",
+        "expected_provider_speaker_id": 3,
+        "overlap_class": "clip"
+      },
+      {
+        "id": "israel-010-reporter-3",
+        "start_s": 81.03,
+        "end_s": 120.12,
+        "speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "overlap_class": "quote_or_clip"
+      }
+    ],
+    "claims": [
+      {
+        "id": "israel-010-claim-1",
+        "start_s": 0.16,
+        "end_s": 10.24,
+        "owner_speaker_id": "anchor",
+        "expected_provider_speaker_id": 0,
+        "stance": "asserted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-2",
+        "start_s": 12.16,
+        "end_s": 21.5,
+        "owner_speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-3",
+        "start_s": 21.57,
+        "end_s": 33.89,
+        "owner_speaker_id": "omar_clip",
+        "expected_provider_speaker_id": 2,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-4",
+        "start_s": 33.89,
+        "end_s": 54.32,
+        "owner_speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-5",
+        "start_s": 54.96,
+        "end_s": 66.29,
+        "owner_speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-6",
+        "start_s": 66.29,
+        "end_s": 80.94,
+        "owner_speaker_id": "mccarthy_clip",
+        "expected_provider_speaker_id": 3,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-7",
+        "start_s": 81.03,
+        "end_s": 111.0,
+        "owner_speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "stance": "reported",
+        "unsafe_attribution": false
+      },
+      {
+        "id": "israel-010-claim-8",
+        "start_s": 111.0,
+        "end_s": 120.12,
+        "owner_speaker_id": "reporter",
+        "expected_provider_speaker_id": 1,
+        "stance": "quoted",
+        "unsafe_attribution": false
+      }
+    ],
+    "markers": [],
+    "unsafe_attribution_spans": []
+  }
+}

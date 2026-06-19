@@ -6,7 +6,7 @@ import { dirname, join, relative } from "node:path";
 import { homedir, tmpdir } from "node:os";
 
 const ROOT = process.cwd();
-const APP_ORIGIN = process.env.YENTL_MOBILE_PROOF_ORIGIN ?? "http://127.0.0.1:3000";
+const APP_ORIGIN = process.env.YENTL_MOBILE_PROOF_ORIGIN ?? "http://localhost:3000";
 const REPORT_PATH = join(ROOT, "docs/superpowers/validation/mobile-pwa-local-proof.json");
 const WIDTHS = [390, 430, 768];
 const MOBILE_USER_AGENT =
@@ -16,7 +16,16 @@ const ROUTES = [
   {
     slug: "mobile-start",
     path: "/mobile",
-    expectedText: ["Yentl on iOS", "Mobile paths stay honest", "iOS", "Android", "Mobile web"],
+    expectedText: [
+      "Yentl on iOS",
+      "Mobile paths stay honest",
+      "iOS",
+      "Android",
+      "Mobile web",
+      "NATIVE SHELL STATUS",
+      "Installable web app first",
+      "Native shells later",
+    ],
   },
   {
     slug: "source-picker",
@@ -24,9 +33,73 @@ const ROUTES = [
     expectedText: ["Choose your source path"],
   },
   {
+    slug: "source-youtube",
+    path: "/session?source=youtube",
+    expectedText: ["YouTube URL", "Paste a YouTube link and watch here", "Load validation YouTube"],
+  },
+  {
+    slug: "source-web-url",
+    path: "/session?source=web-url",
+    expectedText: ["Web page", "Paste a page URL", "Analyze URL", "URL ROUTING"],
+  },
+  {
+    slug: "source-media-url",
+    path: "/session?source=media-url",
+    expectedText: ["Direct media URL", "Paste a media URL", "Load validation media URL", "INTAKE ROUTE"],
+  },
+  {
+    slug: "source-audio-file",
+    path: "/session?source=audio-file",
+    expectedText: ["Audio/video upload", "Drop an audio or video file", "Drop your recording here", "Load validation WAV"],
+  },
+  {
+    slug: "source-text-doc",
+    path: "/session?source=text-doc",
+    expectedText: ["Transcript or text", "Paste or drop a transcript", "Load validation TXT", "Load validation PDF"],
+  },
+  {
+    slug: "source-claim-quick-check",
+    path: "/session?source=claim",
+    expectedText: ["Quick claim check", "Check one specific claim", "Optional context or source note"],
+  },
+  {
+    slug: "source-browser-tab-limit",
+    path: "/session?source=browser-tab",
+    expectedText: ["Use the desktop Chrome extension", "Check in-page extension", "CONNECTION CHECKLIST"],
+  },
+  {
+    slug: "extension-snapshot-workspace",
+    path: "/session?demo=validation&sample=extension_snapshot&view=overview",
+    expectedText: [
+      "EXTENSION SNAPSHOT",
+      "Civic Ledger hearing clip",
+      "Live tab sync is not assumed",
+      "Open original",
+    ],
+    waitMs: 1400,
+  },
+  {
     slug: "share-target-text",
     path: "/session?title=Shared%20note&text=The%20claim%20is%20specific.",
     expectedText: ["Shared note", "The claim is specific"],
+  },
+  {
+    slug: "share-target-web-url",
+    path: "/session?title=Shared%20article&url=https%3A%2F%2Fexample.com%2Farticle",
+    expectedText: ["Paste a page URL", "https://example.com/article", "Readable-page import"],
+    waitMs: 1400,
+  },
+  {
+    slug: "share-target-media-url",
+    path: "/session?title=Shared%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp3",
+    expectedText: ["Paste a media URL", "https://example.com/clip.mp3", "Direct media URL recognized"],
+    waitMs: 1400,
+  },
+  {
+    slug: "share-target-video-url",
+    path: "/session?title=Shared%20video%20clip&url=https%3A%2F%2Fexample.com%2Fclip.mp4",
+    expectedText: ["Paste a media URL", "https://example.com/clip.mp4", "Direct media URL recognized"],
+    waitMs: 1400,
   },
   {
     slug: "saved-sessions",
@@ -34,9 +107,46 @@ const ROUTES = [
     expectedText: ["Saved sessions"],
   },
   {
+    slug: "auth-signin-return-source",
+    path: "/signin?redirect_url=%2Fsession%3Fsource%3Daudio-file",
+    expectedText: [
+      "Accounts are not enabled",
+      "Return to your Yentl flow",
+      "Return to flow",
+      "/session?source=audio-file",
+    ],
+  },
+  {
+    slug: "auth-signup-return-library",
+    path: "/signup?return_to=%2Fsessions%3Ffilter%3Dcloud",
+    expectedText: [
+      "Account creation is not enabled",
+      "Return to your Yentl flow",
+      "Return to flow",
+      "/sessions?filter=cloud",
+    ],
+  },
+  {
+    slug: "auth-signin-unsafe-return",
+    path: "/signin?redirect_url=https%3A%2F%2Fevil.example%2Fsession",
+    expectedText: ["Accounts are not enabled", "Unsafe return target ignored", "Start checking", "/session"],
+    forbiddenText: ["evil.example"],
+  },
+  {
     slug: "room-mode",
     path: "/tv?demo=validation&sample=cable_008",
     expectedText: ["ROOM MODE"],
+  },
+  {
+    slug: "room-mode-extension-snapshot",
+    path: "/tv?demo=validation&sample=extension_snapshot",
+    expectedText: [
+      "ROOM MODE",
+      "Extension workspace snapshot proof",
+      "Browser tab · Review",
+      "/session?demo=validation&sample=extension_snapshot&view=overview",
+    ],
+    waitMs: 1400,
   },
 ];
 
@@ -165,10 +275,10 @@ async function proveRouteAtWidth(client, route, width, issueStart, runtimeIssues
       returnByValue: true,
     })
     .catch(() => null);
-  await sleep(Number(process.env.YENTL_MOBILE_PROOF_WAIT_MS ?? 900));
+  await sleep(Number(route.waitMs ?? process.env.YENTL_MOBILE_PROOF_WAIT_MS ?? 900));
 
   const result = await client.send("Runtime.evaluate", {
-    expression: mobileAuditExpression(route.expectedText),
+    expression: mobileAuditExpression(route.expectedText, route.forbiddenText ?? []),
     awaitPromise: true,
     returnByValue: true,
   });
@@ -179,6 +289,9 @@ async function proveRouteAtWidth(client, route, width, issueStart, runtimeIssues
   if (value.overflowX > 1) failures.push(`horizontal overflow ${value.overflowX}px`);
   for (const expected of route.expectedText) {
     if (!value.textMatches?.[expected]) failures.push(`missing expected text: ${expected}`);
+  }
+  for (const forbidden of route.forbiddenText ?? []) {
+    if (value.forbiddenMatches?.[forbidden]) failures.push(`forbidden text present: ${forbidden}`);
   }
   if (routeIssues.length > 0) failures.push(`${routeIssues.length} console/runtime error(s)`);
 
@@ -193,7 +306,7 @@ async function proveRouteAtWidth(client, route, width, issueStart, runtimeIssues
   };
 }
 
-function mobileAuditExpression(expectedText) {
+function mobileAuditExpression(expectedText, forbiddenText = []) {
   return `
     (() => {
       const doc = document.documentElement;
@@ -205,7 +318,13 @@ function mobileAuditExpression(expectedText) {
         .join(" ")
         .replace(/\\s+/g, " ")
         .trim();
-      const searchableText = [visibleText, fieldText].filter(Boolean).join(" ");
+      const hrefText = [...document.querySelectorAll("a[href]")]
+        .map((element) => element.getAttribute("href") || "")
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\\s+/g, " ")
+        .trim();
+      const searchableText = [visibleText, fieldText, hrefText].filter(Boolean).join(" ");
       const controls = [...document.querySelectorAll("a,button,input,textarea,select")]
         .map((element) => {
           const rect = element.getBoundingClientRect();
@@ -226,6 +345,7 @@ function mobileAuditExpression(expectedText) {
       const scrollWidth = Math.max(doc?.scrollWidth || 0, body?.scrollWidth || 0);
       const clientWidth = Math.max(doc?.clientWidth || 0, window.innerWidth || 0);
       const expected = ${JSON.stringify(expectedText)};
+      const forbidden = ${JSON.stringify(forbiddenText)};
       return {
         title: document.title,
         viewportWidth: window.innerWidth,
@@ -234,8 +354,10 @@ function mobileAuditExpression(expectedText) {
         bodyScrollWidth: body?.scrollWidth || 0,
         overflowX: Math.max(0, scrollWidth - clientWidth),
         textMatches: Object.fromEntries(expected.map((text) => [text, searchableText.includes(text)])),
+        forbiddenMatches: Object.fromEntries(forbidden.map((text) => [text, searchableText.includes(text)])),
         visibleTextStart: visibleText.slice(0, 500),
         fieldTextStart: fieldText.slice(0, 500),
+        hrefTextStart: hrefText.slice(0, 500),
         controlCount: controls.length,
         smallControls,
       };

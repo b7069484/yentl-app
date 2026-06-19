@@ -31,7 +31,7 @@ async function main() {
 
   const replayBackups = IS_DEPLOY ? await backupReplayFixtures(REPLAY_IDS) : null;
   try {
-    await runAnalysisProof(replayBackups);
+    await runAnalysisProof();
   } finally {
     if (replayBackups) {
       await restoreReplayFixtures(replayBackups);
@@ -39,7 +39,7 @@ async function main() {
   }
 }
 
-async function runAnalysisProof(replayBackups) {
+async function runAnalysisProof() {
   const checks = [];
   for (const id of REPLAY_IDS) {
     checks.push(await runCheck(`corpus-replay-${id}`, () => proveCorpusReplay(id)));

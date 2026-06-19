@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo, type DragEvent, type ChangeEvent } from "react";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
@@ -405,6 +406,17 @@ export function TextIngestPane() {
             <span className="font-mono">David:</span> are auto-detected before Yentl builds
             claims and markers from the text.
           </p>
+          <div className="mt-4 flex flex-wrap gap-2 text-[11.5px] text-ink-3">
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              TXT, MD, DOCX, PDF, SRT, VTT
+            </span>
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              PDFs need selectable text
+            </span>
+            <span className="rounded-full border border-line bg-cream px-2.5 py-1">
+              Scanned PDFs need OCR elsewhere
+            </span>
+          </div>
 
           {/* Drop zone + textarea (wrapped in label for keyboard file-pick a11y) */}
           <label htmlFor={FILE_INPUT_ID} className="mt-6 block">
@@ -518,9 +530,18 @@ export function TextIngestPane() {
 
           {/* Error message */}
           {error && (
-            <p className="mt-3 rounded-lg border border-red/20 bg-red-soft px-3 py-2 text-[13px] text-red">
-              {error}
-            </p>
+            <DocumentImportError
+              message={error}
+              onChooseFile={() => document.getElementById(FILE_INPUT_ID)?.click()}
+              onPasteText={() => {
+                setError(null);
+                textareaRef.current?.focus();
+              }}
+              onBrowserTab={() => {
+                setSource({ kind: "browser_tab" });
+                setPrerecordStage("selected");
+              }}
+            />
           )}
 
           {/* Speaker toggle */}
@@ -621,6 +642,16 @@ export function TextIngestPane() {
             </div>
           </section>
 
+          <section className="rounded-lg border border-amber/30 bg-amber-soft p-4 text-[12.5px] leading-relaxed text-ink-3">
+            <div className="mb-2 flex items-center gap-2 font-semibold text-amber-2">
+              <AlertCircle className="h-4 w-4" aria-hidden />
+              PDF import boundary
+            </div>
+            Selectable PDF text is imported with page count and outline context. Scanned image-only PDFs
+            currently need OCR before import; paste the extracted text or use browser-tab capture when
+            the PDF is being viewed online.
+          </section>
+
           <section className="rounded-lg border border-green/25 bg-green-soft p-4 text-[12.5px] leading-relaxed text-ink-3">
             <div className="mb-2 flex items-center gap-2 font-semibold text-green">
               <CheckCircle2 className="h-4 w-4" aria-hidden />
@@ -630,6 +661,57 @@ export function TextIngestPane() {
           </section>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function DocumentImportError({
+  message,
+  onChooseFile,
+  onPasteText,
+  onBrowserTab,
+}: {
+  message: string;
+  onChooseFile: () => void;
+  onPasteText: () => void;
+  onBrowserTab: () => void;
+}) {
+  const isPdfTextLayerProblem = /pdf|ocr|selectable text|text layer/i.test(message);
+
+  return (
+    <div role="alert" className="mt-3 rounded-lg border border-red/20 bg-red-soft px-3 py-3 text-[13px] text-red">
+      <div className="flex items-start gap-2">
+        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <div>
+          <div className="font-semibold">Document import needs attention.</div>
+          <div className="mt-0.5">{message}</div>
+        </div>
+      </div>
+      {isPdfTextLayerProblem && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onChooseFile}
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-red/20 bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream"
+          >
+            Choose another file
+          </button>
+          <button
+            type="button"
+            onClick={onPasteText}
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-red/20 bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream"
+          >
+            Paste extracted text
+          </button>
+          <button
+            type="button"
+            onClick={onBrowserTab}
+            className="inline-flex min-h-10 items-center justify-center rounded-lg border border-red/20 bg-paper px-3 py-2 text-[12px] font-semibold text-ink-2 hover:bg-cream"
+          >
+            Use browser tab
+          </button>
+        </div>
+      )}
     </div>
   );
 }

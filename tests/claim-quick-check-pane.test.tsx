@@ -149,6 +149,41 @@ describe("ClaimQuickCheckPane", () => {
     expect(mockSetPrerecordStage).toHaveBeenCalledWith("picker");
   });
 
+  it("loads the deterministic validation claim and sends its source trail context", async () => {
+    const fetchMock = mockVerificationFetch();
+    render(<ClaimQuickCheckPane />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Load validation claim" }));
+
+    expect(screen.getByLabelText("Claim")).toHaveValue(
+      "City spending rose by twelve percent this year without raising taxes.",
+    );
+    expect((screen.getByLabelText(/Optional context/i) as HTMLTextAreaElement).value).toContain(
+      "Yentl document validation brief",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /^Check claim$/i }));
+
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith("/session/detail/claim/claim-quick-1");
+    });
+
+    const provisionalBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(provisionalBody).toMatchObject({
+      claim_text: "City spending rose by twelve percent this year without raising taxes.",
+      source_context: expect.stringContaining("source trail"),
+      claim_context: {
+        speaker_id: null,
+        topic: "Quick check",
+        stance: "asserted",
+        attribution_status: "not_available",
+        attribution_reasons: ["manual_user_action"],
+      },
+    });
+    const confirmedBody = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(confirmedBody).toEqual(provisionalBody);
+  });
+
   it("asks for a complete factual claim before checking", () => {
     render(<ClaimQuickCheckPane />);
     fireEvent.change(screen.getByLabelText("Claim"), {

@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-12T01:07:40.711Z",
+  "dry_run": false,
+  "force": false,
+  "report_path": "docs/superpowers/validation/launch-canary-template-summary.json",
+  "speaker_proof_path": "docs/superpowers/validation/speaker-attribution-proof.json",
+  "speaker_proof_generated_at": "2026-06-12T00:14:13.859Z",
+  "sensitive_review_required_windows": 5,
+  "templates": [
+    {
+      "id": "sensitive-attribution-review",
+      "status": "written",
+      "path": "agent-work/validation/sensitive-attribution-reviews.template.json",
+      "copy_to_manifest_path": "agent-work/validation/sensitive-attribution-reviews.json",
+      "proof_command": "npm run analysis:proof:sensitive-review"
+    },
+    {
+      "id": "mobile-device-canaries",
+      "status": "written",
+      "path": "agent-work/validation/mobile-device-canaries.template.json",
+      "copy_to_manifest_path": "agent-work/validation/mobile-device-canaries.json",
+      "proof_command": "npm run mobile:proof:devices"
+    },
+    {
+      "id": "large-real-media-canaries",
+      "status": "written",
+      "path": "agent-work/validation/large-real-media-canaries.template.json",
+      "copy_to_manifest_path": "agent-work/validation/large-real-media-canaries.json",
+      "proof_command": "npm run ingestion:proof:large-real-media"
+    }
+  ],
+  "next_actions": [
+    "Copy each .template.json to its matching manifest path only when real evidence is ready.",
+    "Replace placeholders with real reviewer/device/media values.",
+    "Run each proof command; release readiness remains blocked until these commands pass against real evidence."
+  ]
+}

@@ -1,8 +1,15 @@
 {
-  "generated_at": "2026-05-21T23:17:05.896Z",
+  "ok": true,
+  "generated_at": "2026-06-11T21:35:49.520Z",
+  "app_origin": "http://localhost:3000",
+  "target_count": 3,
+  "pass_count": 3,
+  "failures": [],
   "results": [
     {
       "id": "browser-tab-real-video-page",
+      "ok": true,
+      "failures": [],
       "url": "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm",
       "title": "File:David Korten, The Green Interview.webm - Wikimedia Commons",
       "requiresMedia": true,
@@ -13,10 +20,22 @@
       "audioCount": 0,
       "pageTextChunks": 1,
       "pageTextLength": 214,
+      "minPageTextLength": 180,
+      "expectedText": [
+        "David Korten",
+        "The Green Interview"
+      ],
+      "sourceContextKeys": [
+        "page_title",
+        "canonical_url",
+        "detected_names"
+      ],
       "pageTextSample": "DescriptionDavid Korten, The Green Interview.webm\n\nEnglish: David Korten in conversation with Silver Donald Cameron\n\nYouTube: https://www.youtube.com/watch?v=ysCtpyhmsY4 – View/save archived versions on archive.org"
     },
     {
       "id": "browser-page-real-text",
+      "ok": true,
+      "failures": [],
       "url": "https://en.wikinews.org/wiki/Residents_shelter_in_place_for_hours_after_gas_leak_outside_of_Los_Angeles",
       "title": "Residents shelter in place for hours after gas leak outside of Los Angeles - Wikinews, the free news source",
       "requiresMedia": false,
@@ -27,7 +46,44 @@
       "audioCount": 0,
       "pageTextChunks": 1,
       "pageTextLength": 731,
+      "minPageTextLength": 450,
+      "expectedText": [
+        "gas leak",
+        "Los Angeles"
+      ],
+      "sourceContextKeys": [
+        "page_title",
+        "canonical_url",
+        "detected_names"
+      ],
       "pageTextSample": "A gas leak occurred in Castaic, California, in northern Los Angeles County, on Saturday, December 27. More than 14,000 people were required to shelter in place. Interstate 5 was shut down for several hours due to the gas leak, bottlenecking"
+    },
+    {
+      "id": "browser-page-real-spec-text",
+      "ok": true,
+      "failures": [],
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+      "requiresMedia": false,
+      "panelInjected": true,
+      "panelStatus": "Page text captured",
+      "iframeSrc": "http://localhost:3000/session?source=browser-tab&surface=extension-panel&title=Web+Content+Accessibility+Guidelines+%28WCAG%29+2.2",
+      "videoCount": 0,
+      "audioCount": 0,
+      "pageTextChunks": 10,
+      "pageTextLength": 12000,
+      "minPageTextLength": 900,
+      "expectedText": [
+        "Web Content Accessibility Guidelines",
+        "WCAG 2.2"
+      ],
+      "sourceContextKeys": [
+        "page_title",
+        "description",
+        "canonical_url",
+        "detected_names"
+      ],
+      "pageTextSample": "Web Content Accessibility Guidelines (WCAG) 2.2\n\nW3C Recommendation 12 December 2024\n\nCopyright © 2020-2024 World Wide Web Consortium. W3C® liability, trademark and document use rules apply.\n\nWeb Content Accessibility Guidelines (WCAG) 2.2 "
     }
   ]
 }

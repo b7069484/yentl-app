@@ -10,8 +10,8 @@ import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { emitSecurityEvent } from "@/lib/server/security-events";
 import {
-  isSyntheticPanelValidationFile,
-  isSyntheticPanelValidationUrl,
+  syntheticPanelValidationFile,
+  syntheticPanelValidationMedia,
   syntheticPanelTranscriptionFixture,
 } from "@/lib/server/validation-media-fixtures";
 
@@ -125,8 +125,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    if (isSyntheticPanelValidationFile(file)) {
-      return NextResponse.json(syntheticPanelTranscriptionFixture());
+    const validationFile = syntheticPanelValidationFile(file);
+    if (validationFile) {
+      return NextResponse.json(syntheticPanelTranscriptionFixture(validationFile.id));
     }
 
     // Browsers occasionally omit the file's Content-Type — fall back to a sane
@@ -202,8 +203,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    if (isSyntheticPanelValidationUrl(targetUrl)) {
-      return NextResponse.json(syntheticPanelTranscriptionFixture());
+    const validationMedia = syntheticPanelValidationMedia(targetUrl);
+    if (validationMedia) {
+      return NextResponse.json(syntheticPanelTranscriptionFixture(validationMedia.id));
     }
 
     try {

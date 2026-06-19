@@ -72,3 +72,23 @@ export function tvHrefForSessionContext(current: SearchParamsLike): string {
   const query = next.toString();
   return query ? `/tv?${query}` : "/tv";
 }
+
+export function sessionHrefForTvContext(current: SearchParamsLike): string {
+  const params = paramsFrom(current);
+  const next = new URLSearchParams();
+  const restoreId = params.get("restore");
+  const demo = params.get("demo");
+  const sample = params.get("sample");
+
+  if (restoreId) {
+    next.set("restore", restoreId);
+  } else if (demo === "validation" && sample) {
+    next.set("demo", demo);
+    next.set("sample", sample);
+  }
+
+  if (next.size > 0) next.set("view", "overview");
+
+  const query = next.toString();
+  return query ? `/session?${query}` : "/session";
+}

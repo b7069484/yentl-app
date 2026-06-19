@@ -111,6 +111,25 @@ function normalizeSavedSession(record: SavedSession): SavedSession {
   };
 }
 
+function savedSessionMeta(record: SavedSession): SavedSessionMeta {
+  const normalized = normalizeSavedSession(record);
+  return {
+    id: normalized.id,
+    name: normalized.name,
+    source_kind: normalized.source_kind,
+    saved_at: normalized.saved_at,
+    started_at: normalized.started_at,
+    ended_at: normalized.ended_at,
+    claim_count: normalized.claim_count,
+    marker_count: normalized.marker_count,
+    speaker_count: normalized.speaker_count,
+    source_count: normalized.source_count,
+    source_linked_count: normalized.source_linked_count,
+    high_source_count: normalized.high_source_count,
+    duration_sec: normalized.duration_sec,
+  };
+}
+
 // ─── Public API ─────────────────────────────────────────────────────────────────
 
 /** Save a session. If id is omitted, generate ulid and create. If id matches an
@@ -144,13 +163,7 @@ export async function listSessions(): Promise<SavedSessionMeta[]> {
     const req = store.getAll();
     req.onsuccess = () => {
       const all: SavedSession[] = req.result;
-      const meta: SavedSessionMeta[] = all.map(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (record) => {
-          const { session: _session, ...m } = normalizeSavedSession(record);
-          return m;
-        },
-      );
+      const meta = all.map(savedSessionMeta);
       meta.sort((a, b) => (a.saved_at > b.saved_at ? -1 : 1));
       resolve(meta);
     };

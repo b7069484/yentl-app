@@ -104,6 +104,8 @@ export type WindowScore = {
   claim_owner_accuracy: number | null;
   unsafe_attribution_recall: number | null;
   quote_vs_endorsement_errors: number | null;
+  non_asserted_claim_spans: number | null;
+  unsafe_non_asserted_claim_spans: number | null;
   marker_owner_accuracy: number | null;
   wer: number | null;
   warnings: string[];
@@ -122,6 +124,8 @@ export type AttributionReport = {
     mean_claim_owner_accuracy: number | null;
     unsafe_attribution_recall: number | null;
     quote_vs_endorsement_errors: number;
+    non_asserted_claim_spans: number;
+    unsafe_non_asserted_claim_spans: number;
   };
   windows: WindowScore[];
 };
@@ -323,9 +327,29 @@ function scoreUnsafeRecall(spans: UnsafeSpan[] | undefined, words: DeepgramWord[
   return recalled / spans.length;
 }
 
-function scoreQuoteErrors(claims: ReferenceSpan[] | undefined): number | null {
-  if (!claims?.length) return null;
-  return claims.filter((claim) => claim.stance && claim.stance !== "asserted").length;
+function scoreStanceRisk(claims: ReferenceSpan[] | undefined): {
+  nonAsserted: number | null;
+  unsafeNonAsserted: number | null;
+  quoteVsEndorsementErrors: number | null;
+} {
+  if (!claims?.length) {
+    return {
+      nonAsserted: null,
+      unsafeNonAsserted: null,
+      quoteVsEndorsementErrors: null,
+    };
+  }
+
+  const nonAssertedClaims = claims.filter((claim) => claim.stance && claim.stance !== "asserted");
+  const unsafeNonAssertedClaims = nonAssertedClaims.filter((claim) => claim.unsafe_attribution);
+  const quoteEndorsementRiskClaims = unsafeNonAssertedClaims.filter((claim) =>
+    claim.stance === "quoted" || claim.stance === "reported" || claim.stance === "mocked"
+  );
+  return {
+    nonAsserted: nonAssertedClaims.length,
+    unsafeNonAsserted: unsafeNonAssertedClaims.length,
+    quoteVsEndorsementErrors: quoteEndorsementRiskClaims.length,
+  };
 }
 
 async function readManifest(manifestPath: string): Promise<ManifestRow[]> {
@@ -375,6 +399,8 @@ async function scoreWindow(
       claim_owner_accuracy: null,
       unsafe_attribution_recall: null,
       quote_vs_endorsement_errors: null,
+      non_asserted_claim_spans: null,
+      unsafe_non_asserted_claim_spans: null,
       marker_owner_accuracy: null,
       wer: null,
       warnings,
@@ -401,6 +427,8 @@ async function scoreWindow(
       claim_owner_accuracy: null,
       unsafe_attribution_recall: null,
       quote_vs_endorsement_errors: null,
+      non_asserted_claim_spans: null,
+      unsafe_non_asserted_claim_spans: null,
       marker_owner_accuracy: null,
       wer: null,
       warnings: [...warnings, `Invalid sidecar: ${path.relative(repoRoot, labelPath)}`],
@@ -411,7 +439,7 @@ async function scoreWindow(
   const claimOwnerAccuracy = scoreOwnerAccuracy(sidecar.labels.claims, words, "claim", missingLabels);
   const markerOwnerAccuracy = scoreOwnerAccuracy(sidecar.labels.markers, words, "marker", missingLabels);
   const unsafeRecall = scoreUnsafeRecall(sidecar.labels.unsafe_attribution_spans, words, speakerConfidenceThreshold);
-  const quoteErrors = scoreQuoteErrors(sidecar.labels.claims);
+  const stanceRisk = scoreStanceRisk(sidecar.labels.claims);
   const hypothesisText = windowWords.map((word) => word.punctuated_word ?? word.word ?? "").join(" ");
   const windowWer = sidecar.labels.reference_text ? wer(sidecar.labels.reference_text, hypothesisText) : null;
 
@@ -437,7 +465,9 @@ async function scoreWindow(
     speaker_time_error: speakerPurity === null ? null : 1 - speakerPurity,
     claim_owner_accuracy: claimOwnerAccuracy,
     unsafe_attribution_recall: unsafeRecall,
-    quote_vs_endorsement_errors: quoteErrors,
+    quote_vs_endorsement_errors: stanceRisk.quoteVsEndorsementErrors,
+    non_asserted_claim_spans: stanceRisk.nonAsserted,
+    unsafe_non_asserted_claim_spans: stanceRisk.unsafeNonAsserted,
     marker_owner_accuracy: markerOwnerAccuracy,
     wer: windowWer,
     warnings,
@@ -447,6 +477,8 @@ async function scoreWindow(
 function summarize(windows: WindowScore[]): AttributionReport["summary"] {
   const unsafeExpected = windows.filter((window) => window.unsafe_attribution_recall !== null);
   const quoteErrors = windows.reduce((sum, window) => sum + (window.quote_vs_endorsement_errors ?? 0), 0);
+  const nonAssertedClaimSpans = windows.reduce((sum, window) => sum + (window.non_asserted_claim_spans ?? 0), 0);
+  const unsafeNonAssertedClaimSpans = windows.reduce((sum, window) => sum + (window.unsafe_non_asserted_claim_spans ?? 0), 0);
   return {
     windows: windows.length,
     scored: windows.filter((window) => window.label_status === "scored").length,
@@ -458,6 +490,8 @@ function summarize(windows: WindowScore[]): AttributionReport["summary"] {
     mean_claim_owner_accuracy: average(windows.map((window) => window.claim_owner_accuracy)),
     unsafe_attribution_recall: unsafeExpected.length ? average(unsafeExpected.map((window) => window.unsafe_attribution_recall)) : null,
     quote_vs_endorsement_errors: quoteErrors,
+    non_asserted_claim_spans: nonAssertedClaimSpans,
+    unsafe_non_asserted_claim_spans: unsafeNonAssertedClaimSpans,
   };
 }
 
@@ -471,7 +505,7 @@ function renderHtml(report: AttributionReport): string {
         <td>${pct(window.speaker_purity)}</td>
         <td>${pct(window.claim_owner_accuracy)}</td>
         <td>${pct(window.unsafe_attribution_recall)}</td>
-        <td>${window.quote_vs_endorsement_errors ?? "n/a"}</td>
+        <td>${window.quote_vs_endorsement_errors ?? "n/a"} / ${window.non_asserted_claim_spans ?? "n/a"}</td>
         <td>${pct(window.wer)}</td>
         <td>${escapeHtml(window.missing_labels.join(", ") || "none")}</td>
       </tr>`).join("\n");
@@ -503,6 +537,7 @@ function renderHtml(report: AttributionReport): string {
     <div class="metric">Missing Labels<strong>${report.summary.missing_labels}</strong></div>
     <div class="metric">Mean Speaker Purity<strong>${pct(report.summary.mean_speaker_purity)}</strong></div>
     <div class="metric">Mean Claim Owner Accuracy<strong>${pct(report.summary.mean_claim_owner_accuracy)}</strong></div>
+    <div class="metric">Stance Risk Spans<strong>${report.summary.unsafe_non_asserted_claim_spans} / ${report.summary.non_asserted_claim_spans}</strong></div>
   </section>
   <table>
     <thead>
@@ -514,7 +549,7 @@ function renderHtml(report: AttributionReport): string {
         <th>Speaker Purity</th>
         <th>Claim Owner</th>
         <th>Unsafe Recall</th>
-        <th>Quote Errors</th>
+        <th>Unsafe / Stance Risk</th>
         <th>WER</th>
         <th>Missing</th>
       </tr>

@@ -2,8 +2,8 @@
   "id": "interview_002",
   "title": "Quentin Tarantino interview: 'I'm shutting your butt down!'",
   "category": "1on1_interview",
-  "startedAt": "2026-06-10T06:56:04.749Z",
-  "finishedAt": "2026-06-10T06:56:33.371Z",
+  "startedAt": "2026-06-10T07:32:19.841Z",
+  "finishedAt": "2026-06-10T07:32:57.793Z",
   "baseUrl": "https://yentl.it",
   "verify": "confirmed",
   "utterancesAvailable": 74,
@@ -18,7 +18,7 @@
       "start_time": 48,
       "end_time": 62,
       "severity": "clear",
-      "explanation": "Highly charged, emotionally loaded phrasing ('laying waste,' 'genocidal white racist class') is used to frame the antagonists in the strongest possible moral terms, characteristic of loaded language.",
+      "explanation": "The speaker uses emotionally charged, morally absolute phrasing ('laying waste,' 'genocidal white racist class') to frame the revenge narrative, which amplifies emotional weight beyond neutral description.",
       "id": "interview_002-marker-1"
     },
     {
@@ -26,10 +26,10 @@
       "name": "repetition_emphasis",
       "display": "Repetition for Emphasis",
       "excerpt": "this happens and this happens and this happens and this happens and that happens",
-      "start_time": 62,
-      "end_time": 72,
+      "start_time": 63,
+      "end_time": 75,
       "severity": "subtle",
-      "explanation": "The speaker repeats 'this happens' multiple times to emphasize the contrast with a mere historical recounting, using repetition as a rhetorical device.",
+      "explanation": "Repeating 'this happens' rhythmically emphasizes the dismissiveness toward a straightforward historical retelling, using cadence rather than argument to make the point.",
       "id": "interview_002-marker-2"
     }
   ],

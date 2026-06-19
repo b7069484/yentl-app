@@ -130,6 +130,11 @@ export function WebUrlIngestPane() {
     setPrerecordStage("selected");
   }, [setPrerecordStage, setSource, trimmedUrl]);
 
+  const switchToTextDocument = useCallback(() => {
+    setSource({ kind: "text_doc", filename: "", mime: "", byte_count: 0 });
+    setPrerecordStage("selected");
+  }, [setPrerecordStage, setSource]);
+
   const handleAnalyze = useCallback(async (urlOverride?: string) => {
     const analysisUrl = (urlOverride ?? trimmedUrl).trim();
     if (isBusy || !isValidWebUrl(analysisUrl)) return;
@@ -348,6 +353,9 @@ export function WebUrlIngestPane() {
                 <div className="min-w-0 flex-1">
                   <div className="text-[14px] font-semibold text-ink">This URL needs a fallback</div>
                   <p className="mt-1 text-[13px] leading-relaxed text-amber-2">{phase.message}</p>
+                  <p className="mt-2 text-[12.5px] leading-relaxed text-ink-3">
+                    {articleRecoveryGuidance(phase.code)}
+                  </p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
                       type="button"
@@ -364,6 +372,14 @@ export function WebUrlIngestPane() {
                     >
                       <LinkIcon className="h-3.5 w-3.5" aria-hidden />
                       Try media URL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={switchToTextDocument}
+                      className="inline-flex min-h-10 items-center gap-2 rounded-md border border-line bg-paper px-3 text-[12.5px] font-medium text-ink-2"
+                    >
+                      <FileText className="h-3.5 w-3.5" aria-hidden />
+                      Paste text
                     </button>
                   </div>
                 </div>
@@ -402,6 +418,21 @@ function UrlRoute({ label, body }: { label: string; body: string }) {
       <p className="mt-0.5 leading-snug">{body}</p>
     </div>
   );
+}
+
+function articleRecoveryGuidance(code: string) {
+  switch (code) {
+    case "SSRF_BLOCKED":
+      return "Private or local pages cannot be fetched safely. If you can see the page in Chrome, use browser-tab capture; if you have the article text, paste it directly.";
+    case "UNSUPPORTED_PAGE":
+      return "This URL is probably not a readable article page. Try the media URL path for direct files, browser-tab capture for player pages, or paste the visible text.";
+    case "NO_READABLE_TEXT":
+      return "The page loaded but did not expose enough readable article text. Browser-tab capture or pasted text keeps the source in play without losing context.";
+    case "PAGE_TOO_LARGE":
+      return "The page is too large for one import. Paste the relevant section or capture the visible tab so Yentl can focus on the material you mean.";
+    default:
+      return "Choose the source path that matches what you have: visible webpage, direct media file, or article text.";
+  }
 }
 
 function validationDemoEnabled(): boolean {

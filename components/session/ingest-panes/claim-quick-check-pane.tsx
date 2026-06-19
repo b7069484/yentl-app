@@ -18,6 +18,9 @@ type CheckingStage = "idle" | "initial" | "source";
 
 const MAX_CLAIM_CHARS = 2_000;
 const MAX_CONTEXT_CHARS = 6_000;
+const VALIDATION_CLAIM_TEXT = "City spending rose by twelve percent this year without raising taxes.";
+const VALIDATION_CONTEXT_TEXT =
+  "Yentl document validation brief: the source trail says the exact budget summary, baseline year, and tax record still need to be named.";
 const AMBIGUOUS_REFERENCE_RE =
   /\b(he|she|they|them|him|her|his|hers|their|theirs|it|this|that|these|those|someone|somebody)\b/i;
 const RELATIVE_TIME_RE =
@@ -106,6 +109,12 @@ export function ClaimQuickCheckPane() {
   const handleBack = useCallback(() => {
     setPrerecordStage("picker");
   }, [setPrerecordStage]);
+
+  const handleLoadValidationClaim = useCallback(() => {
+    setError(null);
+    setClaimText(VALIDATION_CLAIM_TEXT);
+    setContextText(VALIDATION_CONTEXT_TEXT);
+  }, []);
 
   const openDuplicateResult = useCallback(() => {
     if (!duplicateClaim) return;
@@ -311,6 +320,19 @@ export function ClaimQuickCheckPane() {
             <span>Context is for disambiguation, not automatic evidence.</span>
           </div>
 
+          {validationDemoEnabled() && !isChecking && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={handleLoadValidationClaim}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-teal/25 bg-teal-soft px-3 text-[12.5px] font-semibold text-teal transition-colors hover:bg-teal/10"
+              >
+                <FileQuestion className="h-4 w-4" aria-hidden />
+                Load validation claim
+              </button>
+            </div>
+          )}
+
           {(claimTooLong || contextTooLong || error) && (
             <div role="alert" className="mt-4 rounded-lg border border-red-soft bg-red-soft/40 px-3 py-2 text-[13px] text-red">
               {claimTooLong
@@ -444,4 +466,10 @@ export function ClaimQuickCheckPane() {
       </div>
     </div>
   );
+}
+
+function validationDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_YENTL_DISABLE_VALIDATION_DEMO === "1") return false;
+  if (process.env.NEXT_PUBLIC_YENTL_ENABLE_VALIDATION_DEMO === "1") return true;
+  return process.env.NODE_ENV !== "production";
 }

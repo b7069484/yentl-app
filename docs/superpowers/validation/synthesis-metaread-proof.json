@@ -1,0 +1,280 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-11T23:32:34.286Z",
+  "proof": "synthesis-metaread",
+  "case_count": 5,
+  "checks": [
+    {
+      "name": "thin-live-window",
+      "ok": true,
+      "description": "A live window with no clean claims or source context must stay explicitly insufficient.",
+      "meta_read": {
+        "posture": "insufficient",
+        "source_health": "unknown",
+        "scope": "live_window",
+        "summary": "Across the current live window, Yentl does not yet have enough clean evidence for a confident conversation-level read.",
+        "uncertainty": "Main uncertainty: source context is thin.",
+        "key_question": "Which statement should be treated as the first clean owned claim?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "actual": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "evidence_depth": {
+          "clean_claims": 0,
+          "uncertain_claims": 0,
+          "marker_total": 0,
+          "partial_claims": 0,
+          "source_context_present": false,
+          "scope": "live_window"
+        },
+        "mismatches": []
+      }
+    },
+    {
+      "name": "good-faith-full-session-strong-sources",
+      "ok": true,
+      "description": "A full-session read with multiple clean source-backed claims should allow a strong good-faith read.",
+      "meta_read": {
+        "posture": "good_faith",
+        "source_health": "strong",
+        "scope": "full_session",
+        "summary": "Across the full session, the read is mostly topic-engaged, with 2 clean owned claims and limited rhetorical pressure.",
+        "uncertainty": "Main uncertainty is whether later context changes the current read.",
+        "key_question": "Which source-backed claim best represents the conversation's center of gravity?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "good_faith",
+          "source_health": "strong",
+          "scope": "full_session"
+        },
+        "actual": {
+          "posture": "good_faith",
+          "source_health": "strong",
+          "scope": "full_session"
+        },
+        "evidence_depth": {
+          "clean_claims": 2,
+          "uncertain_claims": 0,
+          "marker_total": 0,
+          "partial_claims": 0,
+          "source_context_present": true,
+          "scope": "full_session"
+        },
+        "mismatches": []
+      }
+    },
+    {
+      "name": "bad-faith-risk-pattern",
+      "ok": true,
+      "description": "A repeated bad-faith verdict with multiple markers should surface risk without claiming final intent.",
+      "meta_read": {
+        "posture": "bad_faith_risk",
+        "source_health": "strong",
+        "scope": "full_session",
+        "summary": "Across the full session, Yentl sees a pattern of rhetorical pressure or weakly supported moves that deserves closer review.",
+        "uncertainty": "Main uncertainty is whether later context changes the current read.",
+        "key_question": "Which contradicted claim has the clearest source trail?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "bad_faith_risk",
+          "source_health": "strong",
+          "scope": "full_session"
+        },
+        "actual": {
+          "posture": "bad_faith_risk",
+          "source_health": "strong",
+          "scope": "full_session"
+        },
+        "evidence_depth": {
+          "clean_claims": 2,
+          "uncertain_claims": 0,
+          "marker_total": 3,
+          "partial_claims": 0,
+          "source_context_present": true,
+          "scope": "full_session"
+        },
+        "mismatches": []
+      }
+    },
+    {
+      "name": "quoted-reported-uncertainty",
+      "ok": true,
+      "description": "Quoted/reported claims should not become clean owned claims for the meta-view.",
+      "meta_read": {
+        "posture": "insufficient",
+        "source_health": "unknown",
+        "scope": "live_window",
+        "summary": "Across the current live window, Yentl does not yet have enough clean evidence for a confident conversation-level read.",
+        "uncertainty": "Main uncertainty: 2 claims have uncertain ownership or stance; source context is thin; 1 claims are partial or qualified.",
+        "key_question": "Which statement should be treated as the first clean owned claim?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "actual": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "evidence_depth": {
+          "clean_claims": 0,
+          "uncertain_claims": 2,
+          "marker_total": 0,
+          "partial_claims": 1,
+          "source_context_present": false,
+          "scope": "live_window"
+        },
+        "mismatches": []
+      }
+    },
+    {
+      "name": "mixed-full-session-partial-evidence",
+      "ok": true,
+      "description": "A full-session read with source context and partial evidence should stay mixed.",
+      "meta_read": {
+        "posture": "mixed",
+        "source_health": "mixed",
+        "scope": "full_session",
+        "summary": "Across the full session, the conversation is mixed: 2 clean owned claims and 1 markers point in different directions.",
+        "uncertainty": "Main uncertainty: 1 claims are partial or qualified.",
+        "key_question": "Which rhetoric marker changes the reader's interpretation most?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "mixed",
+          "source_health": "mixed",
+          "scope": "full_session"
+        },
+        "actual": {
+          "posture": "mixed",
+          "source_health": "mixed",
+          "scope": "full_session"
+        },
+        "evidence_depth": {
+          "clean_claims": 2,
+          "uncertain_claims": 0,
+          "marker_total": 1,
+          "partial_claims": 1,
+          "source_context_present": true,
+          "scope": "full_session"
+        },
+        "mismatches": []
+      }
+    },
+    {
+      "name": "sanitize-overconfident-source-health",
+      "ok": true,
+      "raw_meta_read": {
+        "posture": "good_faith",
+        "source_health": "strong",
+        "scope": "full_session",
+        "summary": "",
+        "uncertainty": "",
+        "key_question": ""
+      },
+      "raw_quality": {
+        "ok": false,
+        "score": 0,
+        "expected": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "actual": {
+          "posture": "good_faith",
+          "source_health": "strong",
+          "scope": "full_session"
+        },
+        "evidence_depth": {
+          "clean_claims": 0,
+          "uncertain_claims": 0,
+          "marker_total": 0,
+          "partial_claims": 0,
+          "source_context_present": false,
+          "scope": "live_window"
+        },
+        "mismatches": [
+          {
+            "field": "posture",
+            "expected": "insufficient",
+            "actual": "good_faith",
+            "reason": "Conversation posture does not match the clean-claim, marker, and speaker-verdict evidence depth."
+          },
+          {
+            "field": "source_health",
+            "expected": "unknown",
+            "actual": "strong",
+            "reason": "Source health does not match available source context, clean ownership, and partial evidence."
+          },
+          {
+            "field": "scope",
+            "expected": "live_window",
+            "actual": "full_session",
+            "reason": "Meta-read scope must mirror the request analysis scope."
+          },
+          {
+            "field": "uncertainty",
+            "expected": "uncertainty should name missing source context",
+            "actual": "",
+            "reason": "The meta-read lacks source context but does not warn about it."
+          }
+        ]
+      },
+      "meta_read": {
+        "posture": "insufficient",
+        "source_health": "unknown",
+        "scope": "live_window",
+        "summary": "Conversation posture is still forming.",
+        "uncertainty": "Uncertainty remains around attribution, evidence strength, or missing context.",
+        "key_question": "Which claim has the strongest source-backed support?"
+      },
+      "quality": {
+        "ok": true,
+        "score": 100,
+        "expected": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "actual": {
+          "posture": "insufficient",
+          "source_health": "unknown",
+          "scope": "live_window"
+        },
+        "evidence_depth": {
+          "clean_claims": 0,
+          "uncertain_claims": 0,
+          "marker_total": 0,
+          "partial_claims": 0,
+          "source_context_present": false,
+          "scope": "live_window"
+        },
+        "mismatches": []
+      }
+    }
+  ],
+  "failures": []
+}

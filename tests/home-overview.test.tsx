@@ -400,6 +400,50 @@ describe("HomeOverview – source health", () => {
     expect(screen.getByText("Checking sources")).toBeTruthy();
     expect(screen.getByText("Still checking")).toBeTruthy();
   });
+
+  it("renders extension snapshot continuity for restored browser-tab sessions", () => {
+    mockSearchParamsRaw = new URLSearchParams("view=overview");
+    const transcript: TranscriptSegment[] = [
+      {
+        text: "The panel transcript survives the workspace handoff.",
+        start: 0,
+        end: 4,
+        is_final: true,
+        speaker_id: 0,
+      },
+    ];
+    mockStore(
+      makeDefaultStoreState({
+        startedAt: "2026-06-11T20:10:00.000Z",
+        transcript,
+        source: {
+          kind: "browser_tab",
+          title: "Council stream",
+          url: "https://news.example/live/council",
+        },
+      }),
+    );
+
+    render(<HomeOverview />);
+
+    const card = within(screen.getByTestId("browser-tab-snapshot-card"));
+    expect(card.getByText("Extension snapshot")).toBeTruthy();
+    expect(card.getByText("Council stream")).toBeTruthy();
+    expect(card.getByText("news.example")).toBeTruthy();
+    expect(card.getByText(/durable review snapshot/i)).toBeTruthy();
+    expect(card.getByRole("link", { name: /Transcript/i })).toHaveAttribute(
+      "href",
+      "/session?view=transcript",
+    );
+    expect(card.getByRole("link", { name: /Claims/i })).toHaveAttribute(
+      "href",
+      "/session?view=claims",
+    );
+    expect(card.getByRole("link", { name: /Open original/i })).toHaveAttribute(
+      "href",
+      "https://news.example/live/council",
+    );
+  });
 });
 
 // 9. Text/article source review card

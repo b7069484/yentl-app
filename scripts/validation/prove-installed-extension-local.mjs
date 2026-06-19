@@ -8,7 +8,11 @@ import { spawn } from "node:child_process";
 const ROOT = process.cwd();
 const EXTENSION_DIR = join(ROOT, "extension");
 const APP_ORIGIN = process.env.YENTL_EXTENSION_PROOF_ORIGIN ?? "http://127.0.0.1:3000";
-const EXTERNAL_TARGET_URL = process.env.YENTL_EXTENSION_PROOF_TARGET_URL?.trim() || null;
+const DEFAULT_WIKIMEDIA_TARGET =
+  "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm";
+const EXTERNAL_TARGET_URL =
+  process.env.YENTL_EXTENSION_PROOF_TARGET_URL?.trim() ||
+  (process.env.YENTL_EXTENSION_PROOF_DEFAULT_EXTERNAL === "1" ? DEFAULT_WIKIMEDIA_TARGET : null);
 const EXTERNAL_PROOF = Boolean(EXTERNAL_TARGET_URL);
 const TARGET_URL = EXTERNAL_TARGET_URL ?? `${APP_ORIGIN}/validation/browser-capture.html`;
 const REPORT_PATH = join(
@@ -23,8 +27,6 @@ const SCREENSHOT_PATH = join(
     ? "docs/superpowers/validation/screenshots/installed-extension-external-page.png"
     : "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png",
 );
-const DEFAULT_WIKIMEDIA_TARGET =
-  "https://commons.wikimedia.org/wiki/File:David_Korten,_The_Green_Interview.webm";
 const HEADLESS = process.env.YENTL_EXTENSION_PROOF_HEADLESS === "1";
 const MANUAL_CAPTURE = process.env.YENTL_EXTENSION_PROOF_MANUAL_CAPTURE === "1";
 const POPUP_AUTOMATION = process.env.YENTL_EXTENSION_PROOF_POPUP_AUTOMATION !== "0";
@@ -37,9 +39,27 @@ const MANUAL_CAPTURE_TIMEOUT_MS = Number(process.env.YENTL_EXTENSION_PROOF_MANUA
 const TRANSCRIPT_WAIT_MS = Number(
   process.env.YENTL_EXTENSION_PROOF_TRANSCRIPT_WAIT_MS ?? (EXTERNAL_PROOF ? 45000 : 15000),
 );
+const HARD_TIMEOUT_MS = Number(
+  process.env.YENTL_EXTENSION_PROOF_HARD_TIMEOUT_MS ??
+    Math.max(120000, MANUAL_CAPTURE_TIMEOUT_MS + TRANSCRIPT_WAIT_MS + 45000),
+);
+const REQUIRED_TRANSCRIPT_PHRASE = process.env.YENTL_EXTENSION_PROOF_REQUIRED_TRANSCRIPT?.trim() ?? "";
+const REQUIRE_LIVE_TRANSCRIPT =
+  process.env.YENTL_EXTENSION_PROOF_REQUIRE_LIVE_TRANSCRIPT === "1" ||
+  Boolean(REQUIRED_TRANSCRIPT_PHRASE);
+
+let activeChrome = null;
+let activeClient = null;
 
 async function main() {
   const proofStartedAt = Date.now();
+  const hardTimeout = setTimeout(() => {
+    void stopActiveProofProcess(
+      `Installed-extension proof exceeded hard timeout (${HARD_TIMEOUT_MS}ms).`,
+    );
+  }, HARD_TIMEOUT_MS);
+  hardTimeout.unref?.();
+
   await assertAppIsServing();
   const chromePath = chromeExecutable();
   const port = await pickPort();
@@ -54,15 +74,22 @@ async function main() {
     await copyExtensionForLocalValidation(extensionCopy);
     await mkdir(profileDir, { recursive: true });
     chrome = spawnChrome(chromePath, port, profileDir, extensionCopy, chromeLogLines);
+    activeChrome = chrome;
 
     const pageTarget = await waitForTarget(port, (target) =>
       target.type === "page" && target.url.startsWith(TARGET_URL),
     );
+    let resolvedTargetUrl = pageTarget.url;
     client = await connectCdp(pageTarget.webSocketDebuggerUrl);
+    activeClient = client;
     await client.send("Page.enable");
     await client.send("Runtime.enable");
     await client.send("Page.bringToFront");
     await waitForExpression(client, "document.readyState === 'complete' || document.readyState === 'interactive'");
+    const currentPageUrl = await readCurrentPageUrl(client).catch(() => null);
+    if (typeof currentPageUrl === "string" && currentPageUrl.startsWith("http")) {
+      resolvedTargetUrl = currentPageUrl;
+    }
     await installCaptureEventRecorder(client);
 
     await waitForExpression(
@@ -79,7 +106,10 @@ async function main() {
 
     const manualCapture = MANUAL_CAPTURE
       ? POPUP_AUTOMATION
-        ? await invokePopupStartButton(port, chromePath, MANUAL_CAPTURE_TIMEOUT_MS).catch((error) => ({
+        ? await invokePopupStartButton(port, chromePath, MANUAL_CAPTURE_TIMEOUT_MS, {
+            targetUrl: resolvedTargetUrl,
+            targetId: pageTarget.id,
+          }).catch((error) => ({
             ok: false,
             error: error instanceof Error ? error.message : String(error),
           }))
@@ -110,7 +140,7 @@ async function main() {
     }));
     const serviceWorkerDebug = shortcutPanel?.panelInjected || manualCapture?.popupClickProven
       ? null
-      : await openPanelThroughServiceWorker(port).catch((error) => ({
+      : await openPanelThroughServiceWorker(port, resolvedTargetUrl).catch((error) => ({
           ok: false,
           error: error instanceof Error ? error.message : String(error),
         }));
@@ -133,6 +163,10 @@ async function main() {
         }))
       : null;
     const transcriptProbe = await waitForTranscriptEvidence(client, TRANSCRIPT_WAIT_MS).catch((error) => ({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    }));
+    const extensionDiagnosticsAfterTranscript = await readExtensionDiagnostics(port).catch((error) => ({
       ok: false,
       error: error instanceof Error ? error.message : String(error),
     }));
@@ -169,9 +203,16 @@ async function main() {
       pageCaptureState,
       extensionDiagnosticsAfterShortcut,
       extensionDiagnosticsAfterFallback,
+      extensionDiagnosticsAfterTranscript,
       manualCapture,
       proofEndedAt,
     });
+    const diagnosticsSnapshots = [
+      manualCapture?.diagnostics,
+      extensionDiagnosticsAfterShortcut,
+      extensionDiagnosticsAfterFallback,
+      extensionDiagnosticsAfterTranscript,
+    ];
     const proof = {
       real_user_profile_used: false,
       extension_loaded: extensionTargetsAfterShortcut.yentlServiceWorkers.length > 0,
@@ -197,36 +238,59 @@ async function main() {
         serviceWorkerDebug?.tabCaptureStreamIdAvailable ||
         manualCapture?.captureRunning ||
         extensionDiagnosticsAfterShortcut?.captureState?.running ||
-        extensionDiagnosticsAfterFallback?.captureState?.running
+        extensionDiagnosticsAfterFallback?.captureState?.running ||
+        extensionDiagnosticsAfterTranscript?.captureState?.running
+      ),
+      deepgram_socket_open_proven: diagnosticsSnapshots.some(hasOpenDeepgramSocket),
+      offscreen_audio_chunks_proven: diagnosticsSnapshots.some(hasObservedOffscreenAudioChunks),
+      media_playback_proven: Boolean(
+        mediaPlaybackBeforeShortcut?.ok || mediaPlaybackAfterCapture?.ok,
       ),
       page_text_proven: Boolean(
         transcriptProbe?.pageTextProven ||
         pageCaptureState?.pageTextProven ||
         hasPageTextEvidence(pageCaptureState),
       ),
+      panel_transcript_status_proven: Boolean(
+        hasPanelTranscriptStatus(transcriptProbe?.page) ||
+        hasPanelTranscriptStatus(pageCaptureState),
+      ),
       live_transcription_proven: Boolean(
         manualCapture?.liveTranscriptionProven ||
-        transcriptProbe?.liveTranscriptionProven
+        transcriptProbe?.liveTranscriptionProven ||
+        diagnosticsSnapshots.some(hasOffscreenTranscriptEvidence)
       ),
+      required_transcript_proven: REQUIRED_TRANSCRIPT_PHRASE
+        ? Boolean(transcriptProbe?.requiredTranscriptProven)
+        : null,
     };
-    const report = {
-      ok: EXTERNAL_PROOF
+    const baseOk = EXTERNAL_PROOF
+      ? Boolean(
+          proof.panel_injection_proven &&
+          proof.tab_capture_stream_id_available &&
+          (proof.page_text_proven || proof.live_transcription_proven || proof.media_playback_proven),
+        )
+      : MANUAL_CAPTURE
         ? Boolean(
-            proof.panel_injection_proven &&
-            (proof.page_text_proven || proof.live_transcription_proven || proof.tab_capture_stream_id_available),
+            proof.popup_click_proven &&
+            proof.manual_invocation_proven &&
+            (proof.tab_capture_stream_id_available || proof.live_transcription_proven),
           )
-        : MANUAL_CAPTURE
-          ? Boolean(
-              proof.popup_click_proven &&
-              proof.manual_invocation_proven &&
-              (proof.tab_capture_stream_id_available || proof.live_transcription_proven),
-            )
-          : proof.panel_injection_proven,
+        : proof.panel_injection_proven;
+    const report = {
+      ok: Boolean(
+        baseOk &&
+        (!REQUIRE_LIVE_TRANSCRIPT || proof.live_transcription_proven) &&
+        (!REQUIRED_TRANSCRIPT_PHRASE || proof.required_transcript_proven)
+      ),
       generated_at: new Date().toISOString(),
       chrome: chromePath,
       headless: HEADLESS,
       app_origin: APP_ORIGIN,
       target_url: TARGET_URL,
+      resolved_target_url: resolvedTargetUrl,
+      required_transcript_phrase: REQUIRED_TRANSCRIPT_PHRASE || null,
+      require_live_transcript: REQUIRE_LIVE_TRANSCRIPT,
       external_proof: EXTERNAL_PROOF,
       extension_copy: relative(ROOT, extensionCopy),
       temp_profile: profileDir,
@@ -244,6 +308,7 @@ async function main() {
       shortcut_panel: shortcutPanel,
       extension_diagnostics_after_shortcut: extensionDiagnosticsAfterShortcut,
       extension_diagnostics_after_fallback: extensionDiagnosticsAfterFallback,
+      extension_diagnostics_after_transcript: extensionDiagnosticsAfterTranscript,
       transcript_probe: transcriptProbe,
       page_capture_state: pageCaptureState,
       debug_panel: debugPanel,
@@ -272,6 +337,9 @@ async function main() {
 
     console.log(JSON.stringify(report, null, 2));
   } finally {
+    clearTimeout(hardTimeout);
+    activeClient = null;
+    activeChrome = null;
     client?.close();
     if (chrome) await stopChrome(chrome);
     if (process.env.YENTL_EXTENSION_PROOF_KEEP_PROFILE !== "1") {
@@ -414,51 +482,197 @@ async function startValidationMediaPlayback(client, options = {}) {
   const result = await client.send("Runtime.evaluate", {
     expression: `
       (async () => {
-        const audio = document.querySelector('audio');
-        const videos = Array.from(document.querySelectorAll('video'));
-        const preferredVideo = videos.find((candidate) => candidate.duration > 0 && candidate.readyState >= 2) || videos[0] || null;
-        const media = ${JSON.stringify(target)} === "video" ? preferredVideo : audio || preferredVideo;
-        for (const other of [audio, video].filter(Boolean)) {
-          if (other !== media) other.pause();
-        }
-        if (!media) {
+        const preferredTarget = ${JSON.stringify(target)};
+        const wantsVideo = preferredTarget === "video";
+        const resetPlayback = ${JSON.stringify(reset)};
+        const safeNumber = (value) => Number.isFinite(value) ? Number(value.toFixed(3)) : null;
+        const sourceFor = (media) =>
+          media.currentSrc ||
+          media.src ||
+          Array.from(media.querySelectorAll("source")).map((source) => source.src).find(Boolean) ||
+          null;
+        const summarize = (media, index, extra = {}) => {
+          const rect = media.getBoundingClientRect();
+          const style = getComputedStyle(media);
+          const source = sourceFor(media);
+          const visible = Boolean(
+            rect.width > 0 &&
+            rect.height > 0 &&
+            style.visibility !== "hidden" &&
+            style.display !== "none" &&
+            style.opacity !== "0"
+          );
+          return {
+            index,
+            tag: media.tagName.toLowerCase(),
+            title: media.getAttribute("title") || media.getAttribute("aria-label") || null,
+            source,
+            hasSource: Boolean(source),
+            readyState: media.readyState,
+            networkState: media.networkState,
+            paused: media.paused,
+            muted: media.muted,
+            volume: safeNumber(media.volume),
+            currentTime: safeNumber(media.currentTime),
+            duration: safeNumber(media.duration),
+            width: safeNumber(rect.width),
+            height: safeNumber(rect.height),
+            visible,
+            area: safeNumber(rect.width * rect.height),
+            ...extra
+          };
+        };
+        const waitForReady = (media, timeoutMs = 6000) =>
+          new Promise((resolve) => {
+            if (media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+              resolve({ ready: true, reason: "already-ready" });
+              return;
+            }
+            let settled = false;
+            const cleanup = () => {
+              settled = true;
+              clearTimeout(timer);
+              for (const eventName of events) media.removeEventListener(eventName, onReady);
+              media.removeEventListener("error", onError);
+            };
+            const finish = (value) => {
+              if (settled) return;
+              cleanup();
+              resolve(value);
+            };
+            const onReady = (event) => finish({ ready: true, reason: event.type });
+            const onError = () => finish({
+              ready: false,
+              reason: "error",
+              mediaError: media.error?.message || media.error?.code || null
+            });
+            const events = ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"];
+            const timer = setTimeout(() => finish({ ready: false, reason: "timeout" }), timeoutMs);
+            for (const eventName of events) media.addEventListener(eventName, onReady, { once: true });
+            media.addEventListener("error", onError, { once: true });
+            try {
+              media.load();
+            } catch {
+              // Some external media players reject explicit load(); play() can still work.
+            }
+          });
+        const playWithTimeout = (media, timeoutMs = 4000) =>
+          Promise.race([
+            media.play().then(
+              () => ({ ok: true, error: null }),
+              (error) => ({ ok: false, error: error?.message || String(error) })
+            ),
+            new Promise((resolve) =>
+              setTimeout(() => resolve({ ok: false, error: "Timed out waiting for media.play()." }), timeoutMs)
+            )
+          ]);
+
+        const mediaCandidates = Array.from(document.querySelectorAll("audio, video"));
+        const ranked = mediaCandidates
+          .map((media, index) => ({ media, index, summary: summarize(media, index) }))
+          .sort((left, right) => {
+            const leftTarget = wantsVideo ? left.summary.tag === "video" : left.summary.tag === "audio";
+            const rightTarget = wantsVideo ? right.summary.tag === "video" : right.summary.tag === "audio";
+            if (leftTarget !== rightTarget) return leftTarget ? -1 : 1;
+            if (left.summary.visible !== right.summary.visible) return left.summary.visible ? -1 : 1;
+            if (left.summary.readyState !== right.summary.readyState) return right.summary.readyState - left.summary.readyState;
+            if (left.summary.hasSource !== right.summary.hasSource) return left.summary.hasSource ? -1 : 1;
+            return (right.summary.area || 0) - (left.summary.area || 0);
+          });
+        const playbackCandidates = ranked.slice(0, 3);
+        const attempts = [];
+
+        if (ranked.length === 0) {
           return {
             ok: false,
             error: "No playable audio or video element found.",
-            audioCount: document.querySelectorAll('audio').length,
-            videoCount: document.querySelectorAll('video').length
+            title: document.title,
+            targetPreference: preferredTarget,
+            audioCount: document.querySelectorAll("audio").length,
+            videoCount: document.querySelectorAll("video").length,
+            candidates: [],
+            attempts
           };
         }
 
-        media.muted = false;
-        media.volume = 1;
-        if (${JSON.stringify(reset)}) media.currentTime = 0;
-        let playError = null;
-        try {
-          await media.play();
-        } catch (error) {
-          playError = error?.message || String(error);
+        for (const candidate of playbackCandidates) {
+          const media = candidate.media;
+          const attemptStartedAt = performance.now();
+          let prepare = null;
+          let playError = null;
+          for (const other of mediaCandidates) {
+            if (other !== media) other.pause();
+          }
+
+          try {
+            media.scrollIntoView({ block: "center", inline: "center" });
+          } catch {
+            // Best-effort only; off-screen media can still play.
+          }
+
+          media.muted = false;
+          media.volume = 1;
+          if (resetPlayback) {
+            try {
+              media.currentTime = 0;
+            } catch {
+              // Some streamed media disallows seeking to zero before metadata loads.
+            }
+          }
+
+          if (media.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+            prepare = await waitForReady(media, 2500);
+          } else {
+            prepare = { ready: true, reason: "already-ready" };
+          }
+
+          const playResult = await playWithTimeout(media);
+          playError = playResult.error;
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          const summary = summarize(media, candidate.index, {
+            prepare,
+            playError,
+            elapsedMs: Math.round(performance.now() - attemptStartedAt)
+          });
+          attempts.push(summary);
+
+          if (!playError && !media.paused) {
+            return JSON.parse(JSON.stringify({
+              ok: true,
+              title: document.title,
+              targetPreference: preferredTarget,
+              selected: summary,
+              audioCount: document.querySelectorAll("audio").length,
+              videoCount: document.querySelectorAll("video").length,
+              candidates: ranked.map((entry) => entry.summary),
+              attempts
+            }));
+          }
         }
 
-        return {
-          ok: !playError && !media.paused,
+        return JSON.parse(JSON.stringify({
+          ok: false,
+          error: "No media element started playback.",
           title: document.title,
-          target: media.tagName.toLowerCase(),
-          audioCount: document.querySelectorAll('audio').length,
-          videoCount: document.querySelectorAll('video').length,
-          paused: media.paused,
-          muted: media.muted,
-          volume: media.volume,
-          currentTime: media.currentTime,
-          duration: media.duration,
-          readyState: media.readyState,
-          playError
-        };
+          targetPreference: preferredTarget,
+          audioCount: document.querySelectorAll("audio").length,
+          videoCount: document.querySelectorAll("video").length,
+          candidates: ranked.map((entry) => entry.summary),
+          attempts
+        }));
       })()
     `,
     awaitPromise: true,
     returnByValue: true,
-  });
+  }, { timeoutMs: 45000 });
+
+  if (result.exceptionDetails) {
+    return {
+      ok: false,
+      error: result.exceptionDetails.text ?? "Media playback evaluation failed.",
+    };
+  }
 
   return result.result?.value ?? { ok: false, error: "Media playback returned no value." };
 }
@@ -635,13 +849,14 @@ async function installCaptureEventRecorder(client) {
   });
 }
 
-async function invokePopupStartButton(port, chromePath, timeoutMs) {
-  await waitForYentlExtension(port, Math.min(timeoutMs, 15000));
-  const extensionId = await getYentlExtensionId(port);
-  const popupUrl = `chrome-extension://${extensionId}/popup.html`;
+async function invokePopupStartButton(port, chromePath, timeoutMs, options = {}) {
+  const targetUrl = options.targetUrl ?? TARGET_URL;
+  const targetId = options.targetId ?? null;
   const pageTarget = await waitForTarget(
     port,
-    (target) => target.type === "page" && target.url.startsWith(TARGET_URL),
+    (target) =>
+      target.type === "page" &&
+      (target.id === targetId || target.url.startsWith(targetUrl)),
     timeoutMs,
   );
   const pageClient = await connectCdp(pageTarget.webSocketDebuggerUrl);
@@ -650,6 +865,39 @@ async function invokePopupStartButton(port, chromePath, timeoutMs) {
   try {
     await pageClient.send("Page.bringToFront");
     await dispatchPageClickGesture(pageClient);
+    let serviceWorkerWarmup = await waitForYentlExtension(port, Math.min(timeoutMs, 5000))
+      .then(() => ({ ok: true }))
+      .catch((error) => ({
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      }));
+    let shortcutWake = null;
+    if (!serviceWorkerWarmup.ok) {
+      shortcutWake = await unlockActiveTabAfterPopup(pageClient, chromePath);
+      serviceWorkerWarmup = await waitForYentlExtension(port, Math.min(timeoutMs, 15000))
+        .then(() => ({ ok: true }))
+        .catch((error) => ({
+          ok: false,
+          error: error instanceof Error ? error.message : String(error),
+        }));
+      const shortcutCapture = await waitForCaptureDiagnostics(port, Math.min(timeoutMs, 12000), {
+        popupClickProven: false,
+        manualInvocationProven: true,
+        popup_open: {
+          fallback: "extension-shortcut-wake-before-popup",
+          serviceWorkerWarmup,
+        },
+        active_tab_unlock: shortcutWake,
+      });
+      if (shortcutCapture.captureRunning) return shortcutCapture;
+    }
+
+    if (!serviceWorkerWarmup.ok) {
+      throw new Error(serviceWorkerWarmup.error || "Timed out waiting for the Yentl extension service worker.");
+    }
+
+    const extensionId = await getYentlExtensionId(port);
+    const popupUrl = `chrome-extension://${extensionId}/popup.html`;
     const popupOpen = await openExtensionPopup(port).catch(async (error) => {
       const browserClient = await connectBrowserCdp(port);
       try {
@@ -721,7 +969,10 @@ async function invokePopupStartButton(port, chromePath, timeoutMs) {
         manualInvocationProven: true,
         captureRunning,
         popup_click: clickValue,
-        popup_open: popupOpen,
+        popup_open: {
+          ...popupOpen,
+          serviceWorkerWarmup,
+        },
         active_tab_unlock: activeTabUnlock,
         diagnostics,
       };
@@ -913,6 +1164,37 @@ async function waitForManualCapture(client, port, timeoutMs) {
   };
 }
 
+async function waitForCaptureDiagnostics(port, timeoutMs, seed = {}) {
+  const start = Date.now();
+  let last = null;
+  while (Date.now() - start < timeoutMs) {
+    const diagnostics = await readExtensionDiagnostics(port).catch((error) => ({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    }));
+    const captureRunning = Boolean(diagnostics.captureState?.running);
+    const liveTranscriptionProven = hasOffscreenTranscriptEvidence(diagnostics);
+    last = {
+      ok: captureRunning || liveTranscriptionProven,
+      waited_ms: Date.now() - start,
+      captureRunning,
+      liveTranscriptionProven,
+      diagnostics,
+      ...seed,
+    };
+    if (captureRunning || liveTranscriptionProven) return last;
+    await sleep(500);
+  }
+
+  return {
+    ok: false,
+    error: "Timed out waiting for extension capture diagnostics to become active.",
+    waited_ms: Date.now() - start,
+    ...last,
+    ...seed,
+  };
+}
+
 async function waitForTranscriptEvidence(client, timeoutMs) {
   const start = Date.now();
   let last = null;
@@ -920,11 +1202,20 @@ async function waitForTranscriptEvidence(client, timeoutMs) {
     const page = await readPageCaptureState(client);
     const liveTranscriptionProven = hasTranscriptEvidence(page);
     const pageTextProven = hasPageTextEvidence(page);
+    const transcriptText = transcriptTextForProof(page);
+    const requiredTranscriptProven = REQUIRED_TRANSCRIPT_PHRASE
+      ? transcriptText.toLowerCase().includes(REQUIRED_TRANSCRIPT_PHRASE.toLowerCase())
+      : null;
+    const satisfiesTranscriptRequirement = REQUIRED_TRANSCRIPT_PHRASE
+      ? requiredTranscriptProven
+      : liveTranscriptionProven;
     last = {
-      ok: liveTranscriptionProven || (EXTERNAL_PROOF && pageTextProven),
+      ok: Boolean(satisfiesTranscriptRequirement || (EXTERNAL_PROOF && pageTextProven && !REQUIRED_TRANSCRIPT_PHRASE)),
       waited_ms: Date.now() - start,
       liveTranscriptionProven,
       pageTextProven,
+      requiredTranscriptPhrase: REQUIRED_TRANSCRIPT_PHRASE || null,
+      requiredTranscriptProven,
       page,
     };
     if (last.ok) return last;
@@ -935,6 +1226,8 @@ async function waitForTranscriptEvidence(client, timeoutMs) {
     ok: false,
     waited_ms: Date.now() - start,
     liveTranscriptionProven: false,
+    requiredTranscriptPhrase: REQUIRED_TRANSCRIPT_PHRASE || null,
+    requiredTranscriptProven: false,
     ...last,
   };
 }
@@ -950,6 +1243,19 @@ function hasTranscriptEvidence(page) {
     eventTypes.includes("transcript-final") ||
     eventTypes.includes("transcript-interim")
   );
+}
+
+function hasPanelTranscriptStatus(page) {
+  return /Transcript updating|Audio arriving|Transcribing/i.test(page?.panel?.statusText || "");
+}
+
+function transcriptTextForProof(page) {
+  const iframeText = page?.panel?.iframeText || "";
+  const eventText = (page?.events ?? [])
+    .filter((event) => event.detail?.type === "transcript-final" || event.detail?.type === "transcript-interim")
+    .map((event) => event.detail?.payload?.text ?? "")
+    .join("\n");
+  return `${iframeText}\n${eventText}`.trim();
 }
 
 function buildLatencyMetrics({
@@ -1013,8 +1319,38 @@ function hasPageTextEvidence(page) {
     textLength >= 120 ||
     (/YENTL'S READ/i.test(iframeText) &&
       !/Waiting for the Yentl extension to attach/i.test(iframeText) &&
-      iframeText.length >= 180) ||
-    /Yentl is connected to this tab/i.test(page?.panel?.statusText || "")
+      iframeText.length >= 180)
+  );
+}
+
+function offscreenDiagnosticsFrom(diagnostics) {
+  return diagnostics?.offscreenDiagnostics ?? null;
+}
+
+function hasOpenDeepgramSocket(diagnostics) {
+  const offscreen = offscreenDiagnosticsFrom(diagnostics);
+  return Boolean(
+    offscreen?.socketState === "open" ||
+    offscreen?.socketReadyState === 1 ||
+    offscreen?.socketOpenAt,
+  );
+}
+
+function hasObservedOffscreenAudioChunks(diagnostics) {
+  const offscreen = offscreenDiagnosticsFrom(diagnostics);
+  return Boolean(
+    (offscreen?.chunksObserved ?? 0) > 0 &&
+    (offscreen?.bytesObserved ?? 0) > 0,
+  );
+}
+
+function hasOffscreenTranscriptEvidence(diagnostics) {
+  const offscreen = offscreenDiagnosticsFrom(diagnostics);
+  return Boolean(
+    (offscreen?.finalTranscriptCount ?? 0) > 0 ||
+    (offscreen?.interimTranscriptCount ?? 0) > 0 ||
+    (offscreen?.transcriptChars ?? 0) > 0 ||
+    offscreen?.sawTranscript,
   );
 }
 
@@ -1057,7 +1393,7 @@ async function readPageCaptureState(client) {
   return result.result?.value ?? { ok: false, error: "Page capture state returned no value." };
 }
 
-async function openPanelThroughServiceWorker(port) {
+async function openPanelThroughServiceWorker(port, targetUrl = TARGET_URL) {
   const targets = await listTargets(port).catch(() => []);
   const serviceWorker = targets.find((target) =>
     isYentlServiceWorkerTarget(target) && target.webSocketDebuggerUrl,
@@ -1070,7 +1406,7 @@ async function openPanelThroughServiceWorker(port) {
   try {
     await workerClient.send("Runtime.enable");
     const result = await workerClient.send("Runtime.evaluate", {
-      expression: serviceWorkerPanelExpression(),
+      expression: serviceWorkerPanelExpression(targetUrl),
       awaitPromise: true,
       returnByValue: true,
     });
@@ -1138,12 +1474,20 @@ function extensionDiagnosticsExpression() {
         const badgeText = chrome.action?.getBadgeText
           ? await chrome.action.getBadgeText({}).catch((error) => "ERR:" + (error?.message || String(error)))
           : null;
+        const offscreenDiagnostics = await chrome.runtime.sendMessage({
+          target: "offscreen",
+          type: "diagnostics-request"
+        }).catch((error) => ({
+          active: false,
+          error: error?.message || String(error)
+        }));
 
         return {
           ok: true,
           captureState: stored.captureState || null,
           storageError: stored.__error || null,
           badgeText,
+          offscreenDiagnostics,
           contexts: contexts.map((context) => ({
             contextType: context.contextType,
             documentUrl: context.documentUrl,
@@ -1159,9 +1503,9 @@ function extensionDiagnosticsExpression() {
   `;
 }
 
-function serviceWorkerPanelExpression() {
+function serviceWorkerPanelExpression(resolvedTargetUrl = TARGET_URL) {
   const appOrigin = JSON.stringify(APP_ORIGIN);
-  const targetUrl = JSON.stringify(TARGET_URL);
+  const targetUrl = JSON.stringify(resolvedTargetUrl);
   return `
     (async () => {
       try {
@@ -1254,6 +1598,14 @@ async function waitForExpression(client, expression, options = {}) {
   throw new Error(`Timed out waiting for expression. Last value: ${JSON.stringify(lastValue)}`);
 }
 
+async function readCurrentPageUrl(client) {
+  const result = await client.send("Runtime.evaluate", {
+    expression: "window.location.href",
+    returnByValue: true,
+  });
+  return result.result?.value;
+}
+
 async function waitForTarget(port, predicate, timeoutMs = 12000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
@@ -1310,6 +1662,22 @@ function buildFailureReason(report) {
   }
 
   if (report.ok) return null;
+
+  if (report.required_transcript_phrase && !report.proof.required_transcript_proven) {
+    return `Tab capture ran, but the required transcript phrase was not observed: "${report.required_transcript_phrase}".`;
+  }
+
+  if (report.require_live_transcript && !report.proof.live_transcription_proven) {
+    return "Tab capture ran, but no live transcript evidence was observed before the timeout.";
+  }
+
+  if (report.external_proof && report.proof.tab_capture_stream_id_available && !report.proof.live_transcription_proven) {
+    return "External tab capture ran, but no live transcript evidence was observed before the timeout.";
+  }
+
+  if (report.proof.panel_injection_proven && !report.proof.page_text_proven && !report.proof.live_transcription_proven) {
+    return "The Yentl panel was injected, but neither page text nor live transcript evidence was observed.";
+  }
 
   if (!report.proof.extension_loaded && report.headless) {
     return "No extension service worker appeared after the command shortcut. Headless Chrome may be suppressing extension command dispatch, or the extension failed to load in the temporary profile.";
@@ -1401,6 +1769,23 @@ async function stopChrome(child) {
 
   child.kill("SIGKILL");
   await waitForChildExit(child, 2500);
+}
+
+async function stopActiveProofProcess(message) {
+  console.error(message);
+  try {
+    activeClient?.close();
+  } catch {
+    // noop
+  }
+
+  try {
+    if (activeChrome) await stopChrome(activeChrome);
+  } catch {
+    // noop
+  }
+
+  process.exit(124);
 }
 
 function waitForChildExit(child, timeoutMs) {

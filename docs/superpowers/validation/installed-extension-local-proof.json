@@ -1,18 +1,26 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:50:33.457Z",
+  "generated_at": "2026-06-11T22:23:08.635Z",
   "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
   "headless": false,
   "app_origin": "http://127.0.0.1:3000",
   "target_url": "http://127.0.0.1:3000/validation/browser-capture.html",
+  "resolved_target_url": "http://127.0.0.1:3000/validation/browser-capture.html",
+  "required_transcript_phrase": "operating budget increased",
+  "require_live_transcript": true,
   "external_proof": false,
-  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-FXe5dj/extension",
-  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-FXe5dj/profile",
+  "extension_copy": "../../../var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-LIySGk/extension",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-extension-proof-LIySGk/profile",
   "extension_service_workers": [
-    "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+    "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
   ],
   "extension_targets_before_shortcut": {
     "all": [
+      {
+        "type": "background_page",
+        "title": "Yentl tab capture",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html"
+      },
       {
         "type": "service_worker",
         "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
@@ -20,8 +28,8 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "serviceWorkers": [
@@ -32,15 +40,15 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "yentlServiceWorkers": [
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "pages": []
@@ -48,14 +56,19 @@
   "extension_targets_after_shortcut": {
     "all": [
       {
+        "type": "background_page",
+        "title": "Yentl tab capture",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html"
+      },
+      {
         "type": "service_worker",
         "title": "Service Worker chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js",
         "url": "chrome-extension://nkeimhogjdpnpccoofpliimaahmaaome/thunk.js"
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "serviceWorkers": [
@@ -66,94 +79,578 @@
       },
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "yentlServiceWorkers": [
       {
         "type": "service_worker",
-        "title": "Service Worker chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js",
-        "url": "chrome-extension://nilnbmofpcoikcbkogpmfnendojlfjjc/background.js"
+        "title": "Service Worker chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js",
+        "url": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/background.js"
       }
     ],
     "pages": []
   },
   "screenshot": "docs/superpowers/validation/screenshots/installed-extension-local-fixture.png",
   "screenshot_error": null,
-  "media_playback_before_shortcut": {},
-  "media_playback_after_capture": null,
+  "media_playback_before_shortcut": {
+    "ok": true,
+    "title": "Yentl browser capture validation",
+    "targetPreference": "audio",
+    "selected": {
+      "index": 1,
+      "tag": "audio",
+      "title": null,
+      "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+      "hasSource": true,
+      "readyState": 4,
+      "networkState": 1,
+      "paused": false,
+      "muted": false,
+      "volume": 1,
+      "currentTime": 0.193,
+      "duration": 31.953,
+      "width": 377.258,
+      "height": 54,
+      "visible": true,
+      "area": 20371.922,
+      "prepare": {
+        "ready": true,
+        "reason": "loadedmetadata"
+      },
+      "playError": null,
+      "elapsedMs": 505
+    },
+    "audioCount": 1,
+    "videoCount": 1,
+    "candidates": [
+      {
+        "index": 1,
+        "tag": "audio",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": true,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0,
+        "duration": 31.953,
+        "width": 377.258,
+        "height": 54,
+        "visible": true,
+        "area": 20371.922
+      },
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.mp4",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": true,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0,
+        "duration": 33.3,
+        "width": 664.734,
+        "height": 373.906,
+        "visible": true,
+        "area": 248548.337
+      }
+    ],
+    "attempts": [
+      {
+        "index": 1,
+        "tag": "audio",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0.193,
+        "duration": 31.953,
+        "width": 377.258,
+        "height": 54,
+        "visible": true,
+        "area": 20371.922,
+        "prepare": {
+          "ready": true,
+          "reason": "loadedmetadata"
+        },
+        "playError": null,
+        "elapsedMs": 505
+      }
+    ]
+  },
+  "media_playback_after_capture": {
+    "ok": true,
+    "title": "Yentl browser capture validation",
+    "targetPreference": "audio",
+    "selected": {
+      "index": 1,
+      "tag": "audio",
+      "title": null,
+      "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+      "hasSource": true,
+      "readyState": 4,
+      "networkState": 1,
+      "paused": false,
+      "muted": false,
+      "volume": 1,
+      "currentTime": 0.474,
+      "duration": 31.953,
+      "width": 250,
+      "height": 54,
+      "visible": true,
+      "area": 13500,
+      "prepare": {
+        "ready": true,
+        "reason": "loadedmetadata"
+      },
+      "playError": null,
+      "elapsedMs": 504
+    },
+    "audioCount": 1,
+    "videoCount": 1,
+    "candidates": [
+      {
+        "index": 1,
+        "tag": "audio",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 7.811,
+        "duration": 31.953,
+        "width": 250,
+        "height": 54,
+        "visible": true,
+        "area": 13500
+      },
+      {
+        "index": 0,
+        "tag": "video",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.mp4",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": true,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0,
+        "duration": 33.3,
+        "width": 398,
+        "height": 223.875,
+        "visible": true,
+        "area": 89102.25
+      }
+    ],
+    "attempts": [
+      {
+        "index": 1,
+        "tag": "audio",
+        "title": null,
+        "source": "http://127.0.0.1:3000/validation/yentl-synthetic-panel.wav",
+        "hasSource": true,
+        "readyState": 4,
+        "networkState": 1,
+        "paused": false,
+        "muted": false,
+        "volume": 1,
+        "currentTime": 0.474,
+        "duration": 31.953,
+        "width": 250,
+        "height": 54,
+        "visible": true,
+        "area": 13500,
+        "prepare": {
+          "ready": true,
+          "reason": "loadedmetadata"
+        },
+        "playError": null,
+        "elapsedMs": 504
+      }
+    ]
+  },
   "proof": {
     "real_user_profile_used": false,
     "extension_loaded": true,
-    "manual_capture_mode": false,
-    "popup_automation": false,
-    "invocation_path": "keyboard-shortcut",
-    "popup_click_proven": false,
-    "manual_invocation_proven": false,
-    "shortcut_attempted": true,
-    "shortcut_strategy": "os",
+    "manual_capture_mode": true,
+    "popup_automation": true,
+    "invocation_path": "popup",
+    "popup_click_proven": true,
+    "manual_invocation_proven": true,
+    "shortcut_attempted": false,
+    "shortcut_strategy": "skipped",
     "shortcut_command_proven": false,
-    "debug_service_worker_fallback_used": true,
+    "debug_service_worker_fallback_used": false,
     "panel_injection_proven": true,
-    "tab_capture_stream_id_available": false,
-    "page_text_proven": false,
-    "live_transcription_proven": false
+    "tab_capture_stream_id_available": true,
+    "deepgram_socket_open_proven": true,
+    "offscreen_audio_chunks_proven": true,
+    "media_playback_proven": true,
+    "page_text_proven": true,
+    "live_transcription_proven": true,
+    "required_transcript_proven": true
   },
   "latency_ms": {
-    "total_ms": 30339,
-    "media_ready_ms": 1169,
-    "capture_invocation_ms": 1172,
-    "panel_injection_ms": 29167,
-    "capture_running_observed": false,
+    "total_ms": 20784,
+    "media_ready_ms": 1415,
+    "capture_invocation_ms": 1415,
+    "panel_injection_ms": 19369,
+    "capture_running_observed": true,
     "capture_start_event_ms": null,
-    "first_transcript_wait_ms": 14038,
-    "first_transcript_event_ms": null,
-    "manual_capture_wait_ms": null
+    "first_transcript_wait_ms": 11024,
+    "first_transcript_event_ms": 11024,
+    "manual_capture_wait_ms": 7229
   },
-  "manual_capture": null,
-  "shortcut_error": null,
+  "manual_capture": {
+    "ok": true,
+    "waited_ms": 7229,
+    "popupClickProven": true,
+    "manualInvocationProven": true,
+    "captureRunning": true,
+    "popup_click": {
+      "ok": true,
+      "buttonText": "Start live analysis",
+      "statusText": "Opening Yentl beside this tab..."
+    },
+    "active_tab_unlock": "os-shortcut-after-popup-click",
+    "diagnostics": {
+      "ok": true,
+      "captureState": {
+        "appOrigin": "http://127.0.0.1:3000",
+        "bridgeToken": "b7fa3958-43c9-47bb-9d9a-f70996db046f",
+        "running": true,
+        "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+        "startedAt": 1781216575650,
+        "targetTabId": 789504251
+      },
+      "storageError": null,
+      "badgeText": "REC",
+      "offscreenDiagnostics": {
+        "active": true,
+        "appOrigin": "http://127.0.0.1:3000",
+        "audioContextState": "running",
+        "bytesBuffered": 7606,
+        "bytesDropped": 0,
+        "bytesObserved": 12452,
+        "bytesSent": 12452,
+        "chunksBuffered": 2,
+        "chunksDropped": 0,
+        "chunksObserved": 3,
+        "chunksPending": 0,
+        "chunksSent": 3,
+        "emptyTranscriptResults": 0,
+        "finalTranscriptCount": 0,
+        "interimTranscriptCount": 0,
+        "lastError": null,
+        "lastTranscriptAt": null,
+        "lastTranscriptPreview": null,
+        "mediaRecorderMimeType": "audio/webm;codecs=opus",
+        "mediaRecorderStartedAt": 1781216575755,
+        "mediaRecorderState": "recording",
+        "noTranscriptNoticeSentAt": null,
+        "pendingBytes": 0,
+        "sawTranscript": false,
+        "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+        "socketErrorCount": 0,
+        "socketOpenAt": 1781216576492,
+        "socketOpeningAt": 1781216576126,
+        "socketReadyState": 1,
+        "socketResultCount": 0,
+        "socketState": "open",
+        "startedAt": 1781216575651,
+        "stoppedAt": null,
+        "streamOpenedAt": 1781216575751,
+        "tokenExpiresAtMs": 1781217176125,
+        "tokenReceivedAt": 1781216576126,
+        "tokenRequestedAt": 1781216575755,
+        "trackStates": [
+          {
+            "enabled": true,
+            "id": "f99f2da0-c7af-4708-b101-43a1e69ca032",
+            "kind": "audio",
+            "label": "",
+            "muted": false,
+            "readyState": "live"
+          }
+        ],
+        "transcriptChars": 0
+      },
+      "contexts": [
+        {
+          "contextType": "BACKGROUND",
+          "frameId": -1,
+          "tabId": -1
+        },
+        {
+          "contextType": "OFFSCREEN_DOCUMENT",
+          "documentUrl": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html",
+          "frameId": 0,
+          "tabId": -1
+        }
+      ]
+    }
+  },
+  "shortcut_error": "Skipped in default headless proof mode because Chrome does not reliably dispatch extension command shortcuts through CDP key events.",
   "shortcut_panel": null,
   "extension_diagnostics_after_shortcut": {
     "ok": true,
-    "captureState": null,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "b7fa3958-43c9-47bb-9d9a-f70996db046f",
+      "running": true,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "startedAt": 1781216575650,
+      "targetTabId": 789504251
+    },
     "storageError": null,
-    "badgeText": "",
+    "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 7606,
+      "bytesDropped": 0,
+      "bytesObserved": 12452,
+      "bytesSent": 12452,
+      "chunksBuffered": 2,
+      "chunksDropped": 0,
+      "chunksObserved": 3,
+      "chunksPending": 0,
+      "chunksSent": 3,
+      "emptyTranscriptResults": 0,
+      "finalTranscriptCount": 0,
+      "interimTranscriptCount": 0,
+      "lastError": null,
+      "lastTranscriptAt": null,
+      "lastTranscriptPreview": null,
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781216575755,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 0,
+      "sawTranscript": false,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "socketErrorCount": 0,
+      "socketOpenAt": 1781216576492,
+      "socketOpeningAt": 1781216576126,
+      "socketReadyState": 1,
+      "socketResultCount": 0,
+      "socketState": "open",
+      "startedAt": 1781216575651,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781216575751,
+      "tokenExpiresAtMs": 1781217176125,
+      "tokenReceivedAt": 1781216576126,
+      "tokenRequestedAt": 1781216575755,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "f99f2da0-c7af-4708-b101-43a1e69ca032",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 0
+    },
     "contexts": [
       {
         "contextType": "BACKGROUND",
         "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html",
+        "frameId": 0,
         "tabId": -1
       }
     ]
   },
   "extension_diagnostics_after_fallback": {
     "ok": true,
-    "captureState": null,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "b7fa3958-43c9-47bb-9d9a-f70996db046f",
+      "running": true,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "startedAt": 1781216575650,
+      "targetTabId": 789504251
+    },
     "storageError": null,
-    "badgeText": "",
+    "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 7606,
+      "bytesDropped": 0,
+      "bytesObserved": 12452,
+      "bytesSent": 12452,
+      "chunksBuffered": 2,
+      "chunksDropped": 0,
+      "chunksObserved": 3,
+      "chunksPending": 0,
+      "chunksSent": 3,
+      "emptyTranscriptResults": 0,
+      "finalTranscriptCount": 0,
+      "interimTranscriptCount": 0,
+      "lastError": null,
+      "lastTranscriptAt": null,
+      "lastTranscriptPreview": null,
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781216575755,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 0,
+      "sawTranscript": false,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "socketErrorCount": 0,
+      "socketOpenAt": 1781216576492,
+      "socketOpeningAt": 1781216576126,
+      "socketReadyState": 1,
+      "socketResultCount": 0,
+      "socketState": "open",
+      "startedAt": 1781216575651,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781216575751,
+      "tokenExpiresAtMs": 1781217176125,
+      "tokenReceivedAt": 1781216576126,
+      "tokenRequestedAt": 1781216575755,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "f99f2da0-c7af-4708-b101-43a1e69ca032",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 0
+    },
     "contexts": [
       {
         "contextType": "BACKGROUND",
         "frameId": -1,
         "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
+      }
+    ]
+  },
+  "extension_diagnostics_after_transcript": {
+    "ok": true,
+    "captureState": {
+      "appOrigin": "http://127.0.0.1:3000",
+      "bridgeToken": "b7fa3958-43c9-47bb-9d9a-f70996db046f",
+      "running": true,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "startedAt": 1781216575650,
+      "targetTabId": 789504251
+    },
+    "storageError": null,
+    "badgeText": "REC",
+    "offscreenDiagnostics": {
+      "active": true,
+      "appOrigin": "http://127.0.0.1:3000",
+      "audioContextState": "running",
+      "bytesBuffered": 7606,
+      "bytesDropped": 0,
+      "bytesObserved": 201446,
+      "bytesSent": 201446,
+      "chunksBuffered": 2,
+      "chunksDropped": 0,
+      "chunksObserved": 42,
+      "chunksPending": 0,
+      "chunksSent": 42,
+      "emptyTranscriptResults": 0,
+      "finalTranscriptCount": 6,
+      "interimTranscriptCount": 8,
+      "lastError": null,
+      "lastTranscriptAt": 1781216588198,
+      "lastTranscriptPreview": "The operating budget increased.",
+      "mediaRecorderMimeType": "audio/webm;codecs=opus",
+      "mediaRecorderStartedAt": 1781216575755,
+      "mediaRecorderState": "recording",
+      "noTranscriptNoticeSentAt": null,
+      "pendingBytes": 0,
+      "sawTranscript": true,
+      "sessionId": "a106c04e-60f2-4f1e-b536-b3d34f60dfc3",
+      "socketErrorCount": 0,
+      "socketOpenAt": 1781216576492,
+      "socketOpeningAt": 1781216576126,
+      "socketReadyState": 1,
+      "socketResultCount": 14,
+      "socketState": "open",
+      "startedAt": 1781216575651,
+      "stoppedAt": null,
+      "streamOpenedAt": 1781216575751,
+      "tokenExpiresAtMs": 1781217176125,
+      "tokenReceivedAt": 1781216576126,
+      "tokenRequestedAt": 1781216575755,
+      "trackStates": [
+        {
+          "enabled": true,
+          "id": "f99f2da0-c7af-4708-b101-43a1e69ca032",
+          "kind": "audio",
+          "label": "",
+          "muted": false,
+          "readyState": "live"
+        }
+      ],
+      "transcriptChars": 408
+    },
+    "contexts": [
+      {
+        "contextType": "BACKGROUND",
+        "frameId": -1,
+        "tabId": -1
+      },
+      {
+        "contextType": "OFFSCREEN_DOCUMENT",
+        "documentUrl": "chrome-extension://njaolimeckfpflpmemopochleojnonnp/offscreen.html",
+        "frameId": 0,
+        "tabId": -1
       }
     ]
   },
   "transcript_probe": {
-    "ok": false,
-    "waited_ms": 14038,
-    "liveTranscriptionProven": false,
-    "pageTextProven": false,
+    "ok": true,
+    "waited_ms": 11024,
+    "liveTranscriptionProven": true,
+    "pageTextProven": true,
+    "requiredTranscriptPhrase": "operating budget increased",
+    "requiredTranscriptProven": true,
     "page": {
       "ok": true,
       "panel": {
         "panelInjected": true,
         "bodyMarginRight": "430px",
         "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
-        "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:13\nLive capture started\nYENTL'S READ\nWaiting\n\nWaiting for the extension\n\nWaiting for the Yentl extension to attach to this page.\n\nPULSE\nWaiting\nWaiting for same-page extension capture.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\n\nWaiting for the first finalized transcript line.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+        "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:12\nLive capture started\nYENTL'S READ\nTranscribing\n\nYentl is reading this page live.\n\n6 transcript lines captured. Claims, markers, and evidence checks will keep updating here.\n\nPULSE\nTranscribing\n6 transcript lines captured.\nCLAIMS\nCaution\n2 claims incomplete.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nChecking\n2 claims still being verified.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\nSPEAKER 1\n0:10\n\nThe operating budget increased.\n\nSPEAKER 1\n0:08\n\nThat number needs context.\n\nSPEAKER 1\n0:06\n\nAccording to the mayor's office.\n\nSPEAKER 1\n0:03\n\nThe city library budget increased by 12% this year.\n\nSPEAKER 1\n0:00\n\nThat num Welcome to the Yentle validation panel.\n\nSPEAKER 1\n0:00\n\nOffice.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
         "iframeError": null,
-        "statusText": "No browser tab capture is active.",
+        "statusText": "Transcript updating",
         "hostWidth": "430px"
       },
       "events": []
@@ -165,43 +662,22 @@
       "panelInjected": true,
       "bodyMarginRight": "430px",
       "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
-      "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:14\nLive capture started\nYENTL'S READ\nWaiting\n\nWaiting for the extension\n\nWaiting for the Yentl extension to attach to this page.\n\nPULSE\nWaiting\nWaiting for same-page extension capture.\nCLAIMS\nWaiting\nNo checkable claim yet.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nWaiting\nNo evidence check needed yet.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\n\nWaiting for the first finalized transcript line.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+      "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:12\nLive capture started\nYENTL'S READ\nTranscribing\n\nYentl is reading this page live.\n\n6 transcript lines captured. Claims, markers, and evidence checks will keep updating here.\n\nPULSE\nTranscribing\n6 transcript lines captured.\nCLAIMS\nCaution\n2 claims incomplete.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nChecking\n2 claims still being verified.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\nSPEAKER 1\n0:10\n\nThe operating budget increased.\n\nSPEAKER 1\n0:08\n\nThat number needs context.\n\nSPEAKER 1\n0:06\n\nAccording to the mayor's office.\n\nSPEAKER 1\n0:03\n\nThe city library budget increased by 12% this year.\n\nSPEAKER 1\n0:00\n\nThat num Welcome to the Yentle validation panel.\n\nSPEAKER 1\n0:00\n\nOffice.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
       "iframeError": null,
-      "statusText": "No browser tab capture is active.",
+      "statusText": "Transcript updating",
       "hostWidth": "430px"
     },
     "events": []
   },
-  "debug_panel": {
-    "panelInjected": true,
-    "bodyMarginRight": "430px",
-    "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
-    "statusText": "Connected",
-    "hostWidth": "430px"
-  },
-  "service_worker_debug": {
-    "ok": true,
-    "matchedExactValidationUrl": true,
-    "tabs": [
-      {
-        "id": 1027334906,
-        "active": true,
-        "title": "Yentl browser capture validation",
-        "url": "http://127.0.0.1:3000/validation/browser-capture.html"
-      }
-    ],
-    "tabId": 1027334906,
-    "title": "Yentl browser capture validation",
-    "url": "http://127.0.0.1:3000/validation/browser-capture.html",
-    "panelMessageSent": true,
-    "tabCaptureStreamIdAvailable": false,
-    "tabCaptureError": "Extension has not been invoked for the current page (see activeTab permission). Chrome pages cannot be captured."
-  },
+  "debug_panel": null,
+  "service_worker_debug": null,
   "panel": {
     "panelInjected": true,
     "bodyMarginRight": "430px",
     "iframeSrc": "http://127.0.0.1:3000/session?source=browser-tab&surface=extension-panel&title=Yentl+browser+capture+validation",
-    "statusText": "Connected",
+    "iframeText": "Skip to main content\nYentl session workspace\nREC\n00:00:12\nLive capture started\nYENTL'S READ\nTranscribing\n\nYentl is reading this page live.\n\n6 transcript lines captured. Claims, markers, and evidence checks will keep updating here.\n\nPULSE\nTranscribing\n6 transcript lines captured.\nCLAIMS\nCaution\n2 claims incomplete.\nLANGUAGE\nCalm\nNo rhetoric marker yet.\nEVIDENCE\nChecking\n2 claims still being verified.\nTranscript\nFindings\nLIVE TRANSCRIPT\nCLAIM\nBIAS\nFALLACY\nSPEAKER 1\n0:10\n\nThe operating budget increased.\n\nSPEAKER 1\n0:08\n\nThat number needs context.\n\nSPEAKER 1\n0:06\n\nAccording to the mayor's office.\n\nSPEAKER 1\n0:03\n\nThe city library budget increased by 12% this year.\n\nSPEAKER 1\n0:00\n\nThat num Welcome to the Yentle validation panel.\n\nSPEAKER 1\n0:00\n\nOffice.\n\nCheck\nStop\nOpen snapshot\nReport\nExport files",
+    "iframeError": null,
+    "statusText": "Transcript updating",
     "hostWidth": "430px"
   },
   "failure_reason": null,
@@ -209,9 +685,7 @@
     "This proof uses a visible temporary Chrome profile and does not modify the user's normal Chrome profile."
   ],
   "chrome_log_tail": [
-    "stderr: DevTools listening on ws://127.0.0.1:54511/devtools/browser/07cf6682-c111-4b36-8b8a-10a8f1393841",
-    "stderr: [81885:17811737:0610/025008.168088:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
-    "stderr: [81885:17811737:0610/025008.168191:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
-    "stderr: [81885:17811737:0610/025008.168299:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR"
+    "stderr: DevTools listening on ws://127.0.0.1:54089/devtools/browser/8b09e082-8ec3-4dc1-9aa6-11a534c24f5e",
+    "stderr: [46046:25034207:0611/182251.790727:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
   ]
 }

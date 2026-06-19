@@ -2,15 +2,15 @@
   "id": "cable_008",
   "title": "Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown",
   "category": "cable_news_debate",
-  "startedAt": "2026-06-10T06:50:04.473Z",
-  "finishedAt": "2026-06-10T06:50:54.910Z",
+  "startedAt": "2026-06-10T07:25:46.076Z",
+  "finishedAt": "2026-06-10T07:26:26.894Z",
   "baseUrl": "https://yentl.it",
   "verify": "provisional",
   "utterancesAvailable": 115,
   "utterancesReplayed": 10,
   "claims": [
     {
-      "claim_text": "Donald Trump received over 77,000,000 votes",
+      "claim_text": "Donald Trump received over 77,000,000 votes (in the 2024 U.S. presidential election).",
       "utterance_start": 28.33,
       "utterance_end": 30.01,
       "topic": "Politics",
@@ -23,7 +23,7 @@
           "single_speaker_high_confidence"
         ],
         "stance": "hedged",
-        "confidence": 0.5,
+        "confidence": 0.55,
         "source_turn_ids": [],
         "source_segment_ids": []
       },
@@ -32,11 +32,12 @@
       "status": "provisional",
       "provisional": {
         "primary_label": "TRUE",
-        "score": 92,
+        "score": 95,
         "annotations": [
-          "2024 election"
+          "round number",
+          "official results"
         ],
-        "explanation": "In the 2024 presidential election, Donald Trump received approximately 77 million votes, surpassing the 77,000,000 threshold based on final certified tallies."
+        "explanation": "Donald Trump received approximately 77 million votes in the 2024 presidential election, surpassing 77,000,000 in the final certified tallies. This is consistent with widely reported official results."
       }
     }
   ],
@@ -45,11 +46,11 @@
       "type": "fallacy",
       "name": "red_herring",
       "display": "Red Herring",
-      "excerpt": "Trump is being Trump.",
-      "start_time": 3,
-      "end_time": 6,
+      "excerpt": "the conversation almost always gets reduced to personality. His tone, his style, his behavior, but focusing only on that completely ignores the larger reality",
+      "start_time": 13,
+      "end_time": 25,
       "severity": "subtle",
-      "explanation": "Deflects a substantive question about cognition by restating a tautological personality characterization, avoiding the actual issue raised.",
+      "explanation": "The speaker dismisses discussion of Trump's behavior/cognition as a distraction from some unspecified 'larger reality,' redirecting attention away from the original question rather than engaging with it.",
       "id": "cable_008-marker-1"
     },
     {
@@ -59,43 +60,26 @@
       "excerpt": "the larger reality forming underneath",
       "start_time": 22,
       "end_time": 25,
-      "severity": "subtle",
-      "explanation": "Gestures toward an unspecified 'larger reality' without defining it, building intrigue while avoiding any concrete claim.",
+      "severity": "clear",
+      "explanation": "The phrase 'larger reality forming underneath' is vague and unspecified, gesturing toward something significant without defining what it actually is.",
       "id": "cable_008-marker-2"
     },
     {
       "type": "fallacy",
-      "name": "appeal_to_popularity",
-      "display": "Appeal to Popularity",
-      "excerpt": "Over 77,000,000 people showed up and voted for him. That's not random",
-      "start_time": 28,
-      "end_time": 36,
-      "severity": "clear",
-      "explanation": "The speaker uses the large number of voters as evidence that something deeper and legitimate is happening, treating popularity as validation of substance rather than addressing the underlying claims.",
-      "id": "cable_008-marker-3"
-    },
-    {
-      "type": "rhetoric",
-      "name": "vagueness",
-      "display": "Vagueness / Hand-waving",
-      "excerpt": "something deeper happening in the country, something structural, not emotional",
-      "start_time": 38,
-      "end_time": 44,
-      "severity": "clear",
-      "explanation": "The speaker gestures at 'something deeper' and 'structural' without defining what that is, using vague abstractions to imply profound meaning without specifying any concrete claim.",
-      "id": "cable_008-marker-4"
-    },
-    {
-      "type": "fallacy",
-      "name": "false_dilemma",
-      "display": "False Dilemma Fallacy",
-      "excerpt": "something structural, not emotional",
-      "start_time": 42,
-      "end_time": 44,
+      "name": "reductive_fallacy",
+      "display": "Reductive Fallacy",
+      "excerpt": "Trump is being Trump.",
+      "start_time": 3,
+      "end_time": 6,
       "severity": "subtle",
-      "explanation": "Frames the explanation as a binary between structural and emotional causes, excluding the possibility that both or other factors could be at work.",
-      "id": "cable_008-marker-5"
+      "explanation": "This tautological phrase reduces a complex question about cognitive state to a simplistic identity statement, avoiding substantive engagement.",
+      "id": "cable_008-marker-3"
     }
   ],
-  "errors": []
+  "errors": [
+    {
+      "stage": "rhetoric:9",
+      "message": "/api/analyze-rhetoric HTTP 400: {\"error\":\"invalid request\"}"
+    }
+  ]
 }

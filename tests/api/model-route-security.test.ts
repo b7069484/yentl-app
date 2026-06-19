@@ -237,6 +237,10 @@ describe("model route request security guards", () => {
       factual_grade: "mostly_factual",
       faith_grade: "good_faith",
     });
+    expect(json.meta_read).toMatchObject({
+      source_health: expect.any(String),
+      scope: "live_window",
+    });
     expect(aiMocks.generateText).not.toHaveBeenCalled();
   });
 

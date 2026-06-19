@@ -1,0 +1,68 @@
+{
+  "_template": true,
+  "_copy_to": "agent-work/validation/sensitive-attribution-reviews.json",
+  "_proof_command": "npm run analysis:proof:sensitive-review",
+  "_instructions": [
+    "Use this as a worksheet. Do not copy it to the manifest until an editor has reviewed every required window.",
+    "The passing manifest must use status approved_for_public_claims and public_claims_allowed true for each window.",
+    "Keep notes specific: quote/endorsement boundaries, speaker ownership, and why public-facing claims are safe."
+  ],
+  "speaker_proof_generated_at": "2026-06-12T00:14:13.859Z",
+  "reviews": [
+    {
+      "window_id": "israel_010_sensitive_boundary",
+      "source_id": "israel_010",
+      "failure_family": "sensitive_quote_stance",
+      "expected_risk": "sensitive_identity",
+      "status": "pending_editorial_review",
+      "public_claims_allowed": false,
+      "reviewer": "",
+      "reviewed_at": "",
+      "notes": ""
+    },
+    {
+      "window_id": "holocaust_010_historical_framing",
+      "source_id": "holocaust_010",
+      "failure_family": "historical_memory_boundary",
+      "expected_risk": "review_required",
+      "status": "pending_editorial_review",
+      "public_claims_allowed": false,
+      "reviewer": "",
+      "reviewed_at": "",
+      "notes": ""
+    },
+    {
+      "window_id": "c2_quote_09_brown_quote_boundary",
+      "source_id": "c2_quote_09",
+      "failure_family": "harmful_quote_boundary",
+      "expected_risk": "high_quote_risk",
+      "status": "pending_editorial_review",
+      "public_claims_allowed": false,
+      "reviewer": "",
+      "reviewed_at": "",
+      "notes": ""
+    },
+    {
+      "window_id": "c2_ident_10_identity_boundary",
+      "source_id": "c2_ident_10",
+      "failure_family": "identity_definition_boundary",
+      "expected_risk": "high_identity_risk",
+      "status": "pending_editorial_review",
+      "public_claims_allowed": false,
+      "reviewer": "",
+      "reviewed_at": "",
+      "notes": ""
+    },
+    {
+      "window_id": "c2_platform_07_clip_stack",
+      "source_id": "c2_platform_07",
+      "failure_family": "platform_native_speaker_merge",
+      "expected_risk": "platform_context",
+      "status": "pending_editorial_review",
+      "public_claims_allowed": false,
+      "reviewer": "",
+      "reviewed_at": "",
+      "notes": ""
+    }
+  ]
+}

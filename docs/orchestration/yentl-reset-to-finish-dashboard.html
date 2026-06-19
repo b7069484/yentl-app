@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yentl Reset-To-Finish Dashboard</title>
+  <style>
+    :root {
+      --paper: #fff;
+      --cream: #faf9f5;
+      --cream-2: #f4f1e8;
+      --ink: #1a1a1f;
+      --ink-2: #2a2f40;
+      --ink-3: #5b6075;
+      --line: #e8e1ce;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --green: #15803d;
+      --green-soft: #dcfce7;
+      --red: #b91c1c;
+      --red-soft: #fee2e2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      padding: 24px clamp(18px, 4vw, 48px);
+    }
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px clamp(18px, 4vw, 48px) 48px;
+    }
+    h1, h2, h3 { line-height: 1.1; margin: 0; }
+    h1 { font-size: clamp(28px, 4vw, 44px); }
+    h2 { font-size: 22px; }
+    h3 { font-size: 16px; }
+    p { margin: 8px 0 0; color: var(--ink-3); }
+    code {
+      overflow-wrap: anywhere;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+    .topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--cream-2);
+      padding: 5px 10px;
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .pill.blocked { background: var(--red-soft); color: var(--red); border-color: #fecaca; }
+    .pill.ready { background: var(--green-soft); color: var(--green); border-color: #bbf7d0; }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .summary {
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      margin: 24px 0;
+    }
+    .metric, .lane, .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 16px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    }
+    .metric .label {
+      color: var(--ink-3);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .metric .value {
+      margin-top: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .lanes {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+    .lane {
+      min-width: 0;
+    }
+    .lane-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .status {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .status.ready { background: var(--green-soft); color: var(--green); }
+    .status.blocked { background: var(--red-soft); color: var(--red); }
+    dl {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0 0;
+      font-size: 13px;
+    }
+    dt {
+      color: var(--ink-3);
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-size: 11px;
+    }
+    dd { margin: 2px 0 0; color: var(--ink-2); overflow-wrap: anywhere; }
+    ul { margin: 8px 0 0; padding-left: 18px; color: var(--ink-2); }
+    li { margin: 4px 0; }
+    .blocked-list {
+      border-left: 4px solid var(--red);
+      background: var(--red-soft);
+    }
+    .footer-note {
+      margin-top: 24px;
+      color: var(--ink-3);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Yentl Reset-To-Finish Dashboard</h1>
+    <p>Orchestrator-owned launch dashboard for independent Yentl agent sessions. Each lane owns one block and must update only its own status.</p>
+    <div class="topline">
+      <span class="pill blocked">launch_ready: false</span>
+      <span class="pill ready">local proofs: 13/13</span>
+      <span class="pill ready">deploy artifacts: 5/5</span>
+      <span class="pill blocked">external proofs: 0/3</span>
+      <span class="pill">last source: release-readiness-proof.json</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid summary" aria-label="Readiness summary">
+      <article class="metric">
+        <div class="label">Primary goal</div>
+        <div class="value">Ship</div>
+        <p>Full web/PWA/browser app with honest mobile, extension, TV, cloud sync, and launch proof.</p>
+      </article>
+      <article class="metric">
+        <div class="label">Current state</div>
+        <div class="value">Local green</div>
+        <p>Core local proof is broad, but external proof and release integration remain open.</p>
+      </article>
+      <article class="metric">
+        <div class="label">Coordination</div>
+        <div class="value">12 lanes</div>
+        <p>Each lane has an owner, worktree/branch, dashboard block, and proof gate.</p>
+      </article>
+      <article class="metric">
+        <div class="label">Dirty tree</div>
+        <div class="value">Guarded</div>
+        <p>Agents must not edit the shared checkout unless assigned. Use worktrees.</p>
+      </article>
+    </section>
+
+    <section class="panel blocked-list" aria-label="Launch blockers">
+      <h2>Launch Blockers</h2>
+      <ul>
+        <li>Human/editorial review for sensitive speaker-attribution windows.</li>
+        <li>Authenticated cloud sync with Clerk, database, and a real auth header.</li>
+        <li>Production authenticated cloud sync after deploy.</li>
+        <li>Physical iOS/Android share, file, mic, install/open, and restore canaries.</li>
+        <li>Large real phone-recorded audio, MP4, MOV, and WebM production canaries.</li>
+        <li>Current tree committed, CI green, deployed, and production-smoked.</li>
+      </ul>
+    </section>
+
+    <h2 style="margin: 28px 0 12px;">Agent Lanes</h2>
+    <section class="grid lanes" aria-label="Agent lanes">
+      <!-- BEGIN L0-quartermaster -->
+      <article id="L0-quartermaster" class="lane">
+        <div class="lane-head"><h3>L0 Quartermaster</h3><span class="status">ready</span></div>
+        <p>Protect worktrees, assign file ownership, and keep dashboard status sane.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-quartermaster-2026-06-14</code></dd></div>
+          <div><dt>Worktree</dt><dd><code>../Live-FactCheck-worktrees/quartermaster</code></dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/quartermaster/</code></dd></div>
+          <div><dt>Next milestone</dt><dd>Dirty-tree and file-ownership map.</dd></div>
+        </dl>
+      </article>
+      <!-- END L0-quartermaster -->
+
+      <!-- BEGIN L1-ingestion-backend -->
+      <article id="L1-ingestion-backend" class="lane">
+        <div class="lane-head"><h3>L1 Ingestion Backend</h3><span class="status">ready</span></div>
+        <p>Harden all media, URL, YouTube, document, caption, and claim intake APIs.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-ingestion-backend-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run ingestion:proof:local</code>; real canary when media manifest exists.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/ingestion-backend/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L0 ownership; coordinate response shapes with L2.</dd></div>
+        </dl>
+      </article>
+      <!-- END L1-ingestion-backend -->
+
+      <!-- BEGIN L2-source-intake-ui -->
+      <article id="L2-source-intake-ui" class="lane">
+        <div class="lane-head"><h3>L2 Source Intake UI</h3><span class="status">ready</span></div>
+        <p>Polish every source picker and recovery state across desktop and mobile.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-source-intake-ui-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run ingestion:proof:ui</code>; browser desktop/mobile overflow check.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/source-intake-ui/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L1 backend contracts; L6 mobile behaviors.</dd></div>
+        </dl>
+      </article>
+      <!-- END L2-source-intake-ui -->
+
+      <!-- BEGIN L3-analysis-intelligence -->
+      <article id="L3-analysis-intelligence" class="lane">
+        <div class="lane-head"><h3>L3 Analysis Intelligence</h3><span class="status">ready</span></div>
+        <p>Sharpen multi-speaker attribution, claim ownership, cautious synthesis, and meta-view.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-analysis-intelligence-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run analysis:proof:speaker-attribution</code>; <code>npm run analysis:proof:metaread</code>.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/analysis-intelligence/</code></dd></div>
+          <div><dt>Boundary</dt><dd>Do not self-approve sensitive public-claims windows.</dd></div>
+        </dl>
+      </article>
+      <!-- END L3-analysis-intelligence -->
+
+      <!-- BEGIN L4-evidence-source-review -->
+      <article id="L4-evidence-source-review" class="lane">
+        <div class="lane-head"><h3>L4 Evidence And Source Review</h3><span class="status">ready</span></div>
+        <p>Make source cards, quote anchors, evidence ranking, citations, and exports trustworthy.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-evidence-source-review-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd>Source review tests, export tests, desktop/mobile browser proof.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/evidence-source-review/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L3 claim and speaker semantics.</dd></div>
+        </dl>
+      </article>
+      <!-- END L4-evidence-source-review -->
+
+      <!-- BEGIN L5-cloud-sync -->
+      <article id="L5-cloud-sync" class="lane">
+        <div class="lane-head"><h3>L5 Cloud Sync</h3><span class="status blocked">blocked</span></div>
+        <p>Prove signed-in saved sessions across devices and profiles.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-cloud-sync-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>YENTL_CLOUD_SYNC_PROOF_AUTH_HEADER='Bearer ...' npm run cloud-sync:proof:deploy</code></dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/cloud-sync/</code></dd></div>
+          <div><dt>Blocker</dt><dd>Needs Clerk key, database, and real auth header.</dd></div>
+        </dl>
+      </article>
+      <!-- END L5-cloud-sync -->
+
+      <!-- BEGIN L6-mobile-pwa-devices -->
+      <article id="L6-mobile-pwa-devices" class="lane">
+        <div class="lane-head"><h3>L6 Mobile/PWA/Devices</h3><span class="status">prep</span></div>
+        <p>Prove mobile share, file, mic, install/open, and restore on real iOS/Android devices.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-mobile-pwa-devices-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run mobile:proof:local</code>; <code>npm run mobile:proof:devices</code>.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/mobile-pwa-devices/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L1/L2 flows; L5 restore; production/device access.</dd></div>
+        </dl>
+      </article>
+      <!-- END L6-mobile-pwa-devices -->
+
+      <!-- BEGIN L7-chrome-extension -->
+      <article id="L7-chrome-extension" class="lane">
+        <div class="lane-head"><h3>L7 Chrome Extension</h3><span class="status">ready</span></div>
+        <p>Finish current-tab capture, extension panel, packaging, and real-page proof.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-chrome-extension-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run extension:check</code>; local, external, and real-page proof scripts.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/chrome-extension/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L1/L3 transcript and analysis contracts.</dd></div>
+        </dl>
+      </article>
+      <!-- END L7-chrome-extension -->
+
+      <!-- BEGIN L8-tv-room-mode -->
+      <article id="L8-tv-room-mode" class="lane">
+        <div class="lane-head"><h3>L8 TV Room Mode</h3><span class="status">ready</span></div>
+        <p>Make TV display reliable for live sessions and restored saved sessions.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-tv-room-mode-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npx vitest run tests/tv-dashboard.test.tsx</code>; browser proof.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/tv-room-mode/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L5 for cloud restore; L3 for meta-read content.</dd></div>
+        </dl>
+      </article>
+      <!-- END L8-tv-room-mode -->
+
+      <!-- BEGIN L9-security-privacy-trust -->
+      <article id="L9-security-privacy-trust" class="lane">
+        <div class="lane-head"><h3>L9 Security/Privacy/Trust</h3><span class="status">ready</span></div>
+        <p>Close SSRF, upload, auth, legal-copy, privacy, and trust gates.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-security-privacy-trust-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd>Security tests, trust proof, launch smoke.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/security-privacy-trust/</code></dd></div>
+          <div><dt>Boundary</dt><dd>Escalate legal/product decisions.</dd></div>
+        </dl>
+      </article>
+      <!-- END L9-security-privacy-trust -->
+
+      <!-- BEGIN L10-design-public-ux -->
+      <article id="L10-design-public-ux" class="lane">
+        <div class="lane-head"><h3>L10 Design/Public UX</h3><span class="status">ready</span></div>
+        <p>Polish landing, public pages, visual consistency, and app shell truthfulness.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-design-public-ux-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd>Desktop/mobile browser proof, a11y local proof, public-page tests.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/design-public-ux/</code></dd></div>
+          <div><dt>Dependency</dt><dd>L9 for privacy/legal/trust copy constraints.</dd></div>
+        </dl>
+      </article>
+      <!-- END L10-design-public-ux -->
+
+      <!-- BEGIN L11-launch-qa-release -->
+      <article id="L11-launch-qa-release" class="lane">
+        <div class="lane-head"><h3>L11 Launch QA/Release</h3><span class="status blocked">last</span></div>
+        <p>Integrate completed lanes, prove CI, deploy, and production smoke.</p>
+        <dl>
+          <div><dt>Branch</dt><dd><code>codex/yentl-launch-qa-release-2026-06-14</code></dd></div>
+          <div><dt>Proof</dt><dd><code>npm run release:readiness</code>; CI; deploy; production smoke.</dd></div>
+          <div><dt>Deliverable</dt><dd><code>agent-work/launch-qa-release/</code></dd></div>
+          <div><dt>Dependency</dt><dd>Starts after upstream lanes are integrated.</dd></div>
+        </dl>
+      </article>
+      <!-- END L11-launch-qa-release -->
+    </section>
+
+    <p class="footer-note">Update discipline: each agent changes only its own lane block. The orchestrator merges reports, resolves conflicts, and decides when release readiness is actually proved.</p>
+  </main>
+</body>
+</html>

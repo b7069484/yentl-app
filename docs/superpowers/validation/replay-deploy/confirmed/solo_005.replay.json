@@ -2,8 +2,8 @@
   "id": "solo_005",
   "title": "Hans Rosling: Global population growth, box by box",
   "category": "solo_monologue",
-  "startedAt": "2026-06-10T06:54:34.526Z",
-  "finishedAt": "2026-06-10T06:56:04.309Z",
+  "startedAt": "2026-06-10T07:31:00.486Z",
+  "finishedAt": "2026-06-10T07:32:19.404Z",
   "baseUrl": "https://yentl.it",
   "verify": "confirmed",
   "utterancesAvailable": 125,
@@ -12,7 +12,7 @@
     {
       "claim_text": "The world population reached 3 billion people.",
       "utterance_start": 16.505,
-      "utterance_end": 24.665,
+      "utterance_end": 24.664999,
       "topic": "Society",
       "topic_secondary": "History",
       "stance": "reported",
@@ -35,10 +35,10 @@
         "primary_label": "TRUE",
         "score": 95,
         "annotations": [
-          "historical milestone",
-          "world population"
+          "Claim lacks date context but is historically accurate",
+          "World population passed 3 billion around 1960"
         ],
-        "explanation": "The world population reached 3 billion in 1960, according to UN and US Census Bureau historical estimates. This is a well-documented demographic milestone. The claim is vague (no date given) but as a factual statement about a population threshold that has been crossed, it is true — global population surpassed 3 billion around 1960 and is now over 8 billion.",
+        "explanation": "The world population reaching 3 billion is a well-documented historical milestone, achieved around 1960 according to the United Nations and other demographic sources. The claim is ambiguous in that it doesn't specify when, but as a historical statement it is true — global population surpassed 3 billion decades ago and is now over 8 billion (reached November 2022).",
         "sources": []
       }
     },
@@ -67,33 +67,54 @@
         "primary_label": "TRUE",
         "score": 95,
         "annotations": [
-          "Well-documented demographic milestone",
-          "Confirmed by UN and US Census Bureau sources"
+          "Widely documented demographic milestone"
         ],
-        "explanation": "The world population reaching 3 billion in 1960 is a widely documented demographic fact. According to the United Nations Population Division and other demographic sources, the global population crossed the 3 billion threshold around 1960. This is consistent with historical population data published by major demographic authorities.",
+        "explanation": "According to UN population data and the US Census Bureau, the world population crossed the 3 billion mark around 1959-1960. This is a well-established demographic fact reported by multiple authoritative sources.",
         "sources": []
       }
     },
     {
-      "claim_text": "In 1960, the industrialized world had 1 billion people.",
-      "utterance_start": 60.29,
-      "utterance_end": 61.89,
-      "topic": "Society",
-      "topic_secondary": "History",
-      "stance": "reported",
+      "claim_text": "The speaker has given five previous TED talks using digital technology",
+      "utterance_start": 43.795,
+      "utterance_end": 51.155,
+      "topic": "Culture",
+      "topic_secondary": "Science",
+      "stance": "asserted",
       "ownership": {
         "owner_speaker_id": 0,
         "attribution_status": "confident",
         "attribution_reasons": [
-          "single_speaker_high_confidence",
-          "quoted_or_reported_speech"
+          "single_speaker_high_confidence"
         ],
-        "stance": "reported",
-        "confidence": 0.8,
+        "stance": "asserted",
+        "confidence": 0.6,
         "source_turn_ids": [],
         "source_segment_ids": []
       },
       "id": "solo_005-claim-3",
+      "speaker_id": 0,
+      "status": "failed",
+      "error": "/api/verify-confirmed HTTP 422: {\"error\":{\"code\":\"CLAIM_SCOPE_DECLINED\",\"message\":\"Yentl checks factual claims; this looks outside that scope.\"}}"
+    },
+    {
+      "claim_text": "The industrialized world had 1 billion people in 1960.",
+      "utterance_start": 60.29,
+      "utterance_end": 61.89,
+      "topic": "Society",
+      "topic_secondary": "History",
+      "stance": "asserted",
+      "ownership": {
+        "owner_speaker_id": 0,
+        "attribution_status": "confident",
+        "attribution_reasons": [
+          "single_speaker_high_confidence"
+        ],
+        "stance": "asserted",
+        "confidence": 0.9,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
+      "id": "solo_005-claim-4",
       "speaker_id": 0,
       "status": "failed",
       "error": "/api/verify-confirmed HTTP 500: {\"error\":\"verify failed\"}"

@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { Suspense, useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
   Download,
@@ -73,7 +73,11 @@ type IconComponent = React.ComponentType<{ className?: string }>;
 type SourceFilter = "all" | SavedSessionMeta["source_kind"];
 type SortKey = "recent" | "oldest" | "name" | "claims" | "duration";
 type StorageScope = "local" | "cloud" | "both";
+type StorageFilter = "all" | "cloud_backed" | StorageScope;
 type CloudStatus = "checking" | "synced" | CloudSessionFailureStatus;
+type ReadonlySearchParams = {
+  get: (name: string) => string | null;
+};
 
 function clientCloudSyncConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
@@ -112,16 +116,23 @@ function visibleSessions(
   sessions: SavedSessionMeta[],
   query: string,
   sourceFilter: SourceFilter,
+  storageFilter: StorageFilter,
   sortKey: SortKey,
+  storageScopeFor: (id: string) => StorageScope,
 ) {
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = sessions.filter((session) => {
     if (sourceFilter !== "all" && session.source_kind !== sourceFilter) return false;
+    const storageScope = storageScopeFor(session.id);
+    if (!storageFilterMatches(storageFilter, storageScope)) return false;
     if (!normalizedQuery) return true;
+    const storageLabel = storageScopeLabel(storageScope);
     const haystack = [
       session.name,
       sourceLabel(session.source_kind),
       session.source_kind,
+      storageLabel,
+      storageScope,
       `${session.claim_count} claims`,
       `${session.marker_count} markers`,
       `${session.speaker_count} speakers`,
@@ -147,6 +158,12 @@ function visibleSessions(
         return b.saved_at.localeCompare(a.saved_at);
     }
   });
+}
+
+function storageFilterMatches(filter: StorageFilter, storage: StorageScope): boolean {
+  if (filter === "all") return true;
+  if (filter === "cloud_backed") return storage === "cloud" || storage === "both";
+  return storage === filter;
 }
 
 // ─── Session row ──────────────────────────────────────────────────────────────
@@ -369,17 +386,42 @@ function SessionRow({
 }
 
 function StorageBadge({ storage }: { storage: StorageScope }) {
-  const label =
-    storage === "both"
-      ? "Local + cloud"
-      : storage === "cloud"
-        ? "Cloud"
-        : "Local";
   return (
     <span className="inline-flex items-center rounded-full border border-line-soft bg-paper px-2 py-0.5 text-[11px] font-medium text-ink-3">
-      {label}
+      {storageScopeLabel(storage)}
     </span>
   );
+}
+
+function storageScopeLabel(storage: StorageScope): string {
+  if (storage === "both") return "Local + cloud";
+  if (storage === "cloud") return "Cloud";
+  return "Local";
+}
+
+function storageFilterFromSearchParams(searchParams: ReadonlySearchParams | null): StorageFilter {
+  const raw = searchParams?.get("filter") ?? searchParams?.get("storage");
+  switch (raw?.trim().toLowerCase()) {
+    case "cloud":
+    case "cloud-backed":
+    case "cloud_backed":
+    case "account":
+    case "synced":
+      return "cloud_backed";
+    case "cloud-only":
+    case "cloud_only":
+      return "cloud";
+    case "both":
+    case "local-cloud":
+    case "local_cloud":
+      return "both";
+    case "local":
+    case "local-only":
+    case "local_only":
+      return "local";
+    default:
+      return "all";
+  }
 }
 
 function ExportChoice({
@@ -409,14 +451,36 @@ function ExportChoice({
 // ─── SessionsLibraryPage ───────────────────────────────────────────────────────
 
 export default function SessionsLibraryPage() {
+  return (
+    <Suspense fallback={<SessionsLibraryFallback />}>
+      <SessionsLibraryContent />
+    </Suspense>
+  );
+}
+
+function SessionsLibraryFallback() {
+  return (
+    <div className="min-h-screen bg-cream">
+      <main className="max-w-[900px] mx-auto px-6 md:px-8 py-10">
+        <div className="text-ink-4 text-[13px] animate-pulse">Loading…</div>
+      </main>
+    </div>
+  );
+}
+
+function SessionsLibraryContent() {
   const [sessions, setSessions] = useState<SavedSessionMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
   const [exportingId, setExportingId] = useState<string | null>(null);
   const [confirmingClear, setConfirmingClear] = useState(false);
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
+  const [storageFilter, setStorageFilter] = useState<StorageFilter>(() =>
+    storageFilterFromSearchParams(searchParams),
+  );
   const [sortKey, setSortKey] = useState<SortKey>("recent");
   const [localIds, setLocalIds] = useState<Set<string>>(() => new Set());
   const [cloudIds, setCloudIds] = useState<Set<string>>(() => new Set());
@@ -425,17 +489,6 @@ export default function SessionsLibraryPage() {
 
   const router = useRouter();
   const restoreSession = useSession((s) => s.restoreSession);
-  const filteredSessions = useMemo(
-    () => visibleSessions(sessions, query, sourceFilter, sortKey),
-    [query, sessions, sortKey, sourceFilter],
-  );
-  const sourceFilters = useMemo(
-    () => Array.from(new Set(sessions.map((session) => session.source_kind))).sort((a, b) =>
-      sourceLabel(a).localeCompare(sourceLabel(b)),
-    ),
-    [sessions],
-  );
-
   const storageScopeFor = useCallback(
     (id: string): StorageScope => {
       const local = localIds.has(id);
@@ -445,6 +498,16 @@ export default function SessionsLibraryPage() {
       return "local";
     },
     [cloudIds, localIds],
+  );
+  const filteredSessions = useMemo(
+    () => visibleSessions(sessions, query, sourceFilter, storageFilter, sortKey, storageScopeFor),
+    [query, sessions, sortKey, sourceFilter, storageFilter, storageScopeFor],
+  );
+  const sourceFilters = useMemo(
+    () => Array.from(new Set(sessions.map((session) => session.source_kind))).sort((a, b) =>
+      sourceLabel(a).localeCompare(sourceLabel(b)),
+    ),
+    [sessions],
   );
 
   const refresh = useCallback(async () => {
@@ -713,7 +776,7 @@ export default function SessionsLibraryPage() {
         {!loading && sessions.length > 0 && (
           <>
             <section className="mb-4 rounded-xl border border-line-soft bg-paper p-3 shadow-sm sm:p-4">
-              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px_180px]">
+              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_150px_150px_170px]">
                 <label className="block" htmlFor="session-search">
                   <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-4">
                     <Search className="h-3.5 w-3.5" aria-hidden />
@@ -726,6 +789,25 @@ export default function SessionsLibraryPage() {
                     placeholder="Search by name, source, claims..."
                     className="h-11 w-full rounded-lg border border-line bg-white px-3 text-[13px] text-ink outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20"
                   />
+                </label>
+
+                <label className="block" htmlFor="storage-filter">
+                  <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-4">
+                    <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />
+                    Storage
+                  </span>
+                  <select
+                    id="storage-filter"
+                    value={storageFilter}
+                    onChange={(event) => setStorageFilter(event.target.value as StorageFilter)}
+                    className="h-11 w-full rounded-lg border border-line bg-white px-3 text-[13px] text-ink outline-none transition focus:border-teal focus:ring-2 focus:ring-teal/20"
+                  >
+                    <option value="all">All storage</option>
+                    <option value="cloud_backed">Any cloud copy</option>
+                    <option value="both">Local + cloud</option>
+                    <option value="cloud">Cloud only</option>
+                    <option value="local">Local only</option>
+                  </select>
                 </label>
 
                 <label className="block" htmlFor="source-filter">
@@ -772,12 +854,13 @@ export default function SessionsLibraryPage() {
                 <span>
                   Showing {filteredSessions.length.toLocaleString()} of {sessions.length.toLocaleString()} saved sessions.
                 </span>
-                {(query || sourceFilter !== "all" || sortKey !== "recent") && (
+                {(query || sourceFilter !== "all" || storageFilter !== "all" || sortKey !== "recent") && (
                   <button
                     type="button"
                     onClick={() => {
                       setQuery("");
                       setSourceFilter("all");
+                      setStorageFilter("all");
                       setSortKey("recent");
                     }}
                     className="inline-flex min-h-11 w-fit items-center rounded-lg border border-line bg-cream px-3 text-[12px] font-medium text-ink-2 hover:bg-cream-2"

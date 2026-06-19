@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { pathToFileURL } from "node:url";
 import { PDFParse } from "pdf-parse";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
@@ -10,7 +10,7 @@ export const maxDuration = 60;
 
 const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024;
 let pdfWorkerConfigured = false;
-
+let pdfWorkerDataUrl: string | null = null;
 type DocumentIngestResponse =
   | { filename: string; mime: string; text: string; page_count?: number; byte_count: number }
   | { error: { code: string; message: string } };
@@ -82,9 +82,16 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
 
 function configurePdfWorker() {
   if (pdfWorkerConfigured) return;
-  const workerPath = join(process.cwd(), "node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs");
-  PDFParse.setWorker(pathToFileURL(workerPath).toString());
+  PDFParse.setWorker(getPdfWorkerDataUrl());
   pdfWorkerConfigured = true;
+}
+
+function getPdfWorkerDataUrl() {
+  if (!pdfWorkerDataUrl) {
+    const workerPath = join(process.cwd(), "node_modules/pdf-parse/dist/worker/pdf.worker.mjs");
+    pdfWorkerDataUrl = `data:text/javascript;base64,${readFileSync(workerPath).toString("base64")}`;
+  }
+  return pdfWorkerDataUrl;
 }
 
 function mimeFromName(filename: string) {

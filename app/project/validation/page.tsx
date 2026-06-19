@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle2,
+  ClipboardCheck,
   ExternalLink,
   FileCheck2,
   FlaskConical,
@@ -10,6 +11,7 @@ import {
 import {
   corpusAcceptanceSummary,
   corpusFunctionalSamples,
+  launchCanaryProofs,
   validationFixtures,
   validationRunbook,
 } from "@/lib/validation/fixtures";
@@ -144,6 +146,74 @@ export default function ProjectValidationPage() {
             </div>
           </section>
 
+          <section className="mb-5 rounded-lg border border-line bg-paper p-4 shadow-sm">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-4">
+                  <ClipboardCheck className="h-3.5 w-3.5" aria-hidden />
+                  Launch canaries
+                </div>
+                <h2 className="font-serif text-[24px] leading-tight text-ink">
+                  External proof still required
+                </h2>
+                <p className="mt-1 max-w-3xl text-[13px] leading-relaxed text-ink-3">
+                  Local fixtures prove the core paths. These canaries collect the
+                  real-world evidence needed before Yentl can be called launch-ready.
+                </p>
+              </div>
+              <div className="min-w-0 break-all rounded-lg border border-line bg-cream px-3 py-2 font-mono text-[11px] text-ink-3 sm:break-normal">
+                npm run release:canary-templates
+              </div>
+            </div>
+
+            <div className="grid gap-3 xl:grid-cols-3">
+              {launchCanaryProofs.map((canary) => (
+                <article
+                  key={canary.id}
+                  className="min-w-0 rounded-lg border border-line bg-cream p-3"
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-line bg-paper px-2 py-0.5 text-[10.5px] font-semibold text-ink-3">
+                      {canary.area}
+                    </span>
+                    <span className="rounded-full border border-amber/30 bg-amber-soft px-2 py-0.5 text-[10.5px] font-semibold text-amber">
+                      Needs real evidence
+                    </span>
+                  </div>
+                  <h3 className="text-[14px] font-semibold leading-snug text-ink">
+                    {canary.title}
+                  </h3>
+                  <p className="mt-1 text-[12.5px] leading-relaxed text-ink-3">
+                    {canary.requirement}
+                  </p>
+                  <dl className="mt-3 space-y-2 text-[11px] leading-relaxed text-ink-3">
+                    <CanaryPathList label="Command" values={canary.proofCommands} />
+                    {canary.templatePath && (
+                      <CanaryPath label="Template" value={canary.templatePath} />
+                    )}
+                    {canary.manifestPath && (
+                      <CanaryPath label="Manifest" value={canary.manifestPath} />
+                    )}
+                    <CanaryPathList label="Proof" values={canary.proofArtifacts} />
+                  </dl>
+                  <div className="mt-3 border-t border-line pt-3">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-4">
+                      Evidence needed
+                    </div>
+                    <ul className="mt-2 space-y-1 text-[12px] leading-relaxed text-ink-3">
+                      {canary.evidenceNeeded.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span aria-hidden>•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
           <div className="grid min-w-0 gap-3">
             {validationFixtures.map((fixture) => (
               <article
@@ -178,14 +248,14 @@ export default function ProjectValidationPage() {
                   )}
                 </div>
 
-                <div className="mt-4 grid gap-2 text-[12.5px] sm:grid-cols-2">
-                  <div className="rounded-lg border border-line bg-cream px-3 py-2">
+                <div className="mt-4 grid min-w-0 gap-2 text-[12.5px] sm:grid-cols-2">
+                  <div className="min-w-0 rounded-lg border border-line bg-cream px-3 py-2">
                     <div className="font-semibold text-ink-4">Target</div>
-                    <div className="mt-1 text-ink-2">{fixture.primaryTarget}</div>
+                    <div className="mt-1 break-words text-ink-2">{fixture.primaryTarget}</div>
                   </div>
-                  <div className="rounded-lg border border-line bg-cream px-3 py-2">
+                  <div className="min-w-0 rounded-lg border border-line bg-cream px-3 py-2">
                     <div className="font-semibold text-ink-4">Expected result</div>
-                    <div className="mt-1 text-ink-2">{fixture.expectedResult}</div>
+                    <div className="mt-1 break-words text-ink-2">{fixture.expectedResult}</div>
                   </div>
                 </div>
 
@@ -251,6 +321,35 @@ function MiniMetric({ label, value }: { label: string; value: number }) {
       <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-4">
         {label}
       </div>
+    </div>
+  );
+}
+
+function CanaryPath({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="font-semibold text-ink-4">{label}</dt>
+      <dd className="mt-0.5 break-all rounded-md border border-line bg-paper px-2 py-1 font-mono text-[10.5px] text-ink-3">
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+function CanaryPathList({ label, values }: { label: string; values: string[] }) {
+  return (
+    <div>
+      <dt className="font-semibold text-ink-4">{label}</dt>
+      <dd className="mt-0.5 space-y-1">
+        {values.map((value) => (
+          <div
+            key={value}
+            className="break-all rounded-md border border-line bg-paper px-2 py-1 font-mono text-[10.5px] text-ink-3"
+          >
+            {value}
+          </div>
+        ))}
+      </dd>
     </div>
   );
 }

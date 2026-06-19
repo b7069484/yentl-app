@@ -2,57 +2,159 @@
   "id": "cable_008",
   "title": "Stephen A  Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown",
   "category": "cable_news_debate",
-  "startedAt": "2026-05-21T16:30:54.445Z",
-  "finishedAt": "2026-05-21T16:31:37.821Z",
-  "baseUrl": "http://localhost:3000",
-  "verify": "none",
+  "startedAt": "2026-06-10T09:46:39.979Z",
+  "finishedAt": "2026-06-10T09:47:37.666Z",
+  "baseUrl": "https://yentl.it",
+  "verify": "both",
   "utterancesAvailable": 115,
-  "utterancesReplayed": 12,
+  "utterancesReplayed": 10,
   "claims": [
     {
-      "claim_text": "Over 77,000,000 people voted for Donald Trump in the presidential election.",
-      "utterance_start": 30.01,
-      "utterance_end": 38.09,
+      "claim_text": "Donald Trump received over 77,000,000 votes (in the 2024 U.S. presidential election).",
+      "utterance_start": 28.33,
+      "utterance_end": 30.01,
       "topic": "Politics",
       "topic_secondary": null,
+      "stance": "hedged",
+      "ownership": {
+        "owner_speaker_id": 2,
+        "attribution_status": "probable",
+        "attribution_reasons": [
+          "single_speaker_high_confidence"
+        ],
+        "stance": "hedged",
+        "confidence": 0.5,
+        "source_turn_ids": [],
+        "source_segment_ids": []
+      },
       "id": "cable_008-claim-1",
       "speaker_id": 2,
-      "status": "extracted"
+      "status": "confirmed",
+      "provisional": {
+        "primary_label": "TRUE",
+        "score": 92,
+        "annotations": [
+          "widely reported result",
+          "official certified totals"
+        ],
+        "explanation": "Donald Trump received approximately 77 million votes in the 2024 U.S. presidential election, winning the popular vote. Final certified totals were around 77.3 million, consistent with the claim."
+      },
+      "confirmed": {
+        "primary_label": "TRUE",
+        "score": 97,
+        "annotations": [
+          "Multiple reputable sources confirm Trump received approximately 77.3 million votes in 2024",
+          "Council on Foreign Relations cites 77,284,118 votes specifically",
+          "Claim of 'over 77,000,000' is accurate"
+        ],
+        "explanation": "The claim that Donald Trump received over 77,000,000 votes in the 2024 U.S. presidential election is supported by multiple authoritative sources. The Council on Foreign Relations reports 77,284,118 votes (49.8%), and other trackers report figures in the 77.2-77.3 million range. This is the second-highest vote total in U.S. history, trailing only Joe Biden's 2020 total.",
+        "sources": [
+          {
+            "url": "https://www.livenowfox.com/news/presidents-most-popular-votes-trump-2024",
+            "domain": "livenowfox.com",
+            "title": "Popular vote: How Trump’s 77.3 million ranks among past presidential candidates | LiveNOW from FOX",
+            "stance": "supports",
+            "excerpt": "Trump received 77.3 million popular votes, a number that ranks among the largest vote totals ever in U.S. presidential elections.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.cookpolitical.com/vote-tracker/2024/electoral-college",
+            "domain": "cookpolitical.com",
+            "title": "2024 National Popular Vote Tracker | Cook Political Report",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.cfr.org/articles/2024-election-numbers",
+            "domain": "cfr.org",
+            "title": "The 2024 Election by the Numbers | Council on Foreign Relations",
+            "stance": "supports",
+            "excerpt": "Trump won 77,284,118 votes, or 49.8 percent of the votes cast for president — the second highest vote total in U.S. history.",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://factually.co/fact-checks/politics/2024-us-presidential-election-final-popular-vote-count-74f082",
+            "domain": "factually.co",
+            "title": "What Was the Final Popular Vote Count in the 2024 Pres...",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://factually.co/fact-checks/politics/2024-us-presidential-election-final-popular-vote-count-250f48",
+            "domain": "factually.co",
+            "title": "what was the final popular vote count of the 2024 pres...",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://factually.co/fact-checks/politics/trump-2024-total-popular-vote-count-849dbf",
+            "domain": "factually.co",
+            "title": "How Many Votes Did Donald Trump Get in 2024?",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.fox9.com/news/election-results-popular-vote-kamala-harris-donald-trump",
+            "domain": "fox9.com",
+            "title": "Trump’s popular vote win is GOP's first in 20 years | FOX 9 Minneapolis-St. Paul",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.nbcchicago.com/news/politics/who-won-presidential-election-popular-vote-heres-where-the-count-stands/3596427/",
+            "domain": "nbcchicago.com",
+            "title": "Who won the presidential election popular vote? Here's where the count stands",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://www.thenation.com/article/politics/donald-trump-vote-margin-narrowed/",
+            "domain": "thenation.com",
+            "title": "Donald Trump Has NOT Won a Majority of the Votes Cast for President | The Nation",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          },
+          {
+            "url": "https://worldmapper.org/maps/us-presidential-election-2024-results/",
+            "domain": "worldmapper.org",
+            "title": "| US Presidential Election 2024 Results",
+            "stance": "mixed",
+            "excerpt": "",
+            "reputation_tier": "mid"
+          }
+        ]
+      }
     }
   ],
   "markers": [
     {
-      "type": "rhetoric",
-      "name": "vagueness",
-      "display": "Vagueness / Hand-waving",
-      "excerpt": "Trump is being Trump",
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "Trump is being Trump.",
       "start_time": 3,
-      "end_time": 7,
-      "severity": "clear",
-      "explanation": "The phrase 'Trump is being Trump' is a tautological hand-wave that explains nothing while appearing to answer the question. It substitutes a vague catchphrase for substantive analysis.",
+      "end_time": 6,
+      "severity": "subtle",
+      "explanation": "Deflects the question about whether something cognitive is wrong by offering a tautological non-answer that diverts from the actual inquiry.",
       "id": "cable_008-marker-1"
     },
     {
-      "type": "fallacy",
-      "name": "begging_the_question",
-      "display": "Begging the Question",
-      "excerpt": "focusing only on that completely ignores the larger reality forming underneath",
-      "start_time": 22,
-      "end_time": 28,
-      "severity": "subtle",
-      "explanation": "The speaker assumes the existence of a 'larger reality forming underneath' as a premise without establishing it, using the assumption itself to dismiss alternative framings.",
-      "id": "cable_008-marker-2"
-    },
-    {
       "type": "rhetoric",
-      "name": "innuendo",
-      "display": "Innuendo",
-      "excerpt": "There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't",
-      "start_time": 5,
-      "end_time": 12,
+      "name": "vagueness",
+      "display": "Vagueness / Hand-waving",
+      "excerpt": "the larger reality forming underneath",
+      "start_time": 22,
+      "end_time": 25,
       "severity": "clear",
-      "explanation": "The speaker raises the suggestion of cognitive impairment then disclaims taking a position, planting the implication without committing to or defending the claim.",
-      "id": "cable_008-marker-3"
+      "explanation": "The narrator gestures at an unspecified 'larger reality' without defining it, using hand-waving language to imply hidden significance.",
+      "id": "cable_008-marker-2"
     },
     {
       "type": "fallacy",
@@ -62,30 +164,30 @@
       "start_time": 28,
       "end_time": 36,
       "severity": "clear",
-      "explanation": "The speaker uses the large number of voters as evidence that something 'deeper' and legitimate is occurring, implying validity through popularity rather than through argument about the underlying claims.",
-      "id": "cable_008-marker-4"
-    },
-    {
-      "type": "fallacy",
-      "name": "false_dilemma",
-      "display": "False Dilemma Fallacy",
-      "excerpt": "something structural, not emotional",
-      "start_time": 42,
-      "end_time": 46,
-      "severity": "subtle",
-      "explanation": "Frames the explanation as a binary between 'structural' and 'emotional' causes, excluding the possibility that both or other factors could be at play.",
-      "id": "cable_008-marker-5"
+      "explanation": "The speaker uses the large number of voters as evidence that something meaningful and legitimate ('structural') must be happening, treating popularity itself as proof of validity rather than examining the underlying claims.",
+      "id": "cable_008-marker-3"
     },
     {
       "type": "rhetoric",
       "name": "loaded_language",
       "display": "Loaded Language",
-      "excerpt": "dismiss as confusion or misinformation",
-      "start_time": 33,
-      "end_time": 37,
+      "excerpt": "something structural, not emotional",
+      "start_time": 42,
+      "end_time": 45,
       "severity": "subtle",
-      "explanation": "Pejoratively characterizes opposing explanations as dismissive, preemptively delegitimizing alternative interpretations of voter behavior.",
-      "id": "cable_008-marker-6"
+      "explanation": "The framing contrasts 'structural' (sounding serious and legitimate) against 'emotional' (sounding dismissible), loading the language to validate one interpretation over another without argument.",
+      "id": "cable_008-marker-4"
+    },
+    {
+      "type": "fallacy",
+      "name": "red_herring",
+      "display": "Red Herring",
+      "excerpt": "focusing only on that completely ignores the larger reality forming underneath",
+      "start_time": 22,
+      "end_time": 28,
+      "severity": "subtle",
+      "explanation": "The speaker deflects from the original question about Trump's cognitive state by pivoting to voter numbers, an unrelated topic that diverts attention from the actual question raised.",
+      "id": "cable_008-marker-5"
     }
   ],
   "errors": []

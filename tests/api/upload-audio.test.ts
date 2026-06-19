@@ -120,7 +120,7 @@ describe("POST /api/upload-audio — onBeforeGenerateToken validation", () => {
     vi.clearAllMocks();
   });
 
-  it("onBeforeGenerateToken returns allowedContentTypes including audio/mpeg", async () => {
+  it("onBeforeGenerateToken returns allowedContentTypes including audio and video media", async () => {
     let capturedToken: Awaited<ReturnType<Parameters<typeof mockHandleUpload>[0]["onBeforeGenerateToken"]>> | undefined;
 
     mockHandleUpload.mockImplementation(async ({ onBeforeGenerateToken }) => {
@@ -136,6 +136,9 @@ describe("POST /api/upload-audio — onBeforeGenerateToken validation", () => {
     expect(capturedToken!.allowedContentTypes).toContain("audio/wav");
     expect(capturedToken!.allowedContentTypes).toContain("audio/ogg");
     expect(capturedToken!.allowedContentTypes).toContain("audio/webm");
+    expect(capturedToken!.allowedContentTypes).toContain("video/mp4");
+    expect(capturedToken!.allowedContentTypes).toContain("video/quicktime");
+    expect(capturedToken!.allowedContentTypes).toContain("video/webm");
   });
 
   it("onBeforeGenerateToken enforces maximumSizeInBytes of 500 MB", async () => {

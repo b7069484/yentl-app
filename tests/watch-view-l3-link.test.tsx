@@ -59,7 +59,7 @@ vi.mock("@/lib/client/youtube-adapter", () => ({
 }));
 
 vi.mock("@/lib/client/audio-adapter", () => ({
-  createAudioAdapter: vi.fn(async (opts: AdapterCallbacks) => {
+  createAudioAdapter: vi.fn(async () => {
     return { seekTo: mockSeekTo, destroy: mockDestroy };
   }),
 }));

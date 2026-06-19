@@ -115,6 +115,6 @@ async function runAnalysisInBackground(
 function scheduleSynthesis(signal: AbortSignal | undefined): void {
   setTimeout(() => {
     if (signal?.aborted) return;
-    void runSynthesisNow();
+    void runSynthesisNow({ scope: "full_session" });
   }, SYNTHESIS_BATCH_DELAY_MS);
 }

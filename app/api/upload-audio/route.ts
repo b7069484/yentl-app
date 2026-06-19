@@ -5,10 +5,10 @@ import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { SOURCE_ANALYSIS_CONSENT_VALUE, hasSourceAnalysisConsent } from "@/lib/source-consent";
 
 /**
- * Client-direct upload route for Vercel Blob.
+ * Client-direct media-upload route for Vercel Blob.
  *
  * This route issues short-lived upload tokens to the browser so that the
- * client can POST audio files DIRECTLY to Vercel Blob — bypassing our
+ * client can POST audio/video files DIRECTLY to Vercel Blob — bypassing our
  * serverless function entirely. That sidesteps Vercel's 4.5 MB request-body
  * limit on Pro plans.
  *
@@ -30,17 +30,20 @@ import { SOURCE_ANALYSIS_CONSENT_VALUE, hasSourceAnalysisConsent } from "@/lib/s
  * anything critical here; we rely on the browser passing the URL back.
  */
 
-/** Max audio upload size: 500 MB (matches /api/transcribe-batch cap). */
+/** Max media upload size: 500 MB (matches /api/transcribe-batch cap). */
 const MAX_SIZE_BYTES = 500 * 1024 * 1024;
 
-/** All MIME types accepted by Deepgram and validated in audio-ingest-pane. */
-const ALLOWED_AUDIO_TYPES = [
+/** All media MIME types accepted by Deepgram and validated in audio-ingest-pane. */
+const ALLOWED_MEDIA_TYPES = [
   "audio/mpeg",
   "audio/wav",
   "audio/x-m4a",
   "audio/mp4",
   "audio/ogg",
   "audio/webm",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
   // Browsers sometimes report .mp3 as audio/mp3 instead of audio/mpeg
   "audio/mp3",
 ];
@@ -77,7 +80,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
 
         return {
-          allowedContentTypes: ALLOWED_AUDIO_TYPES,
+          allowedContentTypes: ALLOWED_MEDIA_TYPES,
           maximumSizeInBytes: MAX_SIZE_BYTES,
           addRandomSuffix: true,
           // Short cache — audio files are ephemeral (transcribed then deleted)

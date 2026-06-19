@@ -73,6 +73,19 @@ const SAMPLE: Session = {
       source_segment_ids: ["seg-a", "seg-b"],
     },
   ],
+  synthesis: {
+    text: "Yentl sees a partial unemployment claim with unresolved ownership.",
+    headlines: ["Ownership remains unresolved", "One partial claim", "Rhetoric marker present"],
+    meta_read: {
+      posture: "mixed",
+      source_health: "thin",
+      scope: "full_session",
+      summary: "Across the full session, the read remains mixed.",
+      uncertainty: "The strongest uncertainty is unresolved ownership.",
+      key_question: "Which source anchors the unemployment timeframe?",
+    },
+    at: 1_716_000_000_000,
+  },
   devil_advocate: {
     stance: "A skeptic would ask whether the unemployment claim depends on the chosen timeframe.",
     strongest_counterarguments: [
@@ -107,8 +120,19 @@ describe("toReport", () => {
     expect(html).toContain("Partially true");
     expect(html).toContain("BLS Report");
     expect(html).toContain("Absolutism");
+    expect(html).toContain("Summary");
     expect(html).toContain("Devil's Advocate");
     expect(html).toContain("chosen timeframe");
+  });
+
+  it("includes structured synthesis meta-read fields", () => {
+    const html = toReport(SAMPLE);
+    expect(html).toContain("Meta-read");
+    expect(html).toContain("Posture: mixed");
+    expect(html).toContain("Source health: thin");
+    expect(html).toContain("Scope: full session");
+    expect(html).toContain("The strongest uncertainty is unresolved ownership.");
+    expect(html).toContain("Which source anchors the unemployment timeframe?");
   });
 
   it("includes source evidence score, alignment, and highlighted claim links", () => {

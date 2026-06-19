@@ -1,0 +1,1328 @@
+{
+  "ok": true,
+  "generated_at": "2026-06-12T01:01:43.253Z",
+  "app_origin": "http://localhost:3000",
+  "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-ingestion-ui-proof-XdHoTM/profile",
+  "flows": [
+    {
+      "slug": "web-article-validation-ui-handoff",
+      "path": "/session?source=web-url",
+      "expectedRequests": [
+        "/api/article-ingest"
+      ]
+    },
+    {
+      "slug": "direct-media-validation-ui-handoff",
+      "path": "/session?source=media-url",
+      "expectedRequests": [
+        "/api/media-ingest"
+      ]
+    },
+    {
+      "slug": "direct-video-validation-ui-handoff",
+      "path": "/session?source=media-url",
+      "expectedRequests": [
+        "/api/media-ingest"
+      ]
+    },
+    {
+      "slug": "audio-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "expectedRequests": [
+        "/validation/yentl-synthetic-panel.wav",
+        "/api/transcribe-batch"
+      ]
+    },
+    {
+      "slug": "video-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "expectedRequests": [
+        "/validation/yentl-synthetic-panel.mp4",
+        "/api/transcribe-batch"
+      ]
+    },
+    {
+      "slug": "mov-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "expectedRequests": [
+        "/validation/yentl-synthetic-panel.mov",
+        "/api/transcribe-batch"
+      ]
+    },
+    {
+      "slug": "webm-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "expectedRequests": [
+        "/validation/yentl-synthetic-panel.webm",
+        "/api/transcribe-batch"
+      ]
+    },
+    {
+      "slug": "text-txt-validation-ui-handoff",
+      "path": "/session?source=text-doc",
+      "expectedRequests": [
+        "/validation/yentl-synthetic-transcript.txt"
+      ]
+    },
+    {
+      "slug": "text-pdf-validation-ui-handoff",
+      "path": "/session?source=text-doc",
+      "expectedRequests": [
+        "/validation/yentl-small-text-layer.pdf",
+        "/api/document-ingest"
+      ]
+    },
+    {
+      "slug": "youtube-validation-ui-handoff",
+      "path": "/session?source=youtube",
+      "expectedRequests": [
+        "/api/youtube-ingest"
+      ]
+    },
+    {
+      "slug": "claim-quick-check-validation-ui-handoff",
+      "path": "/session?source=claim",
+      "expectedRequests": [
+        "/api/verify-provisional",
+        "/api/verify-confirmed"
+      ]
+    }
+  ],
+  "report_path": "docs/superpowers/validation/ingestion-ui-local-proof.json",
+  "checks": [
+    {
+      "slug": "web-article-validation-ui-handoff",
+      "path": "/session?source=web-url",
+      "url": "http://localhost:3000/session?source=web-url",
+      "actionResult": {
+        "ok": true,
+        "clicked": "Load validation article"
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/article-ingest"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Web page Paste a page URL Yentl will pull readable page text when it can. YouTube and direct media links are routed to their dedicated live-player paths. Web page URL Analyze URL Paste Load validation article Paste the URL once. Yentl will pick the best branch from there. URL ROUTING YouTube Playable live workspace with synced captions or tab audio. Article/text page Readable text import, then claims and markers. Direct media MP3, MP4, WebM, or hosted media transcription. Before we start. Yentl needs your explicit consent for each thing it does. Tick all four required boxes to continue. Sensitive-data notice. T",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 0 Markers · 0 Sources Room Save Export End Speaker 1 Yentl session workspace Live capture stopped YENTL IS BUILDING THE READ… CLAIMS 0 MARKERS 0 SPEAKERS 1 Speaker 1 100% SESSION 00:00 2 utterances — TOPICS IN PLAY No topics yet SOURCE HEALTH Transcript ready WEB TEXT Yentl Validation Article http://localhost:3000/validation/yentl-synthetic-article.html Transcript 2 utterances Claims ready 0 Still checking 0 Source-backed 0 claims Cited sources None yet ARTICLE SOURCE Yentl Validation Article Plain text Yentl Validation Article Yentl Validation Article The city library operating budget increased by 12 perce",
+      "href": "http://localhost:3000/session?view=overview",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Yentl Validation Article": true,
+        "city library operating budget": true,
+        "Overview": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 0 Markers · 0 Sources Room Save Export End Speaker 1 Yentl session workspace Live capture stopped YENTL IS BUILDING THE READ… CLAIMS 0 MARKERS 0 SPEAKERS 1 Speaker 1 100% SESSION 00:00 2 utterances — TOPICS IN PLAY No topics yet SOURCE HEALTH Transcript ready WEB TEXT Yentl Validation Article http://localhost:3000/validation/yentl-synthetic-article.html Transcript 2 utterances Claims ready 0 Still checking 0 Source-backed 0 claims Cited sources None yet ARTICLE SOURCE Yentl Validation Article Plain text Yentl Validation Article Yentl Validation Article The city library operating budget increased by 12 perce"
+    },
+    {
+      "slug": "direct-media-validation-ui-handoff",
+      "path": "/session?source=media-url",
+      "url": "http://localhost:3000/session?source=media-url",
+      "actionResult": {
+        "ok": true,
+        "clicked": "Load validation media URL"
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/media-ingest"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "GET",
+          "status": 206,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.wav"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Paste a direct audio or video URL Examples: a podcast MP3, an MP4 file, or a hosted WebM clip. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is public and safe to fetch. 2. Transcribe media Supported audio/video is sent through the transcript pipeline. 3. Open Watch The transcript, claims, markers, and source stay together. Webpage with a ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:02 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Media URL Direct media source http://localhost:3000/validation/yentl-synthetic-panel.wav PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:02 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Media URL Direct media source http://localhost:3000/validation/yentl-synthetic-panel.wav PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts"
+    },
+    {
+      "slug": "direct-video-validation-ui-handoff",
+      "path": "/session?source=media-url",
+      "url": "http://localhost:3000/session?source=media-url",
+      "actionResult": {
+        "ok": true,
+        "clicked": "Load validation video URL"
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/media-ingest"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Direct media URL Paste a media URL Use this for a direct podcast MP3, MP4, WebM, or hosted audio/video file. If you have a webpage with a player, the browser-tab path is usually the better fit. Media URL Process Paste Load validation media URL Load validation video URL Paste a direct audio or video URL Examples: a podcast MP3, an MP4 file, or a hosted WebM clip. INTAKE ROUTE 1. Verify URL Yentl checks that the URL is public and safe to fetch. 2. Transcribe media Supported audio/video is sent through the transcript pipeline. 3. Open Watch The transcript, claims, markers, and source stay together. Webpage with a ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Media URL Direct media source http://localhost:3000/validation/yentl-synthetic-panel.mp4 PLAYER Loading TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Media URL Direct media source http://localhost:3000/validation/yentl-synthetic-panel.mp4 PLAYER Loading TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl"
+    },
+    {
+      "slug": "audio-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation WAV",
+          "Process audio"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 206,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.mp4"
+        },
+        {
+          "method": "GET",
+          "status": 206,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.mp4"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.wav"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/transcribe-batch"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS NEXT Upload Large files show upload progress before transcription. Transcribe Deepgram turns the recording into timed speech segments. Review Yentl opens Watch with playback, transcript, claims, and ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.wav audio/wav PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ Th",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.wav audio/wav PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ Th"
+    },
+    {
+      "slug": "video-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation MP4",
+          "Process audio/video"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.mp4"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/transcribe-batch"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS NEXT Upload Large files show upload progress before transcription. Transcribe Deepgram turns the recording into timed speech segments. Review Yentl opens Watch with playback, transcript, claims, and ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.mp4 video/mp4 PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ Th",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.mp4 video/mp4 PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ Th"
+    },
+    {
+      "slug": "mov-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation MOV",
+          "Process audio/video"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.mov"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/transcribe-batch"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS NEXT Upload Large files show upload progress before transcription. Transcribe Deepgram turns the recording into timed speech segments. Review Yentl opens Watch with playback, transcript, claims, and ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.mov video/quicktime PLAYER Loading TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. ",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.mov video/quicktime PLAYER Loading TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. "
+    },
+    {
+      "slug": "webm-upload-validation-ui-handoff",
+      "path": "/session?source=audio-file",
+      "url": "http://localhost:3000/session?source=audio-file",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation WebM",
+          "Process audio/video"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-synthetic-panel.webm"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/transcribe-batch"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Audio/video upload Drop an audio or video file Upload a recording and Yentl will transcribe it, detect speakers, then open the Watch view with transcript, claims, markers, and source playback together. MP3, WAV, M4A, OGG, WebM, MP4, MOV Up to 500 MB Up to 4 hours Drop your recording here or click to browse from this device Load validation WAV Load validation MP4 Load validation MOV Load validation WebM WHAT HAPPENS NEXT Upload Large files show upload progress before transcription. Transcribe Deepgram turns the recording into timed speech segments. Review Yentl opens Watch with playback, transcript, claims, and ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.webm video/webm PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ ",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Welcome to the Yentl validation panel": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Watch Transcript Claims · 0 Markers · 0 Sources Room Save Export End Moderator Analyst Yentl session workspace Live capture stopped Audio file yentl-synthetic-panel.webm video/webm PLAYER Ready TRANSCRIPT 5 CLAIMS 0 MARKERS 0 CURRENT READ Listening Waiting for a checkable claim. LANGUAGE HEAT Calm No rhetoric marker yet. EVIDENCE STATE Waiting No evidence check needed yet. LIVE STATE Ready 5 transcript lines linked to playback. 00:00 synced Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 0 total Claims and markers will appear here as Yentl extracts them from the transcript. YENTL’S READ "
+    },
+    {
+      "slug": "text-txt-validation-ui-handoff",
+      "path": "/session?source=text-doc",
+      "url": "http://localhost:3000/session?source=text-doc",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation TXT",
+          "Process transcript"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-synthetic-transcript.txt"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 0 chars · ~0 tokens · 0 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCTURE Paste transcript text to preview speaker labels, paragraph blocks, and line count befo",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Source Transcript Claims · 0 Markers · 0 Sources Room Save Export End Speaker 1 Speaker 2 Yentl session workspace Live capture stopped YENTL OPINION · REFRESHING… The validation panel has a budget claim, a context challenge, and a separate school-platform warning. The strongest meta-read is cautious: one speaker asserts a number and uses an urgent frame, while the other asks for the missing evidence and scope. META-READ Still forming Updating while checking Across the current live window, Yentl does not yet have enough clean evidence for a confident conversation-level read. Evidence: Thin sources Scope: Live window Main uncertainty i",
+      "href": "http://localhost:3000/session?view=overview",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Overview": true,
+        "yentl-synthetic-transcript.txt": true,
+        "city library budget increased by 12 percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:01 Overview Source Transcript Claims · 0 Markers · 0 Sources Room Save Export End Speaker 1 Speaker 2 Yentl session workspace Live capture stopped YENTL OPINION · REFRESHING… The validation panel has a budget claim, a context challenge, and a separate school-platform warning. The strongest meta-read is cautious: one speaker asserts a number and uses an urgent frame, while the other asks for the missing evidence and scope. META-READ Still forming Updating while checking Across the current live window, Yentl does not yet have enough clean evidence for a confident conversation-level read. Evidence: Thin sources Scope: Live window Main uncertainty i"
+    },
+    {
+      "slug": "text-pdf-validation-ui-handoff",
+      "path": "/session?source=text-doc",
+      "url": "http://localhost:3000/session?source=text-doc",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation PDF",
+          "Process transcript"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/validation/yentl-small-text-layer.pdf"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/document-ingest"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-provisional"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-confirmed"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-provisional"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-confirmed"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/source-preview"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/source-preview"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. TXT, MD, DOCX, PDF, SRT, VTT PDFs need selectable text Scanned PDFs need OCR elsewhere 0 chars · ~0 tokens · 0 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process transcript DETECTED STRUCTURE Paste transcript text to preview speaker labels, paragraph blocks, and line count befo",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 2 Markers · 1 Sources Room Save Export End Speaker 1 Speaker 2 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW This imported document is a source-quality review, not a settled budget finding. Yentl is tracking 1 claim about a twelve-percent spending increase and a mayor's-office summary, plus 1 rhetoric marker around missing-document and tax-framing language. The meta-view is that the document itself raises the right challenge: do not accept the percentage or tax frame until the baseline year and actual budget summary are named. META-READ Still forming Across the current live window, Y",
+      "href": "http://localhost:3000/session?view=overview",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Overview": true,
+        "yentl-small-text-layer.pdf": true,
+        "City spending rose by twelve percent": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 2 Markers · 1 Sources Room Save Export End Speaker 1 Speaker 2 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW This imported document is a source-quality review, not a settled budget finding. Yentl is tracking 1 claim about a twelve-percent spending increase and a mayor's-office summary, plus 1 rhetoric marker around missing-document and tax-framing language. The meta-view is that the document itself raises the right challenge: do not accept the percentage or tax frame until the baseline year and actual budget summary are named. META-READ Still forming Across the current live window, Y"
+    },
+    {
+      "slug": "youtube-validation-ui-handoff",
+      "path": "/session?source=youtube",
+      "url": "http://localhost:3000/session?source=youtube",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation YouTube",
+          "Analyze caption track"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/youtube-ingest"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/youtube-preview?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DfTznEIZRkLg"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-provisional"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-confirmed"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/source-preview"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-provisional"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-confirmed"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/source-preview"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Sources YouTube URL Start Load validation YouTube Save snapshot Watch + live analysis Paste a YouTube link and watch here The video stays left. Yentl reads, transcribes, and flags moments on the right. The video will play in this space Paste a link above. This area becomes the YouTube player, not a thumbnail. Paste a YouTube URL Waiting for a playable YouTube URL 00:00 No video YENTL'S READ Paste URL Bring the video in first. Paste a YouTube link. The player will occupy the left side and Yentl's live read will take over this rail. PULSE Quiet waiting CLAIMS 0 open none yet HEAT Calm low pressure EVIDENCE Waiting no anchor Tran",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 2 Markers · 1 Sources Room Save Export End TED Speaker 2 Yentl session workspace Live capture stopped YouTube Hans Rosling: Global population growth, box by box TED · fTznEIZRkLg PLAYER Loading TRANSCRIPT 241 CLAIMS 2 MARKERS 1 CURRENT READ Supported 2 supported claims and no high-risk claim yet. LANGUAGE HEAT Low 1 subtle marker detected. EVIDENCE STATE Cited 2 claims backed by source evidence. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 3 total Mostly True 88 00:16 The world popula",
+      "href": "http://localhost:3000/session?view=watch",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Watch": true,
+        "Hans Rosling": true,
+        "population growth": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 2 Markers · 1 Sources Room Save Export End TED Speaker 2 Yentl session workspace Live capture stopped YouTube Hans Rosling: Global population growth, box by box TED · fTznEIZRkLg PLAYER Loading TRANSCRIPT 241 CLAIMS 2 MARKERS 1 CURRENT READ Supported 2 supported claims and no high-risk claim yet. LANGUAGE HEAT Low 1 subtle marker detected. EVIDENCE STATE Cited 2 claims backed by source evidence. LIVE STATE Loading Player is connecting to the source. 00:00 loading player Transcript-linked review EVIDENCE QUEUE Jump from a finding to the exact moment in the source. 3 total Mostly True 88 00:16 The world popula"
+    },
+    {
+      "slug": "claim-quick-check-validation-ui-handoff",
+      "path": "/session?source=claim",
+      "url": "http://localhost:3000/session?source=claim",
+      "actionResult": {
+        "ok": true,
+        "clicked": [
+          "Load validation claim",
+          "Check claim"
+        ]
+      },
+      "failures": [],
+      "runtimeIssues": [],
+      "requests": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/devil-advocate"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/analyze-rhetoric"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/synthesize"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": null,
+          "url": "http://localhost:3000/api/extract-claims"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-provisional"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/verify-confirmed"
+        }
+      ],
+      "initialTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Quick claim check Check one specific claim Use this when you already know the claim you want checked. Add context only to clarify who, where, or what the claim is about. Claim Optional context or source note 0 / 2,000 characters Context is for disambiguation, not automatic evidence. Load validation claim Check claim GOOD QUICK CHECKS A factual sentence with names, dates, numbers, or places. A quote or statistic that can be compared against sources. Enough context to distinguish one person, place, or event from another. Quick checks are not a substitute for reviewing a whole source. Use text, file, YouTube, medi",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 1 Markers · 0 Sources Room Save Export End Paused Overview No reliable backing 34/100 “City spending rose by twelve percent this year without raising taxes.” CONFIDENCE 34 / 100 WHY THIS VERDICT The imported brief states the spending claim, but the same exchange asks for the source and baseline year. Yentl should keep it unresolved until the actual budget summary and tax record are named. ● missing baseline year ● missing budget document ● tax claim needs source EVIDENCE STATUS No reliable backing found Confirmed search The confirmed pass did not return reliable source backing. That is not the same as sayin",
+      "href": "http://localhost:3000/session/detail/claim/01KTWNJR5YJV17VYG86X252V3G?source=claim",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "City spending rose by twelve percent this year without raising taxes.": true,
+        "No reliable backing": true,
+        "Yentl small DOCX validation brief": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Source Transcript Claims · 1 Markers · 0 Sources Room Save Export End Paused Overview No reliable backing 34/100 “City spending rose by twelve percent this year without raising taxes.” CONFIDENCE 34 / 100 WHY THIS VERDICT The imported brief states the spending claim, but the same exchange asks for the source and baseline year. Yentl should keep it unresolved until the actual budget summary and tax record are named. ● missing baseline year ● missing budget document ● tax claim needs source EVIDENCE STATUS No reliable backing found Confirmed search The confirmed pass did not return reliable source backing. That is not the same as sayin"
+    }
+  ],
+  "failures": [],
+  "chrome_log_tail": [
+    "stderr: DevTools listening on ws://127.0.0.1:57441/devtools/browser/04569168-56ef-4363-800f-eb1465b3f43d",
+    "stderr: [8865:25930016:0611/210142.153227:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT",
+    "stderr: [8865:25930016:0611/210142.284580:ERROR:google_apis/gcm/engine/mcs_client.cc:702]   Error code: 401  Error message: Authentication Failed: wrong_secret",
+    "stderr: [8865:25930016:0611/210142.284593:ERROR:google_apis/gcm/engine/mcs_client.cc:704] Failed to log in to GCM, resetting connection."
+  ]
+}

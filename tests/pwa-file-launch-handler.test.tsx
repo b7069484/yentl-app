@@ -106,6 +106,29 @@ describe("PWAFileLaunchHandler", () => {
     expect(mockReplace).toHaveBeenCalledWith("/session");
   });
 
+  it.each([
+    ["MOV", "phone-recording.mov", "video/quicktime"],
+    ["WebM", "screen-recording.webm", "video/webm"],
+  ])("stages a launched %s video file into the audio/video pane", async (_label, filename, mime) => {
+    render(<PWAFileLaunchHandler />);
+    const file = new File(["video"], filename, { type: mime });
+
+    await act(async () => {
+      await launchConsumer?.({ files: [{ getFile: async () => file }] });
+    });
+
+    expect(mockSetPendingLaunchFile).toHaveBeenCalledWith(file);
+    expect(mockSetSource).toHaveBeenCalledWith({
+      kind: "audio_file",
+      blob_url: "",
+      duration_sec: 0,
+      filename,
+      mime,
+    } satisfies SessionSource);
+    expect(mockSetPrerecordStage).toHaveBeenCalledWith("selected");
+    expect(mockReplace).toHaveBeenCalledWith("/session");
+  });
+
   it("does not overwrite an active session", async () => {
     mockStartedAt = "2026-06-09T04:00:00.000Z";
     render(<PWAFileLaunchHandler />);

@@ -1,0 +1,35 @@
+{
+  "ok": false,
+  "launch_ready": false,
+  "generated_at": "2026-06-12T00:36:11.335Z",
+  "app_origin": "https://yentl.it",
+  "proof_scope": "deploy",
+  "production_like": true,
+  "report_path": "docs/superpowers/validation/large-real-media-canary-proof.json",
+  "manifest_path": "agent-work/validation/large-real-media-canaries.json",
+  "manifest_status": "missing_manifest",
+  "min_bytes": 4194304,
+  "blob_multipart_threshold_bytes": 52428800,
+  "required_media_kinds": [
+    "audio",
+    "video/mp4",
+    "video/quicktime",
+    "video/webm"
+  ],
+  "required_missing": [
+    "audio",
+    "video/mp4",
+    "video/quicktime",
+    "video/webm"
+  ],
+  "case_summary": {
+    "total": 0,
+    "audio": 0,
+    "video_mp4": 0,
+    "video_quicktime": 0,
+    "video_webm": 0
+  },
+  "checks": [],
+  "failures": [],
+  "next_action": "Create agent-work/validation/large-real-media-canaries.json with real phone-recorded audio, MP4, MOV, and WebM cases."
+}

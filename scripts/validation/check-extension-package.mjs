@@ -5,6 +5,7 @@ import { dirname, join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const EXTENSION_DIR = join(ROOT, "extension");
+const STORE_LISTING_PATH = join(ROOT, "docs/superpowers/chrome-web-store-listing.json");
 const PRODUCTION_ORIGIN = "https://yentl.it";
 const LOCAL_ORIGINS = ["http://localhost:3000/*", "http://127.0.0.1:3000/*"];
 const REQUIRED_FILES = [
@@ -20,7 +21,19 @@ const REQUIRED_FILES = [
   "popup.js",
   "README.md",
 ];
+const REQUIRED_ICON_FILES = [
+  ["icons/icon-16.png", 16, 16],
+  ["icons/icon-32.png", 32, 32],
+  ["icons/icon-48.png", 48, 48],
+  ["icons/icon-128.png", 128, 128],
+];
 const REQUIRED_PERMISSIONS = ["activeTab", "offscreen", "scripting", "storage", "tabCapture", "tabs"];
+const REQUIRED_PERMISSION_RATIONALES = [
+  ...REQUIRED_PERMISSIONS,
+  `${PRODUCTION_ORIGIN}/*`,
+  "https://api.deepgram.com/*",
+  "wss://api.deepgram.com",
+];
 const FORBIDDEN_STRINGS = [
   "factify",
   "factify-rose",
@@ -46,12 +59,55 @@ function assertFile(path) {
   }
 }
 
+function assertRootFile(path) {
+  try {
+    const stat = statSync(join(ROOT, path));
+    if (!stat.isFile()) fail(`${path} is not a file`);
+  } catch {
+    fail(`${path} is missing`);
+  }
+}
+
 function parseJson(path) {
   try {
     return JSON.parse(readExtensionFile(path));
   } catch (error) {
     fail(`${path} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
     return null;
+  }
+}
+
+function parseRootJson(path) {
+  try {
+    return JSON.parse(readFileSync(join(ROOT, path), "utf8"));
+  } catch (error) {
+    fail(`${path} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
+function pngDimensions(path) {
+  try {
+    const file = readFileSync(path);
+    if (!file.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+      fail(`${relative(ROOT, path)} must be a PNG file`);
+      return null;
+    }
+    return {
+      width: file.readUInt32BE(16),
+      height: file.readUInt32BE(20),
+    };
+  } catch (error) {
+    fail(`${relative(ROOT, path)} could not be read: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
+function assertPngSize(path, width, height) {
+  const dimensions = pngDimensions(path);
+  if (!dimensions) return;
+  if (dimensions.width !== width || dimensions.height !== height) {
+    fail(`${relative(ROOT, path)} must be ${width}x${height}px, got ${dimensions.width}x${dimensions.height}px`);
   }
 }
 
@@ -85,9 +141,15 @@ function assertParses(path) {
 }
 
 for (const file of REQUIRED_FILES) assertFile(file);
+for (const [file, width, height] of REQUIRED_ICON_FILES) {
+  assertFile(file);
+  assertPngSize(join(EXTENSION_DIR, file), width, height);
+}
+assertRootFile(relative(ROOT, STORE_LISTING_PATH));
 
 const manifest = parseJson("manifest.json");
 const localManifest = parseJson("manifest.local.json");
+const storeListing = parseRootJson(relative(ROOT, STORE_LISTING_PATH));
 
 if (manifest) {
   if (manifest.manifest_version !== 3) fail("manifest.json must be MV3");
@@ -104,8 +166,33 @@ if (manifest) {
   if (manifest.action?.default_popup !== "popup.html") {
     fail("manifest action.default_popup must be popup.html");
   }
+  for (const [size, iconPath] of Object.entries({
+    16: "icons/icon-16.png",
+    32: "icons/icon-32.png",
+    48: "icons/icon-48.png",
+  })) {
+    if (manifest.action?.default_icon?.[size] !== iconPath) {
+      fail(`manifest action.default_icon.${size} must be ${iconPath}`);
+    }
+  }
+  for (const [size, iconPath] of Object.entries({
+    16: "icons/icon-16.png",
+    32: "icons/icon-32.png",
+    48: "icons/icon-48.png",
+    128: "icons/icon-128.png",
+  })) {
+    if (manifest.icons?.[size] !== iconPath) {
+      fail(`manifest icons.${size} must be ${iconPath}`);
+    }
+  }
   if (manifest.options_page !== "options.html") {
     fail("manifest options_page must be options.html");
+  }
+  if (!/^\d+\.\d+\.\d+$/.test(manifest.version ?? "")) {
+    fail("manifest version must use dotted semantic version form");
+  }
+  if ((manifest.description ?? "").length < 40 || (manifest.description ?? "").length > 132) {
+    fail("manifest description must be between 40 and 132 characters for store listing quality");
   }
 
   for (const localOrigin of LOCAL_ORIGINS) {
@@ -134,6 +221,12 @@ if (manifest) {
 
   const contentScriptFiles = manifest.content_scripts?.flatMap((entry) => entry.js ?? []) ?? [];
   for (const js of contentScriptFiles) assertFile(js);
+  const contentScriptMatches = manifest.content_scripts?.flatMap((entry) => entry.matches ?? []) ?? [];
+  for (const localOrigin of LOCAL_ORIGINS) {
+    if (contentScriptMatches.includes(localOrigin)) {
+      fail(`production content_scripts must not include ${localOrigin}`);
+    }
+  }
 }
 
 if (localManifest) {
@@ -141,6 +234,62 @@ if (localManifest) {
     if (!localManifest.host_permissions?.includes(localOrigin)) {
       fail(`manifest.local host_permissions must include ${localOrigin}`);
     }
+  }
+  for (const [size, iconPath] of Object.entries({
+    16: "icons/icon-16.png",
+    32: "icons/icon-32.png",
+    48: "icons/icon-48.png",
+    128: "icons/icon-128.png",
+  })) {
+    if (localManifest.icons?.[size] !== iconPath) {
+      fail(`manifest.local icons.${size} must be ${iconPath}`);
+    }
+  }
+}
+
+if (storeListing) {
+  if (storeListing.name !== manifest?.name) fail("store listing name must match manifest name");
+  if (typeof storeListing.summary !== "string" || storeListing.summary.length < 40 || storeListing.summary.length > 132) {
+    fail("store listing summary must be between 40 and 132 characters");
+  }
+  for (const [field, expected] of Object.entries({
+    home_page_url: PRODUCTION_ORIGIN,
+    privacy_policy_url: `${PRODUCTION_ORIGIN}/privacy`,
+    support_url: `${PRODUCTION_ORIGIN}/contact`,
+  })) {
+    if (storeListing[field] !== expected) fail(`store listing ${field} must be ${expected}`);
+  }
+  for (const permission of REQUIRED_PERMISSION_RATIONALES) {
+    const rationale = storeListing.permission_rationale?.[permission];
+    if (typeof rationale !== "string" || rationale.trim().length < 30) {
+      fail(`store listing permission_rationale must explain ${permission}`);
+    }
+  }
+  if (!Array.isArray(storeListing.screenshots) || storeListing.screenshots.length < 1) {
+    fail("store listing must include at least one screenshot");
+  } else {
+    for (const screenshot of storeListing.screenshots) {
+      if (typeof screenshot.path !== "string") {
+        fail("store listing screenshot path must be a string");
+        continue;
+      }
+      assertRootFile(screenshot.path);
+      assertPngSize(join(ROOT, screenshot.path), screenshot.width, screenshot.height);
+      const storeSized =
+        (screenshot.width === 1280 && screenshot.height === 800) ||
+        (screenshot.width === 640 && screenshot.height === 400);
+      if (!storeSized) fail(`${screenshot.path} must use a 1280x800 or 640x400 store screenshot size`);
+    }
+  }
+  const promo = storeListing.small_promo_tile;
+  if (!promo?.path) {
+    fail("store listing must include a small promotional tile");
+  } else {
+    assertRootFile(promo.path);
+    assertPngSize(join(ROOT, promo.path), 440, 280);
+  }
+  if (!Array.isArray(storeListing.data_use_disclosure) || storeListing.data_use_disclosure.length < 2) {
+    fail("store listing must document data-use disclosures");
   }
 }
 
@@ -174,7 +323,10 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-const checkedFiles = REQUIRED_FILES.map((file) => relative(ROOT, join(EXTENSION_DIR, file)));
+const checkedFiles = [...REQUIRED_FILES, ...REQUIRED_ICON_FILES.map(([file]) => file)].map((file) =>
+  relative(ROOT, join(EXTENSION_DIR, file)),
+);
+checkedFiles.push(relative(ROOT, STORE_LISTING_PATH));
 const report = {
   ok: true,
   generated_at: new Date().toISOString(),
@@ -191,9 +343,27 @@ const report = {
     local_origins_optional_only: LOCAL_ORIGINS.every(
       (origin) => !manifest?.host_permissions?.includes(origin) && manifest?.optional_host_permissions?.includes(origin),
     ),
+    icons_declared: REQUIRED_ICON_FILES.every(([file, width, height]) => {
+      const size = String(width);
+      return manifest?.icons?.[size] === file && pngDimensions(join(EXTENSION_DIR, file))?.height === height;
+    }),
+    listing_metadata_present: Boolean(storeListing?.privacy_policy_url && storeListing?.support_url),
+    screenshot_assets_present: Boolean(storeListing?.screenshots?.length),
+    permission_rationales_complete: REQUIRED_PERMISSION_RATIONALES.every(
+      (permission) => typeof storeListing?.permission_rationale?.[permission] === "string",
+    ),
     popup_controls_documented: popup.includes("status-request") && popup.includes("popup-start-active-tab"),
     readme_install_docs: readme.includes("Local Validation") && readme.includes("Production Install"),
   },
+  store_listing: storeListing
+    ? {
+        path: relative(ROOT, STORE_LISTING_PATH),
+        privacy_policy_url: storeListing.privacy_policy_url,
+        support_url: storeListing.support_url,
+        screenshots: storeListing.screenshots?.map((screenshot) => screenshot.path) ?? [],
+        small_promo_tile: storeListing.small_promo_tile?.path ?? null,
+      }
+    : null,
   checked_files: checkedFiles,
 };
 

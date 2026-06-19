@@ -1,6 +1,7 @@
 "use client";
 import { ulid } from "ulid";
 import { useSession } from "./session-store";
+import type { SpeakerVerdict, SynthesisMetaRead } from "./session-store";
 import { claimContextForVerification, compactContextPairs, sourceContextForPrompt } from "./analysis-context";
 import { hashClaim, RecentSet } from "@/lib/dedup";
 import { documentAnchorLabel } from "@/lib/document-anchor";
@@ -178,12 +179,19 @@ function documentAnchorContextForPrompt(anchor?: DocumentAnchor): string {
   ]);
 }
 
-function transcriptContextLineForPrompt(segment: TranscriptSegment): string {
+export function transcriptContextLineForPrompt(segment: TranscriptSegment): string {
   const speaker = segment.speaker_id !== null ? `[Speaker ${segment.speaker_id}]` : "[Unknown speaker]";
   const anchor = documentAnchorLabelForPrompt(segment.document_anchor);
   const sourceKind = segment.source_audio_kind ? `[${segment.source_audio_kind}]` : "";
   const position = anchor ? `[${anchor}]` : "";
-  return [position, sourceKind, speaker, segment.text].filter(Boolean).join(" ");
+  const attribution = [
+    `attribution=${segment.attribution_status ?? (segment.speaker_id === null ? "not_available" : "confident")}`,
+    `overlap=${segment.overlap_class ?? "none"}`,
+    segment.turn_id ? `turn=${segment.turn_id}` : null,
+    segment.id ? `segment=${segment.id}` : null,
+    segment.attribution_reasons?.length ? `reasons=${segment.attribution_reasons.join(",")}` : null,
+  ].filter(Boolean).join(" ");
+  return [position, sourceKind, speaker, `[${attribution}]`, segment.text].filter(Boolean).join(" ");
 }
 
 function normalizeRms(rms: number): number {
@@ -402,7 +410,7 @@ export async function onFinalUtterance(segment: TranscriptSegment) {
   // Committee amendment (Linguist): thread speaker labels into CONTEXT so the
   // model can distinguish first-person assertion from reported speech.
   const transcriptContext = transcript
-    .filter((s) => s.end >= cutoff)
+    .filter((s) => s.end >= cutoff && s.start <= segment.end)
     .map(transcriptContextLineForPrompt)
     .join("\n");
   const sourceContext = sourceContextForPrompt(source);
@@ -508,7 +516,12 @@ export function abortDevilAdvocate() {
  * document gets a synthesis pass without waiting for the throttle timer.
  * The existing pacer (maybeRunSynthesis) is unaffected.
  */
-export async function runSynthesisNow(): Promise<void> {
+export async function runSynthesisNow(opts?: { scope?: "live_window" | "full_session" }): Promise<void> {
+  if (opts?.scope === "full_session") {
+    const state = useSession.getState();
+    await runSynthesis({ fullTranscript: state.transcript });
+    return;
+  }
   await runSynthesis();
 }
 
@@ -550,6 +563,7 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
       ...(current.per_speaker_verdicts !== undefined
         ? { per_speaker_verdicts: current.per_speaker_verdicts }
         : {}),
+      ...(current.meta_read !== undefined ? { meta_read: current.meta_read } : {}),
       at: Date.now(),
     });
   }
@@ -557,14 +571,22 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
   // Use the explicit full transcript when provided (endSession path),
   // otherwise fall back to the trailing 20-utterance window (pacer path).
   const source = opts?.fullTranscript ?? transcript.slice(-20);
-  const utterances = source.map((s) => ({
-    speaker_id: s.speaker_id,
-    text: s.text,
-    start: s.start,
-    end: s.end,
-    source_audio_kind: s.source_audio_kind,
-    anchor: documentAnchorLabelForPrompt(s.document_anchor),
-  }));
+  const utterances = source.map((s) => {
+    const anchor = documentAnchorLabelForPrompt(s.document_anchor);
+    return {
+      speaker_id: s.speaker_id,
+      text: s.text,
+      start: s.start,
+      end: s.end,
+      ...(s.source_audio_kind !== undefined ? { source_audio_kind: s.source_audio_kind } : {}),
+      ...(anchor !== null ? { anchor } : {}),
+      ...(s.attribution_status !== undefined ? { attribution_status: s.attribution_status } : {}),
+      ...(s.attribution_reasons !== undefined ? { attribution_reasons: s.attribution_reasons } : {}),
+      ...(s.overlap_class !== undefined ? { overlap_class: s.overlap_class } : {}),
+      ...(s.turn_id !== undefined ? { turn_id: s.turn_id } : {}),
+      ...(s.id !== undefined ? { segment_id: s.id } : {}),
+    };
+  });
 
   // Build counters from claims
   let trueCount = 0;
@@ -614,6 +636,11 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
         speakers: speakersPayload,
         claims: claimsPayload,
         source_context: sourceContextForPrompt(state.source),
+        analysis_scope: {
+          mode: opts?.fullTranscript ? "full_session" : "live_window",
+          total_utterances: transcript.length,
+          included_utterances: source.length,
+        },
       }),
       signal,
     });
@@ -634,6 +661,7 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
           ...(prev.per_speaker_verdicts !== undefined
             ? { per_speaker_verdicts: prev.per_speaker_verdicts }
             : {}),
+          ...(prev.meta_read !== undefined ? { meta_read: prev.meta_read } : {}),
         }
         : {}),
       lastError: String(e),
@@ -653,18 +681,25 @@ async function runSynthesis(opts?: { fullTranscript?: TranscriptSegment[] }) {
           ...(prev.per_speaker_verdicts !== undefined
             ? { per_speaker_verdicts: prev.per_speaker_verdicts }
             : {}),
+          ...(prev.meta_read !== undefined ? { meta_read: prev.meta_read } : {}),
         }
         : {}),
     });
     return;
   }
 
-  const data = (await res.json()) as { text: string; headlines: string[]; per_speaker_verdicts?: import("@/lib/client/session-store").SpeakerVerdict[] };
+  const data = (await res.json()) as {
+    text: string;
+    headlines: string[];
+    per_speaker_verdicts?: SpeakerVerdict[];
+    meta_read?: SynthesisMetaRead;
+  };
   useSession.getState().setSynthesis({
     state: "fresh",
     text: data.text,
     headlines: data.headlines,
     ...(data.per_speaker_verdicts !== undefined ? { per_speaker_verdicts: data.per_speaker_verdicts } : {}),
+    ...(data.meta_read !== undefined ? { meta_read: data.meta_read } : {}),
     at: Date.now(),
   });
 }

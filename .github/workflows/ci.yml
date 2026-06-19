@@ -32,6 +32,12 @@ jobs:
       - name: Tests
         run: npx vitest run
 
+      - name: Production build
+        run: npm run build:automation
+
+      - name: Local release smoke
+        run: bash scripts/run-local-launch-smoke.sh
+
       # Clause 12: a11y audit — runs axe-core CLI against / and /session
       # Requires npm run dev to start successfully (needs env vars for deepgram/anthropic).
       # In CI, DEEPGRAM_API_KEY and ANTHROPIC_API_KEY must be set as repo secrets,

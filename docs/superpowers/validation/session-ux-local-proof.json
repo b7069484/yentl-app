@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T07:04:16.633Z",
+  "generated_at": "2026-06-11T20:27:18.278Z",
   "app_origin": "http://localhost:3000",
   "chrome": "/Users/israelbitton/.agent-browser/browsers/chrome-148.0.7778.167/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
-  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-session-ux-proof-sl1JuK/profile",
+  "temp_profile": "/var/folders/y7/rjg40xdj29q391m6txgpjt1r0000gn/T/yentl-session-ux-proof-sIGRAb/profile",
   "routes": [
     {
       "slug": "source-picker",
@@ -22,7 +22,7 @@
     },
     {
       "slug": "validation-claims",
-      "path": "/session?demo=validation&sample=cable_008&view=claims&status=checking",
+      "path": "/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
       "width": 1280
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "slug": "detail-marker-populated",
-      "path": "/session/detail/marker/cable_008-marker-6?demo=validation&sample=cable_008",
+      "path": "/session/detail/marker/cable_008-marker-4?demo=validation&sample=cable_008",
       "width": 1280
     },
     {
@@ -71,6 +71,11 @@
       "width": 390
     },
     {
+      "slug": "save-session-dialog",
+      "path": "/session?demo=validation&sample=cable_008&view=overview",
+      "width": 1280
+    },
+    {
       "slug": "export-report-preview",
       "path": "/session?demo=validation&sample=cable_008&view=overview",
       "width": 1280
@@ -92,7 +97,7 @@
     },
     {
       "slug": "validation-claims-mobile",
-      "path": "/session?demo=validation&sample=cable_008&view=claims&status=checking",
+      "path": "/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
       "width": 390
     },
     {
@@ -137,7 +142,7 @@
         "YENTL OPINION": true,
         "rhetoric markers": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification has not run for every extracted claim, so keep the sour"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sou"
     },
     {
       "slug": "validation-watch",
@@ -154,12 +159,12 @@
       "textMatches": {
         "Watch": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YouTube Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown OmniNews · 0UYx55YNRv0 PLAYER Ready TRANSCRIPT 12 CLAIMS 1 MARKERS 6 CURRENT READ Checking 1 claim in progress. LANGUAGE HEAT High 3 clear markers detected. EVIDENCE STATE Checking 1 claim still being verified"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YouTube Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown OmniNews · 0UYx55YNRv0 PLAYER Ready TRANSCRIPT 10 CLAIMS 1 MARKERS 5 CURRENT READ Supported 1 supported claim and no high-risk claim yet. LANGUAGE HEAT Rising 2 clear markers detected. EVIDENCE STATE Cited 1 c"
     },
     {
       "slug": "validation-claims",
-      "path": "/session?demo=validation&sample=cable_008&view=claims&status=checking",
-      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=claims&status=checking",
+      "path": "/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
+      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
       "width": 1280,
       "failures": [],
       "runtimeIssues": [],
@@ -169,10 +174,10 @@
       "scrollWidth": 1280,
       "overflowX": 0,
       "textMatches": {
-        "Still checking claims": true,
+        "Confirmed claims": true,
         "77,000,000": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Claims Still checking claims Most recent REFINE: Still checking All verdicts All speakers + Add filter 50/100 NO RELIABLE BACKING S Speaker 3 · 00:30 POLITICS STATUS: STILL CHECKING “Over 77,000,000 people voted for Donald Trump in the presidential election.” 0 sources Verdicts are A"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Claims Confirmed claims Most recent REFINE: Confirmed All verdicts All speakers + Add filter 97/100 TRUE S Speaker 3 · 00:28 POLITICS “Donald Trump received over 77,000,000 votes (in the 2024 U.S. presidential election).” 10 sources support (livenowfox.com, cookpolitical.com, cfr.org"
     },
     {
       "slug": "validation-markers",
@@ -190,7 +195,7 @@
         "All markers": true,
         "Loaded Language": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Markers All markers Most recent REFINE: All types All speakers All severities + Add filter False Dilemma Fallacy FALLACY ● SUBTLE “something structural, not emotional” WATCH FOR: 'Either we do X, or Y disaster happens.' Attribution: not available · 00:42 archetype: false_binary Loade"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Markers All markers Most recent REFINE: All types All speakers All severities + Add filter Loaded Language RHETORIC ● SUBTLE “something structural, not emotional” WATCH FOR: Word choice carries strong emotional charge beyond neutral description. Attribution: not available · 00:42 arc"
     },
     {
       "slug": "validation-transcript",
@@ -208,7 +213,7 @@
         "Search transcript": true,
         "Trump": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped Search transcript Findings 8 All Speaker 1 Speaker 2 Speaker 3 12 of 12 lines shown SPEAKER 1 00:00So what do you think is going on with him? SPEAKER 2 00:03Trump is being Trump. What we Oh, really? There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't. What I'm "
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped Search transcript Findings 7 All Speaker 1 Speaker 2 Speaker 3 10 of 10 lines shown SPEAKER 1 00:00So what do you think is going on with him? SPEAKER 2 00:03Trump is being Trump. What we Oh, really? There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't. What I'm "
     },
     {
       "slug": "detail-claim-populated",
@@ -226,12 +231,12 @@
         "77,000,000": true,
         "Learn more": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Overview Checking 50/100 “Over 77,000,000 people voted for Donald Trump in the presidential election.” CONFIDENCE 50 / 100 WHY THIS VERDICT This claim has been extracted but has not completed a source-backed verification pass yet. ● Needs source pass EVIDENCE STATUS Still checking sources In progress Yentl has opened the claim card, but sou"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Overview Supported 97/100 “Donald Trump received over 77,000,000 votes (in the 2024 U.S. presidential election).” CONFIDENCE 97 / 100 WHY THIS VERDICT The claim that Donald Trump received over 77,000,000 votes in the 2024 U.S. presidential election is supported by multiple authoritative sources. The Council on Foreign Relations reports 77,2"
     },
     {
       "slug": "detail-marker-populated",
-      "path": "/session/detail/marker/cable_008-marker-6?demo=validation&sample=cable_008",
-      "url": "http://localhost:3000/session/detail/marker/cable_008-marker-6?demo=validation&sample=cable_008",
+      "path": "/session/detail/marker/cable_008-marker-4?demo=validation&sample=cable_008",
+      "url": "http://localhost:3000/session/detail/marker/cable_008-marker-4?demo=validation&sample=cable_008",
       "width": 1280,
       "failures": [],
       "runtimeIssues": [],
@@ -244,7 +249,7 @@
         "Loaded Language": true,
         "Learn more": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Overview 2 of 6 RHETORIC Subtle Loaded Language “dismiss as confusion or misinformation” WHY FLAGGED Pejoratively characterizes opposing explanations as dismissive, preemptively delegitimizing alternative interpretations of voter behavior. Attribution not available · 00:33 Share Dispute Learn more about Loaded Language →"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Overview 1 of 5 RHETORIC Subtle Loaded Language “something structural, not emotional” WHY FLAGGED The framing contrasts 'structural' (sounding serious and legitimate) against 'emotional' (sounding dismissible), loading the language to validate one interpretation over another without argument. Attribution not available · 00:42 Share Dispute "
     },
     {
       "slug": "learn-marker-populated",
@@ -262,7 +267,7 @@
         "Loaded Language": true,
         "Rhetorical device": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Back RHETORICAL DEVICE · ARCHETYPE: FRAMING Loaded Language DEFINITION No definition available. HOW TO SPOT IT Word choice carries strong emotional charge beyond neutral description. 'Regime' vs 'government', 'slaughter' vs 'killed', 'crusade' vs 'campaign'. Adjectives doing argumentative work: 'reckless', 'brave', 'so-called'. Same facts c"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Back RHETORICAL DEVICE · ARCHETYPE: FRAMING Loaded Language DEFINITION No definition available. HOW TO SPOT IT Word choice carries strong emotional charge beyond neutral description. 'Regime' vs 'government', 'slaughter' vs 'killed', 'crusade' vs 'campaign'. Adjectives doing argumentative work: 'reckless', 'brave', 'so-called'. Same facts c"
     },
     {
       "slug": "learn-claim-populated",
@@ -279,9 +284,9 @@
       "textMatches": {
         "Sources & context": true,
         "77,000,000": true,
-        "No sources attached": true
+        "SOURCE DOSSIER": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Back Sources & context · “Over 77,000,000 people voted for Donald Trump in the preside…” FULL SOURCE LIST · 0 No sources attached to this claim yet. RELATED CLAIMS IN THIS SESSION · POLITICS No related claims on this topic yet."
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Back Sources & context · “Donald Trump received over 77,000,000 votes (in the 2024 U.S…” FULL SOURCE LIST · 10 SOURCE DOSSIER 10 cited STANCE 2 support / 0 contradict / 8 mixed REPUTATION 0 high / 10 mid / 0 low IMAGES 0 validated / 10 missing ALIGNMENT 2 linked / 8 not direct SUPPORTS 2 Popular vote: How Trump’s 77.3 million ranks among pa"
     },
     {
       "slug": "saved-sessions",
@@ -316,7 +321,7 @@
         "ROOM MODE": true,
         "Yentl's Read": true
       },
-      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 12 lines captured CLAIMS 1 checkable items MARKERS 6 rhetoric signals SOURCES 0 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification "
+      "visibleTextStart": "Skip to main content ROOM MODE Validation demo: Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown YouTube · Review Session Library TRANSCRIPT 10 lines captured CLAIMS 1 checkable items MARKERS 5 rhetoric signals SOURCES 10 0 high reputation Yentl's Read Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes"
     },
     {
       "slug": "share-target-text-mobile",
@@ -337,6 +342,25 @@
       "visibleTextStart": "Skip to main content Yentl session workspace Live capture stopped Back to sources Transcript or text Paste or drop a transcript Accepts plain text, Markdown, Word, PDF text layers, SRT, or VTT. Speaker labels like David: are auto-detected before Yentl builds claims and markers from the text. 35 chars · ~9 tokens · 2 non-empty lines Load validation TXT Load validation MD Load validation DOCX Load validation PDF Load validation VTT Load validation SRT Detect speaker labels (e.g. David:) Process tr"
     },
     {
+      "slug": "save-session-dialog",
+      "path": "/session?demo=validation&sample=cable_008&view=overview",
+      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=overview",
+      "width": 1280,
+      "failures": [],
+      "runtimeIssues": [],
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "Save session snapshot": true,
+        "This snapshot includes": true,
+        "account sync": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sou"
+    },
+    {
       "slug": "export-report-preview",
       "path": "/session?demo=validation&sample=cable_008&view=overview",
       "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=overview",
@@ -352,7 +376,7 @@
         "Preview report": true,
         "Export this session": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification has not run for every extracted claim, so keep the sour"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sou"
     },
     {
       "slug": "end-session-dialog",
@@ -371,7 +395,7 @@
         "Keep going": true,
         "Save first": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification has not run for every extracted claim, so keep the sour"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sou"
     },
     {
       "slug": "source-switch-dialog",
@@ -390,7 +414,7 @@
         "Keep current source": true,
         "Choose new source": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 6 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: source verification has not run for every extracted claim, so keep the sour"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sou"
     },
     {
       "slug": "validation-overview-mobile",
@@ -408,12 +432,12 @@
         "Overview": true,
         "YENTL OPINION": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW META-READ Mixed-faith read Yentl sees a split pattern: some direct engagement, some rhetorical or evidentiary pressure. Good-faith: 0 Mixed: 1 Bad-faith risk: 0 Uncertain: 2 Review the speaker cards and source-backed claims before sharing this read. 1 claim loaded 6 marke"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW META-READ Good-faith read Yentl sees mostly topic-engaged participation with limited hostile or evasive framing. Good-faith: 1 Mixed: 0 Bad-faith risk: 0 Uncertain: 2 Keep checking source-backed claims before treating the read as settled. 1 claim loaded 5 markers mapped R"
     },
     {
       "slug": "validation-claims-mobile",
-      "path": "/session?demo=validation&sample=cable_008&view=claims&status=checking",
-      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=claims&status=checking",
+      "path": "/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
+      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=claims&status=confirmed",
       "width": 390,
       "failures": [],
       "runtimeIssues": [],
@@ -423,10 +447,10 @@
       "scrollWidth": 390,
       "overflowX": 0,
       "textMatches": {
-        "Still checking claims": true,
+        "Confirmed claims": true,
         "77,000,000": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Claims Still checking claims Most recent REFINE: Still checking All verdicts All speakers + Add filter 50/100 NO RELIABLE BACKING S Speaker 3 · 00:30 POLITICS STATUS: STILL CHECKING “Over 77,000,000 people voted for Donald Trump in the presidential election.” 0 sources Verdicts are A"
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped ← Overview / Claims Confirmed claims Most recent REFINE: Confirmed All verdicts All speakers + Add filter 97/100 TRUE S Speaker 3 · 00:28 POLITICS “Donald Trump received over 77,000,000 votes (in the 2024 U.S. presidential election).” 10 sources support (livenowfox.com, cookpolitical.com, cfr.org"
     },
     {
       "slug": "validation-transcript-mobile",
@@ -444,13 +468,84 @@
         "Search transcript": true,
         "Trump": true
       },
-      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 0 Markers · 6 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped Search transcript Findings 8 All Speaker 1 Speaker 2 Speaker 3 12 of 12 lines shown SPEAKER 1 00:00So what do you think is going on with him? SPEAKER 2 00:03Trump is being Trump. What we Oh, really? There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't. What I'm "
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped Search transcript Findings 7 All Speaker 1 Speaker 2 Speaker 3 10 of 10 lines shown SPEAKER 1 00:00So what do you think is going on with him? SPEAKER 2 00:03Trump is being Trump. What we Oh, really? There's nothing cognitively wrong there? Well, I'm not saying whether there is or isn't. What I'm "
+    },
+    {
+      "slug": "save-library-restore-roundtrip",
+      "path": "workflow:/session -> /sessions -> /tv?restore -> /session -> /sessions delete",
+      "url": "http://localhost:3000/session?demo=validation&sample=cable_008&view=overview",
+      "width": 1280,
+      "failures": [],
+      "runtimeIssues": [],
+      "saveResult": {
+        "ok": true,
+        "clearResult": "cleared",
+        "dialogOpened": true,
+        "nameApplied": "Proof saved validation session",
+        "savedMessageObserved": true,
+        "text": "Skip to main content yentl Library Paused · 00:00 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · JUST NOW Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the source context visible before sharing conclusions. META-READ Good-faith read Yentl sees mostly topic-engaged participation with limited hostile or evasive framing. Good-faith: 1 Mixed: 0 Bad-faith risk: 0 Uncertain: 2 Keep checking source-backed claims before treating the read as settled. 1 claim loaded 5 markers mapped Replay verdicts included PER-SPEAKER VERDICT Speaker 1 Insufficient data Insuffic"
+      },
+      "seedResult": {
+        "ok": true,
+        "seeded": [
+          "Proof text research session",
+          "Proof long audio session"
+        ]
+      },
+      "libraryControlsResult": {
+        "ok": true,
+        "searchedFor": "research",
+        "filteredSource": "audio_file",
+        "sortedBy": "claims",
+        "restoredFullView": true
+      },
+      "managementResult": {
+        "ok": true,
+        "renamedTo": "Proof renamed validation session",
+        "exportEvents": [
+          {
+            "type": "application/json",
+            "size": 17056
+          }
+        ]
+      },
+      "tvReturnResult": {
+        "ok": true,
+        "href": "http://localhost:3000/session?restore=01KTW5W4B36PSYZBZ6NGWZT11X&view=overview",
+        "path": "/session?restore=01KTW5W4B36PSYZBZ6NGWZT11X&view=overview"
+      },
+      "deleteResult": {
+        "ok": true,
+        "deleteConfirmed": true,
+        "remainingVisible": [
+          "Proof text research session",
+          "Proof long audio session"
+        ]
+      },
+      "clearResult": {
+        "ok": true,
+        "clearConfirmed": true,
+        "emptyStateVisible": true
+      },
+      "libraryTextStart": "Skip to main content yentl / Saved sessions + New session Saved sessions ACCOUNT SYNC Account sync is not configured for this Yentl environment. Local fallback SEARCH SAVES STORAGE All storage Any cloud copy Local + cloud Cloud only Local only SOURCE All sources Audio Text YouTube SORT Newest saved Oldest saved Name A-Z Most claims Longest session Showing 3 of 3 saved sessions. Proof saved validation session YouTube Local just now 2s 1 claims 5 markers 3 speakers 2/10 linked sources Resume Room ",
+      "finalTextStart": "Skip to main content yentl Library Paused · 00:06 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · 6S AGO Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sourc",
+      "title": "Yentl — Live fact-check & rhetoric analysis",
+      "viewportWidth": 1280,
+      "clientWidth": 1280,
+      "scrollWidth": 1280,
+      "overflowX": 0,
+      "textMatches": {
+        "YENTL OPINION": true,
+        "77,000,000": true
+      },
+      "visibleTextStart": "Skip to main content yentl Library Paused · 00:06 Overview Watch Transcript Claims · 1 Markers · 5 Sources Room Save Export End Speaker 1 Speaker 2 Speaker 3 Yentl session workspace Live capture stopped YENTL OPINION · 6S AGO Validation replay for \"Stephen A Smith Shocks The View Panel as Live Debate Turns Into Total Breakdown\" has 1 claim and 5 rhetoric markers mapped to the transcript. Yentl's read is replay-derived: the replay includes bundled verification labels for review, so keep the sourc"
     }
   ],
   "failures": [],
   "chrome_log_tail": [
-    "stderr: DevTools listening on ws://127.0.0.1:57035/devtools/browser/09748236-27e3-4b3b-8df6-eabc17761c1a",
-    "stderr: [98662:17940786:0610/030330.813109:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT",
-    "stderr: [98662:17940786:0610/030357.460407:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
+    "stderr: DevTools listening on ws://127.0.0.1:53136/devtools/browser/ca1ae36a-c559-426b-86d5-0d6ac711cdf3",
+    "stderr: [67847:24341649:0611/162620.003362:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [67847:24341649:0611/162620.010625:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR",
+    "stderr: [67847:24341649:0611/162649.168012:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
   ]
 }

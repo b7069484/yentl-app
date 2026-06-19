@@ -92,6 +92,57 @@ describe("POST /api/article-ingest", () => {
     expect(json.text).not.toContain("privacy policy");
   });
 
+  it("drops embedded cookie, ad, related-story, sharing, and comment chrome from messy articles", async () => {
+    const html = `
+      <!doctype html>
+      <html>
+        <head>
+          <title>Messy Civic Story</title>
+          <meta name="description" content="A story surrounded by page chrome">
+        </head>
+        <body>
+          <main>
+            <article>
+              <div class="cookie-banner">Accept cookies before reading this site.</div>
+              <button class="share-button">Share this story on every platform.</button>
+              <p>The water authority said its filtration project is six months behind schedule, according to meeting records released Tuesday.</p>
+              <div id="ad-unit-top">Sponsored mortgage offers should never become source text.</div>
+              <p>Board members said the delay came after a contractor missed two inspection deadlines and a replacement part failed certification.</p>
+              <section aria-label="Related articles">
+                <h2>Related articles</h2>
+                <p>Read this unrelated story about summer camps.</p>
+              </section>
+              <p>Residents at the hearing asked whether bottled-water costs would be reimbursed while the older system remains in service.</p>
+              <aside class="newsletter-signup">Subscribe to our daily newsletter.</aside>
+              <p>The agency director said the current advisory is precautionary, not a finding that the tap water violates state standards.</p>
+              <div data-testid="comments-panel">
+                <p>Reader comments and moderation notes should not be treated as the article.</p>
+              </div>
+              <p>The final project report is expected before the next budget hearing, where the board will vote on a revised timeline.</p>
+            </article>
+          </main>
+        </body>
+      </html>
+    `;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(htmlResponse(html)));
+
+    const { POST } = await import("@/app/api/article-ingest/route");
+    const res = await POST(makeRequest("https://example.com/messy-civic-story") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(json.title).toBe("Messy Civic Story");
+    expect(json.text).toContain("filtration project is six months behind schedule");
+    expect(json.text).toContain("bottled-water costs would be reimbursed");
+    expect(json.text).toContain("revised timeline");
+    expect(json.text).not.toContain("Accept cookies");
+    expect(json.text).not.toContain("Share this story");
+    expect(json.text).not.toContain("Sponsored mortgage offers");
+    expect(json.text).not.toContain("summer camps");
+    expect(json.text).not.toContain("Subscribe to our daily newsletter");
+    expect(json.text).not.toContain("Reader comments");
+  });
+
   it("caps oversized readable imports for analysis quality", async () => {
     const longText = Array.from({ length: 2600 }, (_, index) => `word${index}`).join(" ");
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(htmlResponse(`<article><p>${longText}</p></article>`)));

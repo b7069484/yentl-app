@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T07:13:20.138Z",
+  "generated_at": "2026-06-19T23:06:53.769Z",
   "production_origin": "https://yentl.it",
   "manifest_version": 3,
   "version": "0.1.0",
@@ -25,8 +25,21 @@
     "mv3": true,
     "production_host_permission": true,
     "local_origins_optional_only": true,
+    "icons_declared": true,
+    "listing_metadata_present": true,
+    "screenshot_assets_present": true,
+    "permission_rationales_complete": true,
     "popup_controls_documented": true,
     "readme_install_docs": true
+  },
+  "store_listing": {
+    "path": "docs/superpowers/chrome-web-store-listing.json",
+    "privacy_policy_url": "https://yentl.it/privacy",
+    "support_url": "https://yentl.it/contact",
+    "screenshots": [
+      "docs/superpowers/validation/screenshots/chrome-store-extension-panel-1280x800.png"
+    ],
+    "small_promo_tile": "docs/superpowers/validation/screenshots/chrome-store-small-promo-440x280.png"
   },
   "checked_files": [
     "extension/manifest.json",
@@ -39,6 +52,11 @@
     "extension/options.js",
     "extension/popup.html",
     "extension/popup.js",
-    "extension/README.md"
+    "extension/README.md",
+    "extension/icons/icon-16.png",
+    "extension/icons/icon-32.png",
+    "extension/icons/icon-48.png",
+    "extension/icons/icon-128.png",
+    "docs/superpowers/chrome-web-store-listing.json"
   ]
 }

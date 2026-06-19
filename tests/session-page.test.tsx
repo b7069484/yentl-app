@@ -354,6 +354,33 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
     });
   });
 
+  it.each([
+    ["MP4", "https://example.com/clip.mp4"],
+    ["MOV", "https://example.com/phone-recording.mov"],
+    ["WebM", "https://example.com/screen-recording.webm"],
+  ])("routes a mobile share target direct %s URL into the media pane", async (_label, url) => {
+    const setSource = vi.fn();
+    const setPrerecordStage = vi.fn();
+    const reset = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams({
+      title: "Shared clip",
+      url,
+    });
+    mockStore(makeStore({ startedAt: null, reset, setSource, setPrerecordStage }));
+
+    render(<SessionPage />);
+
+    await waitFor(() => {
+      expect(reset).toHaveBeenCalledOnce();
+      expect(setSource).toHaveBeenCalledWith({
+        kind: "media_url",
+        url,
+      });
+      expect(setPrerecordStage).toHaveBeenCalledWith("selected");
+      expect(mockReplace).toHaveBeenCalledWith("/session");
+    });
+  });
+
   it("routes an explicit source=youtube URL into the YouTube pane", async () => {
     const setSource = vi.fn();
     const setPrerecordStage = vi.fn();
@@ -421,6 +448,35 @@ describe("SessionPage – SourceRouter state (pre-record)", () => {
       expect(setSource).toHaveBeenCalledWith({
         kind: "media_url",
         url: "https://example.com/episode.mp3",
+      });
+      expect(setPrerecordStage).toHaveBeenCalledWith("selected");
+    });
+  });
+
+  it.each([
+    ["MP4", "https://example.com/clip.mp4"],
+    ["MOV", "https://example.com/phone-recording.mov"],
+    ["WebM", "https://example.com/screen-recording.webm"],
+  ])("routes an explicit source=media-url %s URL into the direct media pane", async (_label, url) => {
+    const setSource = vi.fn();
+    const setPrerecordStage = vi.fn();
+    mockSearchParamsRaw = new URLSearchParams({
+      source: "media-url",
+      url,
+    });
+    mockStore(makeStore({
+      startedAt: null,
+      source: { kind: "mic" },
+      setSource,
+      setPrerecordStage,
+    }));
+
+    render(<SessionPage />);
+
+    await waitFor(() => {
+      expect(setSource).toHaveBeenCalledWith({
+        kind: "media_url",
+        url,
       });
       expect(setPrerecordStage).toHaveBeenCalledWith("selected");
     });

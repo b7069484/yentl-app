@@ -38,6 +38,16 @@ export function toMarkdown(s: Session): string {
     lines.push("");
     lines.push(s.synthesis.text);
     lines.push("");
+    if (s.synthesis.meta_read) {
+      const meta = s.synthesis.meta_read;
+      lines.push("**Meta-read:**");
+      lines.push(`- Posture: ${humanize(meta.posture)}`);
+      lines.push(`- Source health: ${humanize(meta.source_health)}`);
+      lines.push(`- Scope: ${humanize(meta.scope)}`);
+      lines.push(`- Uncertainty: ${meta.uncertainty}`);
+      lines.push(`- Next question: ${meta.key_question}`);
+      lines.push("");
+    }
   }
 
   if (s.devil_advocate) {

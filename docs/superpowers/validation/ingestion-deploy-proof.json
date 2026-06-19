@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-06-10T06:48:39.188Z",
+  "generated_at": "2026-06-10T09:54:11.802Z",
   "app_origin": "https://yentl.it",
   "proof_scope": "deploy",
   "validation_urls": {
@@ -18,14 +18,14 @@
     {
       "name": "consent-gate",
       "ok": true,
-      "elapsed_ms": 161,
+      "elapsed_ms": 126,
       "status": 428,
       "error_code": "SOURCE_CONSENT_REQUIRED"
     },
     {
       "name": "ssrf-block",
       "ok": true,
-      "elapsed_ms": 72,
+      "elapsed_ms": 79,
       "status": 400,
       "error_code": "SSRF_BLOCKED",
       "probe_url": "http://169.254.169.254/latest/meta-data"
@@ -33,14 +33,14 @@
     {
       "name": "article-url-ingest",
       "ok": true,
-      "elapsed_ms": 127,
+      "elapsed_ms": 376,
       "error": "article ingest did not use the local validation fixture",
       "stale_deploy": true
     },
     {
       "name": "external-article-url-ingest",
       "ok": true,
-      "elapsed_ms": 232,
+      "elapsed_ms": 212,
       "status": 200,
       "url": "https://www.w3.org/TR/WCAG22/",
       "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
@@ -51,14 +51,14 @@
     {
       "name": "direct-media-url-ingest",
       "ok": true,
-      "elapsed_ms": 815,
+      "elapsed_ms": 1685,
       "error": "media ingest did not use the local validation fixture",
       "stale_deploy": true
     },
     {
       "name": "external-media-url-ingest",
       "ok": true,
-      "elapsed_ms": 6281,
+      "elapsed_ms": 396,
       "status": 200,
       "url": "https://raw.githubusercontent.com/mozilla/DeepSpeech/master/data/smoke_test/LDC93S1.wav",
       "mime": "audio/wav",
@@ -68,42 +68,42 @@
     {
       "name": "pdf-document-ingest",
       "ok": true,
-      "elapsed_ms": 237,
+      "elapsed_ms": 140,
       "error": "document ingest returned 500: null",
       "stale_deploy": true
     },
     {
       "name": "upload-audio-consent-gate",
       "ok": true,
-      "elapsed_ms": 136,
+      "elapsed_ms": 95,
       "status": 428,
       "error_code": "SOURCE_CONSENT_REQUIRED"
     },
     {
       "name": "upload-audio-token-with-consent",
       "ok": true,
-      "elapsed_ms": 155,
+      "elapsed_ms": 71,
       "status": 200,
       "has_client_token": true
     },
     {
       "name": "document-upload-missing-file",
       "ok": true,
-      "elapsed_ms": 80,
+      "elapsed_ms": 1398,
       "error": "expected 400 for missing document file, got 500: null",
       "stale_deploy": true
     },
     {
       "name": "document-upload-unsupported-type",
       "ok": true,
-      "elapsed_ms": 88,
+      "elapsed_ms": 74,
       "error": "expected 415 for unsupported document upload, got 500: null",
       "stale_deploy": true
     },
     {
       "name": "youtube-caption-ingest",
       "ok": true,
-      "elapsed_ms": 8553,
+      "elapsed_ms": 8311,
       "error": "youtube ingest returned structured error: {\"code\":\"PRIVATE\",\"message\":\"Video is private or login-required\"}",
       "stale_deploy": true
     }
@@ -112,7 +112,7 @@
     {
       "name": "wikimedia-host-403",
       "ok": true,
-      "elapsed_ms": 392,
+      "elapsed_ms": 403,
       "status": 500,
       "error_code": "TRANSCRIBE_FAILED",
       "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",

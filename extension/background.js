@@ -295,10 +295,12 @@ async function getCaptureState() {
 
 async function buildCaptureStatus() {
   const state = await getCaptureState();
+  const offscreenDiagnostics = await readOffscreenDiagnostics();
   if (!state?.running) {
     return {
       running: false,
       message: "No browser tab capture is active.",
+      offscreenDiagnostics,
     };
   }
 
@@ -326,6 +328,7 @@ async function buildCaptureStatus() {
       message: tab?.title
         ? `Yentl is still listening to "${tab.title}". Return to that tab to keep the page and analysis together.`
         : "Yentl is still listening to the original tab. Return to it to keep the page and analysis together.",
+      offscreenDiagnostics,
     };
   }
 
@@ -335,7 +338,22 @@ async function buildCaptureStatus() {
     title: tab?.title,
     url: tab?.url,
     message: "Browser tab capture is active.",
+    offscreenDiagnostics,
   };
+}
+
+async function readOffscreenDiagnostics() {
+  try {
+    return await chrome.runtime.sendMessage({
+      target: "offscreen",
+      type: "diagnostics-request",
+    });
+  } catch (error) {
+    return {
+      active: false,
+      error: error?.message || String(error),
+    };
+  }
 }
 
 async function setCaptureState(state) {

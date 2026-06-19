@@ -75,6 +75,23 @@ describe("SynthesizeResponse schema", () => {
     expect(parsed.per_speaker_verdicts![1].faith_grade).toBe("bad_faith");
   });
 
+  it("accepts valid payload with structured meta_read", () => {
+    const parsed = SynthesizeResponse.parse({
+      text: "A paragraph.",
+      headlines: ["H1", "H2", "H3"],
+      meta_read: {
+        posture: "mixed",
+        source_health: "thin",
+        scope: "live_window",
+        summary: "The conversation-level read is mixed.",
+        uncertainty: "Ownership is still thin.",
+        key_question: "Which claim has the clearest source trail?",
+      },
+    });
+    expect(parsed.meta_read?.posture).toBe("mixed");
+    expect(parsed.meta_read?.source_health).toBe("thin");
+  });
+
   it("accepts valid payload without per_speaker_verdicts (optional)", () => {
     const parsed = SynthesizeResponse.parse({
       text: "A paragraph.",
@@ -197,6 +214,51 @@ describe("POST /api/synthesize route", () => {
     const json = await res.json();
     expect(json.text).toBe("A synthesis paragraph.");
     expect(json.headlines).toHaveLength(3);
+  });
+
+  it("uses the deterministic synthetic panel synthesis fixture without calling the model", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        utterances: [
+          { speaker_id: 0, text: "Welcome to the Yentl validation panel.", start: 0, end: 4 },
+          {
+            speaker_id: 0,
+            text: "The city library budget increased by 12 percent this year, according to the mayor's office.",
+            start: 4,
+            end: 10,
+          },
+          {
+            speaker_id: 1,
+            text: "That number needs context because the technology grant expired.",
+            start: 10,
+            end: 17,
+          },
+        ],
+        counters: { claims: 0, false: 0, partial: 0, true: 0, fallacy: 0, bias: 0, rhetoric: 0 },
+        speakers: [
+          { id: 0, label: "Moderator" },
+          { id: 1, label: "Analyst" },
+        ],
+      }),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toContain("validation panel");
+    expect(json.headlines).toHaveLength(3);
+    expect(json.per_speaker_verdicts).toHaveLength(2);
+    expect(json.meta_read).toMatchObject({
+      scope: "live_window",
+      source_health: "unknown",
+    });
+    expect(mockGenerateText).not.toHaveBeenCalled();
   });
 
   it("forwards per_speaker_verdicts from model output", async () => {
@@ -381,6 +443,54 @@ describe("POST /api/synthesize route", () => {
     expect(json.text).toBe("A synthesis paragraph.");
     // per_speaker_verdicts absent or undefined is fine
     expect(json.per_speaker_verdicts == null || Array.isArray(json.per_speaker_verdicts)).toBe(true);
+    expect(json.meta_read).toMatchObject({
+      posture: "insufficient",
+      source_health: "unknown",
+      scope: "live_window",
+    });
+    expect(json.meta_read.uncertainty).toContain("source context is thin");
+  });
+
+  it("downgrades overconfident meta_read posture and source health when evidence is thin", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    mockGenerateText.mockResolvedValue({
+      output: {
+        text: "A synthesis paragraph.",
+        headlines: ["Insight one", "Insight two", "Insight three"],
+        meta_read: {
+          posture: "good_faith",
+          source_health: "strong",
+          scope: "full_session",
+          summary: "The model tried to overstate evidence strength.",
+          uncertainty: "It still needs source context.",
+          key_question: "What source verifies the claim?",
+        },
+      },
+    });
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...validBody,
+        analysis_scope: {
+          mode: "live_window",
+          total_utterances: 1,
+          included_utterances: 1,
+        },
+      }),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.meta_read).toMatchObject({
+      posture: "insufficient",
+      source_health: "unknown",
+      scope: "live_window",
+    });
   });
 
   it("returns 400 when body is missing required fields", async () => {
@@ -439,6 +549,11 @@ describe("POST /api/synthesize route", () => {
     const json = await res.json();
     expect(json.text).toContain("No rhetoric, bias, or fallacy markers");
     expect(json.headlines).toHaveLength(3);
+    expect(json.meta_read).toMatchObject({
+      posture: "insufficient",
+      source_health: "unknown",
+      scope: "live_window",
+    });
     expect(json.per_speaker_verdicts[0].one_liner).toContain("Local fallback");
   });
 
@@ -463,6 +578,32 @@ describe("POST /api/synthesize route", () => {
     expect(json.text).toBe("Recovered read.");
     expect(json.headlines).toEqual(["H1", "H2", "H3"]);
     expect(json.per_speaker_verdicts[0].label).toBe("Alice");
+  });
+
+  it("recovers synthesis JSON when tool markup cuts off the final object brace", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const wrappedJson = JSON.stringify({
+      '{"text":"Recovered live read.","headlines":["No fallacies attributed yet.","No verdicted claims yet.","Opening remarks only."]</parameter>\\n</invoke>': "",
+    });
+    mockGenerateText.mockRejectedValue(Object.assign(new Error("No object generated"), { text: wrappedJson }));
+
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await POST(req as never);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.text).toBe("Recovered live read.");
+    expect(json.headlines).toEqual([
+      "No fallacies attributed yet.",
+      "No verdicted claims yet.",
+      "Opening remarks only.",
+    ]);
   });
 
   it("calls generateText with top-level system param (not messages[])", async () => {

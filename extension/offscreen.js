@@ -22,9 +22,15 @@ const SOURCE_CONSENT_HEADER = "x-yentl-source-consent";
 const SOURCE_CONSENT_VALUE = "source-analysis-v1";
 
 let currentCapture = null;
+let lastCaptureDiagnostics = null;
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (!message || message.target !== "offscreen") return false;
+
+  if (message.type === "diagnostics-request") {
+    sendResponse(buildCaptureDiagnostics());
+    return false;
+  }
 
   if (message.type === "start-capture") {
     void startCapture(message);
@@ -47,17 +53,47 @@ async function startCapture(message) {
     audioContext: null,
     controller,
     mediaRecorder: null,
+    mediaRecorderMimeType: null,
+    mediaRecorderStartedAt: null,
     mediaStream: null,
     noTranscriptTimer: null,
     refreshTimer: null,
     sawTranscript: false,
     sessionId: message.sessionId,
     socket: null,
+    socketErrorCount: 0,
+    socketOpenAt: null,
+    socketOpeningAt: null,
+    socketResultCount: 0,
+    socketState: "idle",
     pendingChunks: [],
     pendingBytes: 0,
     sourceNode: null,
+    startedAt: Date.now(),
+    stoppedAt: null,
+    streamOpenedAt: null,
+    tokenExpiresAtMs: null,
+    tokenReceivedAt: null,
+    tokenRequestedAt: null,
+    chunksBuffered: 0,
+    chunksDropped: 0,
+    chunksObserved: 0,
+    chunksSent: 0,
+    bytesBuffered: 0,
+    bytesDropped: 0,
+    bytesObserved: 0,
+    bytesSent: 0,
+    emptyTranscriptResults: 0,
+    finalTranscriptCount: 0,
+    interimTranscriptCount: 0,
+    lastStatusAt: null,
+    lastTranscriptAt: null,
+    lastTranscriptPreview: null,
+    noTranscriptNoticeSentAt: null,
+    transcriptChars: 0,
   };
   currentCapture = capture;
+  lastCaptureDiagnostics = null;
 
   try {
     capture.mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -69,6 +105,7 @@ async function startCapture(message) {
       },
       video: false,
     });
+    capture.streamOpenedAt = Date.now();
 
     preserveTabAudio(capture);
     startMediaRecorder(capture);
@@ -79,7 +116,11 @@ async function startCapture(message) {
         "Capturing tab audio now. Yentl is connecting live transcription and will process buffered audio as soon as it is ready.",
     });
 
+    capture.tokenRequestedAt = Date.now();
     const token = await fetchTokenWithRetry(capture.appOrigin, controller.signal);
+    capture.tokenReceivedAt = Date.now();
+    capture.tokenExpiresAtMs = token.expiresAtMs;
+    capture.socketOpeningAt = Date.now();
     capture.socket = await openDeepgramSocket(token.key, controller.signal, capture);
     flushPendingChunks(capture);
     scheduleTokenRefresh(capture, token.expiresAtMs);
@@ -92,6 +133,7 @@ async function startCapture(message) {
     scheduleNoTranscriptNotice(capture);
   } catch (error) {
     const messageText = error instanceof Error ? error.message : String(error);
+    capture.lastError = messageText;
     sendBackground("capture-error", { message: messageText });
     await stopCapture({ notify: false });
   }
@@ -102,6 +144,7 @@ async function stopCapture({ notify }) {
   currentCapture = null;
   if (!capture) return;
 
+  capture.stoppedAt = Date.now();
   capture.controller.abort();
   if (capture.refreshTimer) clearTimeout(capture.refreshTimer);
   if (capture.noTranscriptTimer) clearTimeout(capture.noTranscriptTimer);
@@ -134,25 +177,33 @@ async function stopCapture({ notify }) {
     // noop
   }
 
+  lastCaptureDiagnostics = summarizeCaptureDiagnostics(capture);
+
   if (notify) {
     sendBackground("capture-stop");
   }
 }
 
 function startMediaRecorder(capture) {
+  const mimeType = pickMimeType();
+  capture.mediaRecorderMimeType = mimeType;
   capture.mediaRecorder = new MediaRecorder(capture.mediaStream, {
-    mimeType: pickMimeType(),
+    mimeType,
   });
   capture.mediaRecorder.ondataavailable = (event) => {
     if (!event.data || event.data.size === 0) return;
+    capture.chunksObserved += 1;
+    capture.bytesObserved += event.data.size;
     sendChunk(capture, event.data);
   };
   capture.mediaRecorder.onerror = (event) => {
+    capture.lastError = event.error?.message ?? "MediaRecorder failed.";
     sendBackground("capture-error", {
       message: event.error?.message ?? "MediaRecorder failed.",
     });
   };
   capture.mediaRecorder.start(CHUNK_MS);
+  capture.mediaRecorderStartedAt = Date.now();
 }
 
 function preserveTabAudio(capture) {
@@ -225,11 +276,15 @@ function openDeepgramSocket(key, signal, capture) {
 
     socket.onopen = () => {
       signal.removeEventListener("abort", onAbort);
+      capture.socketOpenAt = Date.now();
+      capture.socketState = "open";
       attachSocketHandlers(socket, capture);
       resolve(socket);
     };
     socket.onerror = () => {
       signal.removeEventListener("abort", onAbort);
+      capture.socketErrorCount += 1;
+      capture.socketState = "error";
       reject(new Error("Deepgram WebSocket failed to open."));
     };
   });
@@ -240,16 +295,24 @@ function attachSocketHandlers(socket, capture) {
     try {
       const message = JSON.parse(event.data);
       if (message.type !== "Results") return;
+      capture.socketResultCount += 1;
       const alternative = message.channel?.alternatives?.[0];
       const text = alternative?.transcript;
-      if (!text) return;
+      if (!text) {
+        capture.emptyTranscriptResults += 1;
+        return;
+      }
       capture.sawTranscript = true;
+      capture.lastTranscriptAt = Date.now();
+      capture.lastTranscriptPreview = text.slice(0, 240);
+      capture.transcriptChars += text.length;
       if (capture.noTranscriptTimer) {
         clearTimeout(capture.noTranscriptTimer);
         capture.noTranscriptTimer = null;
       }
 
       if (message.is_final) {
+        capture.finalTranscriptCount += 1;
         const start = typeof message.start === "number" ? message.start : 0;
         const duration = typeof message.duration === "number" ? message.duration : 0;
         sendBackground("transcript-final", {
@@ -259,15 +322,19 @@ function attachSocketHandlers(socket, capture) {
           speaker_id: dominantSpeaker(alternative.words ?? []),
         });
       } else {
+        capture.interimTranscriptCount += 1;
         sendBackground("transcript-interim", { text });
       }
     } catch (error) {
       const messageText = error instanceof Error ? error.message : String(error);
+      capture.lastError = messageText;
       sendBackground("capture-error", { message: messageText });
     }
   };
 
   socket.onerror = () => {
+    capture.socketErrorCount += 1;
+    capture.socketState = "error";
     sendBackground("capture-error", { message: "Deepgram WebSocket error." });
   };
 }
@@ -312,6 +379,7 @@ function scheduleNoTranscriptNotice(capture) {
   capture.noTranscriptTimer = setTimeout(() => {
     if (currentCapture !== capture || capture.controller.signal.aborted) return;
     if (capture.sawTranscript) return;
+    capture.noTranscriptNoticeSentAt = Date.now();
     sendBackground("capture-status", {
       running: true,
       phase: "no_audio_detected",
@@ -327,6 +395,8 @@ function sendChunk(capture, blob) {
     const socket = capture.socket;
     if (socket?.readyState === WebSocket.OPEN) {
       socket.send(buffer);
+      capture.chunksSent += 1;
+      capture.bytesSent += buffer.byteLength;
       return;
     }
     bufferChunk(capture, buffer);
@@ -336,6 +406,8 @@ function sendChunk(capture, blob) {
 function bufferChunk(capture, buffer) {
   capture.pendingChunks.push(buffer);
   capture.pendingBytes += buffer.byteLength;
+  capture.chunksBuffered += 1;
+  capture.bytesBuffered += buffer.byteLength;
 
   while (
     capture.pendingChunks.length > MAX_BUFFERED_CHUNKS ||
@@ -343,6 +415,8 @@ function bufferChunk(capture, buffer) {
   ) {
     const dropped = capture.pendingChunks.shift();
     capture.pendingBytes -= dropped?.byteLength ?? 0;
+    capture.chunksDropped += 1;
+    capture.bytesDropped += dropped?.byteLength ?? 0;
   }
 }
 
@@ -352,9 +426,72 @@ function flushPendingChunks(capture) {
 
   for (const buffer of capture.pendingChunks) {
     socket.send(buffer);
+    capture.chunksSent += 1;
+    capture.bytesSent += buffer.byteLength;
   }
   capture.pendingChunks = [];
   capture.pendingBytes = 0;
+}
+
+function buildCaptureDiagnostics() {
+  if (currentCapture) return summarizeCaptureDiagnostics(currentCapture);
+  return lastCaptureDiagnostics ?? {
+    active: false,
+    message: "No offscreen capture has run in this document.",
+  };
+}
+
+function summarizeCaptureDiagnostics(capture) {
+  const tracks = capture.mediaStream?.getTracks?.() ?? [];
+  const socket = capture.socket;
+  return {
+    active: currentCapture === capture,
+    appOrigin: capture.appOrigin,
+    audioContextState: capture.audioContext?.state ?? null,
+    bytesBuffered: capture.bytesBuffered,
+    bytesDropped: capture.bytesDropped,
+    bytesObserved: capture.bytesObserved,
+    bytesSent: capture.bytesSent,
+    chunksBuffered: capture.chunksBuffered,
+    chunksDropped: capture.chunksDropped,
+    chunksObserved: capture.chunksObserved,
+    chunksPending: capture.pendingChunks.length,
+    chunksSent: capture.chunksSent,
+    emptyTranscriptResults: capture.emptyTranscriptResults,
+    finalTranscriptCount: capture.finalTranscriptCount,
+    interimTranscriptCount: capture.interimTranscriptCount,
+    lastError: capture.lastError ?? null,
+    lastTranscriptAt: capture.lastTranscriptAt,
+    lastTranscriptPreview: capture.lastTranscriptPreview,
+    mediaRecorderMimeType: capture.mediaRecorderMimeType,
+    mediaRecorderStartedAt: capture.mediaRecorderStartedAt,
+    mediaRecorderState: capture.mediaRecorder?.state ?? null,
+    noTranscriptNoticeSentAt: capture.noTranscriptNoticeSentAt,
+    pendingBytes: capture.pendingBytes,
+    sawTranscript: capture.sawTranscript,
+    sessionId: capture.sessionId,
+    socketErrorCount: capture.socketErrorCount,
+    socketOpenAt: capture.socketOpenAt,
+    socketOpeningAt: capture.socketOpeningAt,
+    socketReadyState: typeof socket?.readyState === "number" ? socket.readyState : null,
+    socketResultCount: capture.socketResultCount,
+    socketState: capture.socketState,
+    startedAt: capture.startedAt,
+    stoppedAt: capture.stoppedAt,
+    streamOpenedAt: capture.streamOpenedAt,
+    tokenExpiresAtMs: capture.tokenExpiresAtMs,
+    tokenReceivedAt: capture.tokenReceivedAt,
+    tokenRequestedAt: capture.tokenRequestedAt,
+    trackStates: tracks.map((track) => ({
+      enabled: track.enabled,
+      id: track.id,
+      kind: track.kind,
+      label: track.label,
+      muted: track.muted,
+      readyState: track.readyState,
+    })),
+    transcriptChars: capture.transcriptChars,
+  };
 }
 
 function dominantSpeaker(words) {

@@ -2,9 +2,15 @@ import { SignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowRight, FileText, Save, ShieldCheck } from "lucide-react";
 
+import { readAuthReturnTarget, type AuthSearchParams } from "@/lib/auth-return";
+
 const clerkConfigured = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
-function SignUpContextPanel() {
+type AuthPageProps = {
+  searchParams?: Promise<AuthSearchParams>;
+};
+
+function SignUpContextPanel({ returnHref }: { returnHref: string | null }) {
   return (
     <aside className="rounded-lg border border-line bg-paper p-6 shadow-sm">
       <p className="inline-flex items-center gap-2 rounded-lg border border-line bg-cream px-3 py-2 text-xs font-semibold uppercase text-ink-3">
@@ -38,10 +44,10 @@ function SignUpContextPanel() {
       </div>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
-          href="/demo"
+          href={returnHref ?? "/demo"}
           className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-teal px-4 text-sm font-semibold text-white hover:bg-teal-2"
         >
-          Try guest demo <ArrowRight className="h-4 w-4" aria-hidden />
+          {returnHref ? "Return as guest" : "Try guest demo"} <ArrowRight className="h-4 w-4" aria-hidden />
         </Link>
         <Link
           href="/privacy"
@@ -54,7 +60,31 @@ function SignUpContextPanel() {
   );
 }
 
-export default function SignUpPage() {
+function AuthReturnNotice({ returnHref, unsafeIgnored }: { returnHref: string | null; unsafeIgnored: boolean }) {
+  if (returnHref) {
+    return (
+      <p className="mb-5 rounded-lg border border-line bg-cream px-4 py-3 text-sm leading-6 text-ink-3">
+        Return to your Yentl flow after this account step. Your source, saved
+        session, or share context will stay attached.
+      </p>
+    );
+  }
+
+  if (unsafeIgnored) {
+    return (
+      <p className="mb-5 rounded-lg border border-amber/40 bg-cream px-4 py-3 text-sm leading-6 text-ink-3">
+        Unsafe return target ignored. Start from a fresh Yentl workspace
+        instead.
+      </p>
+    );
+  }
+
+  return null;
+}
+
+export default async function SignUpPage({ searchParams }: AuthPageProps) {
+  const returnTarget = readAuthReturnTarget(await searchParams);
+
   if (!clerkConfigured) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream px-4 py-12">
@@ -66,12 +96,13 @@ export default function SignUpPage() {
             Yentl v1 is guest-first. Saved sessions stay local to this browser
             unless you export them.
           </p>
+          <AuthReturnNotice returnHref={returnTarget.href} unsafeIgnored={returnTarget.unsafeIgnored} />
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/session"
+              href={returnTarget.href ?? "/session"}
               className="inline-flex min-h-11 items-center rounded-lg bg-teal px-4 text-sm font-semibold text-white hover:bg-teal-2"
             >
-              Start checking
+              {returnTarget.href ? "Return to flow" : "Start checking"}
             </Link>
             <Link
               href="/demo"
@@ -94,7 +125,7 @@ export default function SignUpPage() {
   return (
     <main className="min-h-screen bg-cream px-4 py-12">
       <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[0.9fr_1fr] lg:items-center">
-        <SignUpContextPanel />
+        <SignUpContextPanel returnHref={returnTarget.href} />
         <section className="flex justify-center rounded-lg border border-line bg-paper p-6 shadow-sm" aria-label="Sign up form">
           <SignUp />
         </section>

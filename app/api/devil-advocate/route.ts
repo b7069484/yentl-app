@@ -8,6 +8,7 @@ import {
   userPrompt,
 } from "@/lib/prompts/devil-advocate";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { documentValidationDevilAdvocateFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
 export const runtime = "nodejs";
@@ -45,6 +46,9 @@ export async function POST(req: NextRequest) {
   if (documentValidationFixture) {
     return NextResponse.json(documentValidationFixture);
   }
+
+  const authError = await requirePaidLiveAccess(req, "model:devil-advocate");
+  if (authError) return authError;
 
   try {
     const { text } = await generateText({

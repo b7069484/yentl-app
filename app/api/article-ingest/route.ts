@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
-import { assertSafeUrl } from "@/lib/server/ssrf-guard";
+import { assertSafeUrl, fetchWithSsrfGuard } from "@/lib/server/ssrf-guard";
 import {
   isSyntheticArticleValidationUrl,
   loadSyntheticArticleValidationFixture,
@@ -69,6 +69,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<ArticleIngest
   try {
     fetched = await fetchReadablePage(initialUrl);
   } catch (error) {
+    const err = error as Error & { code?: string };
+    if (err.code === "SSRF_BLOCKED" || err.code === "INVALID_URL") {
+      return jsonError(err.code, err.message, 400);
+    }
     const message = error instanceof Error ? error.message : "Could not fetch this page.";
     return jsonError("FETCH_FAILED", message, 400);
   }
@@ -123,33 +127,20 @@ type FetchedPage = {
   validation_fixture_id?: string;
 };
 
-async function fetchReadablePage(url: string, redirectCount = 0): Promise<FetchedPage> {
-  if (redirectCount > MAX_REDIRECTS) {
-    throw new Error("Too many redirects while fetching this page.");
-  }
-
+async function fetchReadablePage(url: string): Promise<FetchedPage> {
   const validationFixture = await loadSyntheticArticleValidationFixture(url);
   if (validationFixture) return validationFixture;
 
-  await assertSafeUrl(url);
-
-  const response = await fetch(url, {
+  const response = await fetchWithSsrfGuard(url, {
     method: "GET",
-    redirect: "manual",
-    cache: "no-store",
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    timeoutMs: FETCH_TIMEOUT_MS,
+    maxBytes: MAX_HTML_BYTES + 1,
+    maxRedirects: MAX_REDIRECTS,
     headers: {
       Accept: "text/html,text/plain;q=0.9,*/*;q=0.1",
       "User-Agent": "Yentl article importer/1.0",
     },
   });
-
-  if (response.status >= 300 && response.status < 400) {
-    const location = response.headers.get("location");
-    if (!location) throw new Error("The page redirected without a location.");
-    const nextUrl = new URL(location, url).toString();
-    return fetchReadablePage(nextUrl, redirectCount + 1);
-  }
 
   if (!response.ok) {
     throw new Error(`The page returned HTTP ${response.status}.`);
@@ -162,7 +153,7 @@ async function fetchReadablePage(url: string, redirectCount = 0): Promise<Fetche
 
   const contentType = (response.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
   const html = await response.text();
-  return { html, finalUrl: response.url || url, contentType };
+  return { html, finalUrl: response.finalUrl || url, contentType };
 }
 
 function isReadableContentType(contentType: string) {

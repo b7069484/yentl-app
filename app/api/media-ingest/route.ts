@@ -4,6 +4,7 @@ import { checkMediaMime } from "@/lib/server/media-mime";
 import { transcribeUrl } from "@/lib/server/deepgram-batch";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import {
   syntheticPanelTranscriptionFixture,
   syntheticPanelValidationMedia,
@@ -55,6 +56,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     });
   }
 
+  const authError = await requirePaidLiveAccess(req, "media-ingest");
+  if (authError) return authError;
+
   // 2. SSRF guard
   try {
     await assertSafeUrl(trimmedUrl);
@@ -65,7 +69,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   // 3. MIME check
-  const mime = await checkMediaMime(trimmedUrl);
+  let mime: Awaited<ReturnType<typeof checkMediaMime>>;
+  try {
+    mime = await checkMediaMime(trimmedUrl);
+  } catch (e: unknown) {
+    const err = e as Error & { code?: string };
+    const code = err.code === "SSRF_BLOCKED" ? "SSRF_BLOCKED" : "INVALID_URL";
+    return errorResponse(code, err.message, 400);
+  }
   if (!mime.ok) {
     return errorResponse(
       "UNSUPPORTED_MEDIA",

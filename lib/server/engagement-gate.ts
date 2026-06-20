@@ -7,7 +7,7 @@ import {
 } from "@/lib/prompts/claim-scope";
 import { aiGenerateText as generateText } from "@/lib/server/ai-call";
 import { opus } from "@/lib/server/anthropic";
-import { emitSecurityEvent, routeForRequest } from "@/lib/server/security-events";
+import { emitSecurityEvent, recordSecurityEvent, routeForRequest } from "@/lib/server/security-events";
 
 type GateDecision = "engage" | "engage_cautiously" | "decline" | "refuse";
 
@@ -118,13 +118,12 @@ export async function classifyEngagementGate(
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     return {
-      decision: "refuse",
-      code: "CLAIM_SCOPE_UNAVAILABLE",
-      status: 503,
-      message: "Yentl could not complete the claim-scope safety check. Please try again shortly.",
-      category: "unsafe_or_disallowed",
+      decision: "engage_cautiously",
+      message:
+        "Yentl could not complete the claim-scope safety classifier, so this claim is proceeding after deterministic hard-block checks only.",
+      category: "needs_context",
       classifier: "model_unavailable",
-      // Keep raw error details out of the response; observability logs the route-level failure.
+      // Deliberate fail-soft mode: deterministic private-info/opinion blocks above still hold.
       reason,
     };
   }
@@ -141,11 +140,17 @@ export async function enforceEngagementGate(
   const route = request ? routeForRequest(request) : "unknown";
 
   if (result.decision === "engage_cautiously") {
-    emitSecurityEvent("claim_scope_engage_cautiously", {
+    const fields = {
       route,
       category: result.category,
       classifier: result.classifier,
-    }, "info");
+      reason: result.reason?.slice(0, 180),
+    };
+    if (result.classifier === "model_unavailable") {
+      await recordSecurityEvent("claim_scope_classifier_unavailable", fields, "error");
+    } else {
+      emitSecurityEvent("claim_scope_engage_cautiously", fields, "info");
+    }
     return null;
   }
 

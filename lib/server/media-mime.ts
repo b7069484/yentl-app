@@ -1,3 +1,5 @@
+import { fetchWithSsrfGuard } from "@/lib/server/ssrf-guard";
+
 const FETCH_TIMEOUT_MS = 5_000;
 
 const ALLOWED_EXTENSIONS = new Set([
@@ -47,16 +49,18 @@ export interface MimeCheckResult {
  * Returns `{ ok: true, mime }` or `{ ok: false, reason }`.
  */
 export async function checkMediaMime(url: string): Promise<MimeCheckResult> {
-  let response: Response;
+  let response: Awaited<ReturnType<typeof fetchWithSsrfGuard>>;
   try {
-    response = await fetch(url, {
+    response = await fetchWithSsrfGuard(url, {
       method: "HEAD",
-      redirect: "follow",
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      timeoutMs: FETCH_TIMEOUT_MS,
     });
   } catch (e: unknown) {
-    if ((e as Error).name === "AbortError" || (e as Error).name === "TimeoutError") {
+    if ((e as Error).message.includes("timed out")) {
       return { ok: false, reason: "Timeout" };
+    }
+    if ((e as { code?: string }).code === "SSRF_BLOCKED" || (e as { code?: string }).code === "INVALID_URL") {
+      throw e;
     }
     return { ok: false, reason: "Network error" };
   }

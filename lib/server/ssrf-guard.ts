@@ -1,4 +1,6 @@
 import dns from "node:dns/promises";
+import http from "node:http";
+import https from "node:https";
 import net from "node:net";
 
 /** Returns true if the URL uses the http or https scheme; false otherwise. */
@@ -63,6 +65,29 @@ interface SsrfError extends Error {
   code: "SSRF_BLOCKED" | "INVALID_URL";
 }
 
+export type SafeUrlResolution = {
+  url: URL;
+  address: string;
+  family: number;
+};
+
+export type SafeFetchOptions = {
+  method?: "GET" | "HEAD";
+  headers?: Record<string, string>;
+  timeoutMs?: number;
+  maxBytes?: number;
+  maxRedirects?: number;
+};
+
+export type SafeFetchResponse = {
+  status: number;
+  ok: boolean;
+  headers: Headers;
+  finalUrl: string;
+  text: () => Promise<string>;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+};
+
 function makeError(
   code: "SSRF_BLOCKED" | "INVALID_URL",
   message: string,
@@ -89,6 +114,10 @@ function makeError(
  * attack surface (no fetch-back, no auth cookies forwarded).
  */
 export async function assertSafeUrl(url: string): Promise<void> {
+  await resolveSafeUrl(url);
+}
+
+export async function resolveSafeUrl(url: string): Promise<SafeUrlResolution> {
   // 1. Parse and validate
   let parsed: URL;
   try {
@@ -121,7 +150,7 @@ export async function assertSafeUrl(url: string): Promise<void> {
         `URL resolved to a private address: ${bareHost}`,
       );
     }
-    return;
+    return { url: parsed, address: bareHost, family: net.isIP(bareHost) };
   }
 
   // 3. Resolve via DNS and check every returned address
@@ -144,6 +173,124 @@ export async function assertSafeUrl(url: string): Promise<void> {
       );
     }
   }
+
+  return { url: parsed, address: addrs[0].address, family: addrs[0].family };
+}
+
+export async function fetchWithSsrfGuard(
+  url: string,
+  options: SafeFetchOptions = {},
+): Promise<SafeFetchResponse> {
+  const maxRedirects = options.maxRedirects ?? 4;
+  return fetchWithSsrfGuardInner(url, options, maxRedirects, 0);
+}
+
+async function fetchWithSsrfGuardInner(
+  url: string,
+  options: SafeFetchOptions,
+  maxRedirects: number,
+  redirectCount: number,
+): Promise<SafeFetchResponse> {
+  if (redirectCount > maxRedirects) {
+    throw makeError("SSRF_BLOCKED", "Too many redirects while fetching this URL.");
+  }
+
+  const resolved = await resolveSafeUrl(url);
+  const response = await requestPinnedUrl(resolved, options);
+
+  if (response.status >= 300 && response.status < 400) {
+    const location = response.headers.get("location");
+    if (!location) return response;
+    const nextUrl = new URL(location, resolved.url).toString();
+    return fetchWithSsrfGuardInner(nextUrl, options, maxRedirects, redirectCount + 1);
+  }
+
+  return response;
+}
+
+function requestPinnedUrl(
+  resolved: SafeUrlResolution,
+  options: SafeFetchOptions,
+): Promise<SafeFetchResponse> {
+  const url = resolved.url;
+  const method = options.method ?? "GET";
+  const timeoutMs = options.timeoutMs ?? 10_000;
+  const maxBytes = options.maxBytes ?? 2 * 1024 * 1024;
+  const transport = url.protocol === "https:" ? https : http;
+  const port = url.port ? Number(url.port) : url.protocol === "https:" ? 443 : 80;
+  const path = `${url.pathname || "/"}${url.search}`;
+  const headers = {
+    ...(options.headers ?? {}),
+    Host: url.host,
+  };
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finishReject = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      reject(error);
+    };
+    const finishResolve = (response: SafeFetchResponse) => {
+      if (settled) return;
+      settled = true;
+      resolve(response);
+    };
+
+    const req = transport.request(
+      {
+        protocol: url.protocol,
+        host: resolved.address,
+        port,
+        method,
+        path,
+        headers,
+        servername: net.isIP(url.hostname) ? undefined : url.hostname,
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        let size = 0;
+        const status = res.statusCode ?? 0;
+        const responseHeaders = new Headers();
+        for (const [key, value] of Object.entries(res.headers)) {
+          if (Array.isArray(value)) {
+            responseHeaders.set(key, value.join(", "));
+          } else if (value !== undefined) {
+            responseHeaders.set(key, String(value));
+          }
+        }
+
+        res.on("data", (chunk: Buffer) => {
+          size += chunk.length;
+          if (size > maxBytes) {
+            req.destroy();
+            finishReject(new Error("Response body exceeded the configured size limit."));
+            return;
+          }
+          chunks.push(chunk);
+        });
+        res.on("end", () => {
+          const body = Buffer.concat(chunks);
+          finishResolve({
+            status,
+            ok: status >= 200 && status < 300,
+            headers: responseHeaders,
+            finalUrl: url.toString(),
+            text: async () => body.toString("utf8"),
+            arrayBuffer: async () =>
+              body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength),
+          });
+        });
+      },
+    );
+
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      finishReject(new Error("Request timed out while fetching this URL."));
+    });
+    req.on("error", finishReject);
+    req.end();
+  });
 }
 
 /**

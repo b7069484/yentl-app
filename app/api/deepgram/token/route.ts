@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { mintToken } from "@/lib/server/deepgram";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 
 export const runtime = "nodejs";
 
@@ -68,6 +69,9 @@ export async function POST(req: Request) {
 
   const consentError = requireSourceAnalysisConsent(req);
   if (consentError) return withCors(req, consentError);
+
+  const authError = await requirePaidLiveAccess(req, "deepgram-token");
+  if (authError) return withCors(req, authError);
 
   try {
     const token = await mintToken();

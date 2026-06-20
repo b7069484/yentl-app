@@ -9,6 +9,8 @@ import {
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
 import { emitSecurityEvent } from "@/lib/server/security-events";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
+import { assertSafeUrl } from "@/lib/server/ssrf-guard";
 import {
   syntheticPanelValidationFile,
   syntheticPanelValidationMedia,
@@ -130,6 +132,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json(syntheticPanelTranscriptionFixture(validationFile.id));
     }
 
+    const authError = await requirePaidLiveAccess(req, "transcription-file");
+    if (authError) return authError;
+
     // Browsers occasionally omit the file's Content-Type — fall back to a sane
     // default so Deepgram doesn't reject the upload with a vague error.
     const mime = file.type || "audio/mpeg";
@@ -208,12 +213,22 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json(syntheticPanelTranscriptionFixture(validationMedia.id));
     }
 
+    const authError = await requirePaidLiveAccess(req, "transcription-url");
+    if (authError) return authError;
+
     try {
+      if (!isVercelBlobUrl(targetUrl)) {
+        await assertSafeUrl(targetUrl);
+      }
       const result = isVercelBlobUrl(targetUrl)
         ? await transcribePrivateBlobUrl(targetUrl)
         : await transcribeUrl(targetUrl);
       return NextResponse.json(result);
     } catch (e) {
+      const err = e as Error & { code?: string };
+      if (err.code === "SSRF_BLOCKED" || err.code === "INVALID_URL") {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
       const message = e instanceof Error ? e.message : String(e);
       console.error("transcribe-batch: Deepgram error (url)", message);
       return NextResponse.json(

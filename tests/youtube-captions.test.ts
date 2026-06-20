@@ -42,7 +42,7 @@ vi.mock("youtube-transcript", () => ({
 
 // ─── Import under test (after mocks) ─────────────────────────────────────────
 
-import { fetchCaptions, parseSrt } from "@/lib/server/youtube-captions";
+import { fetchCaptions, fetchViaTranscriptWorker, parseSrt } from "@/lib/server/youtube-captions";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,6 +135,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
 });
 
 // ─── fetchCaptions — happy path ───────────────────────────────────────────────
@@ -545,7 +547,7 @@ describe("parseSrt — CRLF line endings", () => {
 // ─── fetchCaptions — Innertube-first orchestration ───────────────────────────
 // These tests verify the wrapper's two-path strategy:
 //   1. Innertube succeeds → return immediately, yt-dlp never called
-//   2. Innertube fails with PRIVATE → rethrow immediately, yt-dlp never called
+//   2. Innertube fails with PRIVATE → still try later public-client fallbacks
 //   3. Innertube fails with NETWORK_ERROR → fall through to yt-dlp
 //   4. Innertube fails with NO_CAPTIONS → fall through to yt-dlp
 
@@ -620,17 +622,88 @@ describe("fetchCaptions — Innertube-first orchestration", () => {
     ]);
   });
 
-  it("re-throws PRIVATE immediately without trying yt-dlp", async () => {
+  it("falls back to yt-dlp when Innertube reports PRIVATE", async () => {
     const innertubeInstance = {
       getInfo: vi.fn().mockRejectedValue(new Error("Private video. Sign in.")),
     };
     innertubeCreateFn.mockResolvedValue(innertubeInstance);
-
-    await expect(fetchCaptions("dQw4w9WgXcQ")).rejects.toMatchObject({
-      code: "PRIVATE",
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockImplementation(() => {
+      queueMicrotask(() => emitClose(0));
+      return proc;
     });
-    // yt-dlp must not be called
+    readFileFn.mockResolvedValue(VALID_SRT);
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+    expect(segments).toHaveLength(3);
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("falls back to yt-dlp when youtube-transcript reports PRIVATE", async () => {
+    youtubeTranscriptFetchFn.mockRejectedValue(new Error("Video unavailable. Sign in."));
+    const { proc, emitClose } = makeFakeProc();
+    spawnFn.mockReturnValue(proc);
+    readFileFn.mockResolvedValue(VALID_SRT);
+
+    const promise = fetchCaptions("dQw4w9WgXcQ");
+    await flushPromises();
+    emitClose(0);
+
+    const segments = await promise;
+    expect(segments).toHaveLength(3);
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses the configured transcript worker before local yt-dlp", async () => {
+    vi.stubEnv("YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL", "https://worker.example.com/captions?source=yentl");
+    vi.stubEnv("YENTL_YOUTUBE_TRANSCRIPT_WORKER_TOKEN", "worker-secret");
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({
+        transcript_segments: [
+          { text: " Worker caption. ", start: 1, end: 2.5, speaker_id: 0 },
+        ],
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    const segments = await fetchCaptions("dQw4w9WgXcQ");
+
+    expect(segments).toEqual([
+      {
+        text: "Worker caption.",
+        start: 1,
+        end: 2.5,
+        is_final: true,
+        speaker_id: 0,
+      },
+    ]);
     expect(spawnFn).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
+    const [url, init] = fetchSpy.mock.calls[0];
+    expect(String(url)).toBe("https://worker.example.com/captions?source=yentl&video_id=dQw4w9WgXcQ");
+    expect((init as RequestInit).headers).toMatchObject({
+      Accept: "application/json",
+      Authorization: "Bearer worker-secret",
+    });
+  });
+
+  it("maps transcript worker 403 responses to PRIVATE when called directly", async () => {
+    vi.stubEnv("YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL", "https://worker.example.com/captions");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({
+        error: { code: "PRIVATE", message: "sign in required" },
+      }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    await expect(fetchViaTranscriptWorker("dQw4w9WgXcQ")).rejects.toMatchObject({
+      code: "PRIVATE",
+      message: "sign in required",
+    });
   });
 
   it("falls back to yt-dlp when Innertube throws NETWORK_ERROR", async () => {

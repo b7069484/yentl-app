@@ -9,6 +9,10 @@ const aiMocks = vi.hoisted(() => ({
   generateText: vi.fn(),
 }));
 
+const clerkMocks = vi.hoisted(() => ({
+  auth: vi.fn(),
+}));
+
 vi.mock("ai", () => ({
   generateText: aiMocks.generateText,
   Output: {
@@ -26,6 +30,10 @@ vi.mock("@ai-sdk/anthropic", () => ({
       webSearch_20260209: vi.fn(() => ({ type: "web-search" })),
     },
   },
+}));
+
+vi.mock("@clerk/nextjs/server", () => ({
+  auth: clerkMocks.auth,
 }));
 
 function jsonRequest(path: string, body: unknown, headers?: HeadersInit) {
@@ -116,6 +124,60 @@ describe("model route request security guards", () => {
       },
     });
     expect(aiMocks.generateText).not.toHaveBeenCalled();
+  });
+
+  it("requires paid-live auth for validation-shaped model payloads in production because validation analysis fixtures are prod-off", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("YENTL_REQUIRE_PAID_LIVE_AUTH", "1");
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
+    clerkMocks.auth.mockResolvedValue({ userId: null });
+    const { POST } = await import("@/app/api/extract-claims/route");
+
+    const res = await POST(jsonRequest("/api/extract-claims", {
+      utterance:
+        "The world population had become three billion people, and that was in 1960.",
+      utterance_start: 21,
+      utterance_end: 28,
+      context: "SOURCE_CONTEXT:\nsource type: YouTube\nvideo id: fTznEIZRkLg\ntitle: Hans Rosling: Global population growth, box by box",
+      recent_hashes: [],
+      speaker_id: 0,
+      segment_id: "seg-1960",
+      turn_id: "turn-1960",
+      source_audio_kind: "youtube_caption",
+    }));
+
+    expect(res.status).toBe(401);
+    expect(clerkMocks.auth).toHaveBeenCalledOnce();
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("paid_live_auth_required"));
+  });
+
+  it("requires paid-live auth before non-fixture extract-claims model work when the production gate is enabled", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("YENTL_REQUIRE_PAID_LIVE_AUTH", "1");
+    vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
+    clerkMocks.auth.mockResolvedValue({ userId: null });
+    const { POST } = await import("@/app/api/extract-claims/route");
+
+    const res = await POST(jsonRequest("/api/extract-claims", {
+      utterance: "The city budget increased by twelve percent this year.",
+      utterance_start: 0,
+      utterance_end: 4,
+      context: "A local government meeting transcript.",
+      recent_hashes: [],
+    }));
+
+    expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({
+      error: {
+        code: "AUTH_REQUIRED",
+        message: "Sign in to use paid live analysis.",
+      },
+    });
+    expect(aiMocks.generateText).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("paid_live_auth_required"));
   });
 
   it("rejects analyze-rhetoric transcript windows over the cap", async () => {
@@ -572,10 +634,19 @@ describe("model route request security guards", () => {
     expect(aiMocks.generateText).toHaveBeenCalledTimes(2);
   });
 
-  it("fails closed when the model claim-scope classifier is unavailable", async () => {
+  it("degrades cautiously when the model claim-scope classifier is unavailable", async () => {
     vi.stubEnv("YENTL_CLAIM_SCOPE_CLASSIFIER", "model");
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    aiMocks.generateText.mockRejectedValueOnce(new Error("gateway unavailable"));
+    aiMocks.generateText
+      .mockRejectedValueOnce(new Error("gateway unavailable"))
+      .mockResolvedValueOnce({
+        output: {
+          primary_label: "TRUE",
+          score: 88,
+          annotations: ["supported"],
+          explanation: "Verification still ran after the deterministic hard-block checks.",
+        },
+      });
     const { POST } = await import("@/app/api/verify-provisional/route");
 
     const res = await POST(jsonRequest(
@@ -583,9 +654,10 @@ describe("model route request security guards", () => {
       { claim_text: "The city changed the school policy in 2024." },
     ));
 
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.error.code).toBe("CLAIM_SCOPE_UNAVAILABLE");
+    expect(json.primary_label).toBe("TRUE");
+    expect(aiMocks.generateText).toHaveBeenCalledTimes(2);
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining("claim_scope_classifier_unavailable"));
     errorSpy.mockRestore();
   });

@@ -10,6 +10,7 @@ import {
 } from "@/lib/prompts/synthesize";
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { youtubeValidationSynthesisFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
 import { documentValidationSynthesisFixture } from "@/lib/server/document-validation-analysis-fixtures";
 import { syntheticPanelSynthesisFixture } from "@/lib/server/validation-media-fixtures";
@@ -50,6 +51,9 @@ export async function POST(req: NextRequest) {
   if (documentValidationFixture) {
     return NextResponse.json(enrichSynthesisFixture(documentValidationFixture, parsed.data));
   }
+
+  const authError = await requirePaidLiveAccess(req, "model:synthesize");
+  if (authError) return authError;
 
   try {
     // Use top-level `system` (not messages[] role:"system") to avoid the AI SDK

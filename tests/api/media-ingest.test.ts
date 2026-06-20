@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const mockAssertSafeUrl = vi.fn();
 const mockCheckMediaMime = vi.fn();
 const mockTranscribeUrl = vi.fn();
+const mockAuth = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/server/ssrf-guard", () => ({
   assertSafeUrl: mockAssertSafeUrl,
@@ -16,6 +17,10 @@ vi.mock("@/lib/server/media-mime", () => ({
 
 vi.mock("@/lib/server/deepgram-batch", () => ({
   transcribeUrl: mockTranscribeUrl,
+}));
+
+vi.mock("@clerk/nextjs/server", () => ({
+  auth: mockAuth,
 }));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -67,6 +72,7 @@ describe("POST /api/media-ingest", () => {
 
   afterEach(() => {
     vi.resetModules();
+    vi.unstubAllEnvs();
   });
 
   // ─── Happy path ─────────────────────────────────────────────────────────────
@@ -106,6 +112,42 @@ describe("POST /api/media-ingest", () => {
       await POST(req as never);
 
       expect(mockTranscribeUrl).toHaveBeenCalledWith(TEST_URL);
+    });
+
+    it("requires paid-live auth before real media URL transcription when the production gate is enabled", async () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv("YENTL_REQUIRE_PAID_LIVE_AUTH", "1");
+      vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
+      mockAuth.mockResolvedValue({ userId: null });
+      const { POST } = await import("@/app/api/media-ingest/route");
+      const req = makeRequest({ url: TEST_URL });
+
+      const res = await POST(req as never);
+
+      expect(res.status).toBe(401);
+      expect(mockAssertSafeUrl).not.toHaveBeenCalled();
+      expect(mockCheckMediaMime).not.toHaveBeenCalled();
+      expect(mockTranscribeUrl).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("paid_live_auth_required"));
+    });
+
+    it("serves explicitly enabled production validation media without paid-live auth", async () => {
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv("YENTL_ENABLE_VALIDATION_DEMO", "1");
+      vi.stubEnv("YENTL_REQUIRE_PAID_LIVE_AUTH", "1");
+      vi.stubEnv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "pk_test");
+      mockAuth.mockResolvedValue({ userId: null });
+      const { POST } = await import("@/app/api/media-ingest/route");
+      const req = makeRequest({ url: LOCAL_VALIDATION_WAV_URL });
+
+      const res = await POST(req as never);
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.validation_fixture).toBe(true);
+      expect(mockAuth).not.toHaveBeenCalled();
+      expect(mockTranscribeUrl).not.toHaveBeenCalled();
     });
 
     it("returns the deterministic local WAV validation transcript without calling Deepgram", async () => {
@@ -250,6 +292,21 @@ describe("POST /api/media-ingest", () => {
       expect(res.status).toBe(400);
       const json = await res.json();
       expect(json.error.code).toBe("SSRF_BLOCKED");
+    });
+
+    it("returns 400 with code SSRF_BLOCKED when the MIME fetch-time guard catches a redirect", async () => {
+      mockCheckMediaMime.mockRejectedValue(
+        ssrfError("SSRF_BLOCKED", "redirect resolved to a private address"),
+      );
+
+      const { POST } = await import("@/app/api/media-ingest/route");
+      const req = makeRequest({ url: TEST_URL });
+      const res = await POST(req as never);
+
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error.code).toBe("SSRF_BLOCKED");
+      expect(mockTranscribeUrl).not.toHaveBeenCalled();
     });
   });
 

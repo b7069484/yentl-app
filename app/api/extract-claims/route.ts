@@ -14,6 +14,7 @@ import {
   userPrompt,
 } from "@/lib/prompts/extract-claims";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { youtubeValidationExtractClaimsFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
 import { documentValidationExtractClaimsFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
@@ -70,6 +71,9 @@ export async function POST(req: NextRequest) {
   if (documentValidationFixture) {
     return NextResponse.json(documentValidationFixture);
   }
+
+  const authError = await requirePaidLiveAccess(req, "model:extract-claims");
+  if (authError) return authError;
 
   try {
     const { output } = await generateText({

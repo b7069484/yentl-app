@@ -7,6 +7,7 @@ const mockTranscribeFile = vi.fn();
 const mockTranscribeStream = vi.fn();
 const mockBlobGet = vi.fn();
 const mockBlobDel = vi.fn();
+const mockAssertSafeUrl = vi.fn();
 
 vi.mock("@/lib/server/deepgram-batch", () => ({
   transcribeUrl: mockTranscribeUrl,
@@ -17,6 +18,10 @@ vi.mock("@/lib/server/deepgram-batch", () => ({
 vi.mock("@vercel/blob", () => ({
   get: mockBlobGet,
   del: mockBlobDel,
+}));
+
+vi.mock("@/lib/server/ssrf-guard", () => ({
+  assertSafeUrl: mockAssertSafeUrl,
 }));
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -30,6 +35,7 @@ const LOCAL_VALIDATION_WAV_URL = "http://localhost:3000/validation/yentl-synthet
 const LOCAL_VALIDATION_MP4_URL = "http://localhost:3000/validation/yentl-synthetic-panel.mp4";
 const LOCAL_VALIDATION_MOV_URL = "http://localhost:3000/validation/yentl-synthetic-panel.mov";
 const LOCAL_VALIDATION_WEBM_URL = "http://localhost:3000/validation/yentl-synthetic-panel.webm";
+const PUBLIC_MEDIA_URL = "https://example.com/audio.mp3";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -49,6 +55,12 @@ function makeAudioFile(name = "audio.mp3", type = "audio/mpeg", size = 1024): Fi
   const file = new File([content], name, { type });
   Object.defineProperty(file, "size", { value: size });
   return file;
+}
+
+function ssrfError(code: "SSRF_BLOCKED" | "INVALID_URL", message: string): Error {
+  const err = new Error(message) as Error & { code: string };
+  err.code = code;
+  return err;
 }
 
 /**
@@ -96,6 +108,7 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     });
     mockBlobGet.mockResolvedValue(null);
     mockBlobDel.mockResolvedValue(undefined);
+    mockAssertSafeUrl.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -111,6 +124,31 @@ describe("POST /api/transcribe-batch — JSON path (blob_url)", () => {
     const json = await res.json();
     expect(json.utterances).toEqual(VALID_UTTERANCES);
     expect(json.speakers).toEqual(VALID_SPEAKERS);
+  });
+
+  it("guards and transcribes the JSON url path for non-Blob URLs", async () => {
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeJsonRequest({ url: PUBLIC_MEDIA_URL, duration_sec: 120 });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(200);
+    expect(mockAssertSafeUrl).toHaveBeenCalledWith(PUBLIC_MEDIA_URL);
+    expect(mockTranscribeUrl).toHaveBeenCalledWith(PUBLIC_MEDIA_URL);
+  });
+
+  it("blocks the JSON url path when assertSafeUrl rejects a private target", async () => {
+    mockAssertSafeUrl.mockRejectedValue(
+      ssrfError("SSRF_BLOCKED", "URL resolved to a private address"),
+    );
+
+    const { POST } = await import("@/app/api/transcribe-batch/route");
+    const req = makeJsonRequest({ url: PUBLIC_MEDIA_URL, duration_sec: 120 });
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toMatch(/private address/);
+    expect(mockTranscribeUrl).not.toHaveBeenCalled();
   });
 
   it("returns the deterministic local WAV validation transcript for the JSON url path", async () => {

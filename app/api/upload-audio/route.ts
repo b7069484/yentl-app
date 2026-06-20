@@ -2,6 +2,7 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { SOURCE_ANALYSIS_CONSENT_VALUE, hasSourceAnalysisConsent } from "@/lib/source-consent";
 
 /**
@@ -68,6 +69,9 @@ export async function POST(request: Request): Promise<NextResponse> {
   if (body.type === "blob.generate-client-token") {
     const consentError = requireSourceAnalysisConsent(request, clientPayload);
     if (consentError) return consentError;
+
+    const authError = await requirePaidLiveAccess(request, "upload-token");
+    if (authError) return authError;
   }
 
   try {

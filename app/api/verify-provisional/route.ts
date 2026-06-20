@@ -11,6 +11,7 @@ import {
 } from "@/lib/prompts/verify-provisional";
 import { enforceEngagementGate } from "@/lib/server/engagement-gate";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { youtubeValidationVerifyProvisionalFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
 import { documentValidationVerifyProvisionalFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
@@ -50,9 +51,6 @@ export async function POST(req: NextRequest) {
   }
 
   const { claim_text, source_context } = parsed.data;
-  const gateError = await enforceEngagementGate(claim_text, req, source_context);
-  if (gateError) return gateError;
-
   const validationFixture = youtubeValidationVerifyProvisionalFixture(parsed.data);
   if (validationFixture) {
     return NextResponse.json(validationFixture);
@@ -61,6 +59,12 @@ export async function POST(req: NextRequest) {
   if (documentValidationFixture) {
     return NextResponse.json(documentValidationFixture);
   }
+
+  const authError = await requirePaidLiveAccess(req, "model:verify-provisional");
+  if (authError) return authError;
+
+  const gateError = await enforceEngagementGate(claim_text, req, source_context);
+  if (gateError) return gateError;
 
   try {
     const { output } = await generateText({

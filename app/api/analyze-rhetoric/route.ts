@@ -9,6 +9,7 @@ import {
 } from "@/lib/prompts/analyze-rhetoric";
 import { NextRequest, NextResponse } from "next/server";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { requirePaidLiveAccess } from "@/lib/server/paid-live-gate";
 import { youtubeValidationAnalyzeRhetoricFixture } from "@/lib/server/youtube-validation-analysis-fixtures";
 import { documentValidationAnalyzeRhetoricFixture } from "@/lib/server/document-validation-analysis-fixtures";
 
@@ -55,6 +56,9 @@ export async function POST(req: NextRequest) {
   if (documentValidationFixture) {
     return NextResponse.json(documentValidationFixture);
   }
+
+  const authError = await requirePaidLiveAccess(req, "model:analyze-rhetoric");
+  if (authError) return authError;
 
   try {
     // Use top-level `system` (not messages[] role:"system") to avoid the AI SDK

@@ -243,6 +243,7 @@ export function parseSrt(srt: string): TranscriptSegment[] {
 // ─── yt-dlp runner ────────────────────────────────────────────────────────────
 
 const YT_DLP_TIMEOUT_MS = 60_000;
+const TRANSCRIPT_WORKER_TIMEOUT_MS = 45_000;
 
 function spawnYtDlp(
   args: string[],
@@ -505,6 +506,133 @@ function mapYoutubeTranscriptError(error: unknown): CaptionError {
   return new CaptionError("NO_CAPTIONS", message || "No English captions available");
 }
 
+// ─── Remote transcript worker (production escape hatch) ─────────────────────
+
+type WorkerTranscriptPayload = {
+  transcript_segments?: unknown;
+  segments?: unknown;
+  error?: {
+    code?: unknown;
+    message?: unknown;
+  };
+};
+
+function transcriptWorkerUrl(): string | null {
+  const value =
+    process.env.YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL ||
+    process.env.YT_DLP_WORKER_URL ||
+    "";
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function workerEndpoint(videoId: string): string | null {
+  const configured = transcriptWorkerUrl();
+  if (!configured) return null;
+
+  const url = new URL(configured);
+  url.searchParams.set("video_id", videoId);
+  return url.toString();
+}
+
+function workerHeaders(): HeadersInit {
+  const token = process.env.YENTL_YOUTUBE_TRANSCRIPT_WORKER_TOKEN?.trim();
+  return {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+function parseWorkerSegments(value: unknown): TranscriptSegment[] {
+  if (!Array.isArray(value)) return [];
+
+  const segments: TranscriptSegment[] = [];
+  for (const item of value) {
+    if (item == null || typeof item !== "object") continue;
+    const candidate = item as Record<string, unknown>;
+    const text = typeof candidate.text === "string" ? candidate.text.trim() : "";
+    const start = Number(candidate.start);
+    const end = Number(candidate.end);
+    if (!text || !Number.isFinite(start) || !Number.isFinite(end) || end < start) {
+      continue;
+    }
+    segments.push({
+      text,
+      start,
+      end,
+      is_final: candidate.is_final === false ? false : true,
+      speaker_id: typeof candidate.speaker_id === "number" ? candidate.speaker_id : 0,
+    });
+  }
+  return segments;
+}
+
+function workerError(payload: WorkerTranscriptPayload, status: number): CaptionError {
+  const code = typeof payload.error?.code === "string" ? payload.error.code : "";
+  const message =
+    typeof payload.error?.message === "string"
+      ? payload.error.message
+      : `Transcript worker returned ${status}`;
+
+  if (code === "PRIVATE" || status === 401 || status === 403) {
+    return new CaptionError("PRIVATE", message);
+  }
+  if (code === "NO_CAPTIONS" || status === 404) {
+    return new CaptionError("NO_CAPTIONS", message);
+  }
+  return new CaptionError("NETWORK_ERROR", message);
+}
+
+export async function fetchViaTranscriptWorker(
+  videoId: string,
+): Promise<TranscriptSegment[]> {
+  const endpoint = workerEndpoint(videoId);
+  if (!endpoint) {
+    throw new CaptionError("NETWORK_ERROR", "Transcript worker is not configured");
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      headers: workerHeaders(),
+      signal: AbortSignal.timeout(TRANSCRIPT_WORKER_TIMEOUT_MS),
+      cache: "no-store",
+    });
+  } catch (error) {
+    throw new CaptionError(
+      "NETWORK_ERROR",
+      `Transcript worker request failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
+  let payload: WorkerTranscriptPayload;
+  try {
+    payload = (await response.json()) as WorkerTranscriptPayload;
+  } catch {
+    throw new CaptionError("NETWORK_ERROR", "Transcript worker returned invalid JSON");
+  }
+
+  if (!response.ok) {
+    throw workerError(payload, response.status);
+  }
+
+  const segments = parseWorkerSegments(
+    payload.transcript_segments ?? payload.segments,
+  );
+  if (segments.length === 0) {
+    throw new CaptionError("NO_CAPTIONS", "Transcript worker returned no segments");
+  }
+  return segments;
+}
+
 // ─── yt-dlp (fallback path) ───────────────────────────────────────────────────
 
 /**
@@ -601,7 +729,9 @@ export async function fetchViaYtDlp(videoId: string): Promise<TranscriptSegment[
  *      endpoints, which are not blocked on cloud datacenter IPs (unlike yt-dlp).
  *   2. Fall back to youtube-transcript, which currently catches videos where
  *      Innertube / yt-dlp can incorrectly report no captions.
- *   3. Fall back to yt-dlp if the scraping fallback fails for any non-PRIVATE reason.
+ *   3. If configured, try a remote transcript worker outside Vercel's blocked
+ *      datacenter IP pool.
+ *   4. Fall back to local yt-dlp if the worker is absent or fails.
  *      yt-dlp handles more edge cases (age-restricted, region-locked) with the
  *      right cookies and has an active maintenance team.
  *
@@ -616,23 +746,28 @@ export async function fetchCaptions(videoId: string): Promise<TranscriptSegment[
   // ── Primary: Innertube ───────────────────────────────────────────────────
   try {
     return await fetchViaInnertube(videoId);
-  } catch (err) {
-    if (err instanceof CaptionError) {
-      // PRIVATE means both paths will fail — don't bother trying yt-dlp
-      if (err.code === "PRIVATE") throw err;
-      // NO_CAPTIONS from Innertube is definitive — the video truly has no
-      // transcript in the panel. yt-dlp sometimes finds auto-generated captions
-      // even when Innertube reports none, so fall through.
-    } else {
-      // Unexpected non-CaptionError — fall through to yt-dlp
-    }
+  } catch {
+    // Do not fail fast on PRIVATE here. YouTube can surface datacenter bot-wall
+    // responses as sign-in/private from one client while another public-client
+    // fallback can still fetch captions.
   }
 
   // ── Fallback: youtube-transcript ─────────────────────────────────────────
   try {
     return await fetchViaYoutubeTranscript(videoId);
-  } catch (err) {
-    if (err instanceof CaptionError && err.code === "PRIVATE") throw err;
+  } catch {
+    // Same rule: a scraper-level PRIVATE can be a false classification from a
+    // blocked client. Let the final yt-dlp fallback decide.
+  }
+
+  // ── Optional remote worker escape hatch ─────────────────────────────────
+  if (transcriptWorkerUrl()) {
+    try {
+      return await fetchViaTranscriptWorker(videoId);
+    } catch {
+      // Keep local yt-dlp as the final fallback. The final error is what
+      // callers see if every path fails.
+    }
   }
 
   // ── Final fallback: yt-dlp ───────────────────────────────────────────────

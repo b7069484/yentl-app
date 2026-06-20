@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const mockRequireSourceAnalysisConsent = vi.fn();
 const mockEnforceRateLimit = vi.fn();
 const mockAssertSafeUrl = vi.fn();
+const mockFetchWithSsrfGuard = vi.fn();
 
 vi.mock("@/lib/server/consent", () => ({
   requireSourceAnalysisConsent: mockRequireSourceAnalysisConsent,
@@ -15,6 +16,7 @@ vi.mock("@/lib/server/rate-limit", () => ({
 
 vi.mock("@/lib/server/ssrf-guard", () => ({
   assertSafeUrl: mockAssertSafeUrl,
+  fetchWithSsrfGuard: mockFetchWithSsrfGuard,
 }));
 
 function makeRequest(url: string) {
@@ -29,13 +31,20 @@ function makeRequest(url: string) {
 }
 
 function htmlResponse(html: string, headers?: Record<string, string>) {
-  return new Response(html, {
+  const response = new Response(html, {
     status: 200,
     headers: {
       "content-type": "text/html; charset=utf-8",
       ...headers,
     },
   });
+  return Object.assign(response, { finalUrl: "https://example.com/story" });
+}
+
+function ssrfError(message = "redirect resolved to a private address") {
+  const err = new Error(message) as Error & { code: string };
+  err.code = "SSRF_BLOCKED";
+  return err;
 }
 
 describe("POST /api/article-ingest", () => {
@@ -44,6 +53,7 @@ describe("POST /api/article-ingest", () => {
     mockRequireSourceAnalysisConsent.mockReturnValue(null);
     mockEnforceRateLimit.mockResolvedValue(null);
     mockAssertSafeUrl.mockResolvedValue(undefined);
+    mockFetchWithSsrfGuard.mockReset();
   });
 
   afterEach(() => {
@@ -76,7 +86,7 @@ describe("POST /api/article-ingest", () => {
         </body>
       </html>
     `;
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(htmlResponse(html)));
+    mockFetchWithSsrfGuard.mockResolvedValue(htmlResponse(html));
 
     const { POST } = await import("@/app/api/article-ingest/route");
     const res = await POST(makeRequest("https://example.com/story") as never);
@@ -90,6 +100,10 @@ describe("POST /api/article-ingest", () => {
     expect(json.text).not.toContain("Subscribe Sign in");
     expect(json.text).not.toContain("Navigation table");
     expect(json.text).not.toContain("privacy policy");
+    expect(mockFetchWithSsrfGuard).toHaveBeenCalledWith(
+      "https://example.com/story",
+      expect.objectContaining({ maxRedirects: 4, method: "GET" }),
+    );
   });
 
   it("drops embedded cookie, ad, related-story, sharing, and comment chrome from messy articles", async () => {
@@ -124,7 +138,7 @@ describe("POST /api/article-ingest", () => {
         </body>
       </html>
     `;
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(htmlResponse(html)));
+    mockFetchWithSsrfGuard.mockResolvedValue(htmlResponse(html));
 
     const { POST } = await import("@/app/api/article-ingest/route");
     const res = await POST(makeRequest("https://example.com/messy-civic-story") as never);
@@ -145,7 +159,7 @@ describe("POST /api/article-ingest", () => {
 
   it("caps oversized readable imports for analysis quality", async () => {
     const longText = Array.from({ length: 2600 }, (_, index) => `word${index}`).join(" ");
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(htmlResponse(`<article><p>${longText}</p></article>`)));
+    mockFetchWithSsrfGuard.mockResolvedValue(htmlResponse(`<article><p>${longText}</p></article>`));
 
     const { POST } = await import("@/app/api/article-ingest/route");
     const res = await POST(makeRequest("https://example.com/long-story") as never);
@@ -155,6 +169,19 @@ describe("POST /api/article-ingest", () => {
     expect(json.source_word_count).toBe(2600);
     expect(json.word_count).toBe(2200);
     expect(json.truncated).toBe(true);
+  });
+
+  it("returns SSRF_BLOCKED when the fetch-time guard rejects a redirect target", async () => {
+    mockFetchWithSsrfGuard.mockRejectedValue(ssrfError());
+
+    const { POST } = await import("@/app/api/article-ingest/route");
+    const res = await POST(makeRequest("https://example.com/redirects-private") as never);
+    const json = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(json.error.code).toBe("SSRF_BLOCKED");
+    expect(mockAssertSafeUrl).toHaveBeenCalledWith("https://example.com/redirects-private");
+    expect(mockFetchWithSsrfGuard).toHaveBeenCalled();
   });
 
   it("serves the gated local validation article without weakening normal SSRF checks", async () => {

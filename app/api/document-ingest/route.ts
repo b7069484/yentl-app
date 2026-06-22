@@ -2,18 +2,16 @@ import { NextResponse } from "next/server";
 import { PDFParse } from "pdf-parse";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
-import { PDF_WORKER_DATA_URL } from "@/lib/server/pdf-worker-data-url";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// Configure the pdf-parse worker ONCE from an inlined data URL (no runtime file
-// read, no dynamic worker chunk). This is what lets document-ingest survive
-// Vercel's serverless bundle, where both the file-read data URL and the
-// fake-worker fallback fail to locate pdf.worker.mjs.
-PDFParse.setWorker(PDF_WORKER_DATA_URL);
-
 const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024;
+// Worker is configured lazily INSIDE the handler try/catch (below) so any
+// worker/bundle failure surfaces as our JSON error (readable in prod) instead of
+// an opaque module-load 500. The worker source is an inlined data URL — no file,
+// no chunk, no path dependency on Vercel's serverless bundle.
+let pdfWorkerReady = false;
 type DocumentIngestResponse =
   | { filename: string; mime: string; text: string; page_count?: number; byte_count: number }
   | { error: { code: string; message: string } };
@@ -54,6 +52,11 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
   const buffer = Buffer.from(await file.arrayBuffer());
   let parser: InstanceType<typeof PDFParse> | null = null;
   try {
+    if (!pdfWorkerReady) {
+      const { PDF_WORKER_DATA_URL } = await import("@/lib/server/pdf-worker-data-url");
+      PDFParse.setWorker(PDF_WORKER_DATA_URL);
+      pdfWorkerReady = true;
+    }
     parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
     const text = normalizeExtractedText(result.text ?? "");

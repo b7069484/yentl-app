@@ -102,6 +102,20 @@ describe("POST /api/upload-audio — token generation", () => {
     expect(json.error).toMatch(/Invalid token/);
   });
 
+  it("returns 400 for malformed JSON without calling handleUpload", async () => {
+    const req = new Request("http://localhost/api/upload-audio", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{",
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: "Invalid JSON body" });
+    expect(mockHandleUpload).not.toHaveBeenCalled();
+  });
+
   it("requires source analysis consent before generating an upload token", async () => {
     const req = new Request("http://localhost/api/upload-audio", {
       method: "POST",

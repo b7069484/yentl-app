@@ -18,7 +18,15 @@ const commentsDir = path.join(process.cwd(), ".project/review-comments");
 const latestPath = path.join(commentsDir, "yentl-flow-review-latest.json");
 const roundsPath = path.join(commentsDir, "yentl-flow-review-rounds.jsonl");
 
+function unavailableInProduction(): NextResponse | null {
+  if (process.env.NODE_ENV !== "production") return null;
+  return NextResponse.json({ error: "Not found" }, { status: 404 });
+}
+
 export async function GET(): Promise<NextResponse> {
+  const productionResponse = unavailableInProduction();
+  if (productionResponse) return productionResponse;
+
   try {
     const raw = await fs.readFile(latestPath, "utf8");
     const parsed = JSON.parse(raw) as { comments?: FlowComment[]; savedAt?: string };
@@ -32,6 +40,9 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  const productionResponse = unavailableInProduction();
+  if (productionResponse) return productionResponse;
+
   const body = await req.json().catch(() => null) as { comments?: FlowComment[] } | null;
   const comments = Array.isArray(body?.comments)
     ? body.comments.filter(isFlowComment)

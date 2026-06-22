@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:automation": "next build --webpack",
-    "vercel-build": "mkdir -p bin && curl -sSL -o bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux && chmod +x bin/yt-dlp && next build",
+    "vercel-build": "bash scripts/install-yt-dlp.sh && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",

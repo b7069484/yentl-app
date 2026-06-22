@@ -192,6 +192,23 @@ describe("POST /api/synthesize route", () => {
     vi.clearAllMocks();
   });
 
+  it("returns 400 for malformed JSON", async () => {
+    const { generateText } = await import("ai");
+    const mockGenerateText = generateText as ReturnType<typeof vi.fn>;
+    const { POST } = await import("@/app/api/synthesize/route");
+    const req = new Request("http://localhost/api/synthesize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{",
+    });
+
+    const res = await POST(req as never);
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({ error: "Invalid JSON body" });
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
   it("returns text + 3 headlines on valid input", async () => {
     const { generateText } = await import("ai");
     const mockGenerateText = generateText as ReturnType<typeof vi.fn>;

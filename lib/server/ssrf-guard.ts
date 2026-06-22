@@ -106,12 +106,11 @@ function makeError(
  *
  * Safe URLs (https://example.com/foo.mp3) return void.
  *
- * SECURITY NOTE: This validates DNS at submission time. The downstream consumer
- * (e.g., Deepgram) will resolve DNS independently when it fetches the URL,
- * creating a TOCTOU window for DNS-rebinding attacks. Full mitigation requires
- * server-side proxying (fetching the bytes ourselves and re-validating the
- * resolved IP) — out of scope for v1.2. Acceptable for now given the limited
- * attack surface (no fetch-back, no auth cookies forwarded).
+ * SECURITY NOTE: assertSafeUrl() is a submit-time gate. Routes that fetch
+ * server-side should prefer fetchWithSsrfGuard(), which resolves, validates,
+ * pins the public IP for the request, and re-validates every redirect. Routes
+ * that pass a URL to a downstream fetcher still have a TOCTOU window unless
+ * that downstream fetcher or an intermediate proxy applies the same guard.
  */
 export async function assertSafeUrl(url: string): Promise<void> {
   await resolveSafeUrl(url);

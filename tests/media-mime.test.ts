@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// ─── Mock global fetch ─────────────────────────────────────────────────────────
+// ─── Mock SSRF-pinned fetch ───────────────────────────────────────────────────
 
-const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
+const { mockFetchWithSsrfGuard } = vi.hoisted(() => ({
+  mockFetchWithSsrfGuard: vi.fn(),
+}));
+
+vi.mock("@/lib/server/ssrf-guard", () => ({
+  fetchWithSsrfGuard: mockFetchWithSsrfGuard,
+}));
 
 import { checkMediaMime } from "@/lib/server/media-mime";
 
@@ -31,6 +36,10 @@ function timeoutError() {
   return Promise.reject(Object.assign(new Error("The operation timed out"), { name: "TimeoutError" }));
 }
 
+function ssrfBlocked(message = "URL resolved to a private address") {
+  return Object.assign(new Error(message), { code: "SSRF_BLOCKED" });
+}
+
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
@@ -41,49 +50,53 @@ beforeEach(() => {
 
 describe("checkMediaMime — audio MIME types", () => {
   it("returns ok for audio/mpeg", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/mpeg"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/mpeg"));
     const result = await checkMediaMime("https://example.com/ep.mp3");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/mpeg");
+    expect(mockFetchWithSsrfGuard).toHaveBeenCalledWith("https://example.com/ep.mp3", {
+      method: "HEAD",
+      timeoutMs: 5000,
+    });
   });
 
   it("returns ok for audio/wav", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/wav"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/wav"));
     const result = await checkMediaMime("https://example.com/ep.wav");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/wav");
   });
 
   it("returns ok for audio/x-m4a", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/x-m4a"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/x-m4a"));
     const result = await checkMediaMime("https://example.com/ep.m4a");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/x-m4a");
   });
 
   it("returns ok for audio/ogg", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/ogg"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/ogg"));
     const result = await checkMediaMime("https://example.com/ep.ogg");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/ogg");
   });
 
   it("accepts Wikimedia-style application/ogg as audio/ogg", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/ogg"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/ogg"));
     const result = await checkMediaMime("https://example.com/ep.ogg");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/ogg");
   });
 
   it("returns ok for audio/webm", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/webm"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/webm"));
     const result = await checkMediaMime("https://example.com/ep.webm");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/webm");
   });
 
   it("returns ok for audio/flac", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/flac"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/flac"));
     const result = await checkMediaMime("https://example.com/ep.flac");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/flac");
@@ -92,14 +105,14 @@ describe("checkMediaMime — audio MIME types", () => {
 
 describe("checkMediaMime — video MIME types", () => {
   it("returns ok for video/mp4", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "video/mp4"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "video/mp4"));
     const result = await checkMediaMime("https://example.com/clip.mp4");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("video/mp4");
   });
 
   it("returns ok for video/webm", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "video/webm"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "video/webm"));
     const result = await checkMediaMime("https://example.com/clip.webm");
     expect(result.ok).toBe(true);
   });
@@ -107,7 +120,7 @@ describe("checkMediaMime — video MIME types", () => {
 
 describe("checkMediaMime — Content-Type with charset parameter", () => {
   it("strips charset and still accepts audio/mpeg; charset=utf-8", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "audio/mpeg; charset=utf-8"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "audio/mpeg; charset=utf-8"));
     const result = await checkMediaMime("https://example.com/ep.mp3");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/mpeg");
@@ -116,40 +129,40 @@ describe("checkMediaMime — Content-Type with charset parameter", () => {
 
 describe("checkMediaMime — application/octet-stream fallback", () => {
   it("accepts application/octet-stream + .mp3 path", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/audio/episode.mp3");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/mp3");
   });
 
   it("accepts application/octet-stream + .wav path", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/audio/episode.wav");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/wav");
   });
 
   it("accepts application/octet-stream + .m4a path", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/audio/episode.m4a");
     expect(result.ok).toBe(true);
   });
 
   it("accepts application/octet-stream + .mp4 path", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/video/clip.mp4");
     expect(result.ok).toBe(true);
   });
 
   it("rejects application/octet-stream + .pdf path", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/doc/report.pdf");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("Unsupported content type");
   });
 
   it("rejects application/octet-stream + no extension", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/octet-stream"));
     const result = await checkMediaMime("https://cdn.example.com/audio/stream");
     expect(result.ok).toBe(false);
   });
@@ -157,7 +170,7 @@ describe("checkMediaMime — application/octet-stream fallback", () => {
 
 describe("checkMediaMime — missing or empty Content-Type", () => {
   it("falls back to extension when Content-Type header is absent", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, null));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, null));
     const result = await checkMediaMime("https://cdn.example.com/episode.mp3");
     expect(result.ok).toBe(true);
     expect(result.mime).toBe("audio/mp3");
@@ -166,14 +179,14 @@ describe("checkMediaMime — missing or empty Content-Type", () => {
 
 describe("checkMediaMime — unsupported types", () => {
   it("rejects text/html", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "text/html"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "text/html"));
     const result = await checkMediaMime("https://example.com/page.html");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("Unsupported content type");
   });
 
   it("rejects application/json", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(200, "application/json"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(200, "application/json"));
     const result = await checkMediaMime("https://api.example.com/data.json");
     expect(result.ok).toBe(false);
   });
@@ -181,21 +194,21 @@ describe("checkMediaMime — unsupported types", () => {
 
 describe("checkMediaMime — HTTP error responses", () => {
   it("returns ok: false with 'URL not reachable' for 404", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(404, "text/html"));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(404, "text/html"));
     const result = await checkMediaMime("https://example.com/missing.mp3");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("URL not reachable");
   });
 
   it("returns ok: false with 'URL not reachable' for 403", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(403, null));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(403, null));
     const result = await checkMediaMime("https://example.com/forbidden.mp3");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("URL not reachable");
   });
 
   it("returns ok: false with 'URL not reachable' for 500", async () => {
-    mockFetch.mockReturnValueOnce(headResponse(500, null));
+    mockFetchWithSsrfGuard.mockReturnValueOnce(headResponse(500, null));
     const result = await checkMediaMime("https://example.com/error");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("URL not reachable");
@@ -204,23 +217,44 @@ describe("checkMediaMime — HTTP error responses", () => {
 
 describe("checkMediaMime — network errors", () => {
   it("returns ok: false with 'Network error' on TypeError (DNS fail, etc.)", async () => {
-    mockFetch.mockReturnValueOnce(networkError());
+    mockFetchWithSsrfGuard.mockReturnValueOnce(networkError());
     const result = await checkMediaMime("https://nonexistent.example.com/ep.mp3");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("Network error");
   });
 
   it("returns ok: false with 'Timeout' on AbortError (AbortSignal.timeout expired)", async () => {
-    mockFetch.mockReturnValueOnce(abortError());
+    mockFetchWithSsrfGuard.mockReturnValueOnce(abortError());
     const result = await checkMediaMime("https://slow.example.com/ep.mp3");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("Timeout");
   });
 
   it("returns ok: false with 'Timeout' on TimeoutError (Node 18+ AbortSignal.timeout)", async () => {
-    mockFetch.mockReturnValueOnce(timeoutError());
+    mockFetchWithSsrfGuard.mockReturnValueOnce(timeoutError());
     const result = await checkMediaMime("https://slow.example.com/ep.mp3");
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("Timeout");
+  });
+});
+
+describe("checkMediaMime — SSRF guard failures", () => {
+  it("propagates SSRF_BLOCKED for a private literal IP target", async () => {
+    const error = ssrfBlocked("URL resolved to a private address: 127.0.0.1");
+    mockFetchWithSsrfGuard.mockRejectedValueOnce(error);
+
+    await expect(checkMediaMime("http://127.0.0.1/audio.mp3")).rejects.toMatchObject({
+      code: "SSRF_BLOCKED",
+      message: "URL resolved to a private address: 127.0.0.1",
+    });
+  });
+
+  it("propagates SSRF_BLOCKED for a DNS-rebind/private resolution target", async () => {
+    const error = ssrfBlocked('"rebind.example.test" resolves to a private address (10.0.0.8)');
+    mockFetchWithSsrfGuard.mockRejectedValueOnce(error);
+
+    await expect(checkMediaMime("https://rebind.example.test/audio.mp3")).rejects.toMatchObject({
+      code: "SSRF_BLOCKED",
+    });
   });
 });

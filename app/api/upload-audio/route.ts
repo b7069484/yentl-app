@@ -63,7 +63,12 @@ export async function POST(request: Request): Promise<NextResponse> {
   const limited = await enforceRateLimit(request, RATE_LIMITS.uploadToken);
   if (limited) return limited;
 
-  const body = (await request.json()) as HandleUploadBody;
+  let body: HandleUploadBody;
+  try {
+    body = (await request.json()) as HandleUploadBody;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
   const clientPayload = clientPayloadFromBody(body);
 
   if (body.type === "blob.generate-client-token") {

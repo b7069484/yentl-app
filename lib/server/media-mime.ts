@@ -56,7 +56,12 @@ export async function checkMediaMime(url: string): Promise<MimeCheckResult> {
       timeoutMs: FETCH_TIMEOUT_MS,
     });
   } catch (e: unknown) {
-    if ((e as Error).message.includes("timed out")) {
+    const error = e as Error;
+    if (
+      error.name === "AbortError" ||
+      error.name === "TimeoutError" ||
+      error.message.includes("timed out")
+    ) {
       return { ok: false, reason: "Timeout" };
     }
     if ((e as { code?: string }).code === "SSRF_BLOCKED" || (e as { code?: string }).code === "INVALID_URL") {

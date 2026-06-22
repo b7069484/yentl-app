@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { PDFParse } from "pdf-parse";
 import { requireSourceAnalysisConsent } from "@/lib/server/consent";
 import { enforceRateLimit, RATE_LIMITS } from "@/lib/server/rate-limit";
+import { PDF_WORKER_DATA_URL } from "@/lib/server/pdf-worker-data-url";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+// Configure the pdf-parse worker ONCE from an inlined data URL (no runtime file
+// read, no dynamic worker chunk). This is what lets document-ingest survive
+// Vercel's serverless bundle, where both the file-read data URL and the
+// fake-worker fallback fail to locate pdf.worker.mjs.
+PDFParse.setWorker(PDF_WORKER_DATA_URL);
+
 const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024;
-let pdfWorkerConfigured = false;
-let pdfWorkerDataUrl: string | null = null;
 type DocumentIngestResponse =
   | { filename: string; mime: string; text: string; page_count?: number; byte_count: number }
   | { error: { code: string; message: string } };
@@ -51,7 +54,6 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
   const buffer = Buffer.from(await file.arrayBuffer());
   let parser: InstanceType<typeof PDFParse> | null = null;
   try {
-    configurePdfWorker();
     parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
     const text = normalizeExtractedText(result.text ?? "");
@@ -70,6 +72,7 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
       byte_count: file.size,
     });
   } catch (error) {
+    console.error("document-ingest: PDF parse failed", error instanceof Error ? error.message : error);
     return jsonError(
       "PDF_PARSE_FAILED",
       error instanceof Error ? error.message : "Could not extract text from this PDF.",
@@ -78,20 +81,6 @@ export async function POST(req: Request): Promise<NextResponse<DocumentIngestRes
   } finally {
     await parser?.destroy().catch(() => undefined);
   }
-}
-
-function configurePdfWorker() {
-  if (pdfWorkerConfigured) return;
-  PDFParse.setWorker(getPdfWorkerDataUrl());
-  pdfWorkerConfigured = true;
-}
-
-function getPdfWorkerDataUrl() {
-  if (!pdfWorkerDataUrl) {
-    const workerPath = join(process.cwd(), "node_modules/pdf-parse/dist/worker/pdf.worker.mjs");
-    pdfWorkerDataUrl = `data:text/javascript;base64,${readFileSync(workerPath).toString("base64")}`;
-  }
-  return pdfWorkerDataUrl;
 }
 
 function mimeFromName(filename: string) {

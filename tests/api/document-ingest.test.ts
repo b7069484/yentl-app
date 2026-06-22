@@ -105,7 +105,7 @@ describe("POST /api/document-ingest", () => {
     expect(mockPdfConstructor).toHaveBeenCalledWith({
       data: expect.any(Buffer),
     });
-    expect(mockPdfSetWorker).toHaveBeenCalledWith(expect.stringContaining("pdf.worker.mjs"));
+    expect(mockPdfSetWorker.mock.calls[0]?.[0]).toMatch(/^data:text\/javascript;base64,/);
     expect(mockPdfDestroy).toHaveBeenCalledOnce();
   });
 

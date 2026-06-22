@@ -1,197 +1,644 @@
 {
   "board": "yentl-readiness",
   "version": "1.0",
-  "roles": { "operator": "codex-yentl", "readiness": "claude-yentl", "owner": "israel" },
-  "updatedAt": "2026-06-19T23:44:51Z",
+  "roles": {
+    "operator": "codex-yentl",
+    "readiness": "claude-yentl",
+    "owner": "israel"
+  },
+  "updatedAt": "2026-06-22T20:53:57Z",
   "note": "Seeded by Readiness (claude-yentl) from the 2026-06-19 full audit (docs/audit/2026-06-19/). Operator (codex-yentl) sole-writes this board going forward; Readiness owns docs/launch-gate/yentl-readiness-criteria.claude.json. Mailbox: agent-comms/yentl-mailbox.json. Identities are yentl-scoped to avoid consuming the concurrent Hamodia dualtrack mailbox. Owner decisions 2026-06-19: prep+deploy to stop prod 500s; build consent-gated diarization + re-measure; full consumer redesign for glanceability.",
   "items": [
     {
-      "id": "P0-001", "title": "Deploy current tree to clear live prod 500s (document-ingest) + ship PDF/headers fixes",
-      "severity": "P0", "owner": "operator", "verifier": "claude-yentl",
-      "files_surfaces": ["app/api/document-ingest/route.ts", "next.config.ts", "lib/server/security-headers.ts", "whole dirty tree (~246 files)"],
-      "protected_surface_touch": true, "live_mutation": "deploy", "reversible": "partial",
+      "id": "P0-001",
+      "title": "Deploy current tree to clear live prod 500s (document-ingest) + ship PDF/headers fixes",
+      "severity": "P0",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "app/api/document-ingest/route.ts",
+        "next.config.ts",
+        "lib/server/security-headers.ts",
+        "whole dirty tree (~246 files)"
+      ],
+      "protected_surface_touch": true,
+      "live_mutation": "deploy",
+      "reversible": "partial",
       "rollback_note": "Vercel instant rollback to prior production deployment (cda517a).",
-      "acceptance_criteria": "see criteria companion P0-001", "proof_required": ["curl prod /api/document-ingest 200 w/ extracted text", "post-deploy battery green", "prod HTTP 200 + renders"],
-      "readiness": "not-started",
+      "acceptance_criteria": "see criteria companion P0-001",
+      "proof_required": [
+        "curl prod /api/document-ingest 200 w/ extracted text",
+        "post-deploy battery green",
+        "prod HTTP 200 + renders"
+      ],
+      "readiness": "implemented",
       "operator_proof_artifacts": [
         "docs/launch-gate/2026-06-19-p0-001-staging-plan.md",
         "triage snapshot 2026-06-19T23:44:51Z: current git status has 258 porcelain rows, 149 tracked modified files, and 135 untracked files; not safe as a blind full-tree push",
-        "minimal runtime deploy set proposed: app/api/document-ingest/route.ts, next.config.ts, lib/server/security-headers.ts; focused tests proposed: tests/api/document-ingest.test.ts, tests/security-headers.test.ts"
-      ], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
-      "blocker": { "by": "claude-yentl", "failing_criterion": "env CRITICALs (P0-002) unverified on prod + deploy remains Owner-gated", "evidence_missing": "Readiness review of the posted staging plan + P0-002 prod env/model probes + Owner approval before push/deploy", "unblock_action": "Readiness: review docs/launch-gate/2026-06-19-p0-001-staging-plan.md and independently verify P0-002; Operator: run pre-push verification against the minimal staged set; Owner turns the deploy key" },
-      "next_single_action": "Readiness reviews the posted staging plan; Operator runs pre-push verification and P0-002 probes; no push/deploy until the gate clears.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+        "minimal runtime deploy set proposed: app/api/document-ingest/route.ts, next.config.ts, lib/server/security-headers.ts; focused tests proposed: tests/api/document-ingest.test.ts, tests/security-headers.test.ts",
+        "focused local tests passed: npx vitest run tests/api/document-ingest.test.ts tests/security-headers.test.ts (2 files, 13 tests)",
+        "typecheck passed: npx tsc --noEmit",
+        "build passed: npm run build:automation",
+        "local curl passed: POST http://127.0.0.1:3000/api/document-ingest with public/validation/yentl-small-text-layer.pdf returned 200 with extracted text",
+        "prod incident reproduced: POST https://yentl.it/api/document-ingest with the same validation PDF returned HTTP 500 Next error page",
+        "topology confirmed after Readiness checkpoint: local main is at 4e89517, origin/main remains cda517a, and main is push-protected as the production deploy key",
+        "codex worktree created for follow-on P0 code work: /Users/israelbitton/yentl-codex-launch-gate on branch codex/launch-gate",
+        "Readiness mailbox MSG-0e9c2f86: staging plan adopted and P0-001 doc-ingest hotfix cleared from the P0-002 auth dependency; no blanket auth change should be bundled into P0-001",
+        "P0-001 status after pre-push verification: gate-ready pending Owner approval for the irreversible push/deploy; no push/deploy performed by Operator",
+        "Readiness mailbox MSG-fc2fe16d: criteria companion P0-001 updated; P0-002 dependency formally cleared for the hotfix and written bar now matches MSG-0e9c2f86",
+        "incident refresh 2026-06-22T20:44Z: Vercel alert reports /api/document-ingest 5xx anomaly starting 2026-06-22T20:15Z with 32 failed requests in the last 5 minutes",
+        "prod repro 2026-06-22T20:46Z: POST https://yentl.it/api/document-ingest?codex_probe=20260622T2046 with public/validation/yentl-small-text-layer.pdf returned HTTP 500 and Vercel /500 page",
+        "Vercel logs 2026-06-22T20:47Z: deployed dpl_Ddyu2ETKyZ7XmjBF5q5SCn4q9DFX fails at module load with ReferenceError: DOMMatrix is not defined from pdfjs-dist before the route handler can return JSON",
+        "hotfix updated 2026-06-22T20:52Z: app/api/document-ingest/route.ts now lazy-loads pdf-parse inside handler try/catch, installs Node DOMMatrix/ImageData/Path2D fallbacks before import, supports 6-value and 16-value matrix initializers, and keeps the inlined pdf worker data URL",
+        "focused local tests passed after DOMMatrix hotfix: npx vitest run tests/api/document-ingest.test.ts tests/security-headers.test.ts (2 files, 13 tests)",
+        "typecheck passed after DOMMatrix hotfix: npx tsc --noEmit",
+        "webpack production build passed after DOMMatrix hotfix: npm run build:automation",
+        "Turbopack production build passed after DOMMatrix hotfix: npm run build",
+        "local prod-start curl passed after final Turbopack build: POST http://127.0.0.1:3100/api/document-ingest with public/validation/yentl-small-text-layer.pdf returned HTTP 200 with extracted text at 2026-06-22T20:52:39Z",
+        "no irreversible action performed for 2026-06-22 incident refresh: no push, deploy, production write, or protected deploy-config mutation"
+      ],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
+      "blocker": {
+        "by": "owner",
+        "failing_criterion": "production acceptance still requires an Owner-approved deploy plus post-deploy prod proof; no irreversible deploy has occurred and prod remains on dpl_Ddyu2ETKyZ7XmjBF5q5SCn4q9DFX with DOMMatrix module-load 500s",
+        "evidence_missing": "Owner deploy approval/key, deployed SHA/URL, prod /api/document-ingest 200 with extracted text, and post-deploy route battery",
+        "unblock_action": "Owner approves minimal P0-001 DOMMatrix/pdf-worker hotfix deploy; Operator executes only through the gate; Readiness independently reproduces prod document-ingest and route battery before verified"
+      },
+      "next_single_action": "Owner: approve the minimal P0-001 DOMMatrix/pdf-worker hotfix deploy when ready; Operator then deploys through the gate and posts prod /api/document-ingest 200 proof for Readiness reproduction.",
+      "signoff": {
+        "operator": "codex-yentl 2026-06-22T20:53:57Z",
+        "readiness": null,
+        "owner": null
+      }
     },
     {
-      "id": "P0-002", "title": "Verify + lock 3 env CRITICALs in Vercel prod (model slug live, YENTL_REQUIRE_AUTH=1, validation-demo OFF)",
-      "severity": "P0", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/anthropic.ts:5", "proxy.ts:35,51,58", "lib/server/validation-media-fixtures.ts"],
-      "protected_surface_touch": false, "live_mutation": "deploy-config", "reversible": "yes",
+      "id": "P0-002",
+      "title": "Defense-in-depth for paid live routes: auth classification, rate-limit backend, and bot/WAF while keeping guest demo open",
+      "severity": "P0",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "proxy.ts",
+        "app/api/deepgram/token/route.ts",
+        "app/api/extract-claims/route.ts",
+        "paid-live media/transcription routes TBD by route classification",
+        "rate-limit backend/env (Upstash/KV or equivalent)",
+        "Vercel Bot/WAF configuration"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "deploy-config",
+      "reversible": "yes",
       "rollback_note": "Env vars are revertible in Vercel dashboard.",
-      "acceptance_criteria": "see criteria companion P0-002", "proof_required": ["live gateway resolves anthropic/claude-opus-4.7 (or corrected slug)", "prod paid route returns 401 without auth", "prod corpus-sample returns 404"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
-      "blocker": null,
-      "next_single_action": "Readiness: probe live gateway for the model slug; Operator: confirm the two env flags in Vercel prod.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "acceptance_criteria": "see criteria companion P0-002",
+      "proof_required": [
+        "live gateway/model path still succeeds for authorized paid-live traffic",
+        "paid-live cost-bearing routes return 401/403 or rate-limit before minting billable work when unauthenticated/over limit",
+        "guest demo/validation routes remain open where Owner requested frictionless access",
+        "prod /api/corpus-sample remains 404 (validation-demo OFF)",
+        "rate-limit backend active under load with persistent counters",
+        "Vercel Bot/WAF protection configured or explicitly Owner-deferred"
+      ],
+      "readiness": "implemented",
+      "operator_proof_artifacts": [
+        "vercel env ls production (2026-06-19T23:46Z) lists production env names but does not list YENTL_REQUIRE_AUTH",
+        "vercel env ls production (2026-06-19T23:46Z) does not list YENTL_ENABLE_VALIDATION_DEMO; prod /api/corpus-sample?id=solo_005 returned HTTP 404",
+        "Gateway model-list probe with local VERCEL_OIDC_TOKEN returned HTTP 200 and includes anthropic/claude-opus-4.7",
+        "Direct Gateway chat-completions probe with local VERCEL_OIDC_TOKEN returned HTTP 401 requiring AI_GATEWAY_API_KEY, so direct non-app model call remains unproven by Operator",
+        "prod app-route model probe succeeded: unauthenticated POST https://yentl.it/api/extract-claims with a valid non-fixture payload returned HTTP 200 and a real claim response",
+        "prod auth/cost criterion failed: unauthenticated paid routes reached billable work; Readiness also reported /api/deepgram/token returns 200 unauth",
+        "Readiness mailbox MSG-763f9c35 reports Owner decision: defense-in-depth, keep guest demo/validation routes open, gate genuinely cost-bearing paid-live paths, add Upstash/KV rate-limit backend, and add Vercel bot/WAF; do not bundle blanket YENTL_REQUIRE_AUTH=1 into P0-001",
+        "implemented in /Users/israelbitton/yentl-codex-launch-gate on branch codex/launch-gate",
+        "route plan artifact: /Users/israelbitton/yentl-codex-launch-gate/docs/launch-gate/2026-06-20-p0-002-paid-live-route-plan.md",
+        "code: lib/server/paid-live-gate.ts adds production-only YENTL_REQUIRE_PAID_LIVE_AUTH gate with Clerk auth, fail-closed AUTH_UNAVAILABLE when Clerk is absent, and legacy YENTL_REQUIRE_AUTH compatibility",
+        "code: paid-live routes now call requirePaidLiveAccess after validation/fixture bypass and before billable Deepgram, Vercel Blob upload-token, or model work",
+        "code: security events now include paid_live_auth_required and paid_live_auth_unavailable for observable auth/cost gate failures",
+        "focused P0-002 tests passed: npx vitest run tests/paid-live-gate.test.ts tests/api/deepgram-token.test.ts tests/api/media-ingest.test.ts tests/api/model-route-security.test.ts (4 files, 59 tests)",
+        "combined P0 tests passed: npx vitest run tests/paid-live-gate.test.ts tests/api/deepgram-token.test.ts tests/api/media-ingest.test.ts tests/api/model-route-security.test.ts tests/lib-ssrf-guard.test.ts tests/ssrf-guard.test.ts tests/api/article-ingest.test.ts tests/api/transcribe-batch.test.ts tests/security-events.test.ts (9 files, 129 tests)",
+        "typecheck passed: npx tsc --noEmit",
+        "build passed: npm run build:automation",
+        "deploy-config remains unmutated and unproven: Vercel Production still needs Owner-gated YENTL_REQUIRE_PAID_LIVE_AUTH=1, Clerk prod config check, Redis/Upstash rate-limit env, and bot/WAF setup or deferral",
+        "local preservation commit: b15f661 on codex/launch-gate (Implement launch gate P0 backend hardening); no push performed"
+      ],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-82dd4dfe: P0-002 paid-live-gate code/tests/wiring independently reproduced as VERIFIED; disabled-unless-flag, signed-in null, 401 body+event, and 503 fail-closed tests reviewed as honest",
+        "Readiness mailbox MSG-82dd4dfe: all 10 cost-bearing routes call requirePaidLiveAccess after consent and before token mint, Deepgram, Blob, or model work",
+        "Readiness caveat retained: full production proof remains Owner-gated on deploy-config (YENTL_REQUIRE_PAID_LIVE_AUTH=1, Clerk prod, Redis/Upstash rate limit, Vercel WAF) and post-deploy prod 401-unauth reproduction"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
+      "blocker": {
+        "by": "owner",
+        "failing_criterion": "code/tests/wiring verified by Readiness, but production enforcement is not proven until Owner-gated deploy-config and deployment occur",
+        "evidence_missing": "YENTL_REQUIRE_PAID_LIVE_AUTH=1 in Vercel Production, Clerk prod auth configured, Redis/Upstash rate-limit backend env active, Vercel bot/WAF configured or explicitly deferred, deployed SHA/URL, and prod curls showing paid-live unauth blocked while intended demo paths remain open",
+        "unblock_action": "Owner approves deploy-config/deploy; Operator executes only through the gate and posts prod proof; Readiness re-verifies prod 401 unauth plus demo-still-open"
+      },
+      "next_single_action": "Owner: approve P0-002 deploy-config/deploy when ready; Readiness has verified code/wiring and will re-verify prod 401 unauth after the Owner turns the key.",
+      "signoff": {
+        "operator": "codex-yentl 2026-06-20T00:15:30Z",
+        "readiness": "claude-yentl 2026-06-20T00:36:02Z (code/tests/wiring; prod config pending)",
+        "owner": null
+      }
     },
     {
-      "id": "P0-003", "title": "Fix YouTube ingest on prod (datacenter-IP bot-wall returns {code:PRIVATE} for public videos)",
-      "severity": "P0", "owner": "operator", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/youtube-captions.ts", "lib/server/yt-dlp-runner.ts", "lib/server/youtube-oembed.ts"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P0-003",
+      "title": "Fix YouTube ingest on prod (datacenter-IP bot-wall returns {code:PRIVATE} for public videos)",
+      "severity": "P0",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/youtube-captions.ts",
+        "lib/server/yt-dlp-runner.ts",
+        "lib/server/youtube-oembed.ts",
+        "services/youtube-transcript-worker/worker.mjs",
+        "services/youtube-transcript-worker/README.md",
+        "tests/youtube-transcript-worker.test.ts"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Code-level; revert commit.",
-      "acceptance_criteria": "see criteria companion P0-003", "proof_required": ["prod /api/youtube-ingest returns real transcript_segments for a known public video"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
-      "blocker": null,
-      "next_single_action": "Operator: investigate PO-token / cookie / proxy options OR pivot to client-side capture; confirmed working LOCALLY (241 segments) but fails from Vercel IPs.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "acceptance_criteria": "see criteria companion P0-003",
+      "proof_required": [
+        "prod /api/youtube-ingest returns real transcript_segments for a known public video"
+      ],
+      "readiness": "implemented",
+      "operator_proof_artifacts": [
+        "implemented in /Users/israelbitton/yentl-codex-launch-gate on branch codex/launch-gate",
+        "route plan artifact: /Users/israelbitton/yentl-codex-launch-gate/docs/launch-gate/2026-06-20-p0-003-youtube-worker-plan.md",
+        "code: lib/server/youtube-captions.ts no longer fails fast on PRIVATE from Innertube or youtube-transcript, so false datacenter bot-wall classifications can still reach later fallbacks",
+        "code: added optional transcript worker escape hatch via YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL or legacy YT_DLP_WORKER_URL, with optional YENTL_YOUTUBE_TRANSCRIPT_WORKER_TOKEN and response validation for transcript_segments/segments",
+        "local live proof passed: npx tsx fetchCaptions(fTznEIZRkLg) returned 241 segments; first text \"I still remember the day in school\" and last text \"(Applause)\"",
+        "current prod blocker reproduced after implementation but before deploy/config: POST https://yentl.it/api/youtube-ingest for fTznEIZRkLg returned HTTP 200 with {error:{code:\"PRIVATE\",message:\"Video is private or login-required\"}}",
+        "focused YouTube tests passed: npx vitest run tests/youtube-captions.test.ts tests/api/youtube-ingest.test.ts tests/yt-dlp-binary.test.ts tests/youtube-url-parse.test.ts tests/youtube-oembed.test.ts tests/api/youtube-preview.test.ts (6 files, 90 tests)",
+        "expanded P0 tests passed: npx vitest run tests/youtube-captions.test.ts tests/api/youtube-ingest.test.ts tests/yt-dlp-binary.test.ts tests/paid-live-gate.test.ts tests/api/deepgram-token.test.ts tests/api/media-ingest.test.ts tests/api/model-route-security.test.ts tests/lib-ssrf-guard.test.ts tests/ssrf-guard.test.ts tests/api/article-ingest.test.ts tests/api/transcribe-batch.test.ts tests/security-events.test.ts (12 files, 191 tests)",
+        "typecheck passed: npx tsc --noEmit",
+        "build passed: npm run build:automation",
+        "local preservation commit: b15f661 on codex/launch-gate (Implement launch gate P0 backend hardening); no push performed",
+        "optional worker prep 2026-06-20T03:37Z: services/youtube-transcript-worker/worker.mjs implements the existing YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL contract as a standalone Node service; no app production config or deploy was changed",
+        "worker contract: GET /?video_id=<11-char-id> with optional Authorization bearer token returns {transcript_segments:[{text,start,end,is_final,speaker_id}]} or {error:{code,message}}; /healthz returns {ok:true}",
+        "worker code: validates strict 11-character YouTube IDs before spawning yt-dlp, uses execFile with no shell, parses SRT with carousel dedupe, maps PRIVATE/NO_CAPTIONS/NETWORK_ERROR, and cleans temp dirs",
+        "worker docs: services/youtube-transcript-worker/README.md documents run command, token, YT_DLP_PATH, and response contract",
+        "worker prep tests passed: npx vitest run tests/youtube-transcript-worker.test.ts tests/youtube-captions.test.ts tests/yt-dlp-install-script.test.ts tests/yt-dlp-binary.test.ts tests/api/project-flow-comments.test.ts (5 files, 63 tests)",
+        "typecheck passed after worker prep: npx tsc --noEmit"
+      ],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-756847b6: YouTube worker prep independently reproduced; 7 worker tests passed",
+        "Readiness confirmed worker uses execFile with no shell, validates strict /^[A-Za-z0-9_-]{11}$/ video IDs before spawn, returns 401 on bearer mismatch, and maps yt-dlp stderr to PRIVATE/NO_CAPTIONS/timeout envelopes",
+        "Readiness caveat retained: P0-003 is not production-verified until Owner chooses/provisions the worker path and production /api/youtube-ingest returns transcript_segments for the public TED fixture"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
+      "blocker": {
+        "by": "owner",
+        "failing_criterion": "production /api/youtube-ingest still cannot be verified until deploy plus an Owner-selected external caption path or product pivot is approved/configured",
+        "evidence_missing": "Owner-approved deploy/config, selected worker/proxy/third-party/cookie/PO-token/client-capture path, worker host URL and bearer token if the worker path is chosen, Vercel env YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL/token, deployed SHA/URL, and prod curl showing fTznEIZRkLg returns transcript_segments.length > 0 with no error",
+        "unblock_action": "Owner chooses/provisions the production caption escape hatch or pivot; Operator configures/deploys only through the gate and posts prod curl proof; Readiness reproduces production YouTube ingest before any verified status"
+      },
+      "next_single_action": "Owner: choose/provision the production caption path. If the worker path is chosen, deploy services/youtube-transcript-worker and set YENTL_YOUTUBE_TRANSCRIPT_WORKER_URL plus token through the Owner-gated deploy-config path.",
+      "signoff": {
+        "operator": "codex-yentl 2026-06-20T03:37:51Z (worker prep; prod proof pending)",
+        "readiness": "claude-yentl 2026-06-20T03:47:52Z (worker prep; prod proof pending)",
+        "owner": null
+      }
     },
     {
-      "id": "P0-004", "title": "SSRF hardening: DNS-rebind TOCTOU (media/article ingest) + transcribe-batch {url} missing assertSafeUrl",
-      "severity": "P0", "owner": "operator", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/ssrf-guard.ts", "lib/server/media-mime.ts", "app/api/transcribe-batch/route.ts", "app/api/media-ingest/route.ts", "app/api/article-ingest/route.ts"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P0-004",
+      "title": "SSRF hardening: DNS-rebind TOCTOU (media/article ingest) + transcribe-batch {url} missing assertSafeUrl",
+      "severity": "P0",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/ssrf-guard.ts",
+        "lib/server/media-mime.ts",
+        "app/api/transcribe-batch/route.ts",
+        "app/api/media-ingest/route.ts",
+        "app/api/article-ingest/route.ts"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Code-level; revert commit.",
-      "acceptance_criteria": "see criteria companion P0-004", "proof_required": ["test: rebind/redirect to private IP blocked", "transcribe-batch {url} hits assertSafeUrl", "no regression on legit fetch"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "acceptance_criteria": "see criteria companion P0-004",
+      "proof_required": [
+        "test: rebind/redirect to private IP blocked",
+        "transcribe-batch {url} hits assertSafeUrl",
+        "no regression on legit fetch"
+      ],
+      "readiness": "verified",
+      "operator_proof_artifacts": [
+        "implemented in /Users/israelbitton/yentl-codex-launch-gate on branch codex/launch-gate",
+        "code: lib/server/ssrf-guard.ts now exposes resolveSafeUrl/fetchWithSsrfGuard, validates each redirect target, and performs HTTP(S) requests against the resolved public IP while preserving original Host/SNI",
+        "code: app/api/article-ingest/route.ts and lib/server/media-mime.ts use fetchWithSsrfGuard for fetch-time SSRF protection; app/api/media-ingest/route.ts preserves SSRF_BLOCKED/INVALID_URL errors from MIME probing",
+        "code: app/api/transcribe-batch/route.ts now calls assertSafeUrl before non-Blob JSON url transcription",
+        "tests passed: npx vitest run tests/lib-ssrf-guard.test.ts tests/ssrf-guard.test.ts tests/api/article-ingest.test.ts tests/api/media-ingest.test.ts tests/api/transcribe-batch.test.ts (5 files, 86 tests)",
+        "typecheck passed: npx tsc --noEmit",
+        "build passed: npm run build:automation",
+        "local preservation commit: b15f661 on codex/launch-gate (Implement launch gate P0 backend hardening); no push performed",
+        "heartbeat fix 2026-06-20T01:09:53Z in /Users/israelbitton/yentl-codex-launch-gate: tests/media-mime.test.ts now mocks fetchWithSsrfGuard instead of stale global.fetch and asserts HEAD + 5000ms timeout wiring",
+        "heartbeat fix 2026-06-20T01:09:53Z: tests/media-mime.test.ts adds SSRF_BLOCKED propagation coverage for a private literal IP target and a DNS-rebind/private-resolution target",
+        "code: lib/server/media-mime.ts now maps AbortError/TimeoutError from the guarded HEAD path to the existing Timeout result while still rethrowing SSRF_BLOCKED/INVALID_URL",
+        "doc: lib/server/ssrf-guard.ts security note now distinguishes assertSafeUrl submit-time gating from fetchWithSsrfGuard pinned fetch + redirect revalidation, and calls out downstream URL handoff TOCTOU",
+        "tests passed: npx vitest run tests/media-mime.test.ts tests/lib-ssrf-guard.test.ts (2 files, 48 tests)",
+        "expanded P0 tests passed: npx vitest run tests/paid-live-gate.test.ts tests/api/transcribe-batch.test.ts tests/api/media-ingest.test.ts tests/api/article-ingest.test.ts tests/media-mime.test.ts tests/lib-ssrf-guard.test.ts tests/security-events.test.ts tests/api/model-route-security.test.ts tests/youtube-captions.test.ts tests/youtube-innertube.test.ts tests/youtube-oembed.test.ts tests/youtube-url-parse.test.ts tests/api/youtube-ingest.test.ts (13 files, 234 tests)",
+        "full test suite passed: npx vitest run (179 files, 1865 tests)",
+        "typecheck passed after heartbeat fix: npx tsc --noEmit"
+      ],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-d99a2952: P0-004 independently reproduced as VERIFIED after the heartbeat fix",
+        "Readiness re-ran the full suite in /Users/israelbitton/yentl-codex-launch-gate: npx vitest run => 179 files / 1865 tests passed, 0 failed",
+        "Readiness reviewed tests/media-mime.test.ts and confirmed it genuinely mocks fetchWithSsrfGuard rather than global.fetch",
+        "Readiness confirmed the added SSRF_BLOCKED coverage for a private literal IP target (127.0.0.1) and DNS-rebind/private-resolution target covers the security win without weakening assertions"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
-      "next_single_action": "Operator (worktree): pin resolved IP through to fetch (no re-resolve) + add assertSafeUrl to transcribe-batch url branch.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "next_single_action": "Owner-gated: include P0-004 in the P0 backend deploy only after Owner approves the deploy path; Readiness has completed code-level reproduction.",
+      "signoff": {
+        "operator": "codex-yentl 2026-06-20T01:09:53Z",
+        "readiness": "claude-yentl 2026-06-20T01:18:44Z",
+        "owner": null
+      }
     },
     {
-      "id": "P0-005", "title": "Security-event sink + engagement-gate model-error resilience (currently 503-refuses-ALL claims on any model error)",
-      "severity": "P0", "owner": "operator", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/security-events.ts", "lib/server/engagement-gate.ts", "lib/server/anthropic.ts"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P0-005",
+      "title": "Security-event sink + engagement-gate model-error resilience (currently 503-refuses-ALL claims on any model error)",
+      "severity": "P0",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/security-events.ts",
+        "lib/server/engagement-gate.ts",
+        "lib/server/anthropic.ts"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Code-level; revert commit.",
-      "acceptance_criteria": "see criteria companion P0-005", "proof_required": ["security events reach a real sink", "engagement-gate degrades safely (not total outage) on model error"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "acceptance_criteria": "see criteria companion P0-005",
+      "proof_required": [
+        "security events reach a real sink",
+        "engagement-gate degrades safely (not total outage) on model error"
+      ],
+      "readiness": "verified",
+      "operator_proof_artifacts": [
+        "implemented in /Users/israelbitton/yentl-codex-launch-gate on branch codex/launch-gate",
+        "code: lib/server/security-events.ts now exposes recordSecurityEvent and persists events to private Vercel Blob objects when BLOB_READ_WRITE_TOKEN or YENTL_SECURITY_EVENT_SINK=blob is configured, while preserving console/log-drain output",
+        "code: lib/server/engagement-gate.ts now fails softly on model classifier outage after deterministic hard-block checks, emits/persists claim_scope_classifier_unavailable, and lets ordinary factual verification continue cautiously instead of returning 503 for every claim",
+        "tests passed: npx vitest run tests/security-events.test.ts tests/api/model-route-security.test.ts tests/api/transcribe-batch.test.ts (3 files, 61 tests)",
+        "combined focused tests passed: npx vitest run tests/lib-ssrf-guard.test.ts tests/ssrf-guard.test.ts tests/api/article-ingest.test.ts tests/api/media-ingest.test.ts tests/api/transcribe-batch.test.ts tests/security-events.test.ts tests/api/model-route-security.test.ts (7 files, 114 tests)",
+        "typecheck passed: npx tsc --noEmit",
+        "build passed: npm run build:automation",
+        "local preservation commit: b15f661 on codex/launch-gate (Implement launch gate P0 backend hardening); no push performed"
+      ],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-82dd4dfe: P0-005 security-event sink + engagement-gate resilience independently reproduced as VERIFIED (code+tests)",
+        "Readiness verified private Blob sink path with console fallback via tests/security-events.test.ts",
+        "Readiness verified model-route-security classifier mockRejected path returns HTTP 200, not 503, and emits claim_scope_classifier_unavailable while deterministic hard-blocks still run first"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
-      "next_single_action": "Operator: wire security-events to a persistent sink; decide gate fail-mode (fail-closed but observable, with alerting).",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "next_single_action": "Owner acceptance pending; optional post-deploy live re-derivation can force a classifier outage and observe the persisted event sink.",
+      "signoff": {
+        "operator": "codex-yentl 2026-06-20T00:03:26Z",
+        "readiness": "claude-yentl 2026-06-20T00:36:02Z",
+        "owner": null
+      }
     },
     {
-      "id": "P1-001", "title": "Security response headers on all responses (yentl-hardening-pass clause 9)",
-      "severity": "P1", "owner": "readiness", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/security-headers.ts", "next.config.ts", "tests/security-headers.test.ts"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P1-001",
+      "title": "Security response headers on all responses (yentl-hardening-pass clause 9)",
+      "severity": "P1",
+      "owner": "readiness",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/security-headers.ts",
+        "next.config.ts",
+        "tests/security-headers.test.ts"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Remove headers() from next.config.ts.",
-      "acceptance_criteria": "see criteria companion P1-001", "proof_required": ["tsc/lint/test green", "curl shows 5 headers", "microphone preserved"],
+      "acceptance_criteria": "see criteria companion P1-001",
+      "proof_required": [
+        "tsc/lint/test green",
+        "curl shows 5 headers",
+        "microphone preserved"
+      ],
       "readiness": "verified",
       "operator_proof_artifacts": [],
-      "readiness_reproduction_artifacts": ["local curl: 5 headers present on / and /api/* (2026-06-19)", "tests/security-headers.test.ts 8/8", "tsc exit 0", "lint exit 0", "microphone=(self) preserved"],
+      "readiness_reproduction_artifacts": [
+        "local curl: 5 headers present on / and /api/* (2026-06-19)",
+        "tests/security-headers.test.ts 8/8",
+        "tsc exit 0",
+        "lint exit 0",
+        "microphone=(self) preserved"
+      ],
       "independently_reproduced": true,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
       "next_single_action": "Rides to prod on P0-001 deploy; Readiness re-verifies headers on prod, then Owner accepts. Promote CSP from Report-Only to enforce after reports are clean.",
-      "signoff": { "operator": null, "readiness": "claude-yentl 2026-06-19 (local)", "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": "claude-yentl 2026-06-19 (local)",
+        "owner": null
+      }
     },
     {
-      "id": "P1-002", "title": "Unify verdict vocabulary (4 conflicting maps) onto verdict-theme.ts + fix chip contrast (WCAG) + marker icons",
-      "severity": "P1", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/client/verdict-theme.ts", "components/session/chips.tsx", "components/session/claim-row.tsx", "components/session/claim-detail.tsx", "components/session/MarkerChip.tsx"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P1-002",
+      "title": "Unify verdict vocabulary (4 conflicting maps) onto verdict-theme.ts + fix chip contrast (WCAG) + marker icons",
+      "severity": "P1",
+      "owner": "shared",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/client/verdict-theme.ts",
+        "components/session/chips.tsx",
+        "components/session/claim-row.tsx",
+        "components/session/claim-detail.tsx",
+        "components/session/MarkerChip.tsx"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Code-level; revert commit. UI-only, behind tests + screenshots.",
-      "acceptance_criteria": "see criteria companion P1-002", "proof_required": ["one vocabulary across watch/claims/markers/TV/mobile", "VerdictChip contrast >= 4.5:1", "markers have icon + plain word", "tests green", "before/after screenshots"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "acceptance_criteria": "see criteria companion P1-002",
+      "proof_required": [
+        "one vocabulary across watch/claims/markers/TV/mobile",
+        "VerdictChip contrast >= 4.5:1",
+        "markers have icon + plain word",
+        "tests green",
+        "before/after screenshots"
+      ],
+      "readiness": "verified",
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-70bad0d3: P1-002 verified on claude/launch-gate-readiness from Grok 61d8ed8 plus Readiness integrity fix 01bdcc3",
+        "grep: claim-row.tsx and claim-detail.tsx import VERDICT from verdict-theme.ts; 0 leftover hardcoded color maps",
+        "full vitest suite in Readiness worktree: 177 files / 1844 tests pass, no regressions",
+        "independent WCAG contrast from actual hex: all 7 verdicts 5.02-7.58:1, >=4.5:1",
+        "marker icons present for Misleading/Biased/Inflammatory with severity scaling",
+        "Readiness caught and fixed a test-gaming artifact: dead text-[10px] removed, honest text-[12px] assertion committed in 01bdcc3",
+        "live screenshot deferred to main integration because Readiness worktree Turbopack rejected the node_modules symlink"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
-      "next_single_action": "ASSIGNED TO GROK SWARM (driven by Readiness) in an isolated worktree; Readiness verifies via re-run tests + agent-browser contrast check. First safe slice of the consumer redesign (P1-006).",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "next_single_action": "Operator: sequence P1-002 integration after P0 backend work; capture desktop/mobile live screenshots from an integrated main-capable worktree before Owner acceptance.",
+      "signoff": {
+        "operator": null,
+        "readiness": "claude-yentl 2026-06-20T00:15:11Z",
+        "owner": null
+      }
     },
     {
-      "id": "P1-003", "title": "Consent-gated diarization (consent flow + voiceprint deletion + legal review, then diarize ON behind gate)",
-      "severity": "P1", "owner": "operator", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/deepgram-batch.ts:36", "lib/client/deepgram-stream.ts:118", "components/session/ConsentGate.tsx", "docs/dpia.md", "legal review"],
-      "protected_surface_touch": true, "live_mutation": "none", "reversible": "partial",
+      "id": "P1-003",
+      "title": "Consent-gated diarization (consent flow + voiceprint deletion + legal review, then diarize ON behind gate)",
+      "severity": "P1",
+      "owner": "operator",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/deepgram-batch.ts:36",
+        "lib/client/deepgram-stream.ts:118",
+        "components/session/ConsentGate.tsx",
+        "docs/dpia.md",
+        "legal review"
+      ],
+      "protected_surface_touch": true,
+      "live_mutation": "none",
+      "reversible": "partial",
       "rollback_note": "Feature-flag the diarization path; default OFF until gate ships.",
-      "acceptance_criteria": "see criteria companion P1-003", "proof_required": ["consent flow + voiceprint deletion implemented", "legal sign-off recorded", "diarize ON only behind explicit consent", "real multi-speaker accuracy measured (P1-004)"],
+      "acceptance_criteria": "see criteria companion P1-003",
+      "proof_required": [
+        "consent flow + voiceprint deletion implemented",
+        "legal sign-off recorded",
+        "diarize ON only behind explicit consent",
+        "real multi-speaker accuracy measured (P1-004)"
+      ],
       "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
-      "blocker": { "by": "claude-yentl", "failing_criterion": "autonomy rule 11 + Owner gate: no prod diarization without consent/legal gate", "evidence_missing": "consent flow + voiceprint deletion + legal sign-off", "unblock_action": "Owner: authorize the legal review track; Operator: build consent flow behind a flag" },
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
+      "blocker": {
+        "by": "claude-yentl",
+        "failing_criterion": "autonomy rule 11 + Owner gate: no prod diarization without consent/legal gate",
+        "evidence_missing": "consent flow + voiceprint deletion + legal sign-off",
+        "unblock_action": "Owner: authorize the legal review track; Operator: build consent flow behind a flag"
+      },
       "next_single_action": "Owner-chosen path (consent-gated + re-measure). Operator: scope consent flow + voiceprint deletion; Owner: kick off legal review.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": null,
+        "owner": null
+      }
     },
     {
-      "id": "P1-004", "title": "Measure REAL multi-speaker accuracy with human ground truth (real debates), no overclaim",
-      "severity": "P1", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["scripts/test-corpus/**", "speaker-attribution scoring", "real corpus expansion"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P1-004",
+      "title": "Measure REAL multi-speaker accuracy with human ground truth (real debates), no overclaim",
+      "severity": "P1",
+      "owner": "shared",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "scripts/test-corpus/**",
+        "speaker-attribution scoring",
+        "real corpus expansion"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Measurement only.",
-      "acceptance_criteria": "see criteria companion P1-004", "proof_required": ["real 30-45min multi-speaker debate scored end-to-end", "human-labeled ground truth", "WER + attribution on the SHIPPING config"],
+      "acceptance_criteria": "see criteria companion P1-004",
+      "proof_required": [
+        "real 30-45min multi-speaker debate scored end-to-end",
+        "human-labeled ground truth",
+        "WER + attribution on the SHIPPING config"
+      ],
       "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
       "next_single_action": "Depends on P1-003. Then measure on the ACTUAL shipping pipeline (not the diarize:true corpus scripts).",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": null,
+        "owner": null
+      }
     },
     {
-      "id": "P1-005", "title": "Prove REAL Deepgram STT end-to-end on real audio (never exercised by current proofs)",
-      "severity": "P1", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["lib/server/deepgram-batch.ts", "app/api/media-ingest/route.ts", "scripts/validation/"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P1-005",
+      "title": "Prove REAL Deepgram STT end-to-end on real audio (never exercised by current proofs)",
+      "severity": "P1",
+      "owner": "shared",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "lib/server/deepgram-batch.ts",
+        "app/api/media-ingest/route.ts",
+        "scripts/validation/"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Proof only.",
-      "acceptance_criteria": "see criteria companion P1-005", "proof_required": ["real public multi-speaker audio URL -> media-ingest -> real Deepgram transcript (not fixture/replay)"],
-      "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "acceptance_criteria": "see criteria companion P1-005",
+      "proof_required": [
+        "real public multi-speaker audio URL -> media-ingest -> real Deepgram transcript (not fixture/replay)"
+      ],
+      "readiness": "verified",
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [
+        "Readiness mailbox MSG-fc2fe16d: P1-005 independently verified with real Deepgram STT on a real public WAV",
+        "curl /api/media-ingest static.deepgram.com/examples/interview_speech-analytics.wav -> HTTP 200 in 6.4s",
+        "real Deepgram response contained 24 utterances, mime audio/x-wav, coherent transcript beginning with speech analytics content, and no validation fixture/replay marker",
+        "speakers=0 and speaker_id=None confirms diarize:false; multi-speaker separation remains gated on P1-003"
+      ],
+      "independently_reproduced": true,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
-      "next_single_action": "Readiness: find a stable real public multi-speaker audio URL that passes MIME, run real Deepgram, record transcript artifact.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "next_single_action": "Owner acceptance pending; re-test multi-speaker separation after P1-003 turns diarization on.",
+      "signoff": {
+        "operator": null,
+        "readiness": "claude-yentl 2026-06-20T00:28:20Z",
+        "owner": null
+      }
     },
     {
-      "id": "P1-006", "title": "Full consumer redesign — glanceable session IA/flow (one dominant verdict, YouTube-overlay feel)",
-      "severity": "P1", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["components/session/watch-view.tsx", "tv-dashboard.tsx", "live-signal.tsx", "live-analysis-rail.tsx", "session-shell.tsx", "app/mobile/page.tsx", "synthesis-card.tsx"],
-      "protected_surface_touch": true, "live_mutation": "none", "reversible": "partial",
+      "id": "P1-006",
+      "title": "Full consumer redesign — glanceable session IA/flow (one dominant verdict, YouTube-overlay feel)",
+      "severity": "P1",
+      "owner": "shared",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "components/session/watch-view.tsx",
+        "tv-dashboard.tsx",
+        "live-signal.tsx",
+        "live-analysis-rail.tsx",
+        "session-shell.tsx",
+        "app/mobile/page.tsx",
+        "synthesis-card.tsx"
+      ],
+      "protected_surface_touch": true,
+      "live_mutation": "none",
+      "reversible": "partial",
       "rollback_note": "Stage behind a feature flag / branch; keep current views until accepted.",
-      "acceptance_criteria": "see criteria companion P1-006", "proof_required": ["design direction approved by Owner", "one dominant verdict per screen", "glanceable from distance (TV) + on mobile", "screenshots vs intent"],
+      "acceptance_criteria": "see criteria companion P1-006",
+      "proof_required": [
+        "design direction approved by Owner",
+        "one dominant verdict per screen",
+        "glanceable from distance (TV) + on mobile",
+        "screenshots vs intent"
+      ],
       "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
-      "blocker": { "by": "claude-yentl", "failing_criterion": "Owner gate: broad redesign affecting >1 product area needs design direction + approval", "evidence_missing": "approved design direction / reference", "unblock_action": "Owner + Readiness: agree a design direction (reference frames) before build; start with P1-002 vocab/contrast slice" },
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
+      "blocker": {
+        "by": "claude-yentl",
+        "failing_criterion": "Owner gate: broad redesign affecting >1 product area needs design direction + approval",
+        "evidence_missing": "approved design direction / reference",
+        "unblock_action": "Owner + Readiness: agree a design direction (reference frames) before build; start with P1-002 vocab/contrast slice"
+      },
       "next_single_action": "Begin with P1-002 (vocab/contrast/icons). Then Readiness drafts redesign direction (glanceable Watch/TV/mobile) for Owner approval before broad build.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": null,
+        "owner": null
+      }
     },
     {
-      "id": "P2-001", "title": "Proof-battery honesty cleanup (relabel synthetic proofs; fix ingestion-deploy-proof ok:true-while-500 logic)",
-      "severity": "P2", "owner": "shared", "verifier": "claude-yentl",
-      "files_surfaces": ["scripts/validation/prove-ingestion-local.mjs", "docs/superpowers/validation/*.json", "release-readiness-proof.json"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P2-001",
+      "title": "Proof-battery honesty cleanup (relabel synthetic proofs; fix ingestion-deploy-proof ok:true-while-500 logic)",
+      "severity": "P2",
+      "owner": "shared",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "scripts/validation/prove-ingestion-local.mjs",
+        "docs/superpowers/validation/*.json",
+        "release-readiness-proof.json"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Docs/scripts only.",
-      "acceptance_criteria": "see criteria companion P2-001", "proof_required": ["proofs labeled REAL vs SYNTHETIC", "a prod 500 can no longer read ok:true"],
+      "acceptance_criteria": "see criteria companion P2-001",
+      "proof_required": [
+        "proofs labeled REAL vs SYNTHETIC",
+        "a prod 500 can no longer read ok:true"
+      ],
       "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
       "next_single_action": "Fix the deploy-proof pass/fail logic so a live 5xx fails the check instead of hiding in deploy_blockers.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": null,
+        "owner": null
+      }
     },
     {
-      "id": "P2-002", "title": "Full screenshot/state matrix (~100+ states from audit 03 inventory) for the hub",
-      "severity": "P2", "owner": "readiness", "verifier": "claude-yentl",
-      "files_surfaces": ["docs/audit/2026-06-19/screenshots/", "agent-browser"],
-      "protected_surface_touch": false, "live_mutation": "none", "reversible": "yes",
+      "id": "P2-002",
+      "title": "Full screenshot/state matrix (~100+ states from audit 03 inventory) for the hub",
+      "severity": "P2",
+      "owner": "readiness",
+      "verifier": "claude-yentl",
+      "files_surfaces": [
+        "docs/audit/2026-06-19/screenshots/",
+        "agent-browser"
+      ],
+      "protected_surface_touch": false,
+      "live_mutation": "none",
+      "reversible": "yes",
       "rollback_note": "Artifacts only.",
-      "acceptance_criteria": "see criteria companion P2-002", "proof_required": ["every screen + meaningful state captured desktop + mobile"],
+      "acceptance_criteria": "see criteria companion P2-002",
+      "proof_required": [
+        "every screen + meaningful state captured desktop + mobile"
+      ],
       "readiness": "not-started",
-      "operator_proof_artifacts": [], "readiness_reproduction_artifacts": [], "independently_reproduced": false,
-      "owner_acceptance_status": "pending", "deferred_by_owner": false, "deferral_reason": "",
+      "operator_proof_artifacts": [],
+      "readiness_reproduction_artifacts": [],
+      "independently_reproduced": false,
+      "owner_acceptance_status": "pending",
+      "deferred_by_owner": false,
+      "deferral_reason": "",
       "blocker": null,
       "next_single_action": "Readiness drives a Grok/agent-browser pass over the full inventory; 11 key shots already captured.",
-      "signoff": { "operator": null, "readiness": null, "owner": null }
+      "signoff": {
+        "operator": null,
+        "readiness": null,
+        "owner": null
+      }
     }
   ]
 }
